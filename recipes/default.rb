@@ -17,4 +17,5 @@
 # limitations under the License.
 #
 
+include_recipe 'sys::boot'
 include_recipe 'sys::banner' unless node.sys.banner.message.empty?

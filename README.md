@@ -49,6 +49,40 @@ Shutdown system at a given point in time:
 
 # Attributes and  Usage
 
+## Boot Configuration
+
+Alters the Grub configuration using `/etc/default/grub` and **reboots the node**.
+
+**Attributes**
+
+* `node.sys.boot.params` (optional) list of Linux kernel boot parameters.
+* `node.sys.boot.config` (optional) additional configuration for Grub.
+
+If serial console configuration should be altered use:
+
+* `node.serial.port` (required) port number for serial console. 
+* `node.serial.speed` (optional) link speed.
+
+**Examples**
+
+Define a set of additional Linux kernel boot parameters:
+   
+    [...SNIP...]
+    "sys" => {
+      "boot" => { 
+        "params" => [ "noacpi", "panic=10" ]
+      },
+      [...SNIP...]
+    }
+
+Enable serial console on port 1:
+
+    [...SNIP...]
+    "sys" => {
+      "serial" => { "port" => 1 },
+      [...SNIP...]
+    }
+
 ## System Login Banner
 
 Banner message printed at interactive login (in `/etc/motd`) 
