@@ -22,8 +22,8 @@ if node.sys.serial.port > 0
   speed = node.sys.serial.speed
 
   entry = "s#{port}:2345:respawn:/sbin/getty -L #{speed} ttyS#{port} vt102"
-  execute "Configuring inittab" do
-    command %Q[echo "#{entry}" >> /etc/inittab]
+  execute "Configuring and reload inittab" do
+    command %Q[echo "#{entry}" >> /etc/inittab ; init q]
     not_if %Q[grep "^#{entry}$" /etc/inittab 1>-]
   end
 

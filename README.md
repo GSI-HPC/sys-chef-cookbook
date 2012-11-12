@@ -138,7 +138,29 @@ Define a set of additional Linux kernel boot parameters:
     }
 
 
-## System Login Banner
+## Kernel Control (sysctl)
+
+Set Linux kernel variables in `/etc/sysctl.d/` and load them immediately.
+
+**Attribute**
+
+Requires the configuration of `node.sys.ctl` with a structure representing the `sysctl` format (see example). 
+
+**Examples**
+
+    [...SNIP...]
+    "sys" => {
+      "ctl" => {
+        "net.ipv6" => { "conf.all.disable_ipv6" => 1 },
+        "net.ipv4" => { 
+          "icmp_echo_ignore_broadcasts" => 1,
+          "ip_forward" => 0
+        },
+        "vm" => { "zone_reclaim_mode" => 0  }
+      },
+      [...SNIP...]
+
+## Login Banner
 
 Banner message printed at interactive login (in `/etc/motd`) 
 

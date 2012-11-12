@@ -1,6 +1,6 @@
 #
 # Cookbook Name:: linux
-# Recipe:: default
+# Recipe:: sysctl
 #
 # Copyright 2012, Victor Penso
 #
@@ -17,9 +17,29 @@
 # limitations under the License.
 #
 
-# the order of including matters!
-include_recipe 'sys::serial'
-include_recipe 'sys::boot'
-include_recipe 'sys::cgroups' unless node.sys.cgroups.path.empty?
-include_recipe 'sys::ctl' unless node.sys.ctl.empty?
-include_recipe 'sys::banner' unless node.sys.banner.message.empty?
+
+node.sys.ctl.each do |name,values|
+
+  filename = "/etc/sysctl.d/#{name.gsub(/\./,'_')}.conf"
+  sysctl = "Set Linux kernel variables from #{filename}"
+
+  # transform the configuration for JSON attributes to sysctl format
+  config = String.new
+  values.each do |key,value|
+    config << "#{name}.#{key}=#{value}\n"
+  end
+
+  # write the configuration file
+  file filename do
+    content config
+    mode 644
+    notifies :run, "execute[#{sysctl}]", :immediately
+  end
+
+  execute sysctl do
+    action :nothing
+    command %Q[sysctl --load #{filename} 1>-]
+  end
+
+end
+

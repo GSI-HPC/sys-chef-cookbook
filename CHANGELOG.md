@@ -1,5 +1,6 @@
 # 1.0.0
 
+* Configure sysctl with `node.sys.ctl`.
 * Configure a serial console with attribute `node.serial`.
 * Deploy cgroups with attributes in `node.sys.cgroups`.
 * Alter Grub boot configuration attributes in `node.sys.boot`. 
