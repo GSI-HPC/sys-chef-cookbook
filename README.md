@@ -47,7 +47,53 @@ Shutdown system at a given point in time:
 
     sys_shutdown "18:15"
 
-# Attributes and  Usage
+# Attributes and Recipes
+
+## Control Groups (cgroups)
+
+Installs and configures Linux Control Groups.
+
+**Attributes**
+
+All attributes in `node.sys.cgroups`:
+
+* `path` (required) defines the location to mount the cgroups file-system.
+* `subsys` list of cgroups subsystems to mount (contains `cpuset`,`cpu`,`cpuacct`).
+
+**Examples**
+
+Mount cgroups at a given path and add a couple of subsystems:
+
+    [...SNIP...]
+    "sys" => {
+      "cgroups" => {
+        "path" => "/cgroup",
+        "subsys" => [ "devices", "blkio", "net_cls" ]
+      }
+      [...SNIP...]
+    }
+
+Mount a the memory subsystem (including kernel boot parameters):
+
+    [...SNIP...]
+    "sys" => {
+      "boot" => {
+        "params" => [ 
+          {...SNIP...]
+          "cgroup_enable=memory", 
+          "swapaccount" 
+        ]
+      },
+      "cgroups" => {
+        "path" => "/sys/fs/cgroup",
+        "subsys" => [ 'memory' ]
+      },
+      [...SNIP...]
+    }
+    
+
+
+
 
 ## Boot Configuration
 
