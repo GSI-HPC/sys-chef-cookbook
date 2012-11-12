@@ -18,6 +18,7 @@
 #
 
 # the order of including matters!
+include_recipe 'sys::serial'
 include_recipe 'sys::boot'
 include_recipe 'sys::cgroups' unless node.sys.cgroups.path.empty?
 include_recipe 'sys::banner' unless node.sys.banner.message.empty?

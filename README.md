@@ -92,8 +92,26 @@ Mount a the memory subsystem (including kernel boot parameters):
     }
     
 
+## Serial Console
 
+Configures `/etc/inittab` and Grub for a defined serial console.
 
+**Attributes**
+
+All attributes in `node.sys.serial`:
+
+* `port` (required) port number for serial console. 
+* `speed` (optional) link speed.
+
+**Example**
+
+Enable serial console on port 1:
+
+    [...SNIP...]
+    "sys" => {
+      "serial" => { "port" => 2 },
+      [...SNIP...]
+    }
 
 ## Boot Configuration
 
@@ -101,15 +119,13 @@ Alters the Grub configuration using `/etc/default/grub` and **reboots the node**
 
 **Attributes**
 
-* `node.sys.boot.params` (optional) list of Linux kernel boot parameters.
-* `node.sys.boot.config` (optional) additional configuration for Grub.
+All attributes in `node.sys.boot`:
 
-If serial console configuration should be altered use:
+* `params` (optional) list of Linux kernel boot parameters.
+* `config` (optional) additional configuration for Grub.
 
-* `node.serial.port` (required) port number for serial console. 
-* `node.serial.speed` (optional) link speed.
 
-**Examples**
+**Example**
 
 Define a set of additional Linux kernel boot parameters:
    
@@ -121,13 +137,6 @@ Define a set of additional Linux kernel boot parameters:
       [...SNIP...]
     }
 
-Enable serial console on port 1:
-
-    [...SNIP...]
-    "sys" => {
-      "serial" => { "port" => 1 },
-      [...SNIP...]
-    }
 
 ## System Login Banner
 
