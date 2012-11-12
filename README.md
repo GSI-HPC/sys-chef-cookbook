@@ -160,6 +160,23 @@ Requires the configuration of `node.sys.ctl` with a structure representing the `
       },
       [...SNIP...]
 
+## Timezone
+
+Configure the system timezone in `/etc/timezone`.
+
+**Attributes**
+
+The attribute `node.sys.timezone` (default UTC) sets the system timezone.
+
+**Example**
+
+    "sys" => {
+      [...SNIP...]
+      "timezone" => "Europe/Berlin",
+      [...SNIP...]
+    }
+
+
 ## Login Banner
 
 Banner message printed at interactive login (in `/etc/motd`) 
