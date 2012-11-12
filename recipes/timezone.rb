@@ -1,6 +1,6 @@
 #
 # Cookbook Name:: linux
-# Recipe:: default
+# Recipe:: timezone
 #
 # Copyright 2012, Victor Penso
 #
@@ -17,10 +17,17 @@
 # limitations under the License.
 #
 
-# the order of including matters!
-include_recipe 'sys::serial'
-include_recipe 'sys::boot'
-include_recipe 'sys::cgroups' unless node.sys.cgroups.path.empty?
-include_recipe 'sys::ctl' unless node.sys.ctl.empty?
-include_recipe 'sys::timezone'
-include_recipe 'sys::banner' unless node.sys.banner.message.empty?
+package 'tzdata'
+
+configure = "Configuring timezone to #{node.sys.timezone}"
+
+file '/etc/timezone' do
+  content node.sys.timezone
+  mode 644
+  notifies :run, "execute[#{configure}]"
+end
+
+execute configure do
+  action :nothing
+  command 'dpkg-reconfigure -f noninteractive tzdata'
+end
