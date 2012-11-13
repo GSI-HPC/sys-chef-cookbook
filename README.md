@@ -213,11 +213,11 @@ All attributes in `node.sys.resolv`:
 
 ## Login Banner
 
-Banner message printed at interactive login (in `/etc/motd`) 
+Banner message printed at interactive login (↪ `recipes/banner.rb` and `templates/*/etc_motd.erb`).
 
 **Attributes**
 
-All attributes in `node.sys.banner`:
+All attributes in `node.sys.banner` (↪ `attributes/banner.rb`):
 
 * `message` (required) text normally describing the purpose of the node.
 * `header` (optional) text printed in front of the banner message.

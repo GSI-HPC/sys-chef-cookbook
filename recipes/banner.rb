@@ -18,7 +18,7 @@
 #
 
 template '/etc/motd' do
-  source 'banner.erb'
+  source 'etc_motd.erb'
   mode 0644
   variables(
     :header => node.sys.banner.header,
