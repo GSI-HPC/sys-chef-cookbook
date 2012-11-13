@@ -43,7 +43,7 @@ execute config_cgroups do
 end
 
 template '/etc/cgconfig.conf' do
-  source 'etc_cgconfig.erb'
+  source 'etc_cgconfig.conf.erb'
   mode 0644
   variables(
     :subsys => subsystems
