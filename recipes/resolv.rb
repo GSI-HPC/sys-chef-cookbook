@@ -1,6 +1,6 @@
 #
 # Cookbook Name:: linux
-# Recipe:: timezone
+# Recipe:: resolv
 #
 # Copyright 2012, Victor Penso
 #
@@ -17,17 +17,12 @@
 # limitations under the License.
 #
 
-package 'tzdata'
-
-configure = "Configuring timezone to #{node.sys.timezone}"
-
-file '/etc/timezone' do
-  content "#{node.sys.timezone}\n"
+template '/etc/resolv.conf' do
+  source 'etc_resolv.erb'
   mode 644
-  notifies :run, "execute[#{configure}]"
-end
-
-execute configure do
-  action :nothing
-  command 'dpkg-reconfigure -f noninteractive tzdata'
+  variables(
+    :servers => node.sys.resolv.servers,
+    :domain => node.sys.resolv.domain,
+    :search => node.sys.resolv.search
+  )
 end

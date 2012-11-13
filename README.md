@@ -176,6 +176,29 @@ The attribute `node.sys.timezone` (default UTC) sets the system timezone.
       [...SNIP...]
     }
 
+## DNS Lookup
+
+Configure domain name service resolution in `/etc/resolv.conf`.
+
+**Attributes**
+
+All attributes in `node.sys.resolv`:
+
+* `servers` (required) list a DNS server hosts.
+* `domain` (optional) local domain name.
+* `search` (optional) list for host-name lookup.
+
+**Example**
+
+    "sys" => {
+      [...SNIP...]
+      "resolv" => {
+        "servers" => [ "10.1.1.1","10.1.1.2" ],
+        "domain" => "devops.test",
+        "search" => "sub.devops.test devops.test"
+      }
+    }
+
 
 ## Login Banner
 

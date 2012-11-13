@@ -1,5 +1,6 @@
 # 1.0.0
 
+* Configure DNS names service with attributes in `node.sys.resolv`.
 * Set the timezone in `node.sys.timezone`.
 * Configure sysctl with `node.sys.ctl`.
 * Configure a serial console with attribute `node.serial`.
