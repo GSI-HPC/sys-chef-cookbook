@@ -189,11 +189,11 @@ Set the timezone to "Europe/Berlin" and a couple of NTP server are defined like:
 
 ## DNS Lookup
 
-Configure domain name service resolution in `/etc/resolv.conf`.
+Configure domain name service resolution (↪ `recipes/resolv.rb` and `templates/*/etc_resolv.conf.erb`).
 
 **Attributes**
 
-All attributes in `node.sys.resolv`:
+All attributes in `node.sys.resolv` (↪ `attributes/resolv.rb`):
 
 * `servers` (required) list a DNS server hosts.
 * `domain` (optional) local domain name.

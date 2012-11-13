@@ -18,7 +18,7 @@
 #
 
 template '/etc/resolv.conf' do
-  source 'etc_resolv.erb'
+  source 'etc_resolv.conf.erb'
   mode 644
   variables(
     :servers => node.sys.resolv.servers,
