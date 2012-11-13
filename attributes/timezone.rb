@@ -1,1 +1,1 @@
-default[:sys][:timezone] = "UTC" 
+default[:sys][:timezone] = "Etc/UTC" 

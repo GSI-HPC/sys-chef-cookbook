@@ -21,6 +21,8 @@
 include_recipe 'sys::serial'
 include_recipe 'sys::boot'
 include_recipe 'sys::cgroups' unless node.sys.cgroups.path.empty?
-include_recipe 'sys::ctl' unless node.sys.ctl.empty?
+include_recipe 'sys::ctl'     unless node.sys.ctl.empty?
 include_recipe 'sys::timezone'
-include_recipe 'sys::banner' unless node.sys.banner.message.empty?
+include_recipe 'sys::resolv'  unless node.sys.resolv.servers.empty?
+include_recipe 'sys::banner'  unless node.sys.banner.message.empty?
+

@@ -1,0 +1,5 @@
+<% @servers.each do |name| %>
+nameserver <%= name %>
+<% end %>
+<% unless @domain.empty? %>domain <%= @domain %><% end %>
+<% unless @search.empty? %>search <%= @search %><% end %>
