@@ -160,21 +160,32 @@ Requires the configuration of `node.sys.ctl` with a structure representing the `
       },
       [...SNIP...]
 
-## Timezone
+## Time
 
-Configure the system timezone in `/etc/timezone`.
+Configure the system time and timezone (↪ `recipes/time.rb`).
 
 **Attributes**
 
-The attribute `node.sys.timezone` (default UTC) sets the system timezone.
+All attributes in `node.sys.time` (↪ `attributes/time.rb`):
+
+* `zone` (optional) sets the system timezone.
+* `servers` (optional) list of NTP servers (↪ `templates/*/etc_ntp.conf.erb`).
 
 **Example**
 
+Set the timezone to "Europe/Berlin" and a couple of NTP server are defined like:
+
     "sys" => {
       [...SNIP...]
-      "timezone" => "Europe/Berlin",
+      "time" {
+        "zone" => "Europe/Berlin",
+        "servers" => [
+          "0.debian.pool.ntp.org",
+          "1.debian.pool.ntp.org"
+        ]
+      },
       [...SNIP...]
-    }
+
 
 ## DNS Lookup
 

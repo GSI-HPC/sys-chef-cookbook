@@ -1,7 +1,7 @@
 # 1.0.0
 
 * Configure DNS names service with attributes in `node.sys.resolv`.
-* Set the timezone in `node.sys.timezone`.
+* Set the timezone and configure NTP servers in `node.sys.time`.
 * Configure sysctl with `node.sys.ctl`.
 * Configure a serial console with attribute `node.serial`.
 * Deploy cgroups with attributes in `node.sys.cgroups`.
