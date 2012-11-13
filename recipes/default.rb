@@ -24,5 +24,6 @@ include_recipe 'sys::cgroups' unless node.sys.cgroups.path.empty?
 include_recipe 'sys::control' unless node.sys.control.empty?
 include_recipe 'sys::time'
 include_recipe 'sys::resolv'  unless node.sys.resolv.servers.empty?
+include_recipe 'sys::mail'
 include_recipe 'sys::banner'  unless node.sys.banner.message.empty?
 

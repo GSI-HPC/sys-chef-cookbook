@@ -1,5 +1,6 @@
 # 1.0.0
 
+* Configure mail relay and aliases with attributes in `node.sys.mail`.
 * Configure DNS names service with attributes in `node.sys.resolv`.
 * Set the timezone and configure NTP servers in `node.sys.time`.
 * Configure sysctl with `node.sys.ctl`.
