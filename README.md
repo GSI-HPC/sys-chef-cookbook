@@ -1,23 +1,28 @@
 # Description
 
-# Requirements
+**Requirements**
 
+* Chef version >= 10.12
+* No dependencies to other cookbooks
 
-# Definitions
+**Platforms**
+
+* Debian (Wheezy)
+* No other platforms supported yet.
+
+# Definitions and Providers
 
 ## Linux Module
 
-Load a Linux kernel module with `linux_module` followed by the name of the module:
+Load a Linux kernel module with `linux_module` followed by the name of the module (↪ `definitions/linux_module.rb`):
 
     linux_module "ext3"
 
 The module will be added to `/etc/modules`.
 
-# Resources and Providers
-
 ## Shutdown
 
-The provider `sys_shutdown` can be used to restart or power down the node. 
+The provider `sys_shutdown` can be used to restart or power down the node (↪ `resources/shutdown.rb` and `providers/shutdown.rb`). 
 
 **Actions**
 
@@ -51,14 +56,14 @@ Shutdown system at a given point in time:
 
 ## Control Groups (cgroups)
 
-Installs and configures Linux Control Groups.
+Installs and configures Linux Control Groups (↪ `recipes/cgroups.rb` and `templates/*/etc_cgconfig.conf.erb`).
 
 **Attributes**
 
-All attributes in `node.sys.cgroups`:
+All attributes in `node.sys.cgroups` (↪ `attributes/cgroups.rb`):
 
 * `path` (required) defines the location to mount the cgroups file-system.
-* `subsys` list of cgroups subsystems to mount (contains `cpuset`,`cpu`,`cpuacct`).
+* `subsys` (optional) list of cgroup subsystems to mount (contains `cpuset`,`cpu`,`cpuacct` by default).
 
 **Examples**
 
@@ -115,11 +120,11 @@ Enable serial console on port 1:
 
 ## Boot Configuration
 
-Alters the Grub configuration using `/etc/default/grub` and **reboots the node**.
+Alters the Grub configuration and **reboots the node** to apply changes (↪ `recipes/boot.rb` and `templates/*/etc_default_grub.erb`).
 
 **Attributes**
 
-All attributes in `node.sys.boot`:
+All attributes in `node.sys.boot` (↪ `attributes/boot.rb`):
 
 * `params` (optional) list of Linux kernel boot parameters.
 * `config` (optional) additional configuration for Grub.
@@ -140,11 +145,11 @@ Define a set of additional Linux kernel boot parameters:
 
 ## Kernel Control (sysctl)
 
-Set Linux kernel variables in `/etc/sysctl.d/` and load them immediately.
+Set Linux kernel variables in `/etc/sysctl.d/` and load them immediately (↪ `recipes/control.rb`).
 
 **Attribute**
 
-Requires the configuration of `node.sys.ctl` with a structure representing the `sysctl` format (see example). 
+Requires the configuration of `node.sys.control` with a structure representing the `sysctl` format (see example) (↪ `attributes/control.rb`). 
 
 **Examples**
 

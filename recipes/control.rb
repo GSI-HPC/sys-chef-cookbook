@@ -17,14 +17,23 @@
 # limitations under the License.
 #
 
+header = <<-EOF
+#
+# DO NOT CHANGE THIS FILE MANUALLY!
+#
+# This file is managed by the Chef `sys` cookbook.
+#
 
-node.sys.ctl.each do |name,values|
+EOF
+
+node.sys.control.each do |name,values|
 
   filename = "/etc/sysctl.d/#{name.gsub(/\./,'_')}.conf"
   sysctl = "Set Linux kernel variables from #{filename}"
 
   # transform the configuration for JSON attributes to sysctl format
-  config = String.new
+  config = "##{filename}\n"
+  config << header
   values.each do |key,value|
     config << "#{name}.#{key}=#{value}\n"
   end
