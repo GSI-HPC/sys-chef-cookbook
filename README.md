@@ -20,6 +20,16 @@ Load a Linux kernel module with `linux_module` followed by the name of the modul
 
 The module will be added to `/etc/modules`.
 
+## Mail Aliases
+
+Add or change (Postfix) account to mail address aliases in `/etc/aliases` with `mail_alias` (↪ `definitions/mail_alias.rb`) like:
+
+    mail_alias "jdoe" do
+      to "jdoe@devops.test"
+    end
+
+(Note that you cannot remove aliases whith this definition.)
+
 ## Shutdown
 
 The provider `sys_shutdown` can be used to restart or power down the node (↪ `resources/shutdown.rb` and `providers/shutdown.rb`). 
@@ -165,7 +175,7 @@ Requires the configuration of `node.sys.control` with a structure representing t
       },
       [...SNIP...]
 
-## Time
+## Time Configuration
 
 Configure the system time and timezone (↪ `recipes/time.rb`).
 
@@ -192,7 +202,7 @@ Set the timezone to "Europe/Berlin" and a couple of NTP server are defined like:
       [...SNIP...]
 
 
-## DNS Lookup
+## Domain Name Service Lookup
 
 Configure domain name service resolution (↪ `recipes/resolv.rb` and `templates/*/etc_resolv.conf.erb`).
 
@@ -215,6 +225,29 @@ All attributes in `node.sys.resolv` (↪ `attributes/resolv.rb`):
       }
     }
 
+## Mail Delivery
+
+Configures Postfix to forward outgoing messages to a mail relay (↪ `recipes/mail.rb`).
+
+**Attributes**
+
+All attributes in `node.sys.mail` (↪ `attributes/mail.rb`):
+
+* `relay` (required) defines the mail relay host FQDN.
+* `aliases` (optional) hash of account name, mail address pairs.
+
+**Example**
+
+    [...SNIP...]
+    "sys" => {
+      "mail" => {
+        "relay" => "smtp.devops.test",
+        "aliases => {
+          "root" => jdoe@devops.test",
+          "logcheck" => "root"
+        }
+      }
+      [...SNIP...]
 
 ## Login Banner
 
