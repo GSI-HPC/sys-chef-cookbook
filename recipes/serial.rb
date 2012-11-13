@@ -21,10 +21,9 @@ if node.sys.serial.port > 0
   port = node.sys.serial.port
   speed = node.sys.serial.speed
 
-  entry = "s#{port}:2345:respawn:/sbin/getty -L #{speed} ttyS#{port} vt102"
-  execute "Configuring and reload inittab" do
-    command %Q[echo "#{entry}" >> /etc/inittab ; init q]
-    not_if %Q[grep "^#{entry}$" /etc/inittab 1>-]
+  template '/etc/inittab' do
+    source 'etc_inittab.erb'
+    variables :console => "s#{port}:2345:respawn:/sbin/getty -L #{speed} ttyS#{port} vt102"
   end
 
   # add the serial console to the grub boot configuration

@@ -94,11 +94,11 @@ Mount a the memory subsystem (including kernel boot parameters):
 
 ## Serial Console
 
-Configures `/etc/inittab` and Grub for a defined serial console.
+Configures Init and Grub for a defined serial console (↪ `recipes/serial.rb`, `templates/*/etc_default_grub.erb` and `templates/*/etc_inittab.erb`).
 
 **Attributes**
 
-All attributes in `node.sys.serial`:
+All attributes in `node.sys.serial` (↪ `attributes/serial.rb`):
 
 * `port` (required) port number for serial console. 
 * `speed` (optional) link speed.
