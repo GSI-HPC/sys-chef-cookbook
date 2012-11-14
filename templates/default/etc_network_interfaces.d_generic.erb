@@ -1,0 +1,12 @@
+#/etc/network/interface.d/<%= @name %>
+#
+# DO NOT CHANGE THIS FILE MANUALLY!
+#
+# This file is managed by the Chef `sys` cookbook.
+#
+
+auto <%= @name %>
+iface <%= @name %> inet <%= @inet %>
+<% unless @config.empty? %>
+<%= @config.join("\n") %>
+<% end %>

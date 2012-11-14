@@ -1,9 +1,11 @@
 # Description
 
+The "sys" Chef cookbook combines small configuration steps common to most Linux deployments, but not worth of writing a dedicated cookbook (since they would comprise only of a single recipe). Furthermore it defines resources commonly used by other cookbooks but not really related to a specific service other then Linux itself (e.g. system reboot or loading a Linux kernel module).
+
 **Requirements**
 
 * Chef version >= 10.12
-* No dependencies to other cookbooks
+* No dependencies to other cookbooks.
 
 **Platforms**
 
@@ -28,7 +30,7 @@ Add or change (Postfix) account to mail address aliases in `/etc/aliases` with `
       to "jdoe@devops.test"
     end
 
-(Note that you cannot remove aliases whith this definition.)
+Note that you cannot remove aliases this this definition.
 
 ## Shutdown
 
@@ -36,8 +38,8 @@ The provider `sys_shutdown` can be used to restart or power down the node (↪ `
 
 **Actions**
 
-* `:shutdown` (default) executes sync and system shutdown
-* `:reboot` executes sync and system reboot
+* `:shutdown` (default) executes sync and system shutdown.
+* `:reboot` executes sync and system reboot.
 
 **Attributes**
 
@@ -202,6 +204,38 @@ Set the timezone to "Europe/Berlin" and a couple of NTP server are defined like:
       [...SNIP...]
 
 
+## Network Interfaces
+
+Configures the Debian network in `/etc/network/interfaces.d/*` (↪ `recipes/network.rb`, `files/*/etc_network_interfaces` and `templates/*/etc_network_interfaces.d_generic.erb` ). 
+
+**Attributes**
+
+All attributes in `node.sys.network.interfaces` (↪ `attributes/network.rb`). Each interface `name` is the key to a hash of configuration options (see the `interfaces` manual). The only exception is `inet` (default `manual`).
+
+**Examples**
+
+Configure a couple of NICs, a VLAN and a network bridge:
+
+    "sys" => {
+      "network" => {
+        "interfaces" => {
+          "eth0" => { "inet" => "static" },
+          "eth1" => {
+            "inet" => "static",
+            "address" => "10.1.1.4",
+            "netmask" => "255.255.255.0",
+            "broadcast" => "10.1.1.255",
+            "gateway" => '10.1.1.1',
+            "up" => "route add -net 10.0.0.0 netmask 255.0.0.0 gw 10.8.0.1",
+            "down" => "down route del -net 10.0.0.0 netmask 255.0.0.0 gw 10.8.0.1"
+          },
+          "vlan1" => { "vlan_raw_device" => "eth0" },
+          "br1" => { "bridge_ports" => "vlan1" }
+        }
+      }
+      [...SNIP...]
+     
+
 ## Domain Name Service Lookup
 
 Configure domain name service resolution (↪ `recipes/resolv.rb` and `templates/*/etc_resolv.conf.erb`).
@@ -286,4 +320,12 @@ For specific roles/nodes the message describes the hosts purpose.
       }
       [...SNIP...]
 
+# License
 
+Copyright 2012 Victor Penso
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
