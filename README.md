@@ -96,7 +96,7 @@ Mount a the memory subsystem (including kernel boot parameters):
     "sys" => {
       "boot" => {
         "params" => [ 
-          {...SNIP...]
+          [...SNIP...]
           "cgroup_enable=memory", 
           "swapaccount" 
         ]
@@ -167,7 +167,7 @@ Requires the configuration of `node.sys.control` with a structure representing t
 
     [...SNIP...]
     "sys" => {
-      "ctl" => {
+      "control" => {
         "net.ipv6" => { "conf.all.disable_ipv6" => 1 },
         "net.ipv4" => { 
           "icmp_echo_ignore_broadcasts" => 1,
@@ -219,7 +219,7 @@ Configure a couple of NICs, a VLAN and a network bridge:
     "sys" => {
       "network" => {
         "interfaces" => {
-          "eth0" => { "inet" => "static" },
+          "eth0" => { "inet" => "dhcp" },
           "eth1" => {
             "inet" => "static",
             "address" => "10.1.1.4",
