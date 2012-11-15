@@ -206,11 +206,19 @@ Set the timezone to "Europe/Berlin" and a couple of NTP server are defined like:
 
 ## Network Interfaces
 
-Configures the Debian network in `/etc/network/interfaces.d/*` (↪ `recipes/network.rb`, `files/*/etc_network_interfaces` and `templates/*/etc_network_interfaces.d_generic.erb` ). 
+Configures the node network with individual files for each interface in  `/etc/network/interfaces.d/*`. Fruthermore it create a file `/etc/network/interfaces` to source all wihtin the configuration directory 
+
+↪ `attributes/network.rb`  
+↪ `recipes/network.rb`  
+↪ `files/*/etc_network_interfaces`   
+↪ `templates/*/etc_network_interfaces.d_generic.erb`
 
 **Attributes**
 
-All attributes in `node.sys.network.interfaces` (↪ `attributes/network.rb`). Each interface `name` is the key to a hash of configuration options (see the `interfaces` manual). The only exception is `inet` (default `manual`).
+All attributes in `node.sys.network`:
+
+* `interfaces` (required) is a hash with interface names as keys and the their configuration as values. The interface configuration hash holds an `inet` key (default `manual`) also. Read the manuals `interfaces`, `vlan-interfaces` and `bridge-utils-interfaces`.
+* `restart` (optional) default true. Networking is automatically restarted upon configuration change.
 
 **Examples**
 

@@ -18,23 +18,25 @@
 #
 
 interfaces = node.sys.network.interfaces
-
 unless interfaces.empty?
 
   package 'vlan'
   package 'bridge-utils'
 
-  directory '/etc/network/interfaces.d'
+  service 'networking'
 
+  directory '/etc/network/interfaces.d'
   cookbook_file '/etc/network/interfaces' do
     source 'etc_network_interfaces'
   end
 
   interfaces.each do |name,params|
 
+    # manual initialization by default
     inet = params.has_key?(:inet) ? params[:inet] : 'manual'
     params.delete(:inet)
     
+    # try to get configuration of the default interface from Ohai
     if name == node.network.default_interface and inet == 'static'
       params[:address] = node.ipaddress unless params.has_key?(:address)
       params[:gateway] = node.network.default_gateway unless params.has_key?(:gateway)
@@ -42,6 +44,7 @@ unless interfaces.empty?
       params[:netmask] = node.network.interfaces[node.network.default_interface].addresses[params[:address]].netmask unless params.has_key?(:netmask)
     end
 
+    # merge the configuration 
     config = Array.new
     params.each { |key,value| config << "  #{key} #{value}" }
    
@@ -53,6 +56,9 @@ unless interfaces.empty?
         :inet => inet,
         :config => config
       )
+      if node.sys.network.restart
+        notifies :restart, 'service[networking]'
+      end
     end
   
   end
