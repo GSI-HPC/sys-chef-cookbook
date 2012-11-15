@@ -1,0 +1,45 @@
+#!/bin/sh
+#
+# Copyright 2012, Victor Penso
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+procs=$(top -b -n1 | sed -n '2p' | cut -d':' -f 2- | sed 's/^[ \t]*//')
+cpus=$(top -b -n1 | sed -n '3p' | cut -d':' -f 2- | sed 's/^[ \t]*//')
+users=$(ps haeo user | sort | grep -v root | grep -v $USER | uniq -c | sort -nr | tr -s ' ' | awk '{ printf "%s(%s) ", $2, $1 }')
+count=$(ps haeo user | sort | grep -v root | uniq -c | wc -l)
+disk=$(df -lh | grep "^/" | tr -s ' ' | cut -d' ' -f5- | awk '{printf "%s %s  ", $2, $1}')
+
+mem_total=$(grep MemTotal /proc/meminfo | awk '{printf "%sMB",$2/1000}')
+mem_free=$(grep MemFree /proc/meminfo | awk '{printf "%sMB",$2/1000}')
+mem_free_perc=$(free | grep Mem | awk '{printf "%.2f%%" ,  $4/$2 * 100.0}')
+mem_free_perccc=$(free | grep "buffers/cache" | awk '{printf "%.2f%%" ,  $4/($3+$4) * 100.0}')
+
+echo "
+Node:         <%= node.fqdn %> (<%= node.ipaddress%>)
+Platform:     <%= node['platform'].capitalize %> (<%= node['platform_version'] %>) 
+<% unless Chef::Config[:solo] %>
+Chef-Server:  <%= Chef::Config.chef_server_url %>
+<% else %>
+Chef-Solo:    <%= Time.now %>
+<% end %> 
+Run-list:     <%= node.run_list %>
+Tasks:        $procs
+Load:         $(cat /proc/loadavg | cut -d' ' -f1-3)
+CPU(s)%:      $cpus
+RAM:          $mem_total total -- $mem_free ($mem_free_perc) free [$mem_free_perccc with cache]
+Disk(s)%:     $disk
+User(s):      $count    
+$users
+"    

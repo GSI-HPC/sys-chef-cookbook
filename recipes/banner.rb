@@ -26,3 +26,12 @@ template '/etc/motd' do
     :footer => node.sys.banner.footer
   )
 end
+
+if node.sys.banner.info
+
+  template '/etc/profile.d/info.sh' do
+    source 'etc_profile.d_info.sh.erb'
+    mode 0755
+  end
+
+end

@@ -293,15 +293,21 @@ All attributes in `node.sys.mail` (↪ `attributes/mail.rb`):
 
 ## Login Banner
 
-Banner message printed at interactive login (↪ `recipes/banner.rb` and `templates/*/etc_motd.erb`).
+Display a static login message by creating `/etc/motd`.
+
+↪ `attributes/banner.rb`  
+↪ `recipes/banner.rb`  
+↪ `templates/*/etc_motd.erb`  
+↪ `templates/*/etc_profile.d_info.sh.erb`
 
 **Attributes**
 
-All attributes in `node.sys.banner` (↪ `attributes/banner.rb`):
+All attributes in `node.sys.banner`:
 
 * `message` (required) text normally describing the purpose of the node.
 * `header` (optional) text printed in front of the banner message.
 * `footer` (optional) text printed after the banner message.
+* `info` (default `true`) deploys a script in `/etc/profile.d/info.sh` displaying system statistics and infromation about the Chef deployment.
 
 **Example**
 
