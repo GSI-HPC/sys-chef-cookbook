@@ -1,6 +1,12 @@
 # Description
 
-The "sys" Chef cookbook combines small configuration steps common to most Linux deployments, but not worth of writing a dedicated cookbook (since they would comprise only of a single recipe). Furthermore it defines resources commonly used by other cookbooks but not really related to a specific service other then Linux itself (e.g. system reboot or loading a Linux kernel module).
+The "sys" Chef cookbook combines small configuration steps 
+common to most Linux deployments, but not worth of writing 
+a dedicated cookbook (since they would comprise only of a 
+single recipe). Furthermore it defines resources commonly 
+used by other cookbooks but not really related to a specific 
+service other then Linux itself (e.g. system reboot or 
+loading a Linux kernel module).
 
 **Requirements**
 
@@ -14,9 +20,31 @@ The "sys" Chef cookbook combines small configuration steps common to most Linux 
 
 # Definitions and Providers
 
+## SSH Authorize
+
+Deploy SSH public keys for a given account in `~/.ssh/authorized_keys`
+
+↪ `definitions/ssh_authorize.rb`
+
+    ssh_authorize "devops" do
+      keys [
+        "ssh-rsa AAAAB3Nza.....",
+        "ssh-rsa AAAADAQAB....."
+      ]
+      managed true
+    end
+
+The name attribute is the user account name (here devops) 
+where the list of `keys` will be deployed. The attribute
+`managed` (default false) indicates if deviating keys should
+be removed. 
+
 ## Linux Module
 
-Load a Linux kernel module with `linux_module` followed by the name of the module (↪ `definitions/linux_module.rb`):
+Load a Linux kernel module with `linux_module` followed by 
+the name of the module.
+
+↪ `definitions/linux_module.rb`
 
     linux_module "ext3"
 
@@ -24,7 +52,10 @@ The module will be added to `/etc/modules`.
 
 ## Mail Aliases
 
-Add or change (Postfix) account to mail address aliases in `/etc/aliases` with `mail_alias` (↪ `definitions/mail_alias.rb`) like:
+Add or change (Postfix) account to mail address aliases in 
+`/etc/aliases` with `mail_alias`.
+
+↪ `definitions/mail_alias.rb` 
 
     mail_alias "jdoe" do
       to "jdoe@devops.test"
@@ -34,7 +65,11 @@ Note that you cannot remove aliases this this definition.
 
 ## Shutdown
 
-The provider `sys_shutdown` can be used to restart or power down the node (↪ `resources/shutdown.rb` and `providers/shutdown.rb`). 
+The provider `sys_shutdown` can be used to restart or power 
+down the node. 
+
+↪ `resources/shutdown.rb`  
+↪ `providers/shutdown.rb` 
 
 **Actions**
 
@@ -68,14 +103,20 @@ Shutdown system at a given point in time:
 
 ## Control Groups (cgroups)
 
-Installs and configures Linux Control Groups (↪ `recipes/cgroups.rb` and `templates/*/etc_cgconfig.conf.erb`).
+Installs and configures Linux Control Groups.
+
+↪ `attributes/cgroups.rb`  
+↪ `recipes/cgroups.rb`  
+↪ `templates/*/etc_cgconfig.conf.erb`
 
 **Attributes**
 
-All attributes in `node.sys.cgroups` (↪ `attributes/cgroups.rb`):
+All attributes in `node.sys.cgroups`:
 
-* `path` (required) defines the location to mount the cgroups file-system.
-* `subsys` (optional) list of cgroup subsystems to mount (contains `cpuset`,`cpu`,`cpuacct` by default).
+* `path` (required) defines the location to mount the 
+   cgroups file-system.
+* `subsys` (optional) list of cgroup subsystems to mount 
+   (contains `cpuset`,`cpu`,`cpuacct` by default).
 
 **Examples**
 
@@ -90,7 +131,7 @@ Mount cgroups at a given path and add a couple of subsystems:
       [...SNIP...]
     }
 
-Mount a the memory subsystem (including kernel boot parameters):
+Mount the memory subsystem (including kernel boot parameters):
 
     [...SNIP...]
     "sys" => {
@@ -111,11 +152,16 @@ Mount a the memory subsystem (including kernel boot parameters):
 
 ## Serial Console
 
-Configures Init and Grub for a defined serial console (↪ `recipes/serial.rb`, `templates/*/etc_default_grub.erb` and `templates/*/etc_inittab.erb`).
+Configures Init and Grub for a defined serial console.
+
+↪ `attributes/serial.rb`  
+↪ `recipes/serial.rb`  
+↪ `templates/*/etc_default_grub.erb`  
+↪ `templates/*/etc_inittab.erb`)
 
 **Attributes**
 
-All attributes in `node.sys.serial` (↪ `attributes/serial.rb`):
+All attributes in `node.sys.serial`:
 
 * `port` (required) port number for serial console. 
 * `speed` (optional) link speed.
@@ -132,11 +178,16 @@ Enable serial console on port 1:
 
 ## Boot Configuration
 
-Alters the Grub configuration and **reboots the node** to apply changes (↪ `recipes/boot.rb` and `templates/*/etc_default_grub.erb`).
+Alters the Grub configuration and **reboots the node** to 
+apply changes. 
+
+↪ `attributes/boot.rb`  
+↪ `recipes/boot.rb`  
+↪ `templates/*/etc_default_grub.erb`
 
 **Attributes**
 
-All attributes in `node.sys.boot` (↪ `attributes/boot.rb`):
+All attributes in `node.sys.boot`: 
 
 * `params` (optional) list of Linux kernel boot parameters.
 * `config` (optional) additional configuration for Grub.
@@ -157,11 +208,16 @@ Define a set of additional Linux kernel boot parameters:
 
 ## Kernel Control (sysctl)
 
-Set Linux kernel variables in `/etc/sysctl.d/` and load them immediately (↪ `recipes/control.rb`).
+Set Linux kernel variables in `/etc/sysctl.d/` and load them 
+immediately.
+
+↪ `attributes/control.rb`  
+↪ `recipes/control.rb`
 
 **Attribute**
 
-Requires the configuration of `node.sys.control` with a structure representing the `sysctl` format (see example) (↪ `attributes/control.rb`). 
+Requires the configuration of `node.sys.control` with a 
+structure representing the `sysctl` format (see example).
 
 **Examples**
 
@@ -179,11 +235,14 @@ Requires the configuration of `node.sys.control` with a structure representing t
 
 ## Time Configuration
 
-Configure the system time and timezone (↪ `recipes/time.rb`).
+Configure the system time and timezone.
+
+↪ `attributes/time.rb`  
+↪ `recipes/time.rb`
 
 **Attributes**
 
-All attributes in `node.sys.time` (↪ `attributes/time.rb`):
+All attributes in `node.sys.time`:
 
 * `zone` (optional) sets the system timezone.
 * `servers` (optional) list of NTP servers (↪ `templates/*/etc_ntp.conf.erb`).
@@ -291,6 +350,61 @@ All attributes in `node.sys.mail` (↪ `attributes/mail.rb`):
       }
       [...SNIP...]
 
+## Remote Login
+
+Configures the SSH daemon and deploys a list of SSH public keys 
+for a given user account.
+
+↪ `attributes/ssh.rb`  
+↪ `recipes/ssh.rb`  
+↪ `tests/roles/sys_ssh_test.rb`  
+
+**Attributes**
+
+Configure the SSH daemon using attributes in the hash 
+`node.sys.sshd.config` (read the `sshd_config` manual for a list
+of all available key-value pairs). Note that when the daemon 
+configuration is empty the original `/etc/ssh/sshd_config` file
+wont be modified.
+
+All keys in `node.sys.ssh.authorize[account]` (where account
+is an existing user) have the following attributes: 
+
+* `keys` (required) contains at least one SSH public key per 
+  user account.
+* `managed` (default false) overwrites existing keys deviating 
+  form the given list `keys` when true. 
+
+**Example**
+
+    [...SNIP...]
+    "sys" => {
+      "sshd" => { 
+        "config" => {
+          "PermitRootLogin" => "no",
+          "UseDNS" => "no",
+          "X11Forwarding" => "no"
+        }
+      },
+      "ssh" => {
+        "authorize" => {
+          "root" => {
+            "keys" => [
+              "ssh-rsa AAAAB3Nza.....",
+              "ssh-rsa AAAABG4DF....."
+            ],
+            "managed" => true
+          },
+          "devops" => {
+            "keys" => [
+              "ssh-rsa AAAAB3Gb4.....",
+            ]
+          }
+        }
+      }
+      [...SNIP...]
+
+
 ## Login Banner
 
 Display a static login message by creating `/etc/motd`.
@@ -307,7 +421,7 @@ All attributes in `node.sys.banner`:
 * `message` (required) text normally describing the purpose of the node.
 * `header` (optional) text printed in front of the banner message.
 * `footer` (optional) text printed after the banner message.
-* `info` (default `true`) deploys a script in `/etc/profile.d/info.sh` displaying system statistics and infromation about the Chef deployment.
+* `info` (default `true`) deploys a script in `/etc/profile.d/info.sh` displaying system statistics and information about the Chef deployment.
 
 **Example**
 

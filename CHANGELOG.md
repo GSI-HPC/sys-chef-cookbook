@@ -1,5 +1,6 @@
 # 1.0.0
 
+* Configuration of sshd and authorized keys added.
 * Support the configuration of network interfaces, VLANs and bridges.  
 * Configure mail relay and aliases with attributes in `node.sys.mail`.
 * Configure DNS names service with attributes in `node.sys.resolv`.
