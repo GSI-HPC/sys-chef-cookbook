@@ -101,6 +101,12 @@ Shutdown system at a given point in time:
 
 # Attributes and Recipes
 
+The "sys" cookbook can be added to a nodes run-list 
+anytime. **By default the cookbook doesn't deploy or
+configures anything.** The individual recipes will
+be automatically applied when the corresponding 
+attributes are defined. 
+
 ## Control Groups (cgroups)
 
 Installs and configures Linux Control Groups.
@@ -381,7 +387,6 @@ is an existing user) have the following attributes:
     "sys" => {
       "sshd" => { 
         "config" => {
-          "PermitRootLogin" => "no",
           "UseDNS" => "no",
           "X11Forwarding" => "no"
         }
