@@ -19,12 +19,12 @@
 
 # the order of including matters!
 include_recipe 'sys::serial'
-include_recipe 'sys::boot'
+#include_recipe 'sys::boot'
 include_recipe 'sys::cgroups' unless node.sys.cgroups.path.empty?
 include_recipe 'sys::control' unless node.sys.control.empty?
 include_recipe 'sys::time'
 include_recipe 'sys::network'
 include_recipe 'sys::resolv'  unless node.sys.resolv.servers.empty?
 include_recipe 'sys::mail'
+include_recipe 'sys::ssh'
 include_recipe 'sys::banner'  unless node.sys.banner.message.empty?
-
