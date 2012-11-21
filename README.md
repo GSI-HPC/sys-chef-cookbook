@@ -20,99 +20,19 @@ The general philosophy for writing cookbooks is to implement a specific service 
 
 **Focus on the Client-Side**
 
-For example the "sys" cookbook is capable to deploy a mail relay configuration in order to enable all machines part of the infrastructure to send mails to an MTA. Get the right package and do minor changes to the configuration. Very easy, a couple of lines of code. This means 99% of all nodes will never see a dedicate cookbook related to mail. In order to deploy an MTA server a Postfix/Sendmail cookbook will be needed, but only on a hand full of nodes. This approach is different to nearly all Chef cookbooks you will find out there. Server and client deployment is usually within a single cookbook, and this is the right way to implement it (from a single cookbooks perspective). Mostly 90% (if not more) of the code part of a cookbook used to deploy a service is dedicated to the server side. Many services common in bigger computing infrastructures like NIS/LDAP, Mail, DNS, Samba, NFS, etc. have very complex service side configurations, and logically nearly trivial client side configuration. The "sys" cookbook approach removes dependencies to the server-side configuration.
+For example the "sys" cookbook is capable to deploy a mail relay configuration in order to enable all machines part of the infrastructure to send mails to an MTA. Get the right package and do minor changes to the configuration. Very easy, a couple of lines of code. This means 99% of all nodes will never see a dedicate cookbook related to mail. In order to deploy an MTA server a Postfix/Sendmail cookbook will be needed, but only on a hand full of nodes. This approach is different to nearly all Chef cookbooks you will find out there. Server and client deployment is usually within a single cookbook, and this is the right way to implement it (from a single cookbooks perspective). Mostly 90% (if not more) of the code part of a cookbook used to deploy a service is dedicated to the server side. Many services common in bigger computing infrastructures like NIS/LDAP, Mail, DNS, Samba, NFS, etc. have very complex server-side configuration, and logically nearly trivial client side setup. The "sys" cookbook approach removes dependencies to cookbook including the server deployment.
 
 **Minimize Dependenzies**
 
 Cookbooks like `timezone`,`resolv` or `ntp` consist of a single recipe with a hand full of attributes. The "sys" cookbook approach wants to remove dependencies to trivial cookbooks for simplicity. More complex cookbooks for system component configurations like PAM or Sudo have a light-weight implementation in the "sys" cookbook also. Since in big clusters these things tend to be relatively homogeneous for the majority of machines and tend to be more comprehensive on a small number of user-facing nodes.
 
-**Design**
+**Design Prinziples**
 
-Considering all this the basic design requirements for the "sys" cookbook are: 
+1. Reduce cookbook dependencies to one for the integration of all nodes into the environment on a site.  
+2. Change nothing by default! This means unless attributes are set no deployment and configuration happens. Lets say the boot configuration which the "sys" cookbook is capable to deploy with attributes in `node.sys.boot` doesn't match the needs for a specific node, your are still free to use a more general `grub` cookbook or even a `site-grub` cookbook.
+3. The "sys" cookbook doesn't deploy the server-side of services. It configures a node to use a mail relay, but doesn't install a mail-server.
 
-1. By default nothing is done! This means unless attributes are set nothing is deployed and configured. Lets say the boot configuration which the "sys" cookbook is capable to deploy with attributes in `node.sys.boot` doesn't match the needs for a specific node, your are still free to use a more general `grub` cookbook or even a `site-grub` cookbook.
-2. The "sys" cookbook doesn't deploy the server-side of services. It configures a node to use a mail relay, but doesn't install a mail-server.
 
-# Definitions and Providers
-
-## SSH Authorize
-
-Deploy SSH public keys for a given account in `~/.ssh/authorized_keys`
-
-↪ `definitions/ssh_authorize.rb`
-
-    ssh_authorize "devops" do
-      keys [
-        "ssh-rsa AAAAB3Nza.....",
-        "ssh-rsa AAAADAQAB....."
-      ]
-      managed true
-    end
-
-The name attribute is the user account name (here devops) 
-where the list of `keys` will be deployed. The attribute
-`managed` (default false) indicates if deviating keys should
-be removed. 
-
-## Linux Module
-
-Load a Linux kernel module with `linux_module` followed by 
-the name of the module.
-
-↪ `definitions/linux_module.rb`
-
-    linux_module "ext3"
-
-The module will be added to `/etc/modules`.
-
-## Mail Aliases
-
-Add or change (Postfix) account to mail address aliases in 
-`/etc/aliases` with `mail_alias`.
-
-↪ `definitions/mail_alias.rb` 
-
-    mail_alias "jdoe" do
-      to "jdoe@devops.test"
-    end
-
-Note that you cannot remove aliases this this definition.
-
-## Shutdown
-
-The provider `sys_shutdown` can be used to restart or power 
-down the node. 
-
-↪ `resources/shutdown.rb`  
-↪ `providers/shutdown.rb` 
-
-**Actions**
-
-* `:shutdown` (default) executes sync and system shutdown.
-* `:reboot` executes sync and system reboot.
-
-**Attributes**
-
-* `time` (name attribute) delays action, minutes or time e.g. 19:30.
-* `message` optional broadcast message to the system users.
-
-**Examples**
-
-Reboot the system immediately:
-
-    sys_shutdown "now" do 
-      action :reboot
-    end
-
-Shutdown systems in 20 minutes:
-
-    sys_shutdown "20" do
-      message "Hardware maintenance required. We apologize for trouble caused."
-    end
-
-Shutdown system at a given point in time:
-
-    sys_shutdown "18:15"
 
 # Attributes and Recipes
 
@@ -255,35 +175,6 @@ structure representing the `sysctl` format (see example).
       },
       [...SNIP...]
 
-## Time Configuration
-
-Configure the system time and timezone.
-
-↪ `attributes/time.rb`  
-↪ `recipes/time.rb`
-
-**Attributes**
-
-All attributes in `node.sys.time`:
-
-* `zone` (optional) sets the system timezone.
-* `servers` (optional) list of NTP servers (↪ `templates/*/etc_ntp.conf.erb`).
-
-**Example**
-
-Set the timezone to "Europe/Berlin" and a couple of NTP server are defined like:
-
-    "sys" => {
-      [...SNIP...]
-      "time" {
-        "zone" => "Europe/Berlin",
-        "servers" => [
-          "0.debian.pool.ntp.org",
-          "1.debian.pool.ntp.org"
-        ]
-      },
-      [...SNIP...]
-
 
 ## Network Interfaces
 
@@ -323,7 +214,38 @@ Configure a couple of NICs, a VLAN and a network bridge:
         }
       }
       [...SNIP...]
-     
+
+
+## Time Configuration
+
+Configure the system time and timezone.
+
+↪ `attributes/time.rb`  
+↪ `recipes/time.rb`
+
+**Attributes**
+
+All attributes in `node.sys.time`:
+
+* `zone` (optional) sets the system timezone.
+* `servers` (optional) list of NTP servers (↪ `templates/*/etc_ntp.conf.erb`).
+
+**Example**
+
+Set the timezone to "Europe/Berlin" and a couple of NTP server are defined like:
+
+    "sys" => {
+      [...SNIP...]
+      "time" {
+        "zone" => "Europe/Berlin",
+        "servers" => [
+          "0.debian.pool.ntp.org",
+          "1.debian.pool.ntp.org"
+        ]
+      },
+      [...SNIP...]
+
+
 
 ## Domain Name Service Lookup
 
@@ -478,6 +400,90 @@ For specific roles/nodes the message describes the hosts purpose.
         "message" => "Interactive login pool to huge compute cluster" 
       }
       [...SNIP...]
+
+
+
+# Definitions and Providers
+
+## SSH Authorize
+
+Deploy SSH public keys for a given account in `~/.ssh/authorized_keys`
+
+↪ `definitions/ssh_authorize.rb`
+
+    ssh_authorize "devops" do
+      keys [
+        "ssh-rsa AAAAB3Nza.....",
+        "ssh-rsa AAAADAQAB....."
+      ]
+      managed true
+    end
+
+The name attribute is the user account name (here devops) 
+where the list of `keys` will be deployed. The attribute
+`managed` (default false) indicates if deviating keys should
+be removed. 
+
+## Linux Module
+
+Load a Linux kernel module with `linux_module` followed by 
+the name of the module.
+
+↪ `definitions/linux_module.rb`
+
+    linux_module "ext3"
+
+The module will be added to `/etc/modules`.
+
+## Mail Aliases
+
+Add or change (Postfix) account to mail address aliases in 
+`/etc/aliases` with `mail_alias`.
+
+↪ `definitions/mail_alias.rb` 
+
+    mail_alias "jdoe" do
+      to "jdoe@devops.test"
+    end
+
+Note that you cannot remove aliases this this definition.
+
+## Shutdown
+
+The provider `sys_shutdown` can be used to restart or power 
+down the node. 
+
+↪ `resources/shutdown.rb`  
+↪ `providers/shutdown.rb` 
+
+**Actions**
+
+* `:shutdown` (default) executes sync and system shutdown.
+* `:reboot` executes sync and system reboot.
+
+**Attributes**
+
+* `time` (name attribute) delays action, minutes or time e.g. 19:30.
+* `message` optional broadcast message to the system users.
+
+**Examples**
+
+Reboot the system immediately:
+
+    sys_shutdown "now" do 
+      action :reboot
+    end
+
+Shutdown systems in 20 minutes:
+
+    sys_shutdown "20" do
+      message "Hardware maintenance required. We apologize for trouble caused."
+    end
+
+Shutdown system at a given point in time:
+
+    sys_shutdown "18:15"
+
 
 # License
 
