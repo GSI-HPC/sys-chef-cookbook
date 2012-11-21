@@ -1,7 +1,9 @@
-# 1.0.0
+# 0.8.0
 
-* Configuration of sshd and authorized keys added.
-* Support the configuration of network interfaces, VLANs and bridges.  
+* Configuration of the SSH daemon with `node.sshd.config` and management
+  of authorized keys with `node.sys.ssh.authorize`.
+* Support the configuration of network interfaces, VLANs and bridges with
+  `node.sys.network.interfaces`.  
 * Configure mail relay and aliases with attributes in `node.sys.mail`.
 * Configure DNS names service with attributes in `node.sys.resolv`.
 * Set the timezone and configure NTP servers in `node.sys.time`.

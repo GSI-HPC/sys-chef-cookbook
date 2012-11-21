@@ -1,12 +1,6 @@
 # Description
 
-The "sys" Chef cookbook combines small configuration steps 
-common to most Linux deployments, but not worth of writing 
-a dedicated cookbook (since they would comprise only of a 
-single recipe). Furthermore it defines resources commonly 
-used by other cookbooks but not really related to a specific 
-service other then Linux itself (e.g. system reboot or 
-loading a Linux kernel module).
+The "sys" cookbook integrates a node into the site-infrastructure.
 
 **Requirements**
 
@@ -17,6 +11,27 @@ loading a Linux kernel module).
 
 * Debian (Wheezy)
 * No other platforms supported yet.
+
+# Motivation
+
+**Why writing a cookbook like "sys"?**
+
+The general philosophy for writing cookbooks is to implement a specific service (e.g. Syslog, SNMP, OpenSSH, NTP) or system component (e.g. PAM, Sudo, Limits) within a single cookbook. For a community cookbook, where it is the goal to be platform independent, as generic as possible and cross-infrastructure sharable, this makes absolute sense. Unfortunately this approach in the most cases leads to a very complex dependency hierarchy with roles including dozens of cookbooks (with specific version) and a deep attributes structure, just to integrate a node into your environment. The "sys" cookbook is basically the counter approach, implement everything for a basic integration of a node into the site infrastructure within a single cookbook. As soon as a node is integrated by the "sys" cookbook only a very limited number of cookbooks should be required to deploy the service the machine is intended to host.
+
+**Focus on the Client-Side**
+
+For example the "sys" cookbook is capable to deploy a mail relay configuration in order to enable all machines part of the infrastructure to send mails to an MTA. Get the right package and do minor changes to the configuration. Very easy, a couple of lines of code. This means 99% of all nodes will never see a dedicate cookbook related to mail. In order to deploy an MTA server a Postfix/Sendmail cookbook will be needed, but only on a hand full of nodes. This approach is different to nearly all Chef cookbooks you will find out there. Server and client deployment is usually within a single cookbook, and this is the right way to implement it (from a single cookbooks perspective). Mostly 90% (if not more) of the code part of a cookbook used to deploy a service is dedicated to the server side. Many services common in bigger computing infrastructures like NIS/LDAP, Mail, DNS, Samba, NFS, etc. have very complex service side configurations, and logically nearly trivial client side configuration. The "sys" cookbook approach removes dependencies to the server-side configuration.
+
+**Minimize Dependenzies**
+
+Cookbooks like `timezone`,`resolv` or `ntp` consist of a single recipe with a hand full of attributes. The "sys" cookbook approach wants to remove dependencies to trivial cookbooks for simplicity. More complex cookbooks for system component configurations like PAM or Sudo have a light-weight implementation in the "sys" cookbook also. Since in big clusters these things tend to be relatively homogeneous for the majority of machines and tend to be more comprehensive on a small number of user-facing nodes.
+
+**Design**
+
+Considering all this the basic design requirements for the "sys" cookbook are: 
+
+1. By default nothing is done! This means unless attributes are set nothing is deployed and configured. Lets say the boot configuration which the "sys" cookbook is capable to deploy with attributes in `node.sys.boot` doesn't match the needs for a specific node, your are still free to use a more general `grub` cookbook or even a `site-grub` cookbook.
+2. The "sys" cookbook doesn't deploy the server-side of services. It configures a node to use a mail relay, but doesn't install a mail-server.
 
 # Definitions and Providers
 
@@ -189,7 +204,8 @@ apply changes.
 
 ↪ `attributes/boot.rb`  
 ↪ `recipes/boot.rb`  
-↪ `templates/*/etc_default_grub.erb`
+↪ `templates/*/etc_default_grub.erb`  
+↪ `tests/roles/sys_boot_test.rb`
 
 **Attributes**
 
@@ -271,7 +287,7 @@ Set the timezone to "Europe/Berlin" and a couple of NTP server are defined like:
 
 ## Network Interfaces
 
-Configures the node network with individual files for each interface in  `/etc/network/interfaces.d/*`. Fruthermore it create a file `/etc/network/interfaces` to source all wihtin the configuration directory 
+Configures the node network with individual files for each interface in  `/etc/network/interfaces.d/*`. Furthermore it creates a file `/etc/network/interfaces` to source all files within this directory.
 
 ↪ `attributes/network.rb`  
 ↪ `recipes/network.rb`  
@@ -282,7 +298,7 @@ Configures the node network with individual files for each interface in  `/etc/n
 
 All attributes in `node.sys.network`:
 
-* `interfaces` (required) is a hash with interface names as keys and the their configuration as values. The interface configuration hash holds an `inet` key (default `manual`) also. Read the manuals `interfaces`, `vlan-interfaces` and `bridge-utils-interfaces`.
+* `interfaces` (required) is a hash with interface name as keys and its configuration as value. The interface configuration hash holds an `inet` key (default `manual`) also. Read the manuals `interfaces`, `vlan-interfaces` and `bridge-utils-interfaces`.
 * `restart` (optional) default true. Networking is automatically restarted upon configuration change.
 
 **Examples**
@@ -311,11 +327,16 @@ Configure a couple of NICs, a VLAN and a network bridge:
 
 ## Domain Name Service Lookup
 
-Configure domain name service resolution (↪ `recipes/resolv.rb` and `templates/*/etc_resolv.conf.erb`).
+Configure Domain Name Service (DNS) resolution. 
+
+↪ `attributes/resolv.rb`  
+↪ `recipes/resolv.rb`  
+↪ `templates/*/etc_resolv.conf.erb`
 
 **Attributes**
 
-All attributes in `node.sys.resolv` (↪ `attributes/resolv.rb`):
+All attributes in `node.sys.resolv`:
+
 
 * `servers` (required) list a DNS server hosts.
 * `domain` (optional) local domain name.
@@ -334,11 +355,14 @@ All attributes in `node.sys.resolv` (↪ `attributes/resolv.rb`):
 
 ## Mail Delivery
 
-Configures Postfix to forward outgoing messages to a mail relay (↪ `recipes/mail.rb`).
+Configures Postfix to forward outgoing messages to a mail relay 
+
+↪ `attributes/mail.rb`  
+↪ `recipes/mail.rb`
 
 **Attributes**
 
-All attributes in `node.sys.mail` (↪ `attributes/mail.rb`):
+All attributes in `node.sys.mail`: 
 
 * `relay` (required) defines the mail relay host FQDN.
 * `aliases` (optional) hash of account name, mail address pairs.
@@ -388,7 +412,8 @@ is an existing user) have the following attributes:
       "sshd" => { 
         "config" => {
           "UseDNS" => "no",
-          "X11Forwarding" => "no"
+          "X11Forwarding" => "no",
+          [...SNIP...]
         }
       },
       "ssh" => {
@@ -405,6 +430,7 @@ is an existing user) have the following attributes:
               "ssh-rsa AAAAB3Gb4.....",
             ]
           }
+          [...SNIP...]
         }
       }
       [...SNIP...]
