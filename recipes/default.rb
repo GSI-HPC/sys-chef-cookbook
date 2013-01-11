@@ -27,4 +27,4 @@ include_recipe 'sys::network'
 include_recipe 'sys::resolv'  unless node.sys.resolv.servers.empty?
 include_recipe 'sys::mail'
 include_recipe 'sys::ssh'
-include_recipe 'sys::banner'  unless node.sys.banner.message.empty?
+include_recipe 'sys::banner'
