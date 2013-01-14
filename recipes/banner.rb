@@ -1,6 +1,6 @@
 #
-# Cookbook Name:: linux
-# Recipe:: motd
+# Cookbook Name:: sys
+# Recipe:: banner
 #
 # Copyright 2012, Victor Penso
 #

@@ -1,6 +1,6 @@
 #
-# Cookbook Name:: linux
-# Recipe:: sysctl
+# Cookbook Name:: sys
+# Recipe:: control
 #
 # Copyright 2012, Victor Penso
 #

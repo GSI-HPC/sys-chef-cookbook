@@ -1,5 +1,5 @@
 #
-# Cookbook Name:: linux
+# Cookbook Name:: sys
 # Recipe:: default
 #
 # Copyright 2012, Victor Penso
