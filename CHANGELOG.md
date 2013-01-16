@@ -1,5 +1,6 @@
 # 0.8.0
 
+* Configuration of Sudo with `node.sys.sudo`.
 * Configuration of the SSH daemon with `node.sshd.config` and management
   of authorized keys with `node.sys.ssh.authorize`.
 * Support the configuration of network interfaces, VLANs and bridges with

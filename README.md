@@ -215,6 +215,61 @@ Configure a couple of NICs, a VLAN and a network bridge:
       }
       [...SNIP...]
 
+## Sudo
+
+Configures `sudo` with files the diretory `/etc/sudoers.d/*` containing user,host, and command aliases as well as rules. Furthermore is creates a file `/etc/sudoers` to source all files within this directory.
+
+↪ `attributes/sudo.rb`  
+↪ `recipes/sudo.rb`  
+↪ `templates/*/etc_sudoers.erb`
+↪ `templates/*/etc_network_sudoers.d_generic.erb`
+
+**Attributes**
+
+All attributes in `node.sys.sudo`:
+
+* `users` (optional) defines a list of user aliases.
+* `hosts` (optional) defines a list of host aliases.
+* `commands` (optional) defines a list of command aliases.
+* `rules` (required) defines a list of sudo rules.
+
+**Example**
+
+Configure command execution for a group of administrators:
+
+    "sys" => {
+      "sudo" => {
+        "admin" => {
+          "users" => { "ADMIN" => ["joe","bob","ted"] },
+          "rules" => [ 
+            "ADMIN ALL = NOPASSWD: /usr/bin/chef-client",
+            "ADMIN ALL = ALL"
+          ]
+        },
+        "monitor" => {
+          "commands" => {
+            "IB" => [ "/usr/sbin/perfquery" ],
+            "NET" => [ "/bin/netstat", "/usr/sbin/iftop", "/sbin/ifconfig" ]
+          },
+          "rules" => [ "mon LOCAL = NOPASSWD: IB, NET" ]
+        },
+        "users" => {
+          "users" => { "KILLERS" => ["maria","anna"] },
+          "hosts" => { "LAN" => ["10.1.1.0/255.255.255.0"] },
+          "commands" => {  
+            "KILL" => [ "/usr/bin/kill", "/usr/bin/killall" ],
+            "SHUTDOWN" => [ "/usr/sbin/shutdown", "/usr/sbin/reboot" ]
+          },
+          "rules" => [
+            "KILLERS LOCAL = KILL",
+            "%users LAN = SHUTDOWN"
+          ]
+        }
+      }
+    }
+
+Furthermore some extra command for a monitoring user `mon`, and extra privileges for users. 
+
 
 ## Time Configuration
 
