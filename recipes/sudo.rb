@@ -17,5 +17,34 @@
 # limitations under the License.
 #
 
-package 'sudo'
+unless node.sys.sudo.empty?
 
+    package 'sudo'
+    
+    # make sure to keep the right permissions and ownership 
+    # on this file.
+    template '/etc/sudoers' do
+      source 'etc_sudoers.erb'
+      owner 'root'
+      group 'root'
+      mode 0440
+    end
+    # system specific configurations should be applied by
+    # individual files in this directory
+    directory '/etc/sudoers.d' do
+      owner 'root'
+      group 'root'
+      mode 0755
+    end
+
+    node.sys.sudo.each_pair do |name,config|
+      template "/etc/sudoers.d/#{name}" do
+        source 'etc_sudoers.d_generic.erb'
+        owner 'root'
+        group 'root'
+        mode 0440
+        variables( :name => name, :config => config )
+      end
+    end
+
+end
