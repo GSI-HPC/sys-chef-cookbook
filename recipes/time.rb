@@ -22,15 +22,15 @@ timezone = node.sys.time.zone
 unless timezone.empty?
 
   package 'tzdata'
-  
+
   configure = "Configuring timezone to #{timezone}"
-  
+
   file '/etc/timezone' do
     content "#{timezone}\n"
     mode 644
     notifies :run, "execute[#{configure}]"
   end
-  
+
   execute configure do
     action :nothing
     command 'dpkg-reconfigure -f noninteractive tzdata'

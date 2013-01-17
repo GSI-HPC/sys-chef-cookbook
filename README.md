@@ -28,7 +28,7 @@ Cookbooks like `timezone`,`resolv` or `ntp` consist of a single recipe with a ha
 
 **Design Prinziples**
 
-1. Reduce cookbook dependencies to one for the integration of all nodes into the environment on a site.  
+1. Reduce cookbook dependencies to one for the integration of all nodes into the environment on a site.
 2. **No changes by default!** This means unless attributes are set no deployment and configuration happens. Lets say the boot configuration which the "sys" cookbook is capable to deploy with attributes in `node.sys.boot` doesn't match the needs for a specific node, your are still free to use a more general `grub` cookbook or even a `site-grub` cookbook.
 3. The **"sys" cookbook doesn't deploy the server-side of services**. It configures a node to use a mail relay, but doesn't install a mail-server.
 4. The name of **a definition is prefixed with `sys_`** to prevent name space collision with other cookbooks.
@@ -37,23 +37,23 @@ Cookbooks like `timezone`,`resolv` or `ntp` consist of a single recipe with a ha
 
 # Attributes and Recipes
 
-The "sys" cookbook can be added to a nodes run-list anytime. **By default the cookbook doesn't deploy or configures anything.** The individual recipes will be automatically applied when the corresponding attributes are defined or the `sys_*` resources are called. 
+The "sys" cookbook can be added to a nodes run-list anytime. **By default the cookbook doesn't deploy or configures anything.** The individual recipes will be automatically applied when the corresponding attributes are defined or the `sys_*` resources are called.
 
 ## Control Groups (cgroups)
 
 Installs and configures Linux Control Groups.
 
-↪ `attributes/cgroups.rb`  
-↪ `recipes/cgroups.rb`  
+↪ `attributes/cgroups.rb`
+↪ `recipes/cgroups.rb`
 ↪ `templates/*/etc_cgconfig.conf.erb`
 
 **Attributes**
 
 All attributes in `node.sys.cgroups`:
 
-* `path` (required) defines the location to mount the 
+* `path` (required) defines the location to mount the
    cgroups file-system.
-* `subsys` (optional) list of cgroup subsystems to mount 
+* `subsys` (optional) list of cgroup subsystems to mount
    (contains `cpuset`,`cpu`,`cpuacct` by default).
 
 **Examples**
@@ -74,10 +74,10 @@ Mount the memory subsystem (including kernel boot parameters):
     [...SNIP...]
     "sys" => {
       "boot" => {
-        "params" => [ 
+        "params" => [
           [...SNIP...]
-          "cgroup_enable=memory", 
-          "swapaccount" 
+          "cgroup_enable=memory",
+          "swapaccount"
         ]
       },
       "cgroups" => {
@@ -86,22 +86,22 @@ Mount the memory subsystem (including kernel boot parameters):
       },
       [...SNIP...]
     }
-    
+
 
 ## Serial Console
 
 Configures Init and Grub for a defined serial console.
 
-↪ `attributes/serial.rb`  
-↪ `recipes/serial.rb`  
-↪ `templates/*/etc_default_grub.erb`  
+↪ `attributes/serial.rb`
+↪ `recipes/serial.rb`
+↪ `templates/*/etc_default_grub.erb`
 ↪ `templates/*/etc_inittab.erb`)
 
 **Attributes**
 
 All attributes in `node.sys.serial`:
 
-* `port` (required) port number for serial console. 
+* `port` (required) port number for serial console.
 * `speed` (optional) link speed.
 
 **Example**
@@ -116,17 +116,17 @@ Enable serial console on port 1:
 
 ## Boot Configuration
 
-Alters the Grub configuration and **reboots the node** to 
-apply changes. 
+Alters the Grub configuration and **reboots the node** to
+apply changes.
 
-↪ `attributes/boot.rb`  
-↪ `recipes/boot.rb`  
-↪ `templates/*/etc_default_grub.erb`  
+↪ `attributes/boot.rb`
+↪ `recipes/boot.rb`
+↪ `templates/*/etc_default_grub.erb`
 ↪ `tests/roles/sys_boot_test.rb`
 
 **Attributes**
 
-All attributes in `node.sys.boot`: 
+All attributes in `node.sys.boot`:
 
 * `params` (optional) list of Linux kernel boot parameters.
 * `config` (optional) additional configuration for Grub.
@@ -135,10 +135,10 @@ All attributes in `node.sys.boot`:
 **Example**
 
 Define a set of additional Linux kernel boot parameters:
-   
+
     [...SNIP...]
     "sys" => {
-      "boot" => { 
+      "boot" => {
         "params" => [ "noacpi", "panic=10" ]
       },
       [...SNIP...]
@@ -146,7 +146,7 @@ Define a set of additional Linux kernel boot parameters:
 
 ## Kernel Modules
 
-Load a Linux kernel module with `sys_module` followed by 
+Load a Linux kernel module with `sys_module` followed by
 the name of the module.
 
 ↪ `definitions/sys_module.rb`
@@ -157,15 +157,15 @@ The module will be added to `/etc/modules`.
 
 ## Kernel Control (sysctl)
 
-Set Linux kernel variables in `/etc/sysctl.d/` and load them 
+Set Linux kernel variables in `/etc/sysctl.d/` and load them
 immediately.
 
-↪ `attributes/control.rb`  
+↪ `attributes/control.rb`
 ↪ `recipes/control.rb`
 
 **Attribute**
 
-Requires the configuration of `node.sys.control` with a 
+Requires the configuration of `node.sys.control` with a
 structure representing the `sysctl` format (see example).
 
 **Examples**
@@ -174,7 +174,7 @@ structure representing the `sysctl` format (see example).
     "sys" => {
       "control" => {
         "net.ipv6" => { "conf.all.disable_ipv6" => 1 },
-        "net.ipv4" => { 
+        "net.ipv4" => {
           "icmp_echo_ignore_broadcasts" => 1,
           "ip_forward" => 0
         },
@@ -187,9 +187,9 @@ structure representing the `sysctl` format (see example).
 
 Configures the node network with individual files for each interface in  `/etc/network/interfaces.d/*`. Furthermore it creates a file `/etc/network/interfaces` to source all files within this directory.
 
-↪ `attributes/network.rb`  
-↪ `recipes/network.rb`  
-↪ `files/*/etc_network_interfaces`   
+↪ `attributes/network.rb`
+↪ `recipes/network.rb`
+↪ `files/*/etc_network_interfaces`
 ↪ `templates/*/etc_network_interfaces.d_generic.erb`
 
 **Attributes**
@@ -226,11 +226,11 @@ Configure a couple of NICs, a VLAN and a network bridge:
 
 Configures Sudo with files in the directory `/etc/sudoers.d/*` containing user,host, and command aliases as well as rules. Furthermore is creates a file `/etc/sudoers` to source all files within this directory.
 
-↪ `attributes/sudo.rb`  
-↪ `recipes/sudo.rb`  
-↪ `definitions/sys_sudo.rb`  
-↪ `templates/*/etc_sudoers.erb`  
-↪ `templates/*/etc_network_sudoers.d_generic.erb`  
+↪ `attributes/sudo.rb`
+↪ `recipes/sudo.rb`
+↪ `definitions/sys_sudo.rb`
+↪ `templates/*/etc_sudoers.erb`
+↪ `templates/*/etc_network_sudoers.d_generic.erb`
 ↪ `tests/roles/sys_sudo_test.rb`
 
 **Resources**
@@ -241,7 +241,7 @@ The following code deploys a file called `/etc/sudoers.d/admin`.
       users 'ADMIN' => ["joe","bob","ted"]
       rules(
         "ADMIN ALL = NOPASSWD: /usr/bin/chef-client",
-        "ADMIN ALL = ALL" 
+        "ADMIN ALL = ALL"
       )
     end
 
@@ -272,7 +272,7 @@ Configure command execution for a group of administrators:
       "sudo" => {
         "admin" => {
           "users" => { "ADMIN" => ["joe","bob","ted"] },
-          "rules" => [ 
+          "rules" => [
             "ADMIN ALL = NOPASSWD: /usr/bin/chef-client",
             "ADMIN ALL = ALL"
           ]
@@ -287,7 +287,7 @@ Configure command execution for a group of administrators:
         "users" => {
           "users" => { "KILLERS" => ["maria","anna"] },
           "hosts" => { "LAN" => ["10.1.1.0/255.255.255.0"] },
-          "commands" => {  
+          "commands" => {
             "KILL" => [ "/usr/bin/kill", "/usr/bin/killall" ],
             "SHUTDOWN" => [ "/usr/sbin/shutdown", "/usr/sbin/reboot" ]
           },
@@ -299,14 +299,14 @@ Configure command execution for a group of administrators:
       }
     }
 
-Furthermore some extra command for a monitoring user `mon`, and extra privileges for users. 
+Furthermore some extra command for a monitoring user `mon`, and extra privileges for users.
 
 
 ## Time Configuration
 
 Configure the system time and timezone.
 
-↪ `attributes/time.rb`  
+↪ `attributes/time.rb`
 ↪ `recipes/time.rb`
 
 **Attributes**
@@ -335,10 +335,10 @@ Set the timezone to "Europe/Berlin" and a couple of NTP server are defined like:
 
 ## Domain Name Service Lookup
 
-Configure Domain Name Service (DNS) resolution. 
+Configure Domain Name Service (DNS) resolution.
 
-↪ `attributes/resolv.rb`  
-↪ `recipes/resolv.rb`  
+↪ `attributes/resolv.rb`
+↪ `recipes/resolv.rb`
 ↪ `templates/*/etc_resolv.conf.erb`
 
 **Attributes**
@@ -365,13 +365,13 @@ All attributes in `node.sys.resolv`:
 
 Configures Postfix to forward outgoing messages to a mail relay.
 
-↪ `attributes/mail.rb`  
-↪ `recipes/mail.rb`  
-↪ `definitions/sys_mail_alias.rb` 
+↪ `attributes/mail.rb`
+↪ `recipes/mail.rb`
+↪ `definitions/sys_mail_alias.rb`
 
 **Resource**
 
-Add or change (Postfix) account to mail address aliases in 
+Add or change (Postfix) account to mail address aliases in
 `/etc/aliases` with `sys_mail_alias`.
 
 
@@ -383,7 +383,7 @@ Note that you cannot remove aliases with this resource.
 
 **Attributes**
 
-All attributes in `node.sys.mail`: 
+All attributes in `node.sys.mail`:
 
 * `relay` (required) defines the mail relay host FQDN.
 * `aliases` (optional) hash of account name, mail address pairs.
@@ -403,13 +403,13 @@ For example:
 
 ## SSH Remote Login
 
-Configures the SSH daemon and deploys a list of SSH public keys 
+Configures the SSH daemon and deploys a list of SSH public keys
 for a given user account.
 
-↪ `attributes/ssh.rb`  
-↪ `recipes/ssh.rb`  
-↪ `definitions/sys_ssh_authorize.rb`  
-↪ `tests/roles/sys_ssh_test.rb`  
+↪ `attributes/ssh.rb`
+↪ `recipes/ssh.rb`
+↪ `definitions/sys_ssh_authorize.rb`
+↪ `tests/roles/sys_ssh_test.rb`
 
 **Resource**
 
@@ -423,22 +423,22 @@ Deploy SSH public keys for a given account in `~/.ssh/authorized_keys`
       managed true
     end
 
-The name attribute is the user account name (here devops) where the list of `keys` will be deployed. The attribute `managed` (default false) indicates if deviating keys should be removed. 
+The name attribute is the user account name (here devops) where the list of `keys` will be deployed. The attribute `managed` (default false) indicates if deviating keys should be removed.
 
 **Attributes**
 
 Configure the SSH daemon using attributes in the hash `node.sys.sshd.config` (read the `sshd_config` manual for a list of all available key-value pairs). Note that when the daemon configuration is empty the original `/etc/ssh/sshd_config` file wont be modified.
 
-All keys in `node.sys.ssh.authorize[account]` (where account is an existing user) have the following attributes: 
+All keys in `node.sys.ssh.authorize[account]` (where account is an existing user) have the following attributes:
 
 * `keys` (required) contains at least one SSH public key per user account.
-* `managed` (default false) overwrites existing keys deviating form the given list `keys` when true. 
+* `managed` (default false) overwrites existing keys deviating form the given list `keys` when true.
 
 For example:
 
     [...SNIP...]
     "sys" => {
-      "sshd" => { 
+      "sshd" => {
         "config" => {
           "UseDNS" => "no",
           "X11Forwarding" => "no",
@@ -469,9 +469,9 @@ For example:
 
 Display a static login message by creating `/etc/motd`.
 
-↪ `attributes/banner.rb`  
-↪ `recipes/banner.rb`  
-↪ `templates/*/etc_motd.erb`  
+↪ `attributes/banner.rb`
+↪ `recipes/banner.rb`
+↪ `templates/*/etc_motd.erb`
 ↪ `templates/*/etc_profile.d_info.sh.erb`
 
 **Attributes**
@@ -504,7 +504,7 @@ For specific roles/nodes the message describes the hosts purpose.
     [...SNIP...]
     "sys" => {
       "banner" => {
-        "message" => "Interactive login pool to huge compute cluster" 
+        "message" => "Interactive login pool to huge compute cluster"
       }
       [...SNIP...]
 
@@ -513,11 +513,11 @@ For specific roles/nodes the message describes the hosts purpose.
 
 ## Shutdown
 
-The provider `sys_shutdown` can be used to restart or power 
-down the node. 
+The provider `sys_shutdown` can be used to restart or power
+down the node.
 
-↪ `resources/shutdown.rb`  
-↪ `providers/shutdown.rb` 
+↪ `resources/shutdown.rb`
+↪ `providers/shutdown.rb`
 
 **Actions**
 
@@ -533,7 +533,7 @@ down the node.
 
 Reboot the system immediately:
 
-    sys_shutdown "now" do 
+    sys_shutdown "now" do
       action :reboot
     end
 

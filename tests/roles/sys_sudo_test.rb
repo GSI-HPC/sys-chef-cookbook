@@ -5,18 +5,18 @@ default_attributes(
   "sys" => {
     "sudo" => {
       "admins" => {
-        "users" => { 
-          "ADMIN" => ["joe","bob","ted"] 
+        "users" => {
+          "ADMIN" => ["joe","bob","ted"]
         },
-        "rules" => [ 
+        "rules" => [
           "%admin LOCAL = NOPASSWD: ALL",
           "ADMIN ALL = ALL",
           "devops ALL=NOPASSWD: ALL"
         ]
       },
       "monitor" => {
-        "users" => { 
-          "MON" => [ "monalisa", "mon", "nagios", "snmp" ] 
+        "users" => {
+          "MON" => [ "monalisa", "mon", "nagios", "snmp" ]
         },
         "commands" => {
           "IB" => [ "/usr/sbin/perfquery" ],

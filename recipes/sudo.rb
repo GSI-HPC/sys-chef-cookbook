@@ -20,8 +20,8 @@
 unless node.sys.sudo.empty?
 
     package 'sudo'
-    
-    # make sure to keep the right permissions and ownership 
+
+    # make sure to keep the right permissions and ownership
     # on this file.
     template '/etc/sudoers' do
       source 'etc_sudoers.erb'

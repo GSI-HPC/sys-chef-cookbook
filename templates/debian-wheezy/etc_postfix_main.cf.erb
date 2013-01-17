@@ -37,7 +37,7 @@ alias_maps = hash:/etc/aliases
 alias_database = hash:/etc/aliases
 myorigin = /etc/mailname
 mydestination = <%= node.fqdn %>, localhost.<%= node.domain %>, localhost
-relayhost = [<%= @relay %>] 
+relayhost = [<%= @relay %>]
 mynetworks = 127.0.0.0/8 [::ffff:127.0.0.0]/104 [::1]/128
 mailbox_size_limit = 0
 recipient_delimiter = +

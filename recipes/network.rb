@@ -35,7 +35,7 @@ unless interfaces.empty?
     # manual initialization by default
     inet = params.has_key?(:inet) ? params[:inet] : 'manual'
     params.delete(:inet)
-    
+
     # try to get configuration of the default interface from Ohai
     if name == node.network.default_interface and inet == 'static'
       params[:address] = node.ipaddress unless params.has_key?(:address)
@@ -44,10 +44,10 @@ unless interfaces.empty?
       params[:netmask] = node.network.interfaces[node.network.default_interface].addresses[params[:address]].netmask unless params.has_key?(:netmask)
     end
 
-    # merge the configuration 
+    # merge the configuration
     config = Array.new
     params.each { |key,value| config << "  #{key} #{value}" }
-   
+
     template "/etc/network/interfaces.d/#{name}" do
       source 'etc_network_interfaces.d_generic.erb'
       mode 644
@@ -60,7 +60,7 @@ unless interfaces.empty?
         notifies :restart, 'service[networking]'
       end
     end
-  
+
   end
 
 end

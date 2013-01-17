@@ -57,10 +57,10 @@ unless relay.empty?
   end
 
   execute "Rebuild missing /etc/postfix/canonical" do
-    not_if do 
+    not_if do
       ::File.exists? '/etc/postfix/canonical'
     end
-    notifies :run, "execute[#{update_canonical}]", :immediate 
+    notifies :run, "execute[#{update_canonical}]", :immediate
   end
 
 end

@@ -16,7 +16,7 @@
 
 define :sys_mail_alias, :to => String.new do
   if ::File.exists? '/etc/aliases'
-    # read the alias file 
+    # read the alias file
     aliases = Hash.new
     (::File.readlines('/etc/aliases')).each do |line|
       next if line =~ /^#/
@@ -24,7 +24,7 @@ define :sys_mail_alias, :to => String.new do
       aliases[account] = mail_address.lstrip.chop
     end
     # add/change alias
-    unless aliases.has_key? params[:name] and aliases[params[:name]] == params[:to] 
+    unless aliases.has_key? params[:name] and aliases[params[:name]] == params[:to]
       aliases[params[:name]] = params[:to]
       ::File.open('/etc/aliases','w') do |file|
         aliases.each do |account,mail_address|

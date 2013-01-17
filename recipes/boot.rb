@@ -20,18 +20,18 @@
 unless node.sys.boot.params.empty? and node.sys.boot.config.empty?
 
   package 'lsb-release'
-  
+
   sys_shutdown "now" do
     action :nothing
   end
-  
-  update_grub = 'Updating Grub boot configuration' 
+
+  update_grub = 'Updating Grub boot configuration'
   execute update_grub  do
     action :nothing
     command 'update-grub2'
     notifies :reboot, "sys_shutdown[now]", :immediately
   end
-  
+
   template '/etc/default/grub' do
     source 'etc_default_grub.erb'
     mode 0644

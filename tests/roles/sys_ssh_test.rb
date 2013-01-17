@@ -3,7 +3,7 @@ description "Use to test the [ssh] recipe."
 run_list( "recipe[sys]" )
 default_attributes(
   "sys" => {
-    "sshd" => { 
+    "sshd" => {
       "config" => {
         "PermitRootLogin" => "no",
         "UseDNS" => "no",
@@ -21,6 +21,6 @@ default_attributes(
         },
         "jdow" => {}
       }
-    } 
+    }
   }
 )

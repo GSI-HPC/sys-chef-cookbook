@@ -29,10 +29,10 @@ node.sys.cgroups.subsys.each do |subsys|
   # add subsystem to list
   path = "#{node.sys.cgroups.path}/#{subsys}"
   subsystems << "#{subsys} = #{path}"
-  # check if the mount is present already 
+  # check if the mount is present already
   `grep " #{path} " /proc/mounts 1>-`
   # if not trigger configuration
-  run_config_cgroups = true unless $?.success? 
+  run_config_cgroups = true unless $?.success?
 end
 
 # Mount all configured subsystems

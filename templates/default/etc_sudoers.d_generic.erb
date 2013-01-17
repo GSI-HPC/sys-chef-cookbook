@@ -10,11 +10,11 @@ User_Alias <%= name %> = <%= users.join(', ') %>
 
 <% @hosts.each_pair do |name,hosts| %>
 Host_Alias <%= name %> = <%= hosts.join(', ') %>
-<% end %> 
+<% end %>
 
 <% @commands.each_pair do |name,commands| %>
 Cmnd_Alias <%= name %> = <%= commands.join(', ') %>
-<% end %> 
+<% end %>
 
 <% @rules.each do |rule| %>
 <%= rule %>
