@@ -1,8 +1,8 @@
 #
 # Cookbook Name:: sys
-# Recipe:: default
+# Recipe:: hosts
 #
-# Copyright 2012, Victor Penso
+# Copyright 2013, Victor Penso
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,16 +17,18 @@
 # limitations under the License.
 #
 
-# the order of including matters!
-include_recipe 'sys::serial'
-include_recipe 'sys::boot'
-include_recipe 'sys::cgroups' unless node.sys.cgroups.path.empty?
-include_recipe 'sys::control' unless node.sys.control.empty?
-include_recipe 'sys::sudo'
-include_recipe 'sys::time'
-include_recipe 'sys::network'
-include_recipe 'sys::hosts'
-include_recipe 'sys::resolv'  unless node.sys.resolv.servers.empty?
-include_recipe 'sys::mail'
-include_recipe 'sys::ssh'
-include_recipe 'sys::banner'
+unless node.sys.hosts.allow.empty?
+  template '/etc/hosts.allow' do
+    source 'etc_hosts.allow.erb'
+    mode 0644
+    variables( :rules => node.sys.hosts.allow )
+  end
+end
+
+unless node.sys.hosts.deny.empty?
+  template '/etc/hosts.deny' do
+    source 'etc_hosts.deny.erb'
+    mode 0644
+    variables( :rules => node.sys.hosts.deny )
+  end
+end
