@@ -43,9 +43,9 @@ The "sys" cookbook can be added to a nodes run-list anytime. **By default the co
 
 Installs and configures Linux Control Groups.
 
-↪ `attributes/cgroups.rb`
-↪ `recipes/cgroups.rb`
-↪ `templates/*/etc_cgconfig.conf.erb`
+↪ `attributes/cgroups.rb`  
+↪ `recipes/cgroups.rb`  
+↪ `templates/*/etc_cgconfig.conf.erb`  
 
 **Attributes**
 
@@ -92,10 +92,10 @@ Mount the memory subsystem (including kernel boot parameters):
 
 Configures Init and Grub for a defined serial console.
 
-↪ `attributes/serial.rb`
-↪ `recipes/serial.rb`
-↪ `templates/*/etc_default_grub.erb`
-↪ `templates/*/etc_inittab.erb`)
+↪ `attributes/serial.rb`  
+↪ `recipes/serial.rb`  
+↪ `templates/*/etc_default_grub.erb`  
+↪ `templates/*/etc_inittab.erb`)  
 
 **Attributes**
 
@@ -119,10 +119,10 @@ Enable serial console on port 1:
 Alters the Grub configuration and **reboots the node** to
 apply changes.
 
-↪ `attributes/boot.rb`
-↪ `recipes/boot.rb`
-↪ `templates/*/etc_default_grub.erb`
-↪ `tests/roles/sys_boot_test.rb`
+↪ `attributes/boot.rb`  
+↪ `recipes/boot.rb`  
+↪ `templates/*/etc_default_grub.erb`  
+↪ `tests/roles/sys_boot_test.rb`  
 
 **Attributes**
 
@@ -160,8 +160,8 @@ The module will be added to `/etc/modules`.
 Set Linux kernel variables in `/etc/sysctl.d/` and load them
 immediately.
 
-↪ `attributes/control.rb`
-↪ `recipes/control.rb`
+↪ `attributes/control.rb`  
+↪ `recipes/control.rb`  
 
 **Attribute**
 
@@ -187,9 +187,9 @@ structure representing the `sysctl` format (see example).
 
 Configures the node network with individual files for each interface in  `/etc/network/interfaces.d/*`. Furthermore it creates a file `/etc/network/interfaces` to source all files within this directory.
 
-↪ `attributes/network.rb`
-↪ `recipes/network.rb`
-↪ `files/*/etc_network_interfaces`
+↪ `attributes/network.rb`  
+↪ `recipes/network.rb`  
+↪ `files/*/etc_network_interfaces`  
 ↪ `templates/*/etc_network_interfaces.d_generic.erb`
 
 **Attributes**
@@ -226,11 +226,11 @@ Configure a couple of NICs, a VLAN and a network bridge:
 
 Configures Sudo with files in the directory `/etc/sudoers.d/*` containing user,host, and command aliases as well as rules. Furthermore is creates a file `/etc/sudoers` to source all files within this directory.
 
-↪ `attributes/sudo.rb`
-↪ `recipes/sudo.rb`
-↪ `definitions/sys_sudo.rb`
-↪ `templates/*/etc_sudoers.erb`
-↪ `templates/*/etc_network_sudoers.d_generic.erb`
+↪ `attributes/sudo.rb`  
+↪ `recipes/sudo.rb`  
+↪ `definitions/sys_sudo.rb`  
+↪ `templates/*/etc_sudoers.erb`  
+↪ `templates/*/etc_network_sudoers.d_generic.erb`  
 ↪ `tests/roles/sys_sudo_test.rb`
 
 **Resources**
@@ -306,8 +306,8 @@ Furthermore some extra command for a monitoring user `mon`, and extra privileges
 
 Configure the system time and timezone.
 
-↪ `attributes/time.rb`
-↪ `recipes/time.rb`
+↪ `attributes/time.rb`  
+↪ `recipes/time.rb`  
 
 **Attributes**
 
@@ -335,10 +335,10 @@ Set the timezone to "Europe/Berlin" and a couple of NTP server are defined like:
 
 Configure TCP wrapper with the files `/etc/hosts.allow` and `/etc/hosts.deny`.
 
-↪ `attributes/hosts.rb`
-↪ `recipes/hosts.rb`
-↪ `templates/*/etc_hosts.allow.erb`
-↪ `templates/*/etc_hosts.deny.erb`
+↪ `attributes/hosts.rb`  
+↪ `recipes/hosts.rb`  
+↪ `templates/*/etc_hosts.allow.erb`  
+↪ `templates/*/etc_hosts.deny.erb`  
 ↪ `tests/roles/sys_hosts_test.rb`
 
 **Attributes**
@@ -364,9 +364,9 @@ For example:
 
 Configure Domain Name Service (DNS) resolution.
 
-↪ `attributes/resolv.rb`
-↪ `recipes/resolv.rb`
-↪ `templates/*/etc_resolv.conf.erb`
+↪ `attributes/resolv.rb`  
+↪ `recipes/resolv.rb`  
+↪ `templates/*/etc_resolv.conf.erb`  
 
 **Attributes**
 
@@ -392,9 +392,9 @@ All attributes in `node.sys.resolv`:
 
 Configures Postfix to forward outgoing messages to a mail relay.
 
-↪ `attributes/mail.rb`
-↪ `recipes/mail.rb`
-↪ `definitions/sys_mail_alias.rb`
+↪ `attributes/mail.rb`  
+↪ `recipes/mail.rb`  
+↪ `definitions/sys_mail_alias.rb`  
 
 **Resource**
 
@@ -432,8 +432,8 @@ For example:
 
 Configures PAM contorl.
 
-↪ `attributes/pam.rb`
-↪ `recipes/pam.rb`
+↪ `attributes/pam.rb`  
+↪ `recipes/pam.rb`  
 ↪ `templates/*/etc_security_limits.conf.erb`
 
 **Attributes**
@@ -444,24 +444,24 @@ All attributes in `node.sys.pam`:
 
 For Example:
 
-   "sys" => {
-     "pam" => {
-       "limits" => [
-         "*    hard memlock unlimited",
-         "*    soft memlock unlimited"
-       ]
-     }
-   }
+    "sys" => {
+      "pam" => {
+        "limits" => [
+          "*    hard memlock unlimited",
+          "*    soft memlock unlimited"
+        ]
+      }
+    }
 
 ## SSH 
 
 Configures the SSH daemon and deploys a list of SSH public keys
 for a given user account.
 
-↪ `attributes/ssh.rb`
-↪ `recipes/ssh.rb`
-↪ `definitions/sys_ssh_authorize.rb`
-↪ `tests/roles/sys_ssh_test.rb`
+↪ `attributes/ssh.rb`  
+↪ `recipes/ssh.rb`  
+↪ `definitions/sys_ssh_authorize.rb`  
+↪ `tests/roles/sys_ssh_test.rb`  
 
 **Resource**
 
@@ -521,9 +521,9 @@ For example:
 
 Display a static login message by creating `/etc/motd`.
 
-↪ `attributes/banner.rb`
-↪ `recipes/banner.rb`
-↪ `templates/*/etc_motd.erb`
+↪ `attributes/banner.rb`  
+↪ `recipes/banner.rb`  
+↪ `templates/*/etc_motd.erb`  
 ↪ `templates/*/etc_profile.d_info.sh.erb`
 
 **Attributes**
@@ -568,8 +568,8 @@ For specific roles/nodes the message describes the hosts purpose.
 The provider `sys_shutdown` can be used to restart or power
 down the node.
 
-↪ `resources/shutdown.rb`
-↪ `providers/shutdown.rb`
+↪ `resources/shutdown.rb`  
+↪ `providers/shutdown.rb`  
 
 **Actions**
 
