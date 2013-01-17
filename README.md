@@ -221,19 +221,42 @@ Configures `sudo` with files the diretory `/etc/sudoers.d/*` containing user,hos
 
 ↪ `attributes/sudo.rb`  
 ↪ `recipes/sudo.rb`  
+↪ `definitions/sys_sudo.rb`  
 ↪ `templates/*/etc_sudoers.erb`  
 ↪ `templates/*/etc_network_sudoers.d_generic.erb`
+
+**Resources**
+
+The following code deploys a file called `/etc/sudoers.d/admin`.
+
+    sys_sudo "admin" do
+      users 'ADMIN' => ["joe","bob","ted"]
+      rules(
+        "ADMIN ALL = NOPASSWD: /usr/bin/chef-client",
+        "ADMIN ALL = ALL" 
+      )
+    end
+
+It defining and `User_Alias` called "ADMIN" and a pair of rules for this group of users. Similar the following code deploys a file `/etc/sudoers.d/monitor` including `Cmnd_Alias`s and a single rule.
+
+    sys_sudo "monitor" do
+       commands(
+         "IB" => [ "/usr/sbin/perfquery" ],
+         "NET" => [ "/bin/netstat", "/usr/sbin/iftop", "/sbin/ifconfig" ]
+       )
+       rules "mon LOCAL = NOPASSWD: IB, NET"
+    end
+
+The `sys_sudo` resource supports `users`, `hosts`, `commands`, and `rules`.
 
 **Attributes**
 
 All attributes in `node.sys.sudo`:
 
-* `users` (optional) defines a list of user aliases.
-* `hosts` (optional) defines a list of host aliases.
-* `commands` (optional) defines a list of command aliases.
-* `rules` (required) defines a list of sudo rules.
-
-**Example**
+* `users` (optional) defines a hash of user aliases.
+* `hosts` (optional) defines a hash of host aliases.
+* `commands` (optional) defines a hash of command aliases.
+* `rules` (required) defines an array of rules.
 
 Configure command execution for a group of administrators:
 
