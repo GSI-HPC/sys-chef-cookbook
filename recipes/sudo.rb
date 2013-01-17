@@ -38,12 +38,11 @@ unless node.sys.sudo.empty?
     end
 
     node.sys.sudo.each_pair do |name,config|
-      template "/etc/sudoers.d/#{name}" do
-        source 'etc_sudoers.d_generic.erb'
-        owner 'root'
-        group 'root'
-        mode 0440
-        variables( :name => name, :config => config )
+      sys_sudo name do
+        users config[:users] if config.has_key? 'users'
+        hosts config[:hosts] if config.has_key? 'hosts'
+        commands config [:commands] if config.has_key? 'commands'
+        rules config[:rules]
       end
     end
 

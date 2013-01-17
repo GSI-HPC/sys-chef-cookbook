@@ -221,7 +221,7 @@ Configures `sudo` with files the diretory `/etc/sudoers.d/*` containing user,hos
 
 ↪ `attributes/sudo.rb`  
 ↪ `recipes/sudo.rb`  
-↪ `templates/*/etc_sudoers.erb`
+↪ `templates/*/etc_sudoers.erb`  
 ↪ `templates/*/etc_network_sudoers.d_generic.erb`
 
 **Attributes**

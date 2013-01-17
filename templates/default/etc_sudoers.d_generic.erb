@@ -4,26 +4,18 @@
 #
 # This file is managed by the Chef `sys` cookbook.
 
-<% if @config.has_key? 'users' %>
-  <% @config[:users].each_pair do |name,users| %>
+<% @users.each_pair do |name,users| %>
 User_Alias <%= name %> = <%= users.join(', ') %>
-  <% end %>
 <% end %>
 
-<% if @config.has_key? 'hosts' %>
-  <% @config[:hosts].each_pair do |name,hosts| %>
+<% @hosts.each_pair do |name,hosts| %>
 Host_Alias <%= name %> = <%= hosts.join(', ') %>
-  <% end %> 
-<% end %>
+<% end %> 
 
-<% if @config.has_key? 'commands' %>
-  <% @config[:commands].each_pair do |name,commands| %>
+<% @commands.each_pair do |name,commands| %>
 Cmnd_Alias <%= name %> = <%= commands.join(', ') %>
-  <% end %> 
-<% end %>
+<% end %> 
 
-<% if @config.has_key? 'rules' %>
-  <% @config[:rules].each do |rule| %>
+<% @rules.each do |rule| %>
 <%= rule %>
-  <% end %>
 <% end %>
