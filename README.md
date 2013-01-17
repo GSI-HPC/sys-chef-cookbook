@@ -29,18 +29,15 @@ Cookbooks like `timezone`,`resolv` or `ntp` consist of a single recipe with a ha
 **Design Prinziples**
 
 1. Reduce cookbook dependencies to one for the integration of all nodes into the environment on a site.  
-2. Change nothing by default! This means unless attributes are set no deployment and configuration happens. Lets say the boot configuration which the "sys" cookbook is capable to deploy with attributes in `node.sys.boot` doesn't match the needs for a specific node, your are still free to use a more general `grub` cookbook or even a `site-grub` cookbook.
-3. The "sys" cookbook doesn't deploy the server-side of services. It configures a node to use a mail relay, but doesn't install a mail-server.
+2. **No changes by default!** This means unless attributes are set no deployment and configuration happens. Lets say the boot configuration which the "sys" cookbook is capable to deploy with attributes in `node.sys.boot` doesn't match the needs for a specific node, your are still free to use a more general `grub` cookbook or even a `site-grub` cookbook.
+3. The **"sys" cookbook doesn't deploy the server-side of services**. It configures a node to use a mail relay, but doesn't install a mail-server.
+4. The name of **a definition is prefixed with `sys_`** to prevent name space collision with other cookbooks.
 
 
 
 # Attributes and Recipes
 
-The "sys" cookbook can be added to a nodes run-list 
-anytime. **By default the cookbook doesn't deploy or
-configures anything.** The individual recipes will
-be automatically applied when the corresponding 
-attributes are defined. 
+The "sys" cookbook can be added to a nodes run-list anytime. **By default the cookbook doesn't deploy or configures anything.** The individual recipes will be automatically applied when the corresponding attributes are defined or the `sys_*` resources are called. 
 
 ## Control Groups (cgroups)
 
@@ -377,7 +374,7 @@ Add or change (Postfix) account to mail address aliases in
 `/etc/aliases` with `sys_mail_alias`.
 
 
-    sys_alias "jdoe" do
+    sys_mail_alias "jdoe" do
       to "jdoe@devops.test"
     end
 
