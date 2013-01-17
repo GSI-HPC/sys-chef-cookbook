@@ -1,5 +1,6 @@
 # 0.8.0
 
+* Configure hosts files with `node.sys.hosts`.
 * Configuration of Sudo with `node.sys.sudo`.
 * Configuration of the SSH daemon with `node.sshd.config` and management
   of authorized keys with `node.sys.ssh.authorize`.
