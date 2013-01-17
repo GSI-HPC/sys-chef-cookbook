@@ -333,12 +333,12 @@ Set the timezone to "Europe/Berlin" and a couple of NTP server are defined like:
 
 ## TCP Wrapper
 
-Configure TCP wrapper with the files `/etc/hosts.allow` and `/etc/hosts.deny`. 
+Configure TCP wrapper with the files `/etc/hosts.allow` and `/etc/hosts.deny`.
 
-↪ `attributes/hosts.rb`  
-↪ `recipes/hosts.rb`  
-↪ `templates/*/etc_hosts.allow.erb`  
-↪ `templates/*/etc_hosts.deny.erb`  
+↪ `attributes/hosts.rb`
+↪ `recipes/hosts.rb`
+↪ `templates/*/etc_hosts.allow.erb`
+↪ `templates/*/etc_hosts.deny.erb`
 ↪ `tests/roles/sys_hosts_test.rb`
 
 **Attributes**

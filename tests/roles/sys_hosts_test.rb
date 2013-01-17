@@ -4,7 +4,7 @@ run_list( "recipe[sys]" )
 default_attributes(
   "sys" => {
     "hosts" => {
-      "allow" => [ 
+      "allow" => [
         "sshd: 10.1.",
         "snmpd: 10.1.1.14"
       ],
