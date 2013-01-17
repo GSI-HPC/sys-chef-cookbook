@@ -14,7 +14,7 @@
 # limitations under the License.
 #
 
-define :mail_alias, :to => String.new do
+define :sys_mail_alias, :to => String.new do
   if ::File.exists? '/etc/aliases'
     # read the alias file 
     aliases = Hash.new

@@ -51,7 +51,7 @@ unless relay.empty?
   end
 
   node.sys.mail.aliases.each do |account,mail_address|
-    mail_alias account do
+    sys_mail_alias account do
       to mail_address
     end
   end

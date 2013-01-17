@@ -29,18 +29,15 @@ Cookbooks like `timezone`,`resolv` or `ntp` consist of a single recipe with a ha
 **Design Prinziples**
 
 1. Reduce cookbook dependencies to one for the integration of all nodes into the environment on a site.  
-2. Change nothing by default! This means unless attributes are set no deployment and configuration happens. Lets say the boot configuration which the "sys" cookbook is capable to deploy with attributes in `node.sys.boot` doesn't match the needs for a specific node, your are still free to use a more general `grub` cookbook or even a `site-grub` cookbook.
-3. The "sys" cookbook doesn't deploy the server-side of services. It configures a node to use a mail relay, but doesn't install a mail-server.
+2. **No changes by default!** This means unless attributes are set no deployment and configuration happens. Lets say the boot configuration which the "sys" cookbook is capable to deploy with attributes in `node.sys.boot` doesn't match the needs for a specific node, your are still free to use a more general `grub` cookbook or even a `site-grub` cookbook.
+3. The **"sys" cookbook doesn't deploy the server-side of services**. It configures a node to use a mail relay, but doesn't install a mail-server.
+4. The name of **a definition is prefixed with `sys_`** to prevent name space collision with other cookbooks.
 
 
 
 # Attributes and Recipes
 
-The "sys" cookbook can be added to a nodes run-list 
-anytime. **By default the cookbook doesn't deploy or
-configures anything.** The individual recipes will
-be automatically applied when the corresponding 
-attributes are defined. 
+The "sys" cookbook can be added to a nodes run-list anytime. **By default the cookbook doesn't deploy or configures anything.** The individual recipes will be automatically applied when the corresponding attributes are defined or the `sys_*` resources are called. 
 
 ## Control Groups (cgroups)
 
@@ -147,6 +144,16 @@ Define a set of additional Linux kernel boot parameters:
       [...SNIP...]
     }
 
+## Kernel Modules
+
+Load a Linux kernel module with `sys_module` followed by 
+the name of the module.
+
+↪ `definitions/sys_module.rb`
+
+    sys_module "ext3"
+
+The module will be added to `/etc/modules`.
 
 ## Kernel Control (sysctl)
 
@@ -215,6 +222,85 @@ Configure a couple of NICs, a VLAN and a network bridge:
       }
       [...SNIP...]
 
+## Sudo
+
+Configures Sudo with files in the directory `/etc/sudoers.d/*` containing user,host, and command aliases as well as rules. Furthermore is creates a file `/etc/sudoers` to source all files within this directory.
+
+↪ `attributes/sudo.rb`  
+↪ `recipes/sudo.rb`  
+↪ `definitions/sys_sudo.rb`  
+↪ `templates/*/etc_sudoers.erb`  
+↪ `templates/*/etc_network_sudoers.d_generic.erb`  
+↪ `tests/roles/sys_sudo_test.rb`
+
+**Resources**
+
+The following code deploys a file called `/etc/sudoers.d/admin`.
+
+    sys_sudo "admin" do
+      users 'ADMIN' => ["joe","bob","ted"]
+      rules(
+        "ADMIN ALL = NOPASSWD: /usr/bin/chef-client",
+        "ADMIN ALL = ALL" 
+      )
+    end
+
+It defining and `User_Alias` called "ADMIN" and a pair of rules for this group of users. Similar the following code deploys a file `/etc/sudoers.d/monitor` including `Cmnd_Alias`s and a single rule.
+
+    sys_sudo "monitor" do
+       commands(
+         "IB" => [ "/usr/sbin/perfquery" ],
+         "NET" => [ "/bin/netstat", "/usr/sbin/iftop", "/sbin/ifconfig" ]
+       )
+       rules "mon LOCAL = NOPASSWD: IB, NET"
+    end
+
+The `sys_sudo` resource supports `users`, `hosts`, `commands`, and `rules`.
+
+**Attributes**
+
+All attributes in `node.sys.sudo`:
+
+* `users` (optional) defines a hash of user aliases.
+* `hosts` (optional) defines a hash of host aliases.
+* `commands` (optional) defines a hash of command aliases.
+* `rules` (required) defines an array of rules.
+
+Configure command execution for a group of administrators:
+
+    "sys" => {
+      "sudo" => {
+        "admin" => {
+          "users" => { "ADMIN" => ["joe","bob","ted"] },
+          "rules" => [ 
+            "ADMIN ALL = NOPASSWD: /usr/bin/chef-client",
+            "ADMIN ALL = ALL"
+          ]
+        },
+        "monitor" => {
+          "commands" => {
+            "IB" => [ "/usr/sbin/perfquery" ],
+            "NET" => [ "/bin/netstat", "/usr/sbin/iftop", "/sbin/ifconfig" ]
+          },
+          "rules" => [ "mon LOCAL = NOPASSWD: IB, NET" ]
+        },
+        "users" => {
+          "users" => { "KILLERS" => ["maria","anna"] },
+          "hosts" => { "LAN" => ["10.1.1.0/255.255.255.0"] },
+          "commands" => {  
+            "KILL" => [ "/usr/bin/kill", "/usr/bin/killall" ],
+            "SHUTDOWN" => [ "/usr/sbin/shutdown", "/usr/sbin/reboot" ]
+          },
+          "rules" => [
+            "KILLERS LOCAL = KILL",
+            "%users LAN = SHUTDOWN"
+          ]
+        }
+      }
+    }
+
+Furthermore some extra command for a monitoring user `mon`, and extra privileges for users. 
+
 
 ## Time Configuration
 
@@ -275,12 +361,25 @@ All attributes in `node.sys.resolv`:
       }
     }
 
-## Mail Delivery
+## Mail Relay (Postfix)
 
-Configures Postfix to forward outgoing messages to a mail relay 
+Configures Postfix to forward outgoing messages to a mail relay.
 
 ↪ `attributes/mail.rb`  
-↪ `recipes/mail.rb`
+↪ `recipes/mail.rb`  
+↪ `definitions/sys_mail_alias.rb` 
+
+**Resource**
+
+Add or change (Postfix) account to mail address aliases in 
+`/etc/aliases` with `sys_mail_alias`.
+
+
+    sys_mail_alias "jdoe" do
+      to "jdoe@devops.test"
+    end
+
+Note that you cannot remove aliases with this resource.
 
 **Attributes**
 
@@ -289,7 +388,7 @@ All attributes in `node.sys.mail`:
 * `relay` (required) defines the mail relay host FQDN.
 * `aliases` (optional) hash of account name, mail address pairs.
 
-**Example**
+For example:
 
     [...SNIP...]
     "sys" => {
@@ -302,32 +401,40 @@ All attributes in `node.sys.mail`:
       }
       [...SNIP...]
 
-## Remote Login
+## SSH Remote Login
 
 Configures the SSH daemon and deploys a list of SSH public keys 
 for a given user account.
 
 ↪ `attributes/ssh.rb`  
 ↪ `recipes/ssh.rb`  
+↪ `definitions/sys_ssh_authorize.rb`  
 ↪ `tests/roles/sys_ssh_test.rb`  
+
+**Resource**
+
+Deploy SSH public keys for a given account in `~/.ssh/authorized_keys`
+
+    ssh_authorize "devops" do
+      keys [
+        "ssh-rsa AAAAB3Nza.....",
+        "ssh-rsa AAAADAQAB....."
+      ]
+      managed true
+    end
+
+The name attribute is the user account name (here devops) where the list of `keys` will be deployed. The attribute `managed` (default false) indicates if deviating keys should be removed. 
 
 **Attributes**
 
-Configure the SSH daemon using attributes in the hash 
-`node.sys.sshd.config` (read the `sshd_config` manual for a list
-of all available key-value pairs). Note that when the daemon 
-configuration is empty the original `/etc/ssh/sshd_config` file
-wont be modified.
+Configure the SSH daemon using attributes in the hash `node.sys.sshd.config` (read the `sshd_config` manual for a list of all available key-value pairs). Note that when the daemon configuration is empty the original `/etc/ssh/sshd_config` file wont be modified.
 
-All keys in `node.sys.ssh.authorize[account]` (where account
-is an existing user) have the following attributes: 
+All keys in `node.sys.ssh.authorize[account]` (where account is an existing user) have the following attributes: 
 
-* `keys` (required) contains at least one SSH public key per 
-  user account.
-* `managed` (default false) overwrites existing keys deviating 
-  form the given list `keys` when true. 
+* `keys` (required) contains at least one SSH public key per user account.
+* `managed` (default false) overwrites existing keys deviating form the given list `keys` when true. 
 
-**Example**
+For example:
 
     [...SNIP...]
     "sys" => {
@@ -403,50 +510,6 @@ For specific roles/nodes the message describes the hosts purpose.
 
 
 
-# Definitions and Providers
-
-## SSH Authorize
-
-Deploy SSH public keys for a given account in `~/.ssh/authorized_keys`
-
-↪ `definitions/ssh_authorize.rb`
-
-    ssh_authorize "devops" do
-      keys [
-        "ssh-rsa AAAAB3Nza.....",
-        "ssh-rsa AAAADAQAB....."
-      ]
-      managed true
-    end
-
-The name attribute is the user account name (here devops) 
-where the list of `keys` will be deployed. The attribute
-`managed` (default false) indicates if deviating keys should
-be removed. 
-
-## Linux Module
-
-Load a Linux kernel module with `linux_module` followed by 
-the name of the module.
-
-↪ `definitions/linux_module.rb`
-
-    linux_module "ext3"
-
-The module will be added to `/etc/modules`.
-
-## Mail Aliases
-
-Add or change (Postfix) account to mail address aliases in 
-`/etc/aliases` with `mail_alias`.
-
-↪ `definitions/mail_alias.rb` 
-
-    mail_alias "jdoe" do
-      to "jdoe@devops.test"
-    end
-
-Note that you cannot remove aliases this this definition.
 
 ## Shutdown
 

@@ -1,8 +1,5 @@
 #
-# Cookbook Name:: sys
-# Recipe:: default
-#
-# Copyright 2012, Victor Penso
+# Copyright 2013, Victor Penso
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,15 +14,19 @@
 # limitations under the License.
 #
 
-# the order of including matters!
-include_recipe 'sys::serial'
-include_recipe 'sys::boot'
-include_recipe 'sys::cgroups' unless node.sys.cgroups.path.empty?
-include_recipe 'sys::control' unless node.sys.control.empty?
-include_recipe 'sys::sudo'
-include_recipe 'sys::time'
-include_recipe 'sys::network'
-include_recipe 'sys::resolv'  unless node.sys.resolv.servers.empty?
-include_recipe 'sys::mail'
-include_recipe 'sys::ssh'
-include_recipe 'sys::banner'
+define :sys_sudo, :users => Hash.new, :hosts => Hash.new, :commands => Hash.new, :rules => Array.new do
+  name = params[:name]
+  template "/etc/sudoers.d/#{name}" do
+    source 'etc_sudoers.d_generic.erb'
+    owner 'root'
+    group 'root'
+    mode 0440
+    variables( 
+      :name => name, 
+      :users => params[:users],
+      :hosts => params[:hosts],
+      :commands => params[:commands],
+      :rules => params[:rules]
+    )
+  end
+end
