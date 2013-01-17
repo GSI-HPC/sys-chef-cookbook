@@ -434,18 +434,26 @@ Configures PAM contorl.
 
 ↪ `attributes/pam.rb`  
 ↪ `recipes/pam.rb`  
-↪ `templates/*/etc_security_limits.conf.erb`
+↪ `templates/*/etc_security_limits.conf.erb`  
+↪ `templates/*/etc_security_access.conf.erb`
 
 **Attributes**
 
 All attributes in `node.sys.pam`:
 
-* `limits` holds an array of strings written to `/etc/security/limits.conf`.
+* `limits` holds an array of ulimits written to `/etc/security/limits.conf`.
+* `access` holds an array of rules written to `/etc/security/access.conf`.
 
 For Example:
 
     "sys" => {
       "pam" => {
+        "access" => [
+          "+:devops:10.1.1.1 LOCAL",
+          "+:ALL:.devops.test LOCAL",
+          "+:ALL:LOCAL",
+          "-:ALL:ALL" 
+        ],
         "limits" => [
           "*    hard memlock unlimited",
           "*    soft memlock unlimited"
