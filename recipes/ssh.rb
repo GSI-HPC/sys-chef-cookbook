@@ -67,7 +67,7 @@ end
 
 unless node.sys.ssh.authorize.empty?
   node.sys.ssh.authorize.each do |account,params|
-    ssh_authorize account do
+    sys_ssh_authorize account do
       keys params[:keys]
       managed params[:managed] if params.has_key? :managed
     end

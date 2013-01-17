@@ -14,7 +14,7 @@
 # limitations under the License.
 #
 
-define :ssh_authorize, :keys => Array.new, :managed => false do
+define :sys_ssh_authorize, :keys => Array.new, :managed => false do
   account = params[:name]
   # does the user exists?
   if node.etc.passwd.has_key? account
