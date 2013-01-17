@@ -17,6 +17,15 @@
 # limitations under the License.
 #
 
+unless node.sys.pam.access.empty?
+  template '/etc/security/access.conf' do
+    source 'etc_security_access.conf.erb'
+    owner 'root'
+    group 'root'
+    mode 0600
+    variables :rules => node.sys.pam.access
+  end
+end
 
 unless node.sys.pam.limits.empty?
   template '/etc/security/limits.conf' do
