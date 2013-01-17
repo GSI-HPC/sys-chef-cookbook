@@ -363,12 +363,25 @@ All attributes in `node.sys.resolv`:
       }
     }
 
-## Mail Delivery
+## Mail Relay (Postfix)
 
-Configures Postfix to forward outgoing messages to a mail relay 
+Configures Postfix to forward outgoing messages to a mail relay.
 
 ↪ `attributes/mail.rb`  
-↪ `recipes/mail.rb`
+↪ `recipes/mail.rb`  
+↪ `definitions/sys_mail_alias.rb` 
+
+**Resource**
+
+Add or change (Postfix) account to mail address aliases in 
+`/etc/aliases` with `sys_mail_alias`.
+
+
+    sys_alias "jdoe" do
+      to "jdoe@devops.test"
+    end
+
+Note that you cannot remove aliases with this resource.
 
 **Attributes**
 
@@ -377,7 +390,7 @@ All attributes in `node.sys.mail`:
 * `relay` (required) defines the mail relay host FQDN.
 * `aliases` (optional) hash of account name, mail address pairs.
 
-**Example**
+For example:
 
     [...SNIP...]
     "sys" => {
@@ -513,18 +526,6 @@ where the list of `keys` will be deployed. The attribute
 be removed. 
 
 
-## Mail Aliases
-
-Add or change (Postfix) account to mail address aliases in 
-`/etc/aliases` with `mail_alias`.
-
-↪ `definitions/mail_alias.rb` 
-
-    mail_alias "jdoe" do
-      to "jdoe@devops.test"
-    end
-
-Note that you cannot remove aliases this this definition.
 
 ## Shutdown
 
