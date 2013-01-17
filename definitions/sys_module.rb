@@ -14,7 +14,7 @@
 # limitations under the License.
 #
 
-define :linux_module do
+define :sys_module do
   execute "Enable module #{params[:name]} in /etc/modules" do
     command %Q[echo "#{params[:name]}" >> /etc/modules]
     not_if %Q[grep "^#{params[:name]}$" /etc/modules]

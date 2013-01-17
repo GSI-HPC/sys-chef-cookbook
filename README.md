@@ -147,6 +147,16 @@ Define a set of additional Linux kernel boot parameters:
       [...SNIP...]
     }
 
+## Kernel Modules
+
+Load a Linux kernel module with `sys_module` followed by 
+the name of the module.
+
+↪ `definitions/sys_module.rb`
+
+    sys_module "ext3"
+
+The module will be added to `/etc/modules`.
 
 ## Kernel Control (sysctl)
 
@@ -217,7 +227,7 @@ Configure a couple of NICs, a VLAN and a network bridge:
 
 ## Sudo
 
-Configures `sudo` with files the diretory `/etc/sudoers.d/*` containing user,host, and command aliases as well as rules. Furthermore is creates a file `/etc/sudoers` to source all files within this directory.
+Configures Sudo with files in the directory `/etc/sudoers.d/*` containing user,host, and command aliases as well as rules. Furthermore is creates a file `/etc/sudoers` to source all files within this directory.
 
 ↪ `attributes/sudo.rb`  
 ↪ `recipes/sudo.rb`  
@@ -502,16 +512,6 @@ where the list of `keys` will be deployed. The attribute
 `managed` (default false) indicates if deviating keys should
 be removed. 
 
-## Linux Module
-
-Load a Linux kernel module with `linux_module` followed by 
-the name of the module.
-
-↪ `definitions/linux_module.rb`
-
-    linux_module "ext3"
-
-The module will be added to `/etc/modules`.
 
 ## Mail Aliases
 
