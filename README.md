@@ -428,7 +428,32 @@ For example:
       }
       [...SNIP...]
 
-## SSH Remote Login
+## PAM 
+
+Configures PAM contorl.
+
+↪ `attributes/pam.rb`
+↪ `recipes/pam.rb`
+↪ `templates/*/etc_security_limits.conf.erb`
+
+**Attributes**
+
+All attributes in `node.sys.pam`:
+
+* `limits` holds an array of strings written to `/etc/security/limits.conf`.
+
+For Example:
+
+   "sys" => {
+     "pam" => {
+       "limits" => [
+         "*    hard memlock unlimited",
+         "*    soft memlock unlimited"
+       ]
+     }
+   }
+
+## SSH 
 
 Configures the SSH daemon and deploys a list of SSH public keys
 for a given user account.
