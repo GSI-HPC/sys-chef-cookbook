@@ -1,0 +1,29 @@
+# /etc/tmpreaper.conf
+#
+# DO NOT CHANGE THIS FILE MANUALLY!
+#
+# This file is managed by the Chef `sys` cookbook.
+
+# This is only used if /etc/cron.daily/tmpreaper was also updated,
+# i.e. there's a line ". /etc/tmpreaper.conf" in that file.
+# The shell code that used to be here (pre version 1.6.7) is now
+# in the cron.daily script.
+
+# Remove the next line if you understand the possible security implications of
+# having tmpreaper run automatically;
+# see /usr/share/doc/tmpreaper/README.security.gz
+
+<% if @disabled %>
+SHOWWARNING=true
+<% end %>
+
+# min age of the files that will be deleted
+TMPREAPER_TIME=<%= @max_age %>
+# Files matching the following regexes won't be deleted
+TMPREAPER_PROTECT_EXTRA='<%= @protected_patterns.join(" ") %>'
+# Directories tmpreaper should take care of
+TMPREAPER_DIRS='<%= @dirs.join(" ") %>'
+# Splay time
+TMPREAPER_DELAY='256'
+# Additional commandline options to be used by the cronjob
+TMPREAPER_ADDITIONALOPTIONS='<%= @options %>'
