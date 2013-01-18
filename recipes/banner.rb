@@ -2,7 +2,7 @@
 # Cookbook Name:: sys
 # Recipe:: banner
 #
-# Copyright 2012, Victor Penso
+# Copyright 2012-2013, Victor Penso
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -30,8 +30,12 @@ unless node.sys.banner.message.empty?
 end
 
 if node.sys.banner.info
+
+  package 'lsb-release'
+
   template '/etc/profile.d/info.sh' do
     source 'etc_profile.d_info.sh.erb'
     mode 0755
   end
+
 end
