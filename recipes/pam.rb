@@ -36,3 +36,19 @@ unless node.sys.pam.limits.empty?
     variables :rules => node.sys.pam.limits
   end
 end
+
+unless node.sys.pam.pamd.empty?
+  node.sys.pam.pamd.each do |file, contents|
+    template "/etc/pam.d/#{file}" do
+      source 'etc_pam.d_file.erb'
+      owner 'root'
+      group 'root'
+      mode 0644
+      variables(
+        :rules => contents,
+        :filename => file
+      )
+    end
+  end
+end
+
