@@ -524,7 +524,8 @@ Display a static login message by creating `/etc/motd`.
 ↪ `attributes/banner.rb`  
 ↪ `recipes/banner.rb`  
 ↪ `templates/*/etc_motd.erb`  
-↪ `templates/*/etc_profile.d_info.sh.erb`
+↪ `templates/*/etc_profile.d_info.sh.erb`  
+↪ `tests/roles/sys_banner_test.rb`  
 
 **Attributes**
 
