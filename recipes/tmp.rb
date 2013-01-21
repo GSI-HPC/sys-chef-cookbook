@@ -17,21 +17,30 @@
 # limitations under the License.
 #
 
-unless node.sys.tmp.reaper.empty?
+unless node.sys.tmp.empty?
 
-  package 'tmpreaper'
+  unless node.sys.tmp.reaper.empty?
 
-  template '/etc/tmpreaper.conf' do
-    source 'etc_tmpreaper.conf.erb'
-    mode 0644
-    variables(
-      :disabled => node.sys.tmp.reaper.disabled,
-      :max_age => node.sys.tmp.reaper.max_age,
-      :protected_patterns => node.sys.tmp.reaper.protected_patterns,
-      :dirs => node.sys.tmp.reaper.dirs,
-      :options => node.sys.tmp.reaper.options
-    )
-  end
+    package 'tmpreaper'
+
+    unless node.sys.tmp.reaper.has_key? 'disabled'
+      node.set[:sys][:tmp][:reaper][:disabled] = false
+    end
+
+    template '/etc/tmpreaper.conf' do
+      source 'etc_tmpreaper.conf.erb'
+      mode 0644
+      variables(
+        :disabled => node.sys.tmp.reaper.disabled,
+        :max_age => node.sys.tmp.reaper.max_age,
+        :protected_patterns => node.sys.tmp.reaper.protected_patterns,
+        :dirs => node.sys.tmp.reaper.dirs,
+        :options => node.sys.tmp.reaper.options
+      )
+    end
+
+  end 
+
 end
 
 
