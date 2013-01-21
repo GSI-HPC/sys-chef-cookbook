@@ -14,6 +14,14 @@ default_attributes(
         "*    hard memlock unlimited",
         "*    soft memlock unlimited"
       ]
+    },
+    "pamd" => {
+      "common-session" => "
+        session [default=1]     pam_permit.so
+        session requisite       pam_deny.so
+        session required        pam_permit.so
+        session required        pam_unix.so
+      "
     }
   }
 )
