@@ -1,6 +1,6 @@
 # 0.8.0
 
-* Configuration of PAM with `nodes.sys.pam`.
+* Configuration of PAM with `nodes.sys.pam`, and `node.sys.pamd`.
 * Configure hosts files with `node.sys.hosts`.
 * Configuration of Sudo with `node.sys.sudo`.
 * Configuration of the SSH daemon with `node.sshd.config` and management
