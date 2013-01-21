@@ -17,12 +17,16 @@
 # limitations under the License.
 #
 
-template '/etc/resolv.conf' do
-  source 'etc_resolv.conf.erb'
-  mode 644
-  variables(
-    :servers => node.sys.resolv.servers,
-    :domain => node.sys.resolv.domain,
-    :search => node.sys.resolv.search
-  )
+unless node.sys.resolv.servers.empty?
+
+  template '/etc/resolv.conf' do
+    source 'etc_resolv.conf.erb'
+    mode 644
+    variables(
+      :servers => node.sys.resolv.servers,
+      :domain => node.sys.resolv.domain,
+      :search => node.sys.resolv.search
+    )
+  end
+
 end
