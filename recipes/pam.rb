@@ -2,7 +2,7 @@
 # Cookbook Name:: sys
 # Recipe:: pam
 #
-# Copyright 2013, Victor Penso
+# Copyright 2013, Bastian Neuburger,  Victor Penso
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -37,16 +37,17 @@ unless node.sys.pam.limits.empty?
   end
 end
 
-unless node.sys.pam.pamd.empty?
-  node.sys.pam.pamd.each do |file, contents|
-    template "/etc/pam.d/#{file}" do
-      source 'etc_pam.d_file.erb'
+unless node.sys.pamd.empty?
+  node.sys.pamd.each do |name, contents|
+    template "/etc/pam.d/#{name}" do
+      source 'etc_pam.d_generic.erb'
       owner 'root'
       group 'root'
       mode 0644
       variables(
-        :rules => contents,
-        :filename => file
+        # remove leading spaces, and empty lines
+        :rules => contents.gsub(/^ */,'').gsub(/^$\n/,''),
+        :name => name
       )
     end
   end
