@@ -1,8 +1,8 @@
 #
 # Cookbook Name:: sys
-# Recipe:: tmpreaper
+# Recipe:: tmp
 #
-# Copyright 2013, Bastian Neuburger, GSI HPC Department
+# Copyright 2013, Bastian Neuburger, Victor Penso
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-unless node.sys.tmpreaper.empty?
+unless node.sys.tmp.reaper.empty?
 
   package 'tmpreaper'
 
@@ -25,11 +25,11 @@ unless node.sys.tmpreaper.empty?
     source 'etc_tmpreaper.conf.erb'
     mode 0644
     variables(
-      :disabled => node.sys.tmpreaper.disabled,
-      :max_age => node.sys.tmpreaper.max_age,
-      :protected_patterns => node.sys.tmpreaper.protected_patterns,
-      :dirs => node.sys.tmpreaper.dirs,
-      :options => node.sys.tmpreaper.options
+      :disabled => node.sys.tmp.reaper.disabled,
+      :max_age => node.sys.tmp.reaper.max_age,
+      :protected_patterns => node.sys.tmp.reaper.protected_patterns,
+      :dirs => node.sys.tmp.reaper.dirs,
+      :options => node.sys.tmp.reaper.options
     )
   end
 end
