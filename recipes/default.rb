@@ -21,7 +21,7 @@
 include_recipe 'sys::serial'
 include_recipe 'sys::boot'
 include_recipe 'sys::cgroups' unless node.sys.cgroups.path.empty?
-include_recipe 'sys::control' unless node.sys.control.empty?
+include_recipe 'sys::control'
 include_recipe 'sys::sudo'
 include_recipe 'sys::time'
 include_recipe 'sys::network'
