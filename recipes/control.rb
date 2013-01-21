@@ -17,37 +17,42 @@
 # limitations under the License.
 #
 
-header = <<-EOF
-#
-# DO NOT CHANGE THIS FILE MANUALLY!
-#
-# This file is managed by the Chef `sys` cookbook.
-#
+unless node.sys.control.empty?
 
-EOF
+  header = <<-EOF
+  #
+  # DO NOT CHANGE THIS FILE MANUALLY!
+  #
+  # This file is managed by the Chef `sys` cookbook.
+  #  
+  EOF
+  
+  header = header.gsub(/^ */,'')
 
-node.sys.control.each do |name,values|
-
-  filename = "/etc/sysctl.d/#{name.gsub(/\./,'_')}.conf"
-  sysctl = "Set Linux kernel variables from #{filename}"
-
-  # transform the configuration for JSON attributes to sysctl format
-  config = "##{filename}\n"
-  config << header
-  values.each do |key,value|
-    config << "#{name}.#{key}=#{value}\n"
-  end
-
-  # write the configuration file
-  file filename do
-    content config
-    mode 644
-    notifies :run, "execute[#{sysctl}]", :immediately
-  end
-
-  execute sysctl do
-    action :nothing
-    command %Q[sysctl --load #{filename} 1>-]
+  node.sys.control.each do |name,values|
+  
+    filename = "/etc/sysctl.d/#{name.gsub(/\./,'_')}.conf"
+    sysctl = "Set Linux kernel variables from #{filename}"
+  
+    # transform the configuration for JSON attributes to sysctl format
+    config = "##{filename}\n"
+    config << header
+    values.each do |key,value|
+      config << "#{name}.#{key}=#{value}\n"
+    end
+  
+    # write the configuration file
+    file filename do
+      content config
+      mode 644
+      notifies :run, "execute[#{sysctl}]", :immediately
+    end
+  
+    execute sysctl do
+      action :nothing
+      command %Q[sysctl --load #{filename} 1>-]
+    end
+  
   end
 
 end
