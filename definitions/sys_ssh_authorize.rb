@@ -36,10 +36,11 @@ define :sys_ssh_authorize, :keys => Array.new, :managed => false do
           path authorized_keys
           content params[:keys].join("\n") << "\n"
         end
+        log("Deploying SSH authorized keys for account [#{account}]") { level :info }
       # append keys if missing
       else
         params[:keys].each do |key|
-          execute "Deploying SSH key for account [#{account}]" do
+          execute "Deploying SSH authorized key for account [#{account}]" do
             command %[echo "#{key}" >> #{authorized_keys}]
             # the key is a string not a regex!
             not_if %Q[grep -q -F "#{key}" #{authorized_keys}]
