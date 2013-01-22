@@ -1,5 +1,6 @@
 # 0.8.0
 
+* Network Service Switch configuration with `node.sys.nsswitch`.
 * Configuration of PAM with `nodes.sys.pam`, and `node.sys.pamd`.
 * Configure hosts files with `node.sys.hosts`.
 * Configuration of Sudo with `node.sys.sudo`.

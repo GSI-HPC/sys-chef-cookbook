@@ -1,8 +1,8 @@
 #
 # Cookbook Name:: sys
-# Recipe:: default
+# Recipe:: nsswitch
 #
-# Copyright 2012, Victor Penso
+# Copyright 2013, Victor Penso
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,19 +17,12 @@
 # limitations under the License.
 #
 
-# the order of including matters!
-include_recipe 'sys::serial'
-include_recipe 'sys::boot'
-include_recipe 'sys::cgroups'
-include_recipe 'sys::control'
-include_recipe 'sys::sudo'
-include_recipe 'sys::time'
-include_recipe 'sys::network'
-include_recipe 'sys::nsswitch'
-include_recipe 'sys::hosts'
-include_recipe 'sys::resolv'
-include_recipe 'sys::mail'
-include_recipe 'sys::pam'
-include_recipe 'sys::ssh'
-include_recipe 'sys::banner'
-include_recipe 'sys::tmp'
+unless node.sys.nsswitch.empty?
+
+  template "/etc/nsswitch.conf" do
+    source "etc_nsswitch.conf.erb"
+    mode 644
+    variables :rules => node.sys.nsswitch.gsub(/^ */,'')
+  end
+
+end
