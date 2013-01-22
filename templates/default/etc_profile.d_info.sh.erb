@@ -28,7 +28,7 @@ mem_free_perccc=$(free | grep "buffers/cache" | awk '{printf "%.2f%%" ,  $4/($3+
 
 echo "
 Node:         <%= node.fqdn %> (<%= node.ipaddress %>)
-Platform:     <%= node.lsb.description %>
+Platform:     <%= node.lsb.description if node.lsb.has_key? 'description' %>
 <% unless Chef::Config[:solo] %>
 Chef-Server:  <%= Chef::Config.chef_server_url %>
 <% else %>
@@ -41,5 +41,4 @@ CPU(s)%:      $cpus
 RAM:          $mem_total total -- $mem_free ($mem_free_perc) free [$mem_free_perccc with cache]
 Disk(s)%:     $disk
 User(s):      $count
-$users
-"
+$users"
