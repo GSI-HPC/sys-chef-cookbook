@@ -556,7 +556,7 @@ for a given user account.
 
 Deploy SSH public keys for a given account in `~/.ssh/authorized_keys`
 
-    ssh_authorize "devops" do
+    sys_ssh_authorize "devops" do
       keys [
         "ssh-rsa AAAAB3Nza.....",
         "ssh-rsa AAAADAQAB....."
