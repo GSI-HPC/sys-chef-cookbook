@@ -46,13 +46,40 @@ Configures the APT package management on Debian.
 ↪ `attributes/apt.rb`  
 ↪ `recipes/apt.rb`  
 ↪ `resources/apt_preferences.rb`  
+↪ `resources/apt_conf.rb`  
 ↪ `providers/apt_preferences.rb`  
+↪ `providers/apt_conf.rb`  
 ↪ `templates/*/etc_apt_preferences.d_generic.erb`  
 ↪ `tests/roles/sys_apt_test.rb`  
 
-**APT Preferences**
+**Configuration**
 
-Set APT preferences with individual files in the `/etc/apt/preferences.d/` directory using the `sys_apt_preference` provider (refer to the `apt_preferences` manual).
+Set APT configurations with individual file in the `/etc/apt/apt.conf.d/` directroy using the **`sys_apt_conf`** resource.  
+
+Actions:
+
+* `set` (default) creates a new APT configuration file.
+* `remove` deletes an APT configuration file.
+
+Attributes:
+
+* `name` (name attribute) is the filename used for the configuration.
+* `commands` (required) to be written into the configuration file.
+
+The following examples configure a couple APT specifics:
+
+    sys_apt_conf "50pdiffs" do
+      commands %q[Acquire::PDiffs "false";]
+     end
+     
+    sys_apt_conf "90recommends" do
+      commands %q[APT::Install-Recommends "0";]
+    end
+
+
+**Preferences**
+
+Set APT preferences with individual files in the `/etc/apt/preferences.d/` directory using the **`sys_apt_preference`** resource (refer to the `apt_preferences` manual).
 
 Actions:
 
@@ -61,6 +88,7 @@ Actions:
 
 Attributes:
 
+* `name` (name attribute) is the filename used for the configuration.
 * `package` (defaults to any, as specified by asterisk) list.   
 * `pin` (required) specifies the release.
 * `priority` (required) specifies the priority level.
