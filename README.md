@@ -61,18 +61,18 @@ Actions:
 
 Attributes:
 
-* `package` (default to any)  
+* `package` (defaults to any, as specified by asterisk) list.   
 * `pin` (required) specifies the release.
 * `priority` (required) specifies the priority level.
 
 The following example defines precedents for the testing packages over unstable.
 
-    sys_apt_preferences "testing" do
+    sys_apt_preference "testing" do
       pin "release o=Debian,a=testing"
       priority 900
     end
  
-    sys_apt_preferences "unstable" do
+    sys_apt_preference "unstable" do
       pin "release o=Debian,a=unstable"
       priority 800
     end
