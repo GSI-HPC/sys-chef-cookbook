@@ -12,7 +12,8 @@ default_attributes(
         "unstable" => {
           "pin" => "release o=Debian,a=unstable",
           "priority" => 400
-        }
+        },
+        "site-testing" => {}
       }
     }
   }

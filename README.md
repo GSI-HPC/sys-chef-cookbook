@@ -41,6 +41,8 @@ The "sys" cookbook can be added to a nodes run-list anytime. **By default the co
 
 ## Debian Packages
 
+Configures the APT package management on Debian.
+
 ↪ `attributes/apt.rb`  
 ↪ `recipes/apt.rb`  
 ↪ `resources/apt_preferences.rb`  
@@ -65,15 +67,19 @@ Attributes:
 
 The following example defines precedents for the testing packages over unstable.
 
-   sys_apt_preferences "testing" do
-     pin "release o=Debian,a=testing"
-     priority 900
-   end
+    sys_apt_preferences "testing" do
+      pin "release o=Debian,a=testing"
+      priority 900
+    end
+ 
+    sys_apt_preferences "unstable" do
+      pin "release o=Debian,a=unstable"
+      priority 800
+    end
 
-   sys_apt_preferences "unstable" do
-     pin "release o=Debian,a=unstable"
-     priority 800
-   end
+    sys_apt_preference "site-testing" do
+      action :remove
+    end
 
 Alternatively use attributes in the `node.sys.apt.preferences` to configure, e.g.:
 
@@ -98,6 +104,9 @@ Alternatively use attributes in the `node.sys.apt.preferences` to configure, e.g
       }
       [...SNIP...]
     }
+
+Leaving a key with an empty hash a value in the `node.sys.apt.preferences` will remove the corresponding configuration file if present.
+
 
 ## Control Groups (cgroups)
 
