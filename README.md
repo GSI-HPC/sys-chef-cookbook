@@ -39,6 +39,66 @@ Cookbooks like `timezone`,`resolv` or `ntp` consist of a single recipe with a ha
 
 The "sys" cookbook can be added to a nodes run-list anytime. **By default the cookbook doesn't deploy or configures anything.** The individual recipes will be automatically applied when the corresponding attributes are defined or the `sys_*` resources are called.
 
+## Debian Packages
+
+↪ `attributes/apt.rb`  
+↪ `recipes/apt.rb`  
+↪ `resources/apt_preferences.rb`  
+↪ `providers/apt_preferences.rb`  
+↪ `templates/*/etc_apt_preferences.d_generic.erb`  
+↪ `tests/roles/sys_apt_test.rb`  
+
+**APT Preferences**
+
+Set APT preferences with individual files in the `/etc/apt/preferences.d/` directory using the `sys_apt_preference` provider (refer to the `apt_preferences` manual).
+
+Actions:
+
+* `set` (default) creates a new APT preferences configuration file.
+* `remove` deletes an APT preferences configuration file.
+
+Attributes:
+
+* `package` (default to any)  
+* `pin` (required) specifies the release.
+* `priority` (required) specifies the priority level.
+
+The following example defines precedents for the testing packages over unstable.
+
+   sys_apt_preferences "testing" do
+     pin "release o=Debian,a=testing"
+     priority 900
+   end
+
+   sys_apt_preferences "unstable" do
+     pin "release o=Debian,a=unstable"
+     priority 800
+   end
+
+Alternatively use attributes in the `node.sys.apt.preferences` to configure, e.g.:
+
+    [...SNIP...]
+    "sys" => {
+      "apt" => {
+        "preferences" => {
+          "testing" => {
+            "pin" => "release o=Debian,a=testing",
+            "priority" => 400
+          },
+          "unstable" => {
+            "pin" => "release o=Debian,a=unstable",
+            "priority" => 200
+          },
+          "site-testing" => {
+            "package" => "foo",
+            "pin" => "o=site,a=testing",
+            "priority" => 900
+          }
+        }
+      }
+      [...SNIP...]
+    }
+
 ## Control Groups (cgroups)
 
 Installs and configures Linux Control Groups.
