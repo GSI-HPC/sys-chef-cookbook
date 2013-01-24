@@ -1,8 +1,8 @@
 #
 # Cookbook Name:: sys
-# Recipe:: default
+# Recipe:: apt
 #
-# Copyright 2012, Victor Penso
+# Copyright 2013, Victor Penso
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,20 +17,20 @@
 # limitations under the License.
 #
 
-# the order of including matters!
-include_recipe 'sys::apt'
-include_recipe 'sys::serial'
-include_recipe 'sys::boot'
-include_recipe 'sys::cgroups'
-include_recipe 'sys::control'
-include_recipe 'sys::sudo'
-include_recipe 'sys::time'
-include_recipe 'sys::network'
-include_recipe 'sys::nsswitch'
-include_recipe 'sys::hosts'
-include_recipe 'sys::resolv'
-include_recipe 'sys::mail'
-include_recipe 'sys::pam'
-include_recipe 'sys::ssh'
-include_recipe 'sys::banner'
-include_recipe 'sys::tmp'
+unless node.sys.apt.preferences.empty?
+  node.sys.apt.preferences.each do |name,pref|
+    if pref.empty?
+      sys_apt_preference name do
+        action :remove
+      end
+      next
+    end
+    pref[:package] = '*' unless pref.has_key? 'package'
+    sys_apt_preference name do
+      package pref[:package]
+      pin pref[:pin]
+      priority pref[:priority]
+    end
+  end
+end
+
