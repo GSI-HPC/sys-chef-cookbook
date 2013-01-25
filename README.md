@@ -55,6 +55,20 @@ Configures the APT package management on Debian.
 ↪ `templates/*/etc_apt_sources.list.d_generic.erb`  
 ↪ `tests/roles/sys_apt_test.rb`  
 
+### Main Repository
+
+Configure the main source repository in `/etc/apt/sources.list` using the attribute `node.sys.apt.sources`, for example:
+
+    "sys" => {
+      "apt" => {
+        "sources" => "
+          deb     http://debian.site.domain/debian wheezy main contrib
+          deb-src http://debian.site.domain/debian wheezy main contrib
+        ",
+        [...SNIP...]
+      }
+    }
+
 ### Configuration
 
 Set APT configurations with individual file in the `/etc/apt/apt.conf.d/` directroy using the **`sys_apt_conf`** resource.  
