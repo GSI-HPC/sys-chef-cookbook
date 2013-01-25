@@ -13,7 +13,20 @@ default_attributes(
           "pin" => "release o=Debian,a=unstable",
           "priority" => 400
         },
-        "site-testing" => {}
+        "experimental" => {
+          "pin" => "release o=Debian,a=experimental",
+          "priority" => 200
+        }
+      },
+      "repositories" => {
+        "unstable" => "
+          deb http://ftp.de.debian.org/debian/ unstable main
+          deb-src http://ftp.de.debian.org/debian/ unstable main
+        ",
+        "experimental" => "
+          deb http://ftp.de.debian.org/debian/ experimental main
+          deb-src http://ftp.de.debian.org/debian/ experimental main
+        "
       }
     }
   }
