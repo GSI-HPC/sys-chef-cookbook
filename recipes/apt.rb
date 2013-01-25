@@ -17,6 +17,20 @@
 # limitations under the License.
 #
 
+apt_update = "apt-get -qq update"
+execute apt_update do
+  action :nothing
+end
+
+unless node.sys.apt.sources.empty?
+  template "/etc/apt/sources.list" do
+    source "etc_apt_sources.list.erb"
+    mode 644
+    variables :config => node.sys.apt.sources.gsub(/^ */,'')
+    notifies :run, "execute[#{apt_update}]", :immediately
+  end
+end
+
 unless node.sys.apt.preferences.empty?
   node.sys.apt.preferences.each do |name,pref|
     if pref.empty?

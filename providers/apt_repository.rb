@@ -24,7 +24,7 @@ action :add do
   name = "#{new_resource.name}.list"
   template "#{path}/#{name}" do
     source 'etc_apt_sources.list.d_generic.erb'
-    mode 644
+    mode "0644"
     variables(
       :name => name,
       :config => new_resource.config.gsub(/^ */,''),

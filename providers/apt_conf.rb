@@ -22,7 +22,7 @@ action :set do
     action :nothing
   end
   file "#{path}/#{new_resource.name}" do
-    mode 644
+    mode "0644"
     content new_resource.commands.gsub(/^ */,'')
     notifies :run, "execute[#{apt_update}]", :immediately
   end

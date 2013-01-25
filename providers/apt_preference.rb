@@ -23,13 +23,14 @@ action :set do
   end
   template "#{path}/#{new_resource.name}" do
     source 'etc_apt_preferences.d_generic.erb'
-    mode 644
+    mode "0644"
     variables(
       :name => new_resource.name,
       :package => new_resource.package,
       :pin => new_resource.pin,
       :priority => new_resource.priority
     )
+    cookbook "sys"
     notifies :run, "execute[#{apt_update}]", :immediately
   end
 end
