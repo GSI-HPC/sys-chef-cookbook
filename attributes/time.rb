@@ -1,2 +1,2 @@
-default[:sys][:time][:zone] = String.new
-default[:sys][:time][:servers] = Array.new
+default_unless[:sys][:time][:zone] = String.new
+default_unless[:sys][:time][:servers] = Array.new

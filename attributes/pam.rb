@@ -1,3 +1,3 @@
-default[:sys][:pam][:limits] = Array.new
-default[:sys][:pam][:access] = Array.new
-default[:sys][:pamd] = Hash.new
+default_unless[:sys][:pam][:limits] = Array.new
+default_unless[:sys][:pam][:access] = Array.new
+default_unless[:sys][:pamd] = Hash.new

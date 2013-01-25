@@ -1,4 +1,4 @@
-default[:sys][:banner][:header] = String.new
-default[:sys][:banner][:message] = String.new
-default[:sys][:banner][:footer] = String.new
-default[:sys][:banner][:info] = false
+default_unless[:sys][:banner][:header] = String.new
+default_unless[:sys][:banner][:message] = String.new
+default_unless[:sys][:banner][:footer] = String.new
+default_unless[:sys][:banner][:info] = false

@@ -1,2 +1,2 @@
-default[:sys][:mail][:relay] = String.new
-default[:sys][:mail][:aliases] = Hash.new
+default_unless[:sys][:mail][:relay] = String.new
+default_unless[:sys][:mail][:aliases] = Hash.new
