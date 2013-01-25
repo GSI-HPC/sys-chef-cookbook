@@ -173,21 +173,21 @@ Add unstable and remove experimental repositories:
 
 Alternatively use attributes in `node.sys.apt.repositories` to configure, e.g.:
 
-   "sys" => {
-     "apt" => {
-       [...SNIP...]
-       "repositories" => {
-         "unstable" => "
-           deb http://ftp.de.debian.org/debian/ unstable main
-           deb-src http://ftp.de.debian.org/debian/ unstable main
-         ",
-         "experimental" => "
-           deb http://ftp.de.debian.org/debian/ experimental main
-           deb-src http://ftp.de.debian.org/debian/ experimental main
-         "
-       }
-     }
-   }
+    "sys" => {
+      "apt" => {
+        [...SNIP...]
+        "repositories" => {
+          "unstable" => "
+            deb http://ftp.de.debian.org/debian/ unstable main
+            deb-src http://ftp.de.debian.org/debian/ unstable main
+          ",
+          "experimental" => "
+            deb http://ftp.de.debian.org/debian/ experimental main
+            deb-src http://ftp.de.debian.org/debian/ experimental main
+          "
+        }
+      }
+    }
 
 ## Control Groups (cgroups)
 
