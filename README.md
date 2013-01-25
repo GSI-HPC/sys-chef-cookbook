@@ -47,26 +47,31 @@ Configures the APT package management on Debian.
 ↪ `recipes/apt.rb`  
 ↪ `resources/apt_preferences.rb`  
 ↪ `resources/apt_conf.rb`  
+↪ `resources/apt_repository.rb`  
 ↪ `providers/apt_preferences.rb`  
 ↪ `providers/apt_conf.rb`  
+↪ `providers/apt_repository.rb`  
 ↪ `templates/*/etc_apt_preferences.d_generic.erb`  
+↪ `templates/*/etc_apt_sources.list.d_generic.erb`  
 ↪ `tests/roles/sys_apt_test.rb`  
 
-**Configuration**
+### Configuration
 
 Set APT configurations with individual file in the `/etc/apt/apt.conf.d/` directroy using the **`sys_apt_conf`** resource.  
 
-Actions:
+**Actions**
 
 * `set` (default) creates a new APT configuration file.
 * `remove` deletes an APT configuration file.
 
-Attributes:
+**Attributes**
 
 * `name` (name attribute) is the filename used for the configuration.
 * `commands` (required) to be written into the configuration file.
 
-The following examples configure a couple APT specifics:
+**Examples**
+
+Configure a couple APT specifics:
 
     sys_apt_conf "50pdiffs" do
       commands %q[Acquire::PDiffs "false";]
@@ -77,23 +82,25 @@ The following examples configure a couple APT specifics:
     end
 
 
-**Preferences**
+### Preferences
 
 Set APT preferences with individual files in the `/etc/apt/preferences.d/` directory using the **`sys_apt_preference`** resource (refer to the `apt_preferences` manual).
 
-Actions:
+**Actions**
 
 * `set` (default) creates a new APT preferences configuration file.
 * `remove` deletes an APT preferences configuration file.
 
-Attributes:
+**Attributes**
 
 * `name` (name attribute) is the filename used for the configuration.
 * `package` (defaults to any, as specified by asterisk) list.   
 * `pin` (required) specifies the release.
 * `priority` (required) specifies the priority level.
 
-The following example defines precedents for the testing packages over unstable.
+**Examples**
+
+Defines precedents for the testing packages over unstable.
 
     sys_apt_preference "testing" do
       pin "release o=Debian,a=testing"
@@ -135,6 +142,52 @@ Alternatively use attributes in the `node.sys.apt.preferences` to configure, e.g
 
 Leaving a key with an empty hash a value in the `node.sys.apt.preferences` will remove the corresponding configuration file if present.
 
+### Repositories
+
+Add APT repositories with individual files in the `/etc/apt/sources.list.d/` directory using the **`sys_apt_repository`** resource.
+
+**Actions**
+
+* `add` (default) writes a new APT repository configuration file.
+* `remove` deletes an APT repository configuration file.
+
+**Attributes:**
+
+* `name` (name attribute) is the filename used for the configuration.
+* `config` (required) to be written to the configuration file.
+
+**Example**
+
+Add unstable and remove experimental repositories:
+
+    sys_apt_repository "unstable" do
+      config "
+        deb http://ftp.de.debian.org/debian/ unstable main
+        deb-src http://ftp.de.debian.org/debian/ unstable main
+      "
+    end
+    
+    sys_apt_repository "experimental" do
+      action :remove
+    end
+
+Alternatively use attributes in `node.sys.apt.repositories` to configure, e.g.:
+
+   "sys" => {
+     "apt" => {
+       [...SNIP...]
+       "repositories" => {
+         "unstable" => "
+           deb http://ftp.de.debian.org/debian/ unstable main
+           deb-src http://ftp.de.debian.org/debian/ unstable main
+         ",
+         "experimental" => "
+           deb http://ftp.de.debian.org/debian/ experimental main
+           deb-src http://ftp.de.debian.org/debian/ experimental main
+         "
+       }
+     }
+   }
 
 ## Control Groups (cgroups)
 
