@@ -29,6 +29,7 @@ action :add do
       :name => name,
       :config => new_resource.config.gsub(/^ */,''),
     )
+    cookbook "sys"
     notifies :run, "execute[#{apt_update}]", :immediately
   end
 end
