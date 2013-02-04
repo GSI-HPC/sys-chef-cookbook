@@ -33,31 +33,31 @@ Cookbooks like `timezone`,`resolv` or `ntp` consist of a single recipe with a ha
 3. The **"sys" cookbook doesn't deploy the server-side of services**. It configures a node to use a mail relay, but doesn't install a mail-server.
 4. The name of **a definition is prefixed with `sys_`** to prevent name space collision with other cookbooks.
 
-
-
-# Attributes and Recipes
+# Usage
 
 The "sys" cookbook can be added to a nodes run-list anytime. **By default the cookbook doesn't deploy or configures anything.** The individual recipes will be automatically applied when the corresponding attributes are defined or the `sys_*` resources are called.
 
-* [APT](documents/apt.md) package management
-* [Control Groups](documents/cgroups.md) (`cgroups`)
-* [Serial Console](documents/serial.md)
-* [Boot Configuration](documents/boot.md)
-* [Kernel Modules](documents/modules.md)
-* [System Control](documents/sysctl.md) (`sysctl`)
-* [Network Interfaces](documents/interfaces.md)
-* [Sudo](documents/sudo.md)
-* [Time Configuration](documents/time.md)
-* [Network Service Switch](documents/nsswitch.md)
-* [TCP Wrapper](documents/hosts.md)
-* [Domain Name Service Lookup](documents/resolv.md)
-* [Mail Relay](documents/mail.md)
-* [PAM](documents/pam.md)
-* [CA Certificates](documents/ca_certificates.md)
-* [SSH](documents/ssh.md)
-* [Temporary Directories](documents/tmp.md)
-* [Login Banner](documents/banner.md)
-* [Shutdown](documents/shutdown.md)
+* [APT](documents/apt.md) -- Configure APT, set preferences and define repositories.
+* [Control Groups](documents/cgroups.md) -- Define `cgroups` in `/etc/cgconfig.conf` and load sub-systems.
+* [Serial Console](documents/serial.md) -- Configure `/etc/inittab`.
+* [Boot Configuration](documents/boot.md) -- Set Grub boot parameters in `/etc/default/grub`.
+* [Modules](documents/modules.md) -- Load kernel modules.
+* [System Control](documents/sysctl.md) (`sysctl`) -- Define kernel variables in `/etc/sysctl.d/`.
+* [Network Interfaces](documents/interfaces.md) -- Setup the local network in `/etc/network/interfaces`.
+* [Sudo](documents/sudo.md) -- Add Sudo privileges to `/etc/sudoers.d/`.
+* [Time Configuration](documents/time.md) -- Connect to site NTP server and set local time zone. 
+* [Network Service Switch](documents/nsswitch.md) -- Overwrite `/etc/nsswitch.conf`.
+* [TCP Wrapper](documents/hosts.md) -- Local `/etc/hosts.allow` and `/etc/hosts.deny` configuration.
+* [DNS Resolution](documents/resolv.md) -- Adjust `/etc/resolve.conf` to lookup at your site DNS server.
+* [Mail Relay](documents/mail.md) -- Forward mails to an mail relay with Postfix. 
+* [PAM](documents/pam.md) -- Configure the authentication modules.
+* [CA Certificates](documents/ca_certificates.md) -- Install/remove CA certificates.
+* [SSH](documents/ssh.md) -- Configure the SSH daemon and deploy/manage authorized keys.
+* [Temporary Directories](documents/tmp.md) -- Deploy [Tmpreaper][reaper] to clean directories like `/tmp/`.
+* [Login Banner](documents/banner.md) -- Sets a welcome message displayed at login. 
+* [Shutdown](documents/shutdown.md) -- Resource to restart and power down the node at a defined time.
+
+[reaper]: http://packages.debian.org/search?keywords=tmpreaper
 
 
 # License
