@@ -21,9 +21,14 @@ action :set do
   execute apt_update do
     action :nothing
   end
-  file "#{path}/#{new_resource.name}" do
+  template "#{path}/#{new_resource.name}" do
+    source "etc_apt_apt.conf.d_generic.erb"
     mode "0644"
-    content new_resource.commands.gsub(/^ */,'')
+    cookbook "sys"
+    variables(
+      :name => new_resource.name,
+      :config => new_resource.commands.gsub(/^ */,'')
+    )
     notifies :run, "execute[#{apt_update}]", :immediately
   end
 end
