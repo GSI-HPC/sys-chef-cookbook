@@ -17,4 +17,4 @@
 actions :set, :remove
 default_action :set
 attribute :name, :kind_of => String , :name_attribute => true
-attribute :commands, :kind_of => String, :required => true
+attribute :config, :kind_of => Hash, :required => true

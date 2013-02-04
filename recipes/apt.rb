@@ -22,6 +22,8 @@ execute apt_update do
   action :nothing
 end
 
+# Default APT source file
+
 unless node.sys.apt.sources.empty?
   template "/etc/apt/sources.list" do
     source "etc_apt_sources.list.erb"
@@ -30,6 +32,17 @@ unless node.sys.apt.sources.empty?
     notifies :run, "execute[#{apt_update}]", :immediately
   end
 end
+
+# APT configuration
+
+unless node.sys.apt.config.empty?
+  node.sys.apt.config.each do |name,conf|
+    sys_apt_conf name do
+      config conf
+    end
+  end
+end
+
 
 unless node.sys.apt.preferences.empty?
   node.sys.apt.preferences.each do |name,pref|

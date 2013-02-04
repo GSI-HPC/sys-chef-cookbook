@@ -81,19 +81,45 @@ Set APT configurations with individual file in the `/etc/apt/apt.conf.d/` direct
 **Attributes**
 
 * `name` (name attribute) is the filename used for the configuration.
-* `commands` (required) to be written into the configuration file.
+* `config` (required) to be written into the configuration file.
 
 **Examples**
 
 Configure a couple APT specifics:
+     
+    sys_apt_conf "10periodic" do
+      config(
+        "APT::Periodic::Enable" => 1,
+        "APT::Periodic::Update-Package-Lists" => 1,
+        "APT::Periodic::Unattended-Upgrade" => 1,
+        "APT::Periodic::Download-Upgradeable-Packages" => 1,
+        "APT::Periodic::AutocleanInterval" => 7
+      )
+    end
 
     sys_apt_conf "50pdiffs" do
-      commands %q[Acquire::PDiffs "false";]
-     end
-     
-    sys_apt_conf "90recommends" do
-      commands %q[APT::Install-Recommends "0";]
+      config( "Acquire::PDiffs" => false )
     end
+
+Alternatively use attributes in the `node.sys.apt.config`, e.g.:
+
+    "sys" => {
+      [...SNIP...]
+      "apt" => {
+        "config" => {
+          "51retries" => {
+            "Acquire::Retries" => 0
+          },
+          "60unattended-upgrade" => {
+            "Unattended-Upgrade::Automatic-Reboot" => false,
+            "Unattended-Upgrade::Remove-Unused-Dependencies" => true;
+            "Unattended-Upgrade::Mail" => "root",
+            "Unattended-Upgrade::MailOnlyOnError" => true
+          }
+        }
+        [...SNIP...]
+      }
+    } 
 
 
 ### Preferences

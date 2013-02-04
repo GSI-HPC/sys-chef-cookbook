@@ -4,6 +4,14 @@ run_list( "recipe[sys]" )
 default_attributes(
   "sys" => {
     "apt" => {
+      "config" => {
+        "50pdiffs" => {
+          "Acquire::PDiffs" => false
+        },
+        "90recommends" => {
+          "APT::Install-Recommends" => 0
+        }
+      },
       "preferences" => {
         "testing" => {
           "pin" => "release o=Debian,a=testing",
