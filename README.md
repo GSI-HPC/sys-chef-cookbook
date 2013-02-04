@@ -32,6 +32,7 @@ Cookbooks like `timezone`,`resolv` or `ntp` consist of a single recipe with a ha
 2. **No changes by default!** This means unless attributes are set, no deployment and configuration happens. Lets say the boot configuration which the "sys" cookbook is capable of deploying with attributes in `node.sys.boot` doesn't match the needs for a specific node, you are still free to use a more general `grub` cookbook or even a `site-grub` cookbook.
 3. The **"sys" cookbook doesn't deploy the server-side of services**. It configures a node to use a mail relay, but doesn't install a mail-server.
 4. The name of **a definition is prefixed with `sys_`** to prevent name space collision with other cookbooks.
+5. Attributes defined with loaded with `default_unless` in the `attributes/` directory.
 
 # Usage
 
