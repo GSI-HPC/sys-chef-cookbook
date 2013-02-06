@@ -15,7 +15,7 @@ Configures the APT package management on Debian.
 
 # Configuration
 
-Set APT configurations with individual file in the `/etc/apt/apt.conf.d/` directroy using the **`sys_apt_conf`** resource.  
+Set APT configurations with individual file in the `/etc/apt/apt.conf.d/` directory using the **`sys_apt_conf`** resource.
 
 **Actions**
 
@@ -30,7 +30,7 @@ Set APT configurations with individual file in the `/etc/apt/apt.conf.d/` direct
 **Examples**
 
 Configure a couple APT specifics:
-     
+
     sys_apt_conf "10periodic" do
       config(
         "APT::Periodic::Enable" => 1,
@@ -40,7 +40,7 @@ Configure a couple APT specifics:
         "APT::Periodic::AutocleanInterval" => 7
       )
     end
-
+    
     sys_apt_conf "50pdiffs" do
       config( "Acquire::PDiffs" => false )
     end
@@ -78,7 +78,7 @@ Set APT preferences with individual files in the `/etc/apt/preferences.d/` direc
 **Attributes**
 
 * `name` (name attribute) is the filename used for the configuration.
-* `package` (defaults to any, as specified by asterisk) list.   
+* `package` (defaults to any, as specified by asterisk) list.
 * `pin` (required) specifies the release.
 * `priority` (required) specifies the priority level.
 
