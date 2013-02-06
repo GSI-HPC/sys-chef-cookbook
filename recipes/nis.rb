@@ -36,7 +36,7 @@ unless node.sys.nis.servers.empty?
   template '/etc/yp.conf' do
     source 'etc_yp.conf.erb'
     variables( 
-      :domain => node.sys.nis.domain,
+      :domain => node.sys.nis.domain.chomp,
       :servers => node.sys.nis.servers 
     )
     notifies :restart, 'service[nis]'
