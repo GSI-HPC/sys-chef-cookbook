@@ -11,6 +11,17 @@ default_attributes(
       }
     },
     "ssh" => {
+      "config" => {
+        "devops" => {
+          "*.devops.test" => {
+            "User" => "noops",
+            "Port" => 2200
+          },
+          "lxfoo01" => {
+            "StrictHostKeyChecking" => "no"
+          }
+        }
+      },
       "authorize" => {
         "root" => {
           "managed" => true,

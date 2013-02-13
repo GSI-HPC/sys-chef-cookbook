@@ -73,3 +73,12 @@ unless node.sys.ssh.authorize.empty?
     end
   end
 end
+
+unless node.sys.ssh.config.empty?
+  node.sys.ssh.config.each do |account,params|
+    sys_ssh_config account do
+      config params
+    end
+  end
+end
+
