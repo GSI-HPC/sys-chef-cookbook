@@ -50,7 +50,7 @@ unless interfaces.empty?
 
     template "/etc/network/interfaces.d/#{name}" do
       source 'etc_network_interfaces.d_generic.erb'
-      mode 644
+      mode "0644"
       variables(
         :name => name,
         :inet => inet,
