@@ -9,7 +9,7 @@ Configures the node network with individual files for each interface in  `/etc/n
 
 All attributes in `node.sys.network`:
 
-* `interfaces` (required) is a hash with interface name as keys and its configuration as value. The interface configuration hash holds an `inet` key (default `manual`) also. Read the manuals `interfaces`, `vlan-interfaces` and `bridge-utils-interfaces`.
+* `interfaces` (required) is a hash with interface name as keys and its configuration as value. The interface configuration hash holds an `inet` key (default `manual`) and `auto` (default true) also. Read the manuals `interfaces`, `vlan-interfaces` and `bridge-utils-interfaces`.
 * `restart` (optional) default true. Networking is automatically restarted upon configuration change.
 
 **Examples**
@@ -29,8 +29,14 @@ Configure a couple of NICs, a VLAN and a network bridge:
             "up" => "route add -net 10.0.0.0 netmask 255.0.0.0 gw 10.8.0.1",
             "down" => "down route del -net 10.0.0.0 netmask 255.0.0.0 gw 10.8.0.1"
           },
-          "vlan1" => { "vlan_raw_device" => "eth0" },
-          "br1" => { "bridge_ports" => "vlan1" }
+          "vlan1" => { 
+            "vlan_raw_device" => "eth0", 
+            "up" => "ifup br1"
+          },
+          "br1" => { 
+            "auto" => false,
+            "bridge_ports" => "vlan1" 
+          }
         }
       }
       [...SNIP...]

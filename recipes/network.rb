@@ -35,6 +35,8 @@ unless interfaces.empty?
     # manual initialization by default
     inet = params.has_key?(:inet) ? params[:inet] : 'manual'
     params.delete(:inet)
+    auto = params.has_key?(:auto) ? params[:auto] : true
+    params.delete(:auto)
 
     # try to get configuration of the default interface from Ohai
     if name == node.network.default_interface and inet == 'static'
@@ -52,6 +54,7 @@ unless interfaces.empty?
       source 'etc_network_interfaces.d_generic.erb'
       mode "0644"
       variables(
+        :auto => auto,
         :name => name,
         :inet => inet,
         :config => config
