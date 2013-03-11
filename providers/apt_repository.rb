@@ -27,7 +27,7 @@ action :add do
     mode "0644"
     variables(
       :name => name,
-      :config => new_resource.config.gsub(/^ */,''),
+      :config => new_resource.config.gsub(/^ */,'')
     )
     cookbook "sys"
     notifies :run, "execute[#{apt_update}]", :immediately
