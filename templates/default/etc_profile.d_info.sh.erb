@@ -15,12 +15,17 @@
 # limitations under the License.
 #
 
+# Test for an interactive shell
+if [[ $- != *i* ]]
+then
+  return
+fi
+
 procs=$(top -b -n1 | sed -n '2p' | cut -d':' -f 2- | sed 's/^[ \t]*//')
 cpus=$(top -b -n1 | sed -n '3p' | cut -d':' -f 2- | sed 's/^[ \t]*//')
 users=$(ps haeo user | sort | grep -v root | grep -v $USER | uniq -c | sort -nr | tr -s ' ' | awk '{ printf "%s(%s) ", $2, $1 }')
 count=$(ps haeo user | sort | grep -v root | uniq -c | wc -l)
 disk=$(df -lh | grep "^/" | tr -s ' ' | cut -d' ' -f5- | awk '{printf "%s %s  ", $2, $1}')
-
 mem_total=$(grep MemTotal /proc/meminfo | awk '{printf "%sMB",$2/1000}')
 mem_free=$(grep MemFree /proc/meminfo | awk '{printf "%sMB",$2/1000}')
 mem_free_perc=$(free | grep Mem | awk '{printf "%.2f%%" ,  $4/$2 * 100.0}')
@@ -41,4 +46,5 @@ CPU(s)%:      $cpus
 RAM:          $mem_total total -- $mem_free ($mem_free_perc) free [$mem_free_perccc with cache]
 Disk(s)%:     $disk
 User(s):      $count
-$users"
+Who:          $users
+"
