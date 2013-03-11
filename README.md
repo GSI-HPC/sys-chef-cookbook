@@ -60,6 +60,11 @@ The "sys" cookbook can be added to a nodes run-list anytime. **By default the co
 * [Login Banner](documents/banner.md) -- Sets a welcome message displayed at login. 
 * [Shutdown](documents/shutdown.md) -- Resource to restart and power down the node at a defined time.
 
+# Library
+
+The `Sys::Secret` enables [transport of encrypted data between nodes](documents/secret.md) using the private/public key infrastructure of Chef. 
+
+
 [reaper]: http://packages.debian.org/search?keywords=tmpreaper
 
 
