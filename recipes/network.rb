@@ -32,11 +32,9 @@ unless interfaces.empty?
 
   interfaces.each do |name,params|
 
-    # manual initialization by default
+    # set defaults
     inet = params.has_key?(:inet) ? params[:inet] : 'manual'
-    params.delete(:inet)
     auto = params.has_key?(:auto) ? params[:auto] : true
-    params.delete(:auto)
 
     # try to get configuration of the default interface from Ohai
     if name == node.network.default_interface and inet == 'static'
@@ -48,7 +46,11 @@ unless interfaces.empty?
 
     # merge the configuration
     config = Array.new
-    params.each { |key,value| config << "  #{key} #{value}" }
+    params.each do |key,value| 
+      unless ["inet", "auto"].include? key
+        config << "  #{key} #{value}" 
+      end
+    end
 
     template "/etc/network/interfaces.d/#{name}" do
       source 'etc_network_interfaces.d_generic.erb'
