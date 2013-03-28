@@ -1,0 +1,33 @@
+[libdefaults]
+	default_realm = <%= @realm %>
+	allow_weak_crypto = no
+	clockskew = 180
+	kdc_timeout = 3 # Time is in seconds
+	default_etypes = des3-cbc-sha1
+	ticket_lifetime = 10h
+	# This option is set to make pam_krb5 fail, if TGS-REP does not succeed
+	verify_ap_req_nofail = true
+	# Use heimdal-kcm as Ticket cache
+	# default_cc_type = KCM
+[appdefaults]
+	default_realm = <%= @realm %>
+	forwardable = true
+	proxiable = false
+	no-adress = true
+	ticket_lifetime = 10h
+	encrypt = true
+	forward = true
+[realms]
+	<%= @realm %> = {
+      	<% @servers.each do |kdc| %>
+        kdc = <%= kdc %>
+	<% end -%>
+	admin_server = <%= @admin_server %>
+	}
+[password_quality]
+	policies = builtin:minimum-length builtin:character-class
+	min_classes = 3
+	min_length = 8
+[domain_realm]
+	<%= @domain %> = <%= @realm.upcase %>
+	.<%= @domain %> = <%= @realm.upcase %>
