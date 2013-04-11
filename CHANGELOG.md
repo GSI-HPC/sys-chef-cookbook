@@ -1,3 +1,7 @@
+# next version
+
+* Add FUSE configuration support. 
+
 # 0.10.0
 
 * Add LDAP/Kerberos support.
