@@ -81,4 +81,3 @@ unless node.sys.ssh.config.empty?
     end
   end
 end
-
