@@ -56,6 +56,7 @@ The "sys" cookbook can be added to a nodes run-list anytime. **By default the co
 * [CA Certificates](documents/ca_certificates.md) -- Install/remove CA certificates.
 * [SSH](documents/ssh.md) -- Configure the SSH daemon and deploy/manage authorized keys.
 * [AutoFS](documents/autofs.md) -- Setup automatic mounting of NFS servers in `/etc/auto.master`.
+* [FUSE](documents/fuse.md) -- Setup FUSE in `/etc/fuse.conf`.
 * [Temporary Directories](documents/tmp.md) -- Deploy [Tmpreaper][reaper] to clean directories like `/tmp/`.
 * [Login Banner](documents/banner.md) -- Sets a welcome message displayed at login. 
 * [Shutdown](documents/shutdown.md) -- Resource to restart and power down the node at a defined time.
