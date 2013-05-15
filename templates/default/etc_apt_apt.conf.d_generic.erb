@@ -4,6 +4,14 @@
 #
 # This file is managed by the Chef `sys::apt` cookbook.
 
-<% @config.each do |key,value| %>
-<%= key %> "<%= value%>";
+<% @config.each do |key,values| %>
+<% if values.kind_of? Array %>
+<%= key %> { 
+ <% values.each do |value| %>
+ "<%= value %>";
+ <% end %>
+};
+<% else %>
+<%= key %> "<%= values %>";
+<% end %>
 <% end %>
