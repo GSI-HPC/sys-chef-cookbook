@@ -17,21 +17,24 @@
 # limitations under the License.
 #
 
-unless node.sys.autofs.master.empty?
+unless node.sys.autofs.empty?
   
   package 'autofs'
 
-  template '/etc/auto.master' do
-    source 'etc_auto.master.erb'
-    variables(
-      :maps => node.sys.autofs.master
-    )
-    notifies :reload, 'service[autofs]'
-  end
+  node.sys.autofs.each do |sniplet, maps|
 
-  node.sys.autofs.master.each_key do |path|
-    directory path do
-      recursive true
+    template '/etc/auto.master.d/#{sniplet}.autofs' do
+      source 'etc_auto.master.erb'
+      variables(
+        :maps => maps
+      )
+      notifies :restart, 'service[autofs]'
+    end
+
+    maps.each_key do |path|
+      directory path do
+        recursive true
+      end
     end
   end
 
