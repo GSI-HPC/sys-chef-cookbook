@@ -19,7 +19,7 @@
 
 unless node.sys.autofs.master.empty?
   
-  package 'autofs5'
+  package 'autofs'
 
   template '/etc/auto.master' do
     source 'etc_auto.master.erb'
