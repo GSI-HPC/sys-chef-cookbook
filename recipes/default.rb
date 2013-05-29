@@ -17,22 +17,9 @@
 # limitations under the License.
 #
 
-# the order of including matters!
-include_recipe 'sys::apt'
-include_recipe 'sys::serial'
-include_recipe 'sys::boot'
-include_recipe 'sys::cgroups'
-include_recipe 'sys::control'
-include_recipe 'sys::sudo'
-include_recipe 'sys::time'
-include_recipe 'sys::network'
-include_recipe 'sys::nsswitch'
-include_recipe 'sys::nis'
-include_recipe 'sys::hosts'
-include_recipe 'sys::resolv'
-include_recipe 'sys::mail'
-include_recipe 'sys::fuse'
-include_recipe 'sys::pam'
-include_recipe 'sys::ssh'
-include_recipe 'sys::banner'
-include_recipe 'sys::tmp'
+# the order of recipes matters!
+%w(apt serial boot cgroups control sudo time
+network nsswitch nis hosts
+resolv mail fuse pam ssh banner tmp autofs ).each do |recipe|
+  include_recipe "sys::#{recipe}"
+end
