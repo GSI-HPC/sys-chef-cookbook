@@ -23,7 +23,7 @@ unless node.sys.autofs.empty?
 
   node.sys.autofs.each do |sniplet, maps|
 
-    template '/etc/auto.master.d/#{sniplet}.autofs' do
+    template "/etc/auto.master.d/#{sniplet}.autofs" do
       source 'etc_auto.master.erb'
       variables(
         :maps => maps
