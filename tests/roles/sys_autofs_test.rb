@@ -4,11 +4,15 @@ run_list( "recipe[sys::autofs]" )
 default_attributes(
   :sys => {
     :autofs => {
-      :master => {
-        "/path" => {
-          :map => "/etc/autofs/auto.path",
-          :options => "--timeout=600"
-        }
+      "/path" => {
+         :map => "/etc/auto.master.d/map/path.map",
+         :options => "--timeout=600"
+      },
+      "/data/local" => {
+         :map => "/etc/auto.master.d/map/data_local.map"
+      },
+      "/var/spool/service" => {
+         :map => "/etc/auto.master.d/map/var_spool_service.map"
       }
     }
   }

@@ -21,21 +21,34 @@ unless node.sys.autofs.empty?
   
   package 'autofs'
 
-  node.sys.autofs.each do |sniplet, maps|
+  directory '/etc/auto.master.d/map' do
+    recursive true
+  end
 
-    template "/etc/auto.master.d/#{sniplet}.autofs" do
-      source 'etc_auto.master.erb'
+  node.sys.autofs.each do |path, config|
+
+    name = path.gsub(/^\//,'').gsub(/\//,'_')
+    
+    options = if config.has_key?('options') 
+                config[:options]
+              else
+                String.new
+              end
+    
+    template "/etc/auto.master.d/#{name}.autofs" do
+      source 'etc_auto.master.d_generic.erb'
       variables(
-        :maps => maps
+        :path => path,
+        :map => config[:map],
+        :options => options
       )
       notifies :restart, 'service[autofs]'
     end
 
-    maps.each_key do |path|
-      directory path do
-        recursive true
-      end
+    directory path do
+      recursive true
     end
+
   end
 
   service 'autofs' do
