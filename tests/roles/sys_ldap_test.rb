@@ -4,10 +4,10 @@ run_list( "recipe[sys::ldap]" )
 default_attributes(
   "sys" => {
     "ldap" => {
-      "master" => "krb01.devops.test",
-      "slave" => "krb02.devops.test",
-      "searchbase" => "dc=devops,dc=test",
-      "realm" => "devops.test"
+      "master" => "ldap1.example.com",
+      "slave" => "ldap2.example.com",
+      "searchbase" => "ou=people,dc=example,dc=com",
+      "realm" => "example.com"
     }
   }
 )
