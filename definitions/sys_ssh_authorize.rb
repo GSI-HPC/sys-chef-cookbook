@@ -16,45 +16,48 @@
 
 define :sys_ssh_authorize, :keys => Array.new, :managed => false do
   account = params[:name]
-  # does the user exists?
-  if node.etc.passwd.has_key? account
-    if params[:keys].empty?
-      log("Can't deploy SSH key: key(s) missing for account [#{account}]") { level :warn }
-    else
-      # path to the user SSH configuration
-      dot_ssh = "#{node.etc.passwd[account].dir}/.ssh"
-      directory dot_ssh do
-        owner account
-        group node.etc.passwd[account].gid
-        mode 0700
-      end
-      # path to the user keys file
-      authorized_keys = "#{dot_ssh}/authorized_keys"
-      # overwrite deviating keys
-      if params[:managed]
-        file "Deploying SSH keys for account [#{account}]" do
-          path authorized_keys
-          content params[:keys].join("\n") << "\n"
-        end
-      # append keys if missing
+  begin
+    # does the user exists?  
+    if node.etc.passwd.has_key? account
+      if params[:keys].empty?
+        log("Can't deploy SSH key: key(s) missing for account [#{account}]") { level :warn }
       else
-        params[:keys].each do |key|
-          execute "Deploying SSH authorized key for account [#{account}]" do
-            command %[echo "#{key}" >> #{authorized_keys}]
-            # the key is a string not a regex!
+        # path to the user SSH configuration
+        dot_ssh = "#{node.etc.passwd[account].dir}/.ssh"
+        directory dot_ssh do
+          owner account
+          group node.etc.passwd[account].gid
+          mode 0700
+        end
+        # path to the user keys file
+        authorized_keys = "#{dot_ssh}/authorized_keys"
+        # overwrite deviating keys
+        if params[:managed]
+          file "Deploying SSH keys for account [#{account}]" do
+            path authorized_keys
+            content params[:keys].join("\n") << "\n"
+          end
+          # append keys if missing
+        else
+          params[:keys].each do |key|
+            execute "Deploying SSH authorized key for account [#{account}]" do
+              command %[echo "#{key}" >> #{authorized_keys}]
+              # the key is a string not a regex!
             not_if %Q[grep -q -F "#{key}" #{authorized_keys}]
+            end
           end
         end
+        #the file needs to have right ownership and permissions
+        file authorized_keys do
+          owner account
+          group node.etc.passwd[account].gid
+          mode 0644
+        end
       end
-      #the file needs to have right ownership and permissions
-      file authorized_keys do
-        owner account
-        group node.etc.passwd[account].gid
-        mode 0644
-      end
-    end
-  else
+    else
     log("Can't deploy SSH keys: account [#{account}] missing") { level :warn }
+    end
+  rescue ArgumentError => e
+    log("Can't deploy SSH keys: " + e.to_s) { level :warn }
   end
-
 end

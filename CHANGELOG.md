@@ -2,6 +2,10 @@
 
 * Add FUSE configuration support. 
 
+Incompatible changes:
+
+* Automounter configuration `/etc/auto.master.d/` instead if `/etc/auto.master`.
+
 # 0.10.0
 
 * Add LDAP/Kerberos support.
