@@ -8,9 +8,9 @@
 ↪ `attributes/default/ldap.rb`
 
 ## Configuration of the client ##
-It is assumed, that ldap is used in conjunction with kerberos.  Since this requires an existing kerberos-server, it is therfore assume that it is already setup.  The rought outline is like this:
+It is assumed that ldap is used in conjunction with kerberos.  Without a kerberos server, you have add more options to the template, so that GSSAPI can be disabled.  The rough outline is like this:
 
-`nslcd` connects to the ldap-server, to query information for users.  Since the communication between client and server should be encrypted and kerberos is already there, this is done via SASL/GSSAPI.  That is why nslcd needs its own keytab, to authenticate to the ldap server.  In order to securely transport the keytabs from server to client the library `sys::secret` is used.
+`nslcd` connects to the ldap-server, to query information for users.  Since the communication between client and server should be encrypted and kerberos is already there, this is done via SASL/GSSAPI.  That is why nslcd needs its own keytab, to authenticate to the ldap server.  In order to securely transport the keytabs from server to client the library `sys::secret` is used.  The keytab will be used by the program `k5start` to periodically get tickets for the ldap service from the kerberos kdc.
 
 ## attributes ##
 The following attributes are required by the cookbook.  It is assumed, that the ldap-server is setup in some sort of master-slave configuration.  nslcd usually talks to the master, but can use the slave as a failover.  The searchbase tells nslcd in which subtree of the directory information tree to search for the users.  Finally nslcd needs to provide a realm to the ldap-server for the use of the SASL/GSSAPI-mechanism.
@@ -26,4 +26,4 @@ The following attributes are required by the cookbook.  It is assumed, that the 
 	}
 
 ## pam ##
-This recipe does not touch any pam-files.  They need to be configured with the pam-cookbook.
+This recipe does not touch any pam-files.  They need to be configured with sys::pam.
