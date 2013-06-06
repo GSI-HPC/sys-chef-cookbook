@@ -4,11 +4,12 @@ run_list( "recipe[sys::krb5]" )
 default_attributes(
   "sys" => {
     "krb5" => {
-      "realm" => "devops.test",
-      "admin_server" => "krb01.devops.test",
-      "master" => "krb01.devops.test",
-      "slave" => "krb02.devops.test",
-      "domain" => "devops.test"
+      # this is upcased in the recipe
+      "realm" => "example.com",
+      "admin_server" => "kdc1.h5l.example.com",
+      "master" => "kdc1.h5l.example.com",
+      "slave" => "kdc2.h5l.example.com",
+      "domain" => "example.com"
     }
   }
 )
