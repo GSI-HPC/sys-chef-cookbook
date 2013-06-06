@@ -17,22 +17,38 @@
 # limitations under the License.
 #
 
-unless node.sys.autofs.master.empty?
+unless node.sys.autofs.empty?
   
-  package 'autofs5'
+  package 'autofs'
 
-  template '/etc/auto.master' do
-    source 'etc_auto.master.erb'
-    variables(
-      :maps => node.sys.autofs.master
-    )
-    notifies :reload, 'service[autofs]'
+  directory '/etc/auto.master.d/map' do
+    recursive true
   end
 
-  node.sys.autofs.master.each_key do |path|
+  node.sys.autofs.each do |path, config|
+
+    name = path.gsub(/^\//,'').gsub(/\//,'_')
+    
+    options = if config.has_key?('options') 
+                config[:options]
+              else
+                String.new
+              end
+    
+    template "/etc/auto.master.d/#{name}.autofs" do
+      source 'etc_auto.master.d_generic.erb'
+      variables(
+        :path => path,
+        :map => config[:map],
+        :options => options
+      )
+      notifies :restart, 'service[autofs]'
+    end
+
     directory path do
       recursive true
     end
+
   end
 
   service 'autofs' do

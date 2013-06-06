@@ -1,1 +1,1 @@
-default_unless[:sys][:autofs][:master] = Hash.new
+default_unless[:sys][:autofs] = Hash.new
