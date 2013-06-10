@@ -17,7 +17,7 @@ It is assumed, that the LDAP-server is setup in some sort of master-slave config
 
 **Attributes**
 
-All attributes in `node.ldap`:
+All attributes in `node.sys.ldap`:
 
     "sys" => {
       "ldap" => {
