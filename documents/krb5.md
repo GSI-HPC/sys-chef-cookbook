@@ -9,7 +9,7 @@ Setup a client to communicate with a Kerberos server.
 
 The basic requirements for talking to a Kerberos-server are the kerberos-realm, the adress of the admin-server, as well as possible slaves and a domain which is mapped to the kerberos-realm.  Atrributes might look like this:
 
-All attributes in `node.krb5`: 
+All attributes in `node.sys.krb5`: 
 
 
     "sys" => {
