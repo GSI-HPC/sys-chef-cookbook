@@ -5,7 +5,10 @@ Configures Linux authentication modules (PAM).
 ↪ `templates/*/etc_security_limits.conf.erb`  
 ↪ `templates/*/etc_security_access.conf.erb`  
 ↪ `templates/*/etc_pam.d_generic.erb`  
-↪ `tests/roles/sys_pam_test.rb`
+↪ `tests/roles/sys_pam_test.rb`  
+↪ `files/*/etc_pam.d_sshd`  
+↪ `files/*/etc_pam.d_login`  
+
 
 **Attributes**
 
@@ -46,3 +49,6 @@ For Example:
       }
     }
 
+`files/*/etc_pam.d_login` is deployed at `/etc/pam.d/login` if the `[:sys][:pam][:access]` attribute is set. It is the default file shipped with the `login` package and commented-in pam_access line.
+
+`files/*/etc_pam.d_sshd` is deployed at `/etc/pam.d/sshd` if the `[:sys][:pam][:access]` attribute is set and the file `/etc/ssh/sshd_config` exists (meaning `openssh-server` package is installed). It is the default file shipped with the `openssh-server` package and commented-in pam_access line.
