@@ -38,7 +38,7 @@ Cookbooks like `timezone`,`resolv` or `ntp` consist of a single recipe with a ha
 
 The "sys" cookbook can be added to a nodes run-list anytime. **By default the cookbook doesn't deploy or configures anything.** The individual recipes will be automatically applied when the corresponding attributes are defined or the `sys_*` resources are called.
 
-* [APT](documents/apt.md) – Configure APT, set preferences and define repositories.
+* [APT](documents/apt.md) – Configure APT in `/etc/apt/apt.conf.d/`, set APT preferences in `/etc/apt/preferences.d` and define package repositories in `/etc/apt/sources.list.d`.
 * [Control Groups](documents/cgroups.md) – Define `cgroups` in `/etc/cgconfig.conf` and load sub-systems.
 * [Serial Console](documents/serial.md) – Configure `/etc/inittab`.
 * [Boot Configuration](documents/boot.md) – Set Grub boot parameters in `/etc/default/grub`.
@@ -49,12 +49,12 @@ The "sys" cookbook can be added to a nodes run-list anytime. **By default the co
 * [Time Configuration](documents/time.md) – Connect to site NTP server and set local time zone. 
 * [Network Service Switch](documents/nsswitch.md) – Overwrite `/etc/nsswitch.conf`.
 * [NIS](documents/nis.md) – Connect to local NIS servers by configuring `/etc/yp.conf`.
-* [LDAP](documents/ldap.md) – Connect to a local LDAP account management (authorization) by configuring `/etc/ldap.ldao.conf` and `/etc/nslcd.conf`.
+* [LDAP](documents/ldap.md) – Connect to a local LDAP account management (authorization) by configuring `/etc/ldap/ldap.conf`.
 * [Kerberos](documents/krb5.md) – Use Kerberos to manage credential security (authentication).
 * [TCP Wrapper](documents/hosts.md) – Local `/etc/hosts.allow` and `/etc/hosts.deny` configuration.
 * [DNS Resolution](documents/resolv.md) – Adjust `/etc/resolve.conf` to lookup at your site DNS server.
 * [Mail Relay](documents/mail.md) – Forward mails to an mail relay with Postfix. 
-* [PAM](documents/pam.md) – Configure the authentication modules in `/etc/pam.d/.
+* [PAM](documents/pam.md) – Configure the authentication modules in `/etc/pam.d/`.
 * [CA Certificates](documents/ca_certificates.md) – Install/remove CA certificates.
 * [SSH](documents/ssh.md) – Configure the SSH daemon and deploy/manage authorized keys.
 * [AutoFS](documents/autofs.md) – Setup automatic mounting of NFS servers in `/etc/auto.master.d/`.
