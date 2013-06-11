@@ -1,5 +1,8 @@
-# next version
+# 0.11.1
 
+* _pam_ recipe deploys basic configurations for SSH and login in `/etc/pam.d/`.
+* Basic documentation for LDAP/Kerberos.
+* Improvements for the configurations in `/etc/apt/apt.conf.d/`.
 * Add FUSE configuration support. 
 
 Incompatible changes:
