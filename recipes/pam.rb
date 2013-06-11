@@ -25,6 +25,21 @@ unless node.sys.pam.access.empty?
     mode 0600
     variables :rules => node.sys.pam.access
   end
+
+  cookbook_file '/etc/pam.d/sshd' do
+    source 'etc_pam.d_sshd'
+    owner 'root'
+    group 'root'
+    mode 0644
+    only_if do ::File.exists? '/etc/ssh/sshd_config' end
+  end
+
+  cookbook_file '/etc/pam.d/login' do
+    source 'etc_pam.d_login'
+    owner 'root'
+    group 'root'
+    mode 0644
+  end
 end
 
 unless node.sys.pam.limits.empty?
