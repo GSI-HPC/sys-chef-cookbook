@@ -13,12 +13,14 @@ The attribute `node.sys.autofs` contain keys of paths to be mounted. The values 
 
     "sys" => {
       "autofs" => {
-        "/path" => {
-          "map" => "/etc/auto.master.d/map/path.map",
-          "options" => "--timeout=600"
-        },
-        "/foo/bar" => {
-           "map" => "/etc/auto.master.d/map/foo_bar.map"
+        "maps" => {
+          "/path" => {
+            "map" => "/etc/autofs/autofs.map1",
+            "options" => "--timeout=600"
+          },
+          "/foo/bar" => {
+             "map" => "/path/to/autofs.map2"
+          }
         }
       }
     }
