@@ -18,22 +18,28 @@
 #
 
 unless node.sys.autofs.maps.empty?
-  
-  package 'autofs'
 
-  template '/etc/auto.master' do
-    source 'etc_auto.master.erb'
-    variables(
-      :maps => node.sys.autofs.maps
-    )
-    notifies :reload, 'service[autofs]'
+  node.sys.autofs.maps.each do |path,conf|
+
+    package 'autofs'
+
+    template '/etc/auto.master' do
+      source 'etc_auto.master.erb'
+      variables(
+        :path => path,
+        :map => conf[:map],
+        :options => conf[:options]
+        )
+      notifies :reload, 'service[autofs]'
+    end
+
+    #  node.sys.autofs.maps.each_key do |path|
+    #    directory path do
+    #      recursive true
+    #    end
+    #  end
+
   end
-
-#  node.sys.autofs.maps.each_key do |path|
-#    directory path do
-#      recursive true
-#    end
-#  end
 
   service 'autofs' do
     supports :restart => true, :reload => true
