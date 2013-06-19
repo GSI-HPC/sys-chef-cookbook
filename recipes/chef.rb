@@ -34,7 +34,7 @@ template '/etc/default/chef-client' do
   mode 0644
   variables(
     :interval => node.sys.chef.interval,
-    :splay => node.sys.chef.splay
+    :splay    => node.sys.chef.splay
   )
   notifies :restart, "service[chef-client]"
 end
@@ -72,6 +72,7 @@ if server_url
               :opath      => node.ohai.plugin_path,
               :odisable   => node.ohai.disabled_plugins,
               :syslog     => node.sys.chef.use_syslog
+              :log_level  => node.sys.chef.log_level
               )
     notifies :restart, "service[chef-client]"
   end
