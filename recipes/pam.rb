@@ -52,6 +52,16 @@ unless node.sys.pam.limits.empty?
   end
 end
 
+if node.sys.pam[:group]
+  template '/etc/security/group.conf' do
+    source 'etc_security_group.conf.erb'
+    owner 'root'
+    group 'root'
+    mode 0644
+    variables :rules => node.sys.pam.group
+  end
+end
+
 unless node.sys.pamd.empty?
   node.sys.pamd.each do |name, contents|
     template "/etc/pam.d/#{name}" do
