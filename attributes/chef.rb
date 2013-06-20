@@ -7,4 +7,4 @@ default[:sys][:chef][:validation_key] = '/etc/chef/validation.pem'
 # this definition is bogus, not?
 default[:sys][:chef][:server_url]     = nil
 default[:sys][:chef][:use_syslog]     = false
-default[:sys][:chef][:log_level]      = 'info'
+default[:sys][:chef][:log_level]      = ':info'
