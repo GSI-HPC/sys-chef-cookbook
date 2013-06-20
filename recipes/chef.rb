@@ -71,7 +71,7 @@ if server_url
               :server_url => server_url,
               :opath      => node.ohai.plugin_path,
               :odisable   => node.ohai.disabled_plugins,
-              :syslog     => node.sys.chef.use_syslog
+              :syslog     => node.sys.chef.use_syslog,
               :log_level  => node.sys.chef.log_level
               )
     notifies :restart, "service[chef-client]"
