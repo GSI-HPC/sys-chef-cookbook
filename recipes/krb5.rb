@@ -42,15 +42,14 @@ unless node.sys.krb5.empty?
   # use a secret or manual distribution of keytabs
   if node.sys.krb5.distribution == "secret"
     Chef::Log.info("search for node #{node.sys.krb5.master}")
+
     class Chef::Recipe
       include Sys::Secret
     end
 
     kdc_node = search(:node, "fqdn:#{node.sys.krb5.master}")[0]
-
-    # if kdc_node.krb5.keytabs.has_key?("#{node.name.split('.')[0]}_host")
     unless kdc_node.nil?
-      node.sys.krb5.keys.each do |kh|
+      node.sys.krb5.keytab_config.each do |kh|
         key = kh["key"]
         owner = kh["owner"] || "root"
         group = kh["group"] || "root"
