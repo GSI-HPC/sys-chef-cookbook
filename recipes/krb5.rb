@@ -38,4 +38,35 @@ unless node.sys.krb5.empty?
       :domain => node.domain
     )
   end
+
+  # use a secret or manual distribution of keytabs
+  if node.sys.krb5.distribution == "secret"
+    Chef::Log.info("search for node #{node.sys.krb5.master}")
+    class Chef::Recipe
+      include Sys::Secret
+    end
+
+    kdc_node = search(:node, "fqdn:#{node.sys.krb5.master}")[0]
+
+    # if kdc_node.krb5.keytabs.has_key?("#{node.name.split('.')[0]}_host")
+    unless kdc_node.nil?
+      node.sys.krb5.keys.each do |kh|
+        key = kh["key"]
+        owner = kh["owner"] || "root"
+        group = kh["group"] || "root"
+        mode = kh["mode"] || "0600"
+        place = kh["place"] || "/etc/#{key}.keytab"
+        if kdc_node.krb5.keytabs.has_key?("#{key}_#{node.fqdn}")
+          kt = decrypt(kdc_node.krb5.keytabs["#{key}_#{node.fqdn}"])
+          template "#{place}" do
+            source "etc_keytab_generic.erb"
+            owner owner
+            group group
+            mode mode
+            variables :keytab => kt
+          end
+        end
+      end
+    end
+  end
 end
