@@ -1,7 +1,9 @@
-# /etc/auto.master.d/<%= @path %>.autofs
+# /etc/auto.master
 #
 # DO NOT CHANGE THIS FILE MANUALLY!
 #
 # This file is managed by the Chef `sys::autofs` cookbook.
 
-<%= @path %> <%= @map %> <%= @options %>
+<% @maps.each_pair do |path, conf| -%>
+<%= path %> <%= conf[:map] %> <%= conf[:options] %>
+<% end -%>
