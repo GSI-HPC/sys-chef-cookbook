@@ -19,6 +19,8 @@
 
 unless node.sys.nis.servers.empty?
 
+  node.default[:ohai][:disabled_plugins] << 'passwd'
+
   package 'nis'
 
   if node.sys.nis.domain.empty?
