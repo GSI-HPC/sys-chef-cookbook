@@ -6,7 +6,7 @@
 #
 
 <% @config.each do |key,value| %>
-<% if value.kind_of?(Array)
+<% if value.kind_of?(Array) %>
 <% value.each do |v| %>
 <%= key %> <%= v %>
 <% end %>
