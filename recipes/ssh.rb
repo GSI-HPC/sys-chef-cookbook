@@ -25,7 +25,7 @@ sshd_config = {
     "/etc/ssh/ssh_host_rsa_key",
     "/etc/ssh/ssh_host_dsa_key",
     "/etc/ssh/ssh_host_ecdsa_key"
-  ]
+  ],
   "UsePrivilegeSeparation" => "yes",
   "KeyRegenerationInterval" => "3600",
   "ServerKeyBits" => "768",
