@@ -18,8 +18,10 @@
 #
 
 # the order of recipes matters!
-%w(apt serial boot cgroups control sudo time
-network nsswitch nis hosts
-resolv mail fuse pam ssh banner tmp autofs ).each do |recipe|
+%w(
+   apt serial boot cgroups control accounts sudo 
+   time network nsswitch nis hosts resolv mail 
+   fuse pam ssh banner tmp autofs 
+).each do |recipe|
   include_recipe "sys::#{recipe}"
 end
