@@ -23,7 +23,7 @@ unless node.sys.autofs.maps.empty?
 
   template '/etc/auto.master' do
     source 'etc_auto.master.erb'
-    variables (
+    variables(
       :maps => node.sys.autofs.maps
     )
     notifies :reload, 'service[autofs]'
