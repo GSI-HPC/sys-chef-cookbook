@@ -24,7 +24,7 @@ action :add do
   end
   cookbook_file "#{path}/#{new_resource.name}" do
     source new_resource.source
-    mode 644
+    mode '0644'
     notifies :run, 'execute[update-ca-certificates]'
   end
 end
