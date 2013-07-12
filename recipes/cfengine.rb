@@ -23,7 +23,7 @@
 
 if node[:sys][:cfengine]
 
-  package cfengine2
+  package 'cfengine2'
 
   cookbook_file '/etc/cfengine/update.conf' do
     source 'etc_cfengine_update.conf'
@@ -31,6 +31,6 @@ if node[:sys][:cfengine]
     action :create_if_missing
   end
 
-  service cfengine2
+  service 'cfengine2'
 
 end
