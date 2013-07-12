@@ -51,7 +51,7 @@ The "sys" cookbook can be added to a nodes run-list anytime. **By default the co
 * [NIS](documents/nis.md) – Connect to local NIS servers by configuring `/etc/yp.conf`.
 * [LDAP](documents/ldap.md) – Connect to a local LDAP account management (authorization) by configuring `/etc/ldap/ldap.conf`.
 * [Kerberos](documents/krb5.md) – Use Kerberos to manage credential security (authentication).
-* [TCP Wrapper](documents/hosts.md) – Local `/etc/hosts.allow` and `/etc/hosts.deny` configuration.
+* [TCP Wrapper](documents/hosts.md) – Local `/etc/hosts`, `/etc/hosts.allow`, and `/etc/hosts.deny` configuration.
 * [DNS Resolution](documents/resolv.md) – Adjust `/etc/resolve.conf` to lookup at your site DNS server.
 * [Mail Relay](documents/mail.md) – Forward mails to an mail relay with Postfix. 
 * [PAM](documents/pam.md) – Configure the authentication modules in `/etc/pam.d/`.
