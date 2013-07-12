@@ -17,10 +17,18 @@
 # limitations under the License.
 #
 
+unless node.sys.hosts.file.empty?
+  template '/etc/hosts' do
+    source 'etc_hosts.erb'
+    mode '0664'
+    variables( :addresses => node.sys.hosts.file )
+  end
+end
+
 unless node.sys.hosts.allow.empty?
   template '/etc/hosts.allow' do
     source 'etc_hosts.allow.erb'
-    mode 0644
+    mode '0644'
     variables( :rules => node.sys.hosts.allow )
   end
 end
@@ -28,7 +36,7 @@ end
 unless node.sys.hosts.deny.empty?
   template '/etc/hosts.deny' do
     source 'etc_hosts.deny.erb'
-    mode 0644
+    mode '0644'
     variables( :rules => node.sys.hosts.deny )
   end
 end
