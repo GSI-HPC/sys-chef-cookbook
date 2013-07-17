@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-unless node.sys.krb5.empty?
+if node.sys.krb5
   %w(
     heimdal-clients
     libpam-heimdal
