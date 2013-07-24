@@ -49,13 +49,14 @@ if node.sys.krb5
 
     kdc_node = search(:node, "fqdn:#{node.sys.krb5.master}")[0]
     if kdc_node
-      if node.sys.krb5.keytab_config
+      if node.sys.krb5.has_key?(:"keytab_config")
         node.sys.krb5.keytab_config.each do |kh|
           key = kh["keytab"]
           owner = kh["owner"] || "root"
           group = kh["group"] || "root"
           mode = kh["mode"] || "0600"
           place = kh["place"] || "/etc/#{key}.keytab"
+          Chef::Log.info "Put keytab #{key} to place #{place}"
           if kdc_node.krb5.keytabs.has_key?("#{key}_#{node.fqdn}")
             kt = decrypt(kdc_node.krb5.keytabs["#{key}_#{node.fqdn}"])
             template "#{place}" do
