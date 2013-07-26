@@ -184,3 +184,60 @@ Alternatively use attributes in `node.sys.apt.repositories` to configure, e.g.:
         }
       }
     }
+
+# Keys
+
+Manage APT keys.
+
+**Actions**
+
+* `add` (default) adds a new key to the keyring.
+* `remove` deletes a key from the keyring.
+
+**Attributes:**
+
+* `key` (name attribute) is the filename used for the configuration.
+
+**Example**
+
+Remove a key by key id and add another key:
+
+    sys_apt_key "65FFB764" do
+      action :remove
+    end
+    
+    sys_apt_key <<EOF
+    -----BEGIN PGP PUBLIC KEY BLOCK-----
+    Version: GnuPG v1.4.9 (GNU/Linux)
+    
+    mQGiBEtwDoURBACtcaK80IOtBaLtvJvwUYDy2gVD5W05vfx9fSSil8hZDpDL4ZMn
+    [...SNIP...]
+    EQIACQUCS3AOhQIbDAAKCRAkSsogoCBqzNN3AJ9Hvc+p2JXd6RhdqK61UZO4A37c
+    DACcCQ6b+3LKKrdlfy5xAQ/BYVdAxeA=
+    =GI6g
+    -----END PGP PUBLIC KEY BLOCK-----
+    EOF
+
+Alternatively use attributes in `node.sys.apt.keys`, e.g.:
+
+    "sys" => {
+      "apt" => {
+        [...SNIP...]
+        "keys" => {
+          "add" => [ <<EOF
+    -----BEGIN PGP PUBLIC KEY BLOCK-----
+    Version: GnuPG v1.4.9 (GNU/Linux)
+    
+    mQGiBEtwDoURBACtcaK80IOtBaLtvJvwUYDy2gVD5W05vfx9fSSil8hZDpDL4ZMn
+    [...SNIP...]
+    EQIACQUCS3AOhQIbDAAKCRAkSsogoCBqzNN3AJ9Hvc+p2JXd6RhdqK61UZO4A37c
+    DACcCQ6b+3LKKrdlfy5xAQ/BYVdAxeA=
+    =GI6g
+    -----END PGP PUBLIC KEY BLOCK-----
+    EOF   ],
+          "remove" => [ "65FFB764" ]
+        }
+      }
+    }
+
+Keys are removed first and added afterwards.
