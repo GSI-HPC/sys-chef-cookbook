@@ -194,7 +194,7 @@ Manage APT keys.
 * `add` (default) adds a new key to the keyring.
 * `remove` deletes a key from the keyring.
 
-**Attributes:**
+**Attributes**
 
 * `key` (name attribute) is the filename used for the configuration.
 
