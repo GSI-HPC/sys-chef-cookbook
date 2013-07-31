@@ -27,5 +27,6 @@ action :remove do
 
   execute "Remove APT repository key #{keyid}" do
     command "apt-key del #{keyid}"
+    ignore_failure true # If the key does not exist, it should not break the chef run
   end
 end
