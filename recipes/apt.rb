@@ -69,3 +69,18 @@ unless node.sys.apt.repositories.empty?
   end
 end
 
+# Manage APT keys
+# Remove keys specified via attributes first
+unless node.sys.apt[:keys].remove.empty?
+  node.sys.apt[:keys].remove.each do |key|
+    sys_apt_key key do
+      action :remove
+    end
+  end
+end
+# Then add new keys from attributes
+unless node.sys.apt[:keys].add.empty?
+  node.sys.apt[:keys].add.each do |key|
+    sys_apt_key key
+  end
+end
