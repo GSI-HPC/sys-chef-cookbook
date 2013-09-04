@@ -65,6 +65,7 @@ if node.sys.krb5
               group group
               mode mode
               variables :keytab => kt
+              only_if "getent passwd #{owner} && getent group #{group}"
             end
           end
         end
