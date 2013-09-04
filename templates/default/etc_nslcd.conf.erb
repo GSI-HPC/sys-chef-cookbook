@@ -21,6 +21,6 @@ scope sub
 
 sasl_mech GSSAPI
 sasl_realm <%= @realm %>
-sasl_authcid nslcd@<%= @realm %>
-sasl_authzid u:nslcd
+sasl_authcid nslcd/<%= node.fqdn %>@<%= @realm %>
+sasl_authzid u:nslcd/<%= node.fqdn %>
 krb5_ccname /tmp/krb5_nslcd
