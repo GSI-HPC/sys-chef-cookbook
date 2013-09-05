@@ -13,6 +13,9 @@ gid nslcd
 URI ldap://<%= server %>
 <% end -%>
 
+# give up after 10 seconds
+timelimit 10
+
 # The search base that will be used for all queries.
 base <%= @searchbase -%>
 
