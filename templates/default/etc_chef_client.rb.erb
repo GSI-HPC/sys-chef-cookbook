@@ -4,6 +4,10 @@
 #
 # This file is managed by the Chef `sys` cookbook.
 
+chef_server_url  '<%= @server_url %>'
+client_key       "/etc/chef/client.pem"
+node_name        '<%= node.fqdn %>'
+
 log_level        <%= @log_level %>
 <% if @use_syslog -%>
 log_location     SyslogLogger.new("chef-client")
@@ -11,11 +15,8 @@ log_location     SyslogLogger.new("chef-client")
 log_location     STDOUT
 <% end -%>
 
-chef_server_url  '<%= @server_url %>'
-
 validation_client_name "chef-validator"
 validation_key   "/etc/chef/validation.pem"
-client_key       "/etc/chef/client.pem"
 
 file_backup_path "/var/backups/chef"
 file_cache_path  "/var/cache/chef"
