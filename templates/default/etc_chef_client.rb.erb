@@ -9,11 +9,7 @@ client_key       "/etc/chef/client.pem"
 node_name        '<%= node.fqdn %>'
 
 log_level        <%= @log_level %>
-<% if @use_syslog -%>
-log_location     SyslogLogger.new("chef-client")
-<% else -%>
-log_location     STDOUT
-<% end -%>
+log_location     <%= @use_syslog?'SyslogLogger.new("chef-client")':'STDOUT' %>
 
 validation_client_name "chef-validator"
 validation_key   "/etc/chef/validation.pem"
@@ -24,4 +20,4 @@ pid_file         "/var/run/chef/chef-client.pid"
 
 # configuration for Ohai:
 Ohai::Config[:disabled_plugins] = [ "<%= @odisable.join('","')%>" ]
-Ohai::Config[:plugin_path]     << "<%= @opath %>" 
+Ohai::Config[:plugin_path]      << "<%= @opath %>"
