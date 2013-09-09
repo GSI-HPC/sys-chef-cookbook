@@ -64,7 +64,6 @@ if server_url
 
   # compile attributes for the client.rb template:
   v              = node[:sys][:chef].to_hash
-  log(v) { level :info }
   v[:server_url] = server_url
   v[:opath]      = node[:ohai][:plugin_path]
   v[:odisable]   = node[:ohai][:disabled_plugins].clone || [ ]
