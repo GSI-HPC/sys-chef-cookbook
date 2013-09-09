@@ -61,19 +61,21 @@ end
 
 # configuring the chef client only makes sense if the server is defined:
 if server_url
-  
+
+  # compile attributes for the client.rb template:
+  v              = node[:sys][:chef].to_hash
+  log(v) { level :info }
+  v[:server_url] = server_url
+  v[:opath]      = node[:ohai][:plugin_path]
+  v[:odisable]   = node[:ohai][:disabled_plugins].clone || [ ]
+
   template '/etc/chef/client.rb' do
     source 'etc_chef_client.rb.erb'
     owner 'root'
     group 'root'
     mode 0644
-    variables(
-              :server_url => server_url,
-              :opath      => node.ohai.plugin_path,
-              :odisable   => node.ohai.disabled_plugins,
-              :syslog     => node.sys.chef.use_syslog,
-              :log_level  => node.sys.chef.log_level
-              )
+    variables v
+
     notifies :restart, "service[chef-client]"
   end
 else
@@ -93,6 +95,13 @@ file node.sys.chef.validation_key do
   only_if do ::File.exists? node.sys.chef.client_key end
 end
 #end
+
+# make the client key readable for the adm group
+#  (so its members can use 'knife .. -c /etc/chef/client.pem')
+file node.sys.chef.client_key do
+  group 'adm'
+  mode 0640
+end
 
 # Create a script in cron.hourly to make sure chef-client keeps running
 #cookbook_file "/etc/cron.hourly/chef-client-service" do
