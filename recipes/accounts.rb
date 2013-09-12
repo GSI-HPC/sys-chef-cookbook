@@ -21,11 +21,22 @@ unless node.sys.accounts.empty?
 
   package 'ruby-shadow'
 
+  node[:sys][:groups].each do |name,grp|
+    group name do
+      gid    grp[:gid]    if grp.has_key?[:gid]
+      system grp[:system] or false
+    end
+  end
+
   node.sys.accounts.each do |name,account|
 
     # check if the given group exists, gid could be numeric or string:
+    #  additionally the group might not exist but was maybe just created:
     if account.has_key?(:gid) and not
-        (node.etc.group.has_key?(account[:gid]) or node[:etc][:group].values.detect { |e| e[:gid] == account[:gid] })
+        (node.etc.group.has_key?(account[:gid])
+         or node[:etc][:group].values.detect { |e| e[:gid] == account[:gid] }) and not
+        (node[:sys][:groups].has_key?(account[:gid])
+         or node[:sys][:groups].values.detect { |e| e[:gid] == account[:gid] })
 
       log("The given group '#{account[:gid]}' does not exist - creation of user '#{name}' skipped"){ level :error }
 
