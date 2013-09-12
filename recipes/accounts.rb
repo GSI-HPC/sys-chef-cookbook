@@ -22,8 +22,9 @@ unless node.sys.accounts.empty?
   package 'ruby-shadow'
 
   node[:sys][:groups].each do |name,grp|
+    log("Creating the group '#{name}': #{grp}"){ level :debug }
     group name do
-      gid    grp[:gid]    if grp.has_key?[:gid]
+      gid    grp[:gid]    if grp.has_key?(:gid)
       system grp[:system] or false
     end
   end
