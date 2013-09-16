@@ -36,7 +36,10 @@ if platform_family.eql?('debian')
   debian['packages'] = JSON.parse('{' + `dpkg-query -W -f='"${Package}": {"version":"${Version}", "status":"${Status}"}\n'`.split("\n").join(',') + '}')
   
   # figure out the debian architecture (not neccessarily equal to node.kernel.machine!)
-  debian["architecture"] = `dpkg --print-architecture`.chomp
+  debian["architecture"]          = `dpkg --print-architecture`.chomp
+  # list of enabled multiarch architectures (eg. i386 on amd64):
+  debian["foreign_architectures"] = `dpkg  --print-foreign-architectures`.split("\n")
+
+  # this is already provided by the LSB plugin:
   debian["codename"]     = `lsb_release -cs`.chomp
-  
 end
