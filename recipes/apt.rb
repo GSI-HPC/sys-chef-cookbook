@@ -69,3 +69,4 @@ unless node.sys.apt.repositories.empty?
   end
 end
 
+package 'apt-file'
