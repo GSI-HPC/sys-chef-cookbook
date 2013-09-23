@@ -17,7 +17,7 @@
 action :add do
   newkey = new_resource.key
 
-  execute "Adding APT repository key #{newkey}" do
+  execute "Adding APT repository key" do
     command "echo '#{newkey}' | apt-key add -"
   end
 end
@@ -25,7 +25,7 @@ end
 action :remove do
   keyid = new_resource.key
 
-  execute "Remove APT repository key #{keyid}" do
+  execute "Remove APT repository key" do
     command "apt-key del #{keyid}"
     ignore_failure true # If the key does not exist, it should not break the chef run
   end
