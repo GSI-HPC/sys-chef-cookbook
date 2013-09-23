@@ -18,15 +18,23 @@ define :sys_ssh_authorize, :keys => Array.new, :managed => false do
   account = params[:name]
   begin
     # does the user exists?  
-    if node.etc.passwd.has_key? account
+    if node.etc.passwd.has_key?(account) or node[:sys][:accounts].has_key?(account)
       if params[:keys].empty?
-        log("Can't deploy SSH key: key(s) missing for account [#{account}]") { level :warn }
+        raise "key(s) missing for account [#{account}]"
       else
-        # path to the user SSH configuration
-        dot_ssh = "#{node.etc.passwd[account].dir}/.ssh"
+        if node[:etc][:passwd].has_key?(account)
+          # path to the user SSH configuration
+          dot_ssh = "#{node.etc.passwd[account].dir}/.ssh"
+          gid     = node.etc.passwd[account].gid
+        elsif node[:sys][:accounts].has_key?(account)
+          dot_ssh = "#{node[:sys][:accounts][account][:home]}/.ssh"
+          gid     = node[:sys][:accounts][account][:gid]
+        else
+          raise "#{account} has no home dir"
+        end
         directory dot_ssh do
           owner account
-          group node.etc.passwd[account].gid
+          group gid if gid
           mode 0700
         end
         # path to the user keys file
@@ -50,14 +58,14 @@ define :sys_ssh_authorize, :keys => Array.new, :managed => false do
         #the file needs to have right ownership and permissions
         file authorized_keys do
           owner account
-          group node.etc.passwd[account].gid
+          group gid if gid
           mode 0644
         end
       end
     else
     log("Can't deploy SSH keys: account [#{account}] missing") { level :warn }
     end
-  rescue ArgumentError => e
-    log("Can't deploy SSH keys: " + e.to_s) { level :warn }
+  rescue Exception => e
+    log("Can't deploy SSH keys: " + e.to_s) { level :error }
   end
 end
