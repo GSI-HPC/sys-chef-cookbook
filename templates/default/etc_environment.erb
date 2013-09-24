@@ -5,6 +5,6 @@
 # This file is managed by the Chef `sys` cookbook.
   
 <% node[:sys][:env].each_pair do |key,value| %>
-% raise "Whitespace in environment variable name" if key =~ /\s/
+<% raise "Whitespace in environment variable name" if key =~ /\s/ %>
 <%= key %>="<%= value %>"
 <% end %>
