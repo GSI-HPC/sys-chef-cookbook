@@ -21,7 +21,7 @@ unless node.sys.resolv.servers.empty?
 
   template '/etc/resolv.conf' do
     source 'etc_resolv.conf.erb'
-    mode 644
+    mode 0644
     variables(
       :servers => node.sys.resolv.servers,
       :domain => node.sys.resolv.domain,
