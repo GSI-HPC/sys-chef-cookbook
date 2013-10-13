@@ -19,17 +19,17 @@
 
 unless node.sys.nis.servers.empty?
 
+  node.default[:ohai][:disabled_plugins] << 'passwd'
+
   package 'nis'
 
   if node.sys.nis.domain.empty?
     node.default[:sys][:nis][:domain] = node.domain
   else
-    template '/etc/defaultdomain' do
-      source 'etc_generic.erb'
-      variables(
-        :file_name => '/etc/defaultdomain',
-        :content => node.sys.nis.domain << "\n"
-      )
+    # we don't use a template here because this file must only contain
+    #  the NIS domain on a single line - and no comments
+    file '/etc/defaultdomain' do
+      content node.sys.nis.domain << "\n"
     end
   end
 
@@ -43,6 +43,7 @@ unless node.sys.nis.servers.empty?
   end
 
   service 'nis' do
+    action [ :enable, :start ]
     supports :restart => true
   end
 

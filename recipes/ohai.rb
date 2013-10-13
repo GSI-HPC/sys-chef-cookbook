@@ -1,8 +1,8 @@
 #
-# Cookbook Name:: sys
-# Recipe:: resolv
+# Cookbook Name:: ohai
+# Recipe:: default
 #
-# Copyright 2012, Victor Penso
+# Copyright 2010, Opscode, Inc
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,16 +17,14 @@
 # limitations under the License.
 #
 
-unless node.sys.resolv.servers.empty?
+Ohai::Config[:plugin_path] << node['ohai']['plugin_path']
+Chef::Log.info("ohai plugins will be at: #{node['ohai']['plugin_path']}")
 
-  template '/etc/resolv.conf' do
-    source 'etc_resolv.conf.erb'
-    mode 0644
-    variables(
-      :servers => node.sys.resolv.servers,
-      :domain => node.sys.resolv.domain,
-      :search => node.sys.resolv.search
-    )
-  end
-
+# Copy plugins into the plugin directory
+remote_directory node['ohai']['plugin_path'] do
+  source 'ohai_plugins'
+  owner 'root'
+  group 'root'
+  mode 0755
+  action :create
 end

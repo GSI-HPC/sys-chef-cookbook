@@ -1,0 +1,23 @@
+# <%= @file_name %>
+#
+# DO NOT CHANGE THIS FILE MANUALLY!
+#
+# This file is managed by the Chef `sys` cookbook.
+
+chef_server_url  '<%= @server_url %>'
+client_key       "<%= @client_key %>"
+node_name        '<%= node.fqdn %>'
+
+log_level        <%= @log_level %>
+log_location     <%= @use_syslog?'SyslogLogger.new("chef-client")':'STDOUT' %>
+
+validation_client_name "chef-validator"
+validation_key   "<%= @validation_key %>"
+
+file_backup_path "/var/backups/chef"
+file_cache_path  "/var/cache/chef"
+pid_file         "/var/run/chef/chef-client.pid"
+
+# configuration for Ohai:
+Ohai::Config[:disabled_plugins] = [ "<%= @odisable.join('","')%>" ]
+Ohai::Config[:plugin_path]      << "<%= @opath %>"

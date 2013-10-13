@@ -1,8 +1,5 @@
 #
-# Cookbook Name:: sys
-# Recipe:: resolv
-#
-# Copyright 2012, Victor Penso
+# Copyright 2013, Dennis Klein
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,16 +14,19 @@
 # limitations under the License.
 #
 
-unless node.sys.resolv.servers.empty?
+action :add do
+  newkey = new_resource.key
 
-  template '/etc/resolv.conf' do
-    source 'etc_resolv.conf.erb'
-    mode 0644
-    variables(
-      :servers => node.sys.resolv.servers,
-      :domain => node.sys.resolv.domain,
-      :search => node.sys.resolv.search
-    )
+  execute "Adding APT repository key" do
+    command "echo '#{newkey}' | apt-key add -"
   end
+end
 
+action :remove do
+  keyid = new_resource.key
+
+  execute "Remove APT repository key" do
+    command "apt-key del #{keyid}"
+    ignore_failure true # If the key does not exist, it should not break the chef run
+  end
 end
