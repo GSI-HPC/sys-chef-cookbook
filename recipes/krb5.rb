@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-unless node.sys.krb5.empty?
+if node.sys.krb5
   %w(
     heimdal-clients
     libpam-heimdal
@@ -37,5 +37,39 @@ unless node.sys.krb5.empty?
       :servers => [ node.sys.krb5.master, node.sys.krb5.slave ],
       :domain => node.domain
     )
+  end
+
+  # use a secret or manual distribution of keytabs
+  if node.sys.krb5.distribution == "secret"
+    Chef::Log.info("search for node #{node.sys.krb5.master}")
+
+    class Chef::Recipe
+      include Sys::Secret
+    end
+
+    kdc_node = search(:node, "fqdn:#{node.sys.krb5.master}")[0]
+    if kdc_node
+      if node.sys.krb5.has_key?(:"keytab_config")
+        node.sys.krb5.keytab_config.each do |kh|
+          key = kh["keytab"]
+          owner = kh["owner"] || "root"
+          group = kh["group"] || "root"
+          mode = kh["mode"] || "0600"
+          place = kh["place"] || "/etc/#{key}.keytab"
+          Chef::Log.info "Put keytab #{key} to place #{place}"
+          if kdc_node.krb5.keytabs.has_key?("#{key}_#{node.fqdn}")
+            kt = decrypt(kdc_node.krb5.keytabs["#{key}_#{node.fqdn}"])
+            template "#{place}" do
+              source "etc_keytab_generic.erb"
+              owner owner
+              group group
+              mode mode
+              variables :keytab => kt
+              only_if "getent passwd #{owner} && getent group #{group}"
+            end
+          end
+        end
+      end
+    end
   end
 end

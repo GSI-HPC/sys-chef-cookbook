@@ -1,8 +1,8 @@
 #
 # Cookbook Name:: sys
-# Recipe:: resolv
+# Recipe:: env
 #
-# Copyright 2012, Victor Penso
+# Copyright 2013 Christopher Huhn, GSI
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,16 +17,13 @@
 # limitations under the License.
 #
 
-unless node.sys.resolv.servers.empty?
+unless node.sys.env.empty?
 
-  template '/etc/resolv.conf' do
-    source 'etc_resolv.conf.erb'
-    mode 0644
-    variables(
-      :servers => node.sys.resolv.servers,
-      :domain => node.sys.resolv.domain,
-      :search => node.sys.resolv.search
-    )
+  # fill the /etc/environment file:
+  template '/etc/environment' do
+    source 'etc_environment.erb'
+    owner 'root'
+    group 'root'
+    mode 0644    
   end
-
 end

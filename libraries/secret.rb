@@ -51,7 +51,7 @@ module Sys
     def decrypt(secretArray)
       # get private key
       private_key = OpenSSL::PKey::RSA.new(File.read('/etc/chef/client.pem'))
-      Chef::Log.warn("secret array: #{secretArray}")
+      Chef::Log.debug("secret array: #{secretArray}")
       unless secretArray.nil?
         # decrypt symmetric key
         iv_plain = private_key.private_decrypt(Base64.decode64(secretArray[0]))
