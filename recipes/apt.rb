@@ -17,21 +17,10 @@
 # limitations under the License.
 #
 
-apt_update = "apt-get -qq update"
-execute apt_update do
-  action :nothing
-end
-
-# Default APT source file
-
-unless node.sys.apt.sources.empty?
-  template "/etc/apt/sources.list" do
-    source "etc_apt_sources.list.erb"
-    mode 644
-    variables :config => node.sys.apt.sources.gsub(/^ */,'')
-    notifies :run, "execute[#{apt_update}]", :immediately
-  end
-end
+#apt_update = "apt-get -qq update"
+#execute apt_update do
+#  action :nothing
+#end
 
 # APT configuration
 
@@ -43,46 +32,25 @@ unless node.sys.apt.config.empty?
   end
 end
 
+include_recipe 'apt'
 
-unless node.sys.apt.preferences.empty?
-  node.sys.apt.preferences.each do |name,pref|
-    if pref.empty?
-      sys_apt_preference name do
-        action :remove
-      end
-      next
-    end
-    pref[:package] = '*' unless pref.has_key? 'package'
-    sys_apt_preference name do
-      package pref[:package]
-      pin pref[:pin]
-      priority pref[:priority]
-    end
-  end
-end
+node[:sys][:apt][:srcs].each_pair do | name, repo |
+  
+  # skip unless explicitely enabled:
+  next unless node[:sys][:apt][:active_sources].include?(name)
+  
+  apt_repository name do
 
-unless node.sys.apt.repositories.empty?
-  node.sys.apt.repositories.each do |name,conf|
-    sys_apt_repository name do
-      config conf
-    end
+    method = repo[:method] || 'http'
+    server = repo[:server] || node[:sys][:apt][:default_server] || 'ftp.debian.org'
+    path   = repo[:path]   || node[:sys][:apt][:default_path]   || 'ftp.debian.org''/debian'
+    uri method + '://' + server + path
+    distribution repo[:distrib] || node[:lsb][:codename]
+    components repo[:components] || %w{main contrib non-free}
+    deb_src true unless repo[:no_sources]
+    # key ... - not yet implemented
   end
-end
 
-# Manage APT keys
-# Remove keys specified via attributes first
-unless node.sys.apt[:keys].remove.empty?
-  node.sys.apt[:keys].remove.each do |key|
-    sys_apt_key key do
-      action :remove
-    end
-  end
-end
-# Then add new keys from attributes
-unless node.sys.apt[:keys].add.empty?
-  node.sys.apt[:keys].add.each do |key|
-    sys_apt_key key
-  end
 end
 
 # add multiarch support if desired:
@@ -90,7 +58,7 @@ end
 execute 'dpkg --add-architecture i386' do   
   only_if { node[:sys][:apt][:multiarch] and node[:debian][:architecture] == 'amd64' }
   not_if  { node[:debian][:foreign_architectures].include?('i386') }
-  notifies :run, "execute[#{apt_update}]", :immediately
+  notifies :run, "execute[apt-get update]", :immediately
 end
 
 package 'apt-file'
