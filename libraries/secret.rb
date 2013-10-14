@@ -2,7 +2,7 @@ require 'openssl'
 require 'base64'
 
 module Sys
-  
+
   module Secret
 
     def get_api_client_pub_key(clientname)
@@ -16,7 +16,7 @@ module Sys
         return OpenSSL::PKey::RSA.new(client[0].public_key)
       end
     end
-  
+
     def encrypt(plaintext,clientname)
       # choose a cipher
       cipher = OpenSSL::Cipher::Cipher.new 'AES-256-CFB'
@@ -43,7 +43,7 @@ module Sys
         return nil
       end
     end
-  
+
     # secretArray contains the ciphertext, and the AES-Key encrypted by the RSA-public-key of the client
     # secretArray[0]: encrypted initialization vector
     # secretArray[1]: encrypted key
@@ -70,6 +70,7 @@ module Sys
         return decipher.update(secret_enc) + decipher.final
       else
         Chef::Log.info("secretArray was empty")
+        return nil
       end
     end
 
