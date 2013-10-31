@@ -65,7 +65,8 @@ unless node.sys.ldap.empty?
     variables(
       :servers => node.sys.ldap.servers,
       :searchbase => node.sys.ldap.searchbase,
-      :realm => node.sys.ldap.realm.upcase
+      :realm => node.sys.ldap.realm.upcase,
+      :cacert => node.sys.ldap.cacert
     )
   end
 

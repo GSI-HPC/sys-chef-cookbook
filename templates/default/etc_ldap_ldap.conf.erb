@@ -13,3 +13,7 @@ URI <% @servers.each do |server| -%><%= "ldap://" + server %> <% end -%>
 
 SASL_MECH GSSAPI
 SASL_REALM <%= @realm %>
+
+<% if @cacert %>
+<%= "TLS_CACERT #{@cacert}"%>
+<% end %>
