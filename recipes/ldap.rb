@@ -66,7 +66,7 @@ unless node.sys.ldap.empty?
       :servers => node.sys.ldap.servers,
       :searchbase => node.sys.ldap.searchbase,
       :realm => node.sys.ldap.realm.upcase,
-      :cacert => node.sys.ldap.cacert
+      :cacert => begin node.sys.ldap.cacert rescue nil end
     )
   end
 
