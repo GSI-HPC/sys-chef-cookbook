@@ -28,3 +28,14 @@ remote_directory node['ohai']['plugin_path'] do
   mode 0755
   action :create
 end
+
+if node[:ohai][:update_pciids]
+  package 'pciutils'
+  
+  cron 'update-pciids' do
+    weekday 6
+    hour 12
+    command 'update-pciids -q'
+    only_if File.exists?('/usr/bin/update-pciids')
+  end
+end
