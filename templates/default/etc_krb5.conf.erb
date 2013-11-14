@@ -10,6 +10,7 @@
 	# Use heimdal-kcm as Ticket cache
 	# default_cc_type = KCM
 [appdefaults]
+	<%= "pkinit_anchors = #{@pkinit_anchor}" if @pkinit_anchor %>
 	default_realm = <%= @realm %>
 	forwardable = true
 	proxiable = false
@@ -19,7 +20,7 @@
 	forward = true
 [realms]
 	<%= @realm %> = {
-      	<% @servers.each do |kdc| %>
+	<% @servers.each do |kdc| %>
         kdc = <%= kdc %>
 	<% end -%>
 	admin_server = <%= @admin_server %>
