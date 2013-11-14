@@ -35,7 +35,8 @@ if node.sys.krb5
       :realm => node.sys.krb5.realm.upcase,
       :admin_server => node.sys.krb5.admin_server,
       :servers => [ node.sys.krb5.master, node.sys.krb5.slave ],
-      :domain => node.domain
+      :domain => node.domain,
+      :pkinit_anchor => begin node.sys.krb5.pkinit_anchor rescue nil end
     )
   end
 
