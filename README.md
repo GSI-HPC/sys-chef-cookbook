@@ -73,11 +73,11 @@ The `Sys::Secret` enables [transport of encrypted data between nodes](documents/
 
 # License
 
-Author:: Bastian Neuburger
-Author:: Christopher Huhn
-Author:: Dennis Klein
-Author:: Matthias Pausch
-Author:: Victor Penso
+Author:: Bastian Neuburger  
+Author:: Christopher Huhn  
+Author:: Dennis Klein  
+Author:: Matthias Pausch  
+Author:: Victor Penso  
 
 Copyright:: 2012-2013, GSI HPC Department
 
