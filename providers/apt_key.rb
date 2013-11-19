@@ -1,5 +1,8 @@
 #
-# Copyright 2013, Dennis Klein
+# Author:: Dennis Klein
+# Author:: Victor Penso
+#
+# Copyright:: 2013, GSI HPC department
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -18,15 +21,15 @@ action :add do
   newkey = new_resource.key
 
   execute "Adding APT repository key" do
-    command "echo '#{newkey}' | apt-key add -"
+    command "echo '#{newkey}' | apt-key add - >/dev/null" 
   end
 end
 
 action :remove do
   keyid = new_resource.key
-
-  execute "Remove APT repository key" do
-    command "apt-key del #{keyid}"
-    ignore_failure true # If the key does not exist, it should not break the chef run
+  execute "Remove APT repository key [#{keyid}]" do
+    command "apt-key del #{keyid} >/dev/null"
+    only_if "apt-key list | grep #{keyid} >/dev/null"
   end
 end
+
