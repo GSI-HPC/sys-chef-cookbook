@@ -36,6 +36,12 @@ default_attributes(
           deb-src http://ftp.de.debian.org/debian/ experimental main
         "
       },
+      "packages" => [
+        "build-essential",
+        "psutils",
+        "dnsutils",
+        "less"
+      ],
       "keys" => {
         "remove" => [ "A0206ACC" ],
         "add" => [ <<EOKEY
