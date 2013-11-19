@@ -2,7 +2,10 @@
 # Cookbook Name:: sys
 # Recipe:: apt
 #
-# Copyright 2013, Victor Penso
+# Author:: Dennis Klein
+# Author:: Victor Penso
+#
+# Copyright:: 2013, GSI HPC Department
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -82,6 +85,13 @@ end
 unless node.sys.apt[:keys].add.empty?
   node.sys.apt[:keys].add.each do |key|
     sys_apt_key key
+  end
+end
+
+# Install additional packages defined by attribute
+unless node.sys.apt.packages.empty?
+  node.sys.apt.packages.each do |pkg|
+    package pkg
   end
 end
 

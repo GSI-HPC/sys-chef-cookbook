@@ -48,7 +48,6 @@ Configure a couple APT specifics:
 Alternatively use attributes in the `node.sys.apt.config`, e.g.:
 
     "sys" => {
-      [...SNIP...]
       "apt" => {
         "config" => {
           "51retries" => {
@@ -61,9 +60,7 @@ Alternatively use attributes in the `node.sys.apt.config`, e.g.:
             "Unattended-Upgrade::MailOnlyOnError" => true
           }
         }
-        [...SNIP...]
-      }
-    } 
+        […]
 
 
 # Preferences
@@ -102,7 +99,6 @@ Defines precedents for the testing packages over unstable.
 
 Alternatively use attributes in the `node.sys.apt.preferences` to configure, e.g.:
 
-    [...SNIP...]
     "sys" => {
       "apt" => {
         "preferences" => {
@@ -121,7 +117,7 @@ Alternatively use attributes in the `node.sys.apt.preferences` to configure, e.g
           }
         }
       }
-      [...SNIP...]
+      […]
     }
 
 Leaving a key with an empty hash a value in the `node.sys.apt.preferences` will remove the corresponding configuration file if present.
@@ -136,7 +132,7 @@ Configure the main source repository in `/etc/apt/sources.list` using the attrib
           deb     http://debian.site.domain/debian wheezy main contrib
           deb-src http://debian.site.domain/debian wheezy main contrib
         ",
-        [...SNIP...]
+        […]
       }
     }
 
@@ -171,7 +167,7 @@ Alternatively use attributes in `node.sys.apt.repositories` to configure, e.g.:
 
     "sys" => {
       "apt" => {
-        [...SNIP...]
+        […]
         "repositories" => {
           "unstable" => "
             deb http://ftp.de.debian.org/debian/ unstable main
@@ -222,7 +218,7 @@ Alternatively use attributes in `node.sys.apt.keys`, e.g.:
 
     "sys" => {
       "apt" => {
-        [...SNIP...]
+        […]
         "keys" => {
           "add" => [ <<EOF
     -----BEGIN PGP PUBLIC KEY BLOCK-----
@@ -240,4 +236,23 @@ Alternatively use attributes in `node.sys.apt.keys`, e.g.:
       }
     }
 
-Keys are removed first and added afterwards.
+# Others
+
+Install a custom list of Debian packages using the attribute `node.sys.apt.packages`.
+
+
+    "sys" => {
+      "apt" => {
+         […]
+         "packages" => [
+            "build-essential",
+            "psutils",
+            "dnsutils",
+            "less"
+          ],
+    […]
+
+
+
+
+
