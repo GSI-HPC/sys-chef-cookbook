@@ -37,6 +37,7 @@ default_attributes(
         "
       },
       "keys" => {
+        "remove" => [ "A0206ACC" ],
         "add" => [ <<EOKEY
 -----BEGIN PGP PUBLIC KEY BLOCK-----
 Version: GnuPG v1.4.10 (GNU/Linux)
@@ -69,8 +70,7 @@ DACcCQ6b+3LKKrdlfy5xAQ/BYVdAxeA=
 =GI6g
 -----END PGP PUBLIC KEY BLOCK-----
 EOKEY
-        ],
-        "remove" => [ "A0206ACC" ]
+        ]
       }
     }
   }
