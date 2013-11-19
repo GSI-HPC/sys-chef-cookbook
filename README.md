@@ -73,7 +73,13 @@ The `Sys::Secret` enables [transport of encrypted data between nodes](documents/
 
 # License
 
-Copyright 2012-2013 Victor Penso
+Author:: Bastian Neuburger
+Author:: Christopher Huhn
+Author:: Dennis Klein
+Author:: Matthias Pausch
+Author:: Victor Penso
+
+Copyright:: 2012-2013, GSI HPC Department
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
 
