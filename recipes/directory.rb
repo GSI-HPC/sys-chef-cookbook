@@ -1,8 +1,11 @@
 #
 # Cookbook Name:: sys
-# Recipe:: default
+# Recipe:: directory
 #
-# Copyright 2012, Victor Penso
+# Author:: Dennis Klein
+# Author:: Victor Penso
+#
+# Copyright:: 2013, GSI HPC Department
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,11 +20,13 @@
 # limitations under the License.
 #
 
-# the order of recipes matters!
-%w(
-   apt directory serial boot cgroups control accounts sudo 
-   time network nsswitch nis hosts resolv mail 
-   fuse pam ssh banner tmp autofs 
-).each do |recipe|
-  include_recipe "sys::#{recipe}"
+# Manage directories
+unless node.sys.directory.empty?
+  node.sys.directory.each do |name, dir|
+    directory name do
+      dir.each do |key, value|
+        send(key, value)
+      end
+    end
+  end
 end
