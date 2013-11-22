@@ -26,19 +26,23 @@ unless node.sys.pam.access.empty?
     variables :rules => node.sys.pam.access
   end
 
-  cookbook_file '/etc/pam.d/sshd' do
-    source 'etc_pam.d_sshd'
-    owner 'root'
-    group 'root'
-    mode 0644
-    only_if do ::File.exists? '/etc/ssh/sshd_config' end
+  unless node.sys.pamd.has_key?('sshd')
+    cookbook_file '/etc/pam.d/sshd' do
+      source 'etc_pam.d_sshd'
+      owner 'root'
+      group 'root'
+      mode 0644
+      only_if do ::File.exists? '/etc/ssh/sshd_config' end
+    end
   end
 
-  cookbook_file '/etc/pam.d/login' do
-    source 'etc_pam.d_login'
-    owner 'root'
-    group 'root'
-    mode 0644
+  unless node.sys.pamd.has_key?('login')
+    cookbook_file '/etc/pam.d/login' do
+      source 'etc_pam.d_login'
+      owner 'root'
+      group 'root'
+      mode 0644
+    end
   end
 end
 
