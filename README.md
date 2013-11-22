@@ -39,6 +39,7 @@ Cookbooks like `timezone`,`resolv` or `ntp` consist of a single recipe with a ha
 The "sys" cookbook can be added to a nodes run-list anytime. **By default the cookbook doesn't deploy or configures anything.** The individual recipes will be automatically applied when the corresponding attributes are defined or the `sys_*` resources are called.
 
 * [APT](documents/apt.md) – Configure APT in `/etc/apt/apt.conf.d/`, set APT preferences in `/etc/apt/preferences.d`, define package repositories in `/etc/apt/sources.list.d` and manage the APT keyring.
+* [Directories](documents/directory.md) – Provides an attribute interface to the directory resource.
 * [Control Groups](documents/cgroups.md) – Define `cgroups` in `/etc/cgconfig.conf` and load sub-systems.
 * [Serial Console](documents/serial.md) – Configure `/etc/inittab`.
 * [Boot Configuration](documents/boot.md) – Set Grub boot parameters in `/etc/default/grub`.
