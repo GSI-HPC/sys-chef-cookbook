@@ -1,0 +1,14 @@
+<?xml version="1.0" ?>
+<!--
+This files contains a single entry with multiple attributes tied to it.
+See autofs_ldap_auth.conf(5) for more information.
+-->
+
+<autofs_ldap_sasl_conf
+        usetls="no"
+        tlsrequired="no"
+        authrequired="yes"
+        authtype="GSSAPI"
+        clientprinc="autofsclient/<%= @principal %>@<%= @realm %>"
+        credentialcache="/tmp/krb5cc_autofs"
+/>

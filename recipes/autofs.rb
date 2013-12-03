@@ -40,3 +40,31 @@ unless node.sys.autofs.maps.empty?
   end
 
 end
+
+unless node.sys.autofs.ldap.empty?
+  package "autofs-ldap"
+  package "kstart"
+
+  template "/etc/autofs_ldap_auth.conf" do
+    source "etc_autofs_ldap_auth.conf.erb"
+    mode "0600"
+    variables({
+      :principal => node.fqdn,
+      :realm => node.sys.krb5.realm
+    })
+  end
+
+  template "/etc/default/autofs" do
+    source "etc_default_autofs.erb"
+    mode "0600"
+    variables({
+      :uris => node.sys.autofs.ldap.servers,
+      :searchbase => node.sys.autofs.ldap.searchbase
+    })
+  end
+
+  cookbook_file "/etc/init.d/autofs" do
+    source "etc_init.d_autofs"
+    mode "0755"
+  end
+end

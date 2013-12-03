@@ -1,0 +1,181 @@
+#! /bin/sh
+#
+
+### BEGIN INIT INFO
+# Provides: autofs
+# Required-Start: $network $remote_fs $syslog
+# Required-Stop: $network $remote_fs $syslog
+# Should-Start: ypbind nslcd slapd
+# Should-Stop: ypbind nslcd slapd
+# Default-Start: 2 3 4 5
+# Default-Stop: 0 1 6
+# Short-Description: Automounts filesystems on demand
+# Description: Automounts filesystems on demand
+### END INIT INFO
+
+# Location of the automount daemon and the init directory
+#
+PROG=automount
+DAEMON=/usr/sbin/$PROG
+NAME=autofs
+PIDFILE="/var/run/$NAME.pid"
+
+test -e $DAEMON || exit 0
+
+PATH=/sbin:/usr/sbin:/bin:/usr/bin
+export PATH
+
+. /lib/lsb/init-functions
+
+# default options for k5start
+K5START_BIN=/usr/bin/k5start
+K5START_DESC="Keep alive Kerberos ticket"
+K5START_PIDFILE=/var/run/${NAME}_k5start.pid
+K5START_USER=root
+K5START_GROUP=root
+K5START_MODE=600
+K5START_KEYTAB=/etc/autofs.keytab
+K5START_CCREFRESH=60
+K5START_PRINCIPAL="autofsclient/$(hostname -f)"
+K5START_CCFILE=/tmp/krb5cc_autofs
+K5START_START="yes"
+K5START_NAME="k5start_autofs"
+
+k5start_start()
+{
+  if [ "$K5START_START" = "yes" ]
+  then
+    log_daemon_msg "Starting $K5START_DESC" "k5start"
+    start-stop-daemon --start \
+                      --pidfile $K5START_PIDFILE \
+	              --name $K5START_NAME \
+                      --exec $K5START_BIN -- \
+                      -b -p $K5START_PIDFILE \
+                      -o $K5START_USER \
+                      -g $K5START_GROUP \
+                      -m $K5START_MODE \
+                      -f $K5START_KEYTAB \
+                      -K $K5START_CCREFRESH \
+                      -u $K5START_PRINCIPAL \
+                      -k $K5START_CCFILE
+    log_end_msg $?
+  fi
+}
+
+k5start_stop()
+{
+  if [ "$K5START_START" = "yes" ]
+  then
+    log_daemon_msg "Stopping $K5START_DESC" "k5start"
+    start-stop-daemon --stop --oknodo --pidfile $K5START_PIDFILE
+    log_end_msg $?
+    # remove any left behind files
+    [ -n "$K5START_PIDFILE" ] && rm -f $K5START_PIDFILE
+    [ -n "$K5START_CCFILE" ] && rm -f $K5START_CCFILE
+  fi
+}
+
+k5start_status()
+{
+  if [ "$K5START_START" = "yes" ]
+  then
+    status_of_proc -p "$K5START_PIDFILE" "$K5START_BIN" "k5start"
+  fi
+}
+
+#
+# load customized configuation settings
+#
+if [ -r /etc/default/autofs ]; then
+	. /etc/default/autofs
+fi
+
+start_stop_autofs() {
+	start-stop-daemon "$@" --pidfile $PIDFILE --exec $DAEMON -- \
+		$OPTIONS --pid-file $PIDFILE
+}
+
+start() {
+	log_action_begin_msg "Starting $PROG"
+
+	if ! grep -qw autofs /proc/filesystems
+	then
+		if ! modprobe autofs4 >/dev/null 2>&1
+		then
+			log_action_end_msg 1 "failed to load autofs4 module"
+			return 1
+		fi
+	elif [ -f /proc/modules ] && grep -q "^autofs[^4]" /proc/modules
+	then
+		log_action_end_msg 1 "autofs kernel module is loaded, autofs4 required"
+		return 1
+	fi
+
+	if ! start_stop_autofs --start --oknodo --quiet ; then
+		log_action_end_msg 1 "no valid automount entries defined."
+		return 1
+	fi
+	log_end_msg 0
+	return 0
+}
+
+stop() {
+	log_action_begin_msg "Stopping $PROG"
+	if ! start_stop_autofs --stop --retry 5 --oknodo --quiet ; then
+		log_action_end_msg 1
+		return 1
+	fi
+	log_end_msg 0
+	return 0
+}
+
+reload() {
+	log_action_begin_msg "Reloading $PROG maps"
+	if ! start_stop_autofs --stop --signal=HUP --quiet
+	then
+		log_action_end_msg 1 "$PROG not running"
+		return 1
+	fi
+	log_action_end_msg 0
+	return 0
+}
+
+forcestart() {
+	OPTIONS="$OPTIONS --force"
+	start
+}
+
+case "$1" in
+	start|forcestart)
+	        k5start_start
+		$1
+		;;
+        stop)
+	        $1
+                # stop k5start
+	        k5start_stop
+	        ;;
+        reload)
+                $1
+                ;;
+	restart|force-reload)
+		stop
+		k5start_stop
+		k5start_start
+		start
+		;;
+	forcerestart)
+		stop
+		k5start_stop
+		k5start_start
+		forcestart
+		;;
+	status)
+		status_of_proc -p $PIDFILE $DAEMON $PROG
+		k5start_status
+		;;
+	*)
+		echo "Usage: $0 {start|forcestart|stop|restart|forcerestart|reload|force-reload|status}"
+		exit 1
+		;;
+esac

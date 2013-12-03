@@ -1,0 +1,12 @@
+MASTER_MAP_NAME=/etc/auto.master
+TIMEOUT=300
+BROWSE_MODE="yes"
+LOGGING="none"
+LDAP_URI="<% @uris.each do |uri| -%><%= "ldap://" + uri + "/"%> <% end -%>"
+SEARCH_BASE="<%= @searchbase %>"
+MAP_OBJECT_CLASS="*"
+ENTRY_OBJECT_CLASS="automount"
+MAP_ATTRIBUTE="ou"
+ENTRY_ATTRIBUTE="cn"
+VALUE_ATTRIBUTE="automountInformation"
+AUTH_CONF_FILE="/etc/autofs_ldap_auth.conf"
