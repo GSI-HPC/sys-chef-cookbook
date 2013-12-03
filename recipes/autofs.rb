@@ -21,6 +21,12 @@ unless node.sys.autofs.maps.empty?
 
   package 'autofs'
 
+  node.sys.autofs.maps.each_key do |mountpoint|
+    directory mountpoint do
+      not_if { File.exists?(mountpoint) }
+    end
+  end
+
   template '/etc/auto.master' do
     source 'etc_auto.master.erb'
     variables(
