@@ -21,7 +21,7 @@ unless node.sys.nsswitch.empty?
 
   template "/etc/nsswitch.conf" do
     source "etc_nsswitch.conf.erb"
-    mode 644
+    mode '0644'
     variables :rules => node.sys.nsswitch.gsub(/^ */,'')
   end
 
