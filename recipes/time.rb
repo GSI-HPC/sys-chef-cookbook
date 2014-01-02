@@ -44,7 +44,6 @@ unless time_servers.empty?
 
   package 'ntpdate'
   package 'ntp'
-  service 'ntp'
 
   template '/etc/ntp.conf' do
     source 'etc_ntp.conf.erb'
@@ -52,4 +51,8 @@ unless time_servers.empty?
     notifies :restart, "service[ntp]"
   end
 
+  service 'ntp' do
+    action [:enable, :start]
+    supports :status => true, :restart => true
+  end
 end
