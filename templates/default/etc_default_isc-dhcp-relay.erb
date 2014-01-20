@@ -5,10 +5,10 @@
 #
 
 # What servers should the DHCP relay forward requests to?
-SERVERS="<% @servers.join(' ') %>"
+SERVERS="<%= @servers.join(' ') %>"
 
 # On what interfaces should the DHCP relay (dhrelay) serve DHCP requests?
-INTERFACES="<% @interfaces.join(' ') %>"
+INTERFACES="<%= @interfaces.join(' ') %>"
 
 # Additional options that are passed to the DHCP relay daemon?
 OPTIONS=""

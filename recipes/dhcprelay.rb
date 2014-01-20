@@ -23,8 +23,8 @@ if node[:sys][:dhcprelay]
   
   package pkg
 
-  servers    = node[:sys][:dhcprelay][:servers]    || [ ]
-  interfaces = node[:sys][:dhcprelay][:interfaces] || [ ]  
+  servers    = node[:sys][:dhcprelay][:servers]
+  interfaces = node[:sys][:dhcprelay][:interfaces]
 
   template "/etc/default/#{pkg}" do
     source "etc_default_#{pkg}.erb"
