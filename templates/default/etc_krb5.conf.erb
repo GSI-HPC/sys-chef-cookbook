@@ -18,6 +18,12 @@
 	ticket_lifetime = 10h
 	encrypt = true
 	forward = true
+	<% if @wallet_server %>
+	wallet = {
+	       wallet_port   = 4373
+	       wallet_server = <%= @wallet_server %>
+        }
+	<% end %>
 [realms]
 	<%= @realm %> = {
 	<% @servers.each do |kdc| %>
