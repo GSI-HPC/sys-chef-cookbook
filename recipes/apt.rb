@@ -23,6 +23,8 @@
 apt_update = "apt-get -qq update"
 execute apt_update do
   action :nothing
+  # 100 means something went wrong: we don't want chef to fail completely in that case ...
+  returns [ 0, 100 ]
 end
 
 # Default APT source file
