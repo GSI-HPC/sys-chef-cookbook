@@ -22,13 +22,19 @@ if node[:sys][:dhcprelay]
   pkg = 'isc-dhcp-relay'
   
   package pkg
-  
-  template '/etc/default/#{pkg}' do
+
+  servers    = node[:sys][:dhcprelay][:servers]    || [ ]
+  interfaces = node[:sys][:dhcprelay][:interfaces] || [ ]  
+
+  template "/etc/default/#{pkg}" do
     source "etc_default_#{pkg}.erb"
     variables ({
-        servers =>    node[:sys][:dhcprelay][:servers],
-        interfaces => node[:sys][:dhcprelay][:interfaces]       
+        :servers    => servers,
+        :interfaces => interfaces
       })
   end
 
+  service pkg do
+    action [ :enable, :start ]
+  end
 end
