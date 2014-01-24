@@ -36,6 +36,7 @@ if node.sys.krb5
       :admin_server => node.sys.krb5.admin_server,
       :servers => [ node.sys.krb5.master, node.sys.krb5.slave ],
       :domain => node.domain,
+      :wallet_server => begin node.sys.krb5.wallet_server rescue nil end,
       :pkinit_anchor => begin node.sys.krb5.pkinit_anchor rescue nil end
     )
   end
