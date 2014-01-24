@@ -1,0 +1,7 @@
+# Option flags used to start dhcp-helper.
+#
+# This file is managed by Chef
+#  Don't edit - all changes will be overwritten
+#
+
+DHCPHELPER_OPTS="<%= @interfaces.map{|x| '-i '+x }.join(' ') %><%= @servers.map{|x| '-s '+x }.join(' ') %>"

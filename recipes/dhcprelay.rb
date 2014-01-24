@@ -17,23 +17,28 @@
 # limitations under the License.
 #
 
+# recipe for DHCP relay setup
+#  FIXME: not really suitable for sys - should go to a separate dhcp recipe
+
+
 if node[:sys][:dhcprelay]
 
-  pkg = 'isc-dhcp-relay'
-  
-  package pkg
+  # 'dhcp-helper' is a valid alternative here
+  package = node[:sys][:dhcprelay][:package] || 'isc-dhcp-relay'
 
+  package pkg
+  
   servers    = node[:sys][:dhcprelay][:servers]
   interfaces = node[:sys][:dhcprelay][:interfaces]
-
+  
   template "/etc/default/#{pkg}" do
     source "etc_default_#{pkg}.erb"
     variables ({
         :servers    => servers,
         :interfaces => interfaces
       })
-  end
-
+    end
+  
   service pkg do
     action [ :enable, :start ]
   end
