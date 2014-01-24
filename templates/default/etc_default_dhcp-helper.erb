@@ -3,5 +3,7 @@
 # This file is managed by Chef
 #  Don't edit - all changes will be overwritten
 #
+<%- cmdline = @interfaces.map{|x| '-i '+x }.join(' ') -%>
+<%- cmdline += ' ' + @servers.map{|x| '-s '+x }.join(' ') -%>
 
-DHCPHELPER_OPTS="<%= @interfaces.map{|x| '-i '+x }.join(' ') %><%= @servers.map{|x| '-s '+x }.join(' ') %>"
+DHCPHELPER_OPTS="<%= cmdline %>"
