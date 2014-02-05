@@ -19,7 +19,8 @@
 
 action :add do
   newkey = new_resource.key
-
+  # Remove leading white-spaces
+  newkey = newkey.gsub(/^ */,'')
   execute "Adding APT repository key" do
     command "echo '#{newkey}' | apt-key add - >/dev/null" 
   end
@@ -27,6 +28,8 @@ end
 
 action :remove do
   keyid = new_resource.key
+  # Remove leading white-spaces
+  keyid = keyid.gsub(/^ */,'')
   execute "Remove APT repository key [#{keyid}]" do
     command "apt-key del #{keyid} >/dev/null"
     only_if "apt-key list | grep #{keyid} >/dev/null"
