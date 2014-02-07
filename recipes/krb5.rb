@@ -73,5 +73,30 @@ if node.sys.krb5
         end
       end
     end
+  elsif node.sys.krb5.distribution == "wallet"
+    package "wallet-client"
+    if node.sys.krb5.has_key?(:"keytab_config")
+      node.sys.krb5.keytab_config.each do |kh|
+        key = kh["keytab"]
+        owner = kh["owner"] || "root"
+        group = kh["group"] || "root"
+        mode = kh["mode"] || "0600"
+        place = kh["place"] || "/etc/#{key}.keytab"
+        principal = "#{key}/#{node.fqdn}@#{node.sys.krb5.realm.upcase}"
+        Chef::Log.info "Put keytab #{key} to place #{place}"
+        bash "deploy #{principal}" do
+          cwd "/etc/"
+          user "root"
+          code <<-EOH
+          kinit -t /etc/krb5.keytab host/#{node.fqdn}
+          wallet get keytab #{principal} -f #{place}
+          kdestroy
+          chown #{owner}:#{group} #{place}
+          chmod #{mode} #{place}
+          EOH
+          not_if "ktutil -k #{place} list --keys | grep -q #{principal}"
+        end
+      end
+    end
   end
 end
