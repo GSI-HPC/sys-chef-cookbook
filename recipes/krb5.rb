@@ -43,12 +43,12 @@ if node.sys.krb5
 
   # use a secret or manual distribution of keytabs
   if node.sys.krb5.distribution == "secret"
-    Chef::Log.info("search for node #{node.sys.krb5.master}")
 
     class Chef::Recipe
       include Sys::Secret
     end
 
+    Chef::Log.info("search for node #{node.sys.krb5.master}")
     kdc_node = search(:node, "fqdn:#{node.sys.krb5.master}")[0]
     if kdc_node
       if node.sys.krb5.has_key?(:"keytab_config")
