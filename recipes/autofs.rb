@@ -56,7 +56,7 @@ unless node.sys.autofs.ldap.empty?
     mode "0600"
     variables({
       :principal => node.fqdn,
-      :realm => node.sys.krb5.realm
+      :realm => node.sys.krb5.realm.upcase
     })
   end
 
