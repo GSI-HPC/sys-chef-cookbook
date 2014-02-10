@@ -58,6 +58,7 @@ unless node.sys.autofs.ldap.empty?
       :principal => node.fqdn,
       :realm => node.sys.krb5.realm.upcase
     })
+    notifies :restart, 'service[autofs]', :delayed
   end
 
   template "/etc/default/autofs" do
@@ -67,10 +68,12 @@ unless node.sys.autofs.ldap.empty?
       :uris => node.sys.autofs.ldap.servers,
       :searchbase => node.sys.autofs.ldap.searchbase
     })
+    notifies :restart, 'service[autofs]', :delayed
   end
 
   cookbook_file "/etc/init.d/autofs" do
     source "etc_init.d_autofs"
     mode "0755"
+    notifies :restart, 'service[autofs]', :delayed
   end
 end
