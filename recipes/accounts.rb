@@ -28,9 +28,33 @@ unless (node.sys.accounts.empty? and node.sys.groups.empty?)
       system grp[:system] or false
     end
   end
-
+  
   node.sys.accounts.each do |name,account|
-
+    
+    # Currently data bags aren't supported when running chef-solo,
+    # but this will be implemented in a coming version!
+    unless Chef::Config[:solo]
+      # merge with user specific data bag if existing
+      if data_bag('accounts').include?(name)
+        bag = data_bag_item('accounts', name)
+        if bag.has_key?('account')          
+          Chef::Log.debug "data bag found for account #{name}."
+          account['comment'] = bag['comment'] unless account.has_key?('comment')
+          # make sure account hash exists
+          account = Hash.new unless account
+          # Merge the existing account information with the data-bag
+          bag['account'].each do |k,v|
+            unless account[k]
+              account[k] = v
+              Chef::Log.debug "Adding info from data-bag: #{k}: #{v}"
+            end
+          end
+        end
+      else
+        Chef::Log.debug "No data bag for user ID #{name} found"
+      end
+    end
+    
     begin   
       # check if the given group exists, gid could be numeric or string:
       #  additionally the group might not exist but was maybe just created:
