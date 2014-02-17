@@ -46,8 +46,8 @@ unless (node.sys.accounts.empty? and node.sys.groups.empty?)
           bag['account'].each do |k,v|
             unless account[k]
               account[k] = v
-              if k == 'home'
-                account[:supports] << { :managed_home => true }
+              if k == 'home' and not account[:supports]
+                account[:supports] =  { :manage_home => true }
               end
               Chef::Log.debug "Adding info from data-bag: #{k}: #{v}"
             end
