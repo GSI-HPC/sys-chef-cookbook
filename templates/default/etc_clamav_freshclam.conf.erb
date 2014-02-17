@@ -25,4 +25,7 @@ Bytecode true
 Checks 24
 DatabaseMirror db.local.clamav.net
 DatabaseMirror database.clamav.net
-HTTPProxyServer proxy.gsi.de 3128
+<% if @proxy_srv and @proxy_port -%>
+HTTPProxyServer <%= @proxy_srv %>
+HTTPProxyPort <%= @proxy_srv %>
+<%- end %>
