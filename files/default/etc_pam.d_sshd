@@ -16,6 +16,12 @@ auth       required     pam_env.so envfile=/etc/default/locale
 # Standard Un*x authentication.
 @include common-auth
 
+# This allows certain extra groups to be granted to a user
+# based on things like time of day, tty, service, and user.
+# Please edit /etc/security/group.conf to fit your needs
+# (Replaces the `CONSOLE_GROUPS' option in login.defs)
+auth       optional   pam_group.so
+
 # Disallow non-root logins when /etc/nologin exists.
 account    required     pam_nologin.so
 
