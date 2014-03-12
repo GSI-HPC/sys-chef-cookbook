@@ -16,6 +16,10 @@
 
 define :sys_sudo, :users => Hash.new, :hosts => Hash.new, :commands => Hash.new, :rules => Array.new do
   name = params[:name]
+  users = Hash.new
+  params[:users].each_pair do |user_alias, user_list|
+    users[user_alias] = user_list.map{ |user| user.include?('-') ? "\"#{user}\"" : user }
+  end
   template "/etc/sudoers.d/#{name}" do
     source 'etc_sudoers.d_generic.erb'
     owner 'root'
@@ -24,7 +28,7 @@ define :sys_sudo, :users => Hash.new, :hosts => Hash.new, :commands => Hash.new,
     cookbook "sys"
     variables(
       :name => name,
-      :users => params[:users],
+      :users => users,
       :hosts => params[:hosts],
       :commands => params[:commands],
       :rules => params[:rules]
