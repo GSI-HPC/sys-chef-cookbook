@@ -1,5 +1,5 @@
 require 'chefspec'
-ChefSpec::Coverage.start!
+#ChefSpec::Coverage.start!
 
 RSpec.configure do |config|
   # Specify the path for Chef Solo to find cookbooks (default: [inferred from
