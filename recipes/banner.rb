@@ -18,12 +18,18 @@
 #
 
 unless node.sys.banner.message.empty?
+  if node.sys.banner.message.kind_of?(Array)
+    message = node.sys.banner.message.join("\n")
+  else
+    message = node.sys.banner.message
+  end
+
   template '/etc/motd' do
     source 'etc_motd.erb'
     mode 0644
     variables(
       :header => node.sys.banner.header,
-      :message => node.sys.banner.message,
+      :message => message,
       :footer => node.sys.banner.footer
     )
   end
