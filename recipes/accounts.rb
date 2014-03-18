@@ -39,15 +39,15 @@ unless (node.sys.accounts.empty? and node.sys.groups.empty?)
         bag = data_bag_item('accounts', name)
         if bag.has_key?('account')          
           Chef::Log.debug "data bag found for account #{name}."
-          account['comment'] = bag['comment'] unless account.has_key?('comment')
+          node.default[:sys][:accounts][name][account]['comment'] = bag['comment'] unless account.has_key?('comment')
           # make sure account hash exists
           account = Hash.new unless account
           # Merge the existing account information with the data-bag
           bag['account'].each do |k,v|
             unless account[k]
-              account[k] = v
+              node.default[:sys][:accounts][name][account][k] = v
               if k == 'home' and not account[:supports]
-                account[:supports] =  { :manage_home => true }
+                node.default[:sys][:accounts][name][account][:supports] =  { :manage_home => true }
               end
               Chef::Log.debug "Adding info from data-bag: #{k}: #{v}"
             end
