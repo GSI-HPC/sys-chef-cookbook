@@ -11,6 +11,12 @@
 	# default_cc_type = KCM
 [appdefaults]
 	<%= "pkinit_anchors = #{@pkinit_anchor}" if @pkinit_anchor %>
+	<% if @use_pkinit %>
+	use_pkinit = true
+	pkinit_prompt = <%= node.sys.krb5.pkinit_prompt %>
+	pkinit_user = <%= node.sys.krb5.pkinit_user %>
+	pkinit_anchors = <%= node.sys.krb5.pkinit_anchors %>
+	<% end %>
 	default_realm = <%= @realm %>
 	forwardable = true
 	proxiable = false
@@ -26,10 +32,14 @@
 	<% end %>
 [realms]
 	<%= @realm %> = {
-	<% @servers.each do |kdc| %>
-        kdc = <%= kdc %>
-	<% end -%>
-	admin_server = <%= @admin_server %>
+		<% @servers.each do |kdc| %>
+		kdc = <%= kdc %>
+		<% end -%>
+		<% if @use_pkinit %>
+		pkinit_require_eku = <%= node.sys.krb5.pkinit_require_eku %>
+		pkinit_require_krbtgt_otherName = <%= node.sys.krb5.pkinit_require_krbtgt_otherName %>
+		<% end %>
+		admin_server = <%= @admin_server %>
 	}
 [password_quality]
 	policies = builtin:minimum-length builtin:character-class
