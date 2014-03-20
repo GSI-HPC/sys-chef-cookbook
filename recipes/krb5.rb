@@ -75,7 +75,7 @@ if node.sys.krb5
     end
   elsif node.sys.krb5.distribution == "wallet"
     package "wallet-client"
-    if node.sys.krb5.has_key?(:"keytab_config")
+    if node.sys.krb5.has_key?(:"keytab_config") && File.exists?("/etc/krb5.keytab")
       node.sys.krb5.keytab_config.each do |kh|
         key = kh["keytab"]
         owner = kh["owner"] || "root"
