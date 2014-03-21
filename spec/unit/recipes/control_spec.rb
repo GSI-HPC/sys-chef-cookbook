@@ -27,7 +27,7 @@ describe 'sys::control' do
 
     it 'triggers loading of changed /etc/sysctl.d/*.conf files' do
       res = chef_run.find_resource(:execute, @execute_name)
-      expect(res.performed_actions).to be_empty
+      expect(res).to do_nothing
 
       res = chef_run.find_resource(:file, @file_name)
       expect(res).to notify("execute[#{@execute_name}]").to(:run).immediately
