@@ -17,6 +17,14 @@
 # limitations under the License.
 #
 
+unless node.sys.network.vlan_bridges.empty?
+  node.sys.network.vlan_bridges.each do |bridge|
+    sys_network_vlan_bridge bridge do
+      interface node.network.default_interface
+    end
+  end
+end
+
 interfaces = node.sys.network.interfaces
 unless interfaces.empty?
   
