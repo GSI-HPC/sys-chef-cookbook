@@ -5,9 +5,7 @@ describe 'sys::sudo' do
 
   context 'node.sys.sudo is empty' do
     it 'does nothing' do
-      expect(chef_run).not_to install_package('sudo')
-      expect(chef_run).not_to create_template('/etc/sudoers')
-      expect(chef_run).not_to create_directory('/etc/sudoers.d')
+      expect(chef_run.run_context.resource_collection).to be_empty
     end
   end
 
