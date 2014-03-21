@@ -1,15 +1,5 @@
 define :sys_network_vlan_bridge, :interface => 'eth0' do
-  vlanmap = Hash.new
-  vlanmap["UNTAGGED"]         =   0
-  vlanmap["DMZ"]              =   7
-  vlanmap["DMZ-SERVICE"]      =   8
-  vlanmap["INTERNESERVER1"]   = 104
-  vlanmap["INTERNESERVER3"]   = 118
-  vlanmap["DMZ-PROXY"]        = 119
-  vlanmap["INTERNESERVER2"]   = 124
-  vlanmap["DMZ-ACCESS-LINUX"] = 125
-
-  vlan_id = params[:name].kind_of?(String) ? vlanmap[params[:name]] : params[:name]
+  vlan_id = params[:name]
 
   if vlan_id
     interface = params[:interface]

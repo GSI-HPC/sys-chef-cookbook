@@ -45,7 +45,7 @@ describe 'sys::network' do
 
   context 'node.sys.network.vlan_bridges is not empty' do
     before do
-      chef_run.node.default[:sys][:network][:vlan_bridges] = [ 'DMZ' ]
+      chef_run.node.default[:sys][:network][:vlan_bridges] = [ 7 ]
       chef_run.converge(described_recipe)
     end
 
