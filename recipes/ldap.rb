@@ -33,7 +33,7 @@ unless node.sys.ldap.empty?
     source "etc_default_nslcd.conf.erb"
     user "root"
     group "root"
-    mode 0644
+    mode "0644"
     notifies :restart, "service[nslcd]", :delayed
     variables ({
         :servers => node.sys.ldap.servers,
