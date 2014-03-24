@@ -2,3 +2,4 @@ spec/*
 \.rspec
 libraries/matchers.rb
 Gemfile*
+Guardfile
