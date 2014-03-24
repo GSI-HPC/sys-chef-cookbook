@@ -35,11 +35,6 @@ unless node.sys.ldap.empty?
     group "root"
     mode "0644"
     notifies :restart, "service[nslcd]", :delayed
-    variables ({
-        :servers => node.sys.ldap.servers,
-        :searchbase => node.sys.ldap.searchbase,
-        :realm => node.sys.ldap.realm.upcase,
-      })
   end
 
   # Configuration for nslcd.  nlscd queries an ldap-server for user-information.
