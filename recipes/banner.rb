@@ -30,6 +30,7 @@ unless node.sys.banner.message.empty?
     variables(
       :header => node.sys.banner.header,
       :message => message,
+      :service_properties => node.sys.banner.service_properties,
       :footer => node.sys.banner.footer
     )
   end

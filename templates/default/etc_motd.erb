@@ -1,3 +1,9 @@
 <% unless @header.empty? %>[4m<%= "\n#{@header}\n" %>[0m<% end %>
 [1m<%= @message  %>[0m
+<% unless @service_properties.empty? %>
+
+<%   @service_properties.each do |prop| %>
+<%= " * #{prop}" %>
+<%   end %>
+<% end %>
 <% unless @footer.empty? %><%= "\n#{@footer}\n" %><% end %>
