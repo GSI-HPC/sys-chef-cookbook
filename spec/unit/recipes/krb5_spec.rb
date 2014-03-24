@@ -81,6 +81,17 @@ describe 'sys::krb5' do
     end
 
     it "configures pkinit and wallet" do
+      expect(chef_run).to create_template('/etc/krb5.conf').with(
+        :variables => {
+          :realm => "EXAMPLE.COM",
+          :admin_server => "master.example.com",
+          :servers => [ 'master.example.com', 'slave.example.com'],
+          :domain => "example.com",
+          :wallet_server => "wallet.example.com",
+          :use_pkinit => true
+        }
+      )
+
       expect(chef_run).to render_file('/etc/krb5.conf').with_content(
         "\tuse_pkinit = true"
       )
