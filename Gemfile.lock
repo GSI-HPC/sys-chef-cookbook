@@ -56,6 +56,8 @@ GEM
     highline (1.6.21)
     ipaddress (0.8.0)
     json (1.8.1)
+    libnotify (0.8.2)
+      ffi (>= 1.0.11)
     listen (2.7.1)
       celluloid (>= 0.15.2)
       celluloid-io (>= 0.15.0)
@@ -119,3 +121,4 @@ PLATFORMS
 DEPENDENCIES
   chefspec (>= 3.4.0)
   guard-rspec
+  libnotify
