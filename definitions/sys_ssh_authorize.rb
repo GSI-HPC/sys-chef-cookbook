@@ -17,7 +17,7 @@
 define :sys_ssh_authorize, :keys => Array.new, :managed => false do
   account = params[:name]
   begin
-    # does the user exists?  
+    # does the user exist?
     if node.etc.passwd.has_key?(account) or node[:sys][:accounts].has_key?(account)
       if params[:keys].empty?
         raise "key(s) missing for account [#{account}]"
@@ -35,7 +35,7 @@ define :sys_ssh_authorize, :keys => Array.new, :managed => false do
         directory dot_ssh do
           owner account
           group gid if gid
-          mode 0700
+          mode "0700"
         end
         # path to the user keys file
         authorized_keys = "#{dot_ssh}/authorized_keys"
@@ -59,7 +59,7 @@ define :sys_ssh_authorize, :keys => Array.new, :managed => false do
         file authorized_keys do
           owner account
           group gid if gid
-          mode 0644
+          mode "0644"
         end
       end
     else

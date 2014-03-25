@@ -61,7 +61,7 @@ unless node.sys.sshd.config.empty?
   sshd_config.merge! node.sys.sshd.config
   template '/etc/ssh/sshd_config' do
     source 'etc_ssh_sshd_config.erb'
-    mode 0644
+    mode "0644"
     variables :config => sshd_config
     notifies :reload, "service[ssh]"
   end
