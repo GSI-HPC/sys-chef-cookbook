@@ -22,7 +22,7 @@ unless node.sys.pam.access.empty?
     source 'etc_security_access.conf.erb'
     owner 'root'
     group 'root'
-    mode 0600
+    mode "0600"
     variables :rules => node.sys.pam.access
   end
 
@@ -31,7 +31,7 @@ unless node.sys.pam.access.empty?
       source 'etc_pam.d_sshd'
       owner 'root'
       group 'root'
-      mode 0644
+      mode "0644"
       only_if do ::File.exists? '/etc/ssh/sshd_config' end
     end
   end
@@ -41,7 +41,7 @@ unless node.sys.pam.access.empty?
       source 'etc_pam.d_login'
       owner 'root'
       group 'root'
-      mode 0644
+      mode "0644"
     end
   end
 end
@@ -51,17 +51,17 @@ unless node.sys.pam.limits.empty?
     source 'etc_security_limits.conf.erb'
     owner 'root'
     group 'root'
-    mode 0644
+    mode "0644"
     variables :rules => node.sys.pam.limits
   end
 end
 
-if node.sys.pam[:group]
+unless node.sys.pam[:group].empty?
   template '/etc/security/group.conf' do
     source 'etc_security_group.conf.erb'
     owner 'root'
     group 'root'
-    mode 0644
+    mode "0644"
     variables :rules => node.sys.pam.group
   end
 end
@@ -72,7 +72,7 @@ unless node.sys.pamd.empty?
       source 'etc_pam.d_generic.erb'
       owner 'root'
       group 'root'
-      mode 0644
+      mode "0644"
       variables(
         # remove leading spaces, and empty lines
         :rules => contents.gsub(/^ */,'').gsub(/^$\n/,''),
@@ -81,4 +81,3 @@ unless node.sys.pamd.empty?
     end
   end
 end
-
