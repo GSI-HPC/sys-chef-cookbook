@@ -5,3 +5,7 @@ group :development do
   gem 'guard-rspec', require: false
   gem 'libnotify'
 end
+
+group :gsi do
+  gem 'mixlib-authentication', :git => 'https://github.com/dennisklein/mixlib-authentication.git', :branch => 'CHEF-2381'
+end
