@@ -44,7 +44,7 @@ unless node.sys.control.empty?
     # write the configuration file
     file filename do
       content config
-      mode 0644
+      mode "0644"
       notifies :run, "execute[#{sysctl}]", :immediately
     end
 

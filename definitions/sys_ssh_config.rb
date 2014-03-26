@@ -26,7 +26,7 @@ define :sys_ssh_config, :config => Hash.new do
       directory dot_ssh do
         owner account
         group node.etc.passwd[account].gid
-        mode 0700
+        mode "0700"
       end
       # path to the user keys file
       ssh_config = "#{dot_ssh}/config"
@@ -35,7 +35,7 @@ define :sys_ssh_config, :config => Hash.new do
         owner account
         group node.etc.passwd[account].gid
         cookbook 'sys'
-        mode 0600
+        mode "0600"
         variables( 
           :path => node.etc.passwd[account].dir,
           :config => params[:config] 

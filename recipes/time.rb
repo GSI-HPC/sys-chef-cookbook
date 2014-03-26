@@ -27,7 +27,7 @@ unless timezone.empty?
 
   file '/etc/timezone' do
     content "#{timezone}\n"
-    mode 644
+    mode "644"
     notifies :run, "execute[#{configure}]"
   end
 

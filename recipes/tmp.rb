@@ -29,7 +29,7 @@ unless node.sys.tmp.empty?
 
     template '/etc/tmpreaper.conf' do
       source 'etc_tmpreaper.conf.erb'
-      mode 0644
+      mode "0644"
       variables(
         :disabled => node.sys.tmp.reaper.disabled,
         :max_age => node.sys.tmp.reaper.max_age,

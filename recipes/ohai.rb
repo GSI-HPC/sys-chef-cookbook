@@ -25,7 +25,7 @@ remote_directory node['ohai']['plugin_path'] do
   source 'ohai_plugins'
   owner 'root'
   group 'root'
-  mode 0755
+  mode "0755"
   action :create
 end
 
