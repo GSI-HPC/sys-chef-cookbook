@@ -24,6 +24,6 @@ unless node.sys.env.empty?
     source 'etc_environment.erb'
     owner 'root'
     group 'root'
-    mode 0644    
+    mode "0644"    
   end
 end

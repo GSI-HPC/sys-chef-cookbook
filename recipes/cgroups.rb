@@ -46,7 +46,7 @@ unless node.sys.cgroups.path.empty?
   
   template '/etc/cgconfig.conf' do
     source 'etc_cgconfig.conf.erb'
-    mode 0644
+    mode "0644"
     variables(
       :subsys => subsystems
     )

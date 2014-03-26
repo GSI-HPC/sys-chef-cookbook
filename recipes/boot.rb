@@ -34,7 +34,7 @@ unless node.sys.boot.params.empty? and node.sys.boot.config.empty?
 
   template '/etc/default/grub' do
     source 'etc_default_grub.erb'
-    mode 0644
+    mode "0644"
     variables(
       :params => node.sys.boot.params.join(' '),
       :config => (node.sys.boot.config.map { |k,v| %Q[#{k}="#{v}"] }).join("\n")

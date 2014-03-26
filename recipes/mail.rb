@@ -39,13 +39,13 @@ unless relay.empty?
 
   template '/etc/postfix/canonical' do
     source 'etc_postfix_canonical.erb'
-    mode 600
+    mode "600"
     notifies :run, "execute[#{update_canonical}]", :immediate
   end
 
   template '/etc/postfix/main.cf' do
     source 'etc_postfix_main.cf.erb'
-    mode 0644
+    mode "0644"
     variables :relay => relay
     notifies :reload, "service[postfix]"
   end

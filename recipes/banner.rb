@@ -26,7 +26,7 @@ unless node.sys.banner.message.empty?
 
   template '/etc/motd' do
     source 'etc_motd.erb'
-    mode 0644
+    mode "0644"
     variables(
       :header => node.sys.banner.header,
       :message => message,
@@ -42,7 +42,7 @@ if node.sys.banner.info
 
   template '/etc/profile.d/info.sh' do
     source 'etc_profile.d_info.sh.erb'
-    mode 0755
+    mode "0755"
   end
 
 end

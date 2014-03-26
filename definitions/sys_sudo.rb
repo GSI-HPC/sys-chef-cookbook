@@ -24,7 +24,7 @@ define :sys_sudo, :users => Hash.new, :hosts => Hash.new, :commands => Hash.new,
     source 'etc_sudoers.d_generic.erb'
     owner 'root'
     group 'root'
-    mode 0440
+    mode "0440"
     cookbook "sys"
     variables(
       :name => name,

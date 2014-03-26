@@ -31,7 +31,7 @@ template '/etc/default/chef-client' do
   source 'etc_default_chef_client.erb'
   owner 'root'
   group 'root'
-  mode 0644
+  mode "0644"
   variables(
     :interval => node.sys.chef.interval,
     :splay    => node.sys.chef.splay
@@ -72,7 +72,7 @@ if server_url
     source 'etc_chef_client.rb.erb'
     owner 'root'
     group 'root'
-    mode 0644
+    mode "0644"
     variables v
 
     notifies :restart, "service[chef-client]"
@@ -99,13 +99,13 @@ end
 #  (so its members can use 'knife .. -c /etc/chef/client.pem')
 file node.sys.chef.client_key do
   group 'adm'
-  mode 0640
+  mode "0640"
 end
 
 # Create a script in cron.hourly to make sure chef-client keeps running
 #cookbook_file "/etc/cron.hourly/chef-client-service" do
 #  source "chefclientcronjob"
-#  mode 0755
+#  mode "0755"
 #end
 
 service 'chef-client' do

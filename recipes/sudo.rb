@@ -27,14 +27,14 @@ unless node.sys.sudo.empty?
       source 'etc_sudoers.erb'
       owner 'root'
       group 'root'
-      mode 0440
+      mode "0440"
     end
     # system specific configurations should be applied by
     # individual files in this directory
     directory '/etc/sudoers.d' do
       owner 'root'
       group 'root'
-      mode 0755
+      mode "0755"
     end
 
     node.sys.sudo.each_pair do |name,config|

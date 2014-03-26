@@ -32,7 +32,7 @@ end
 unless node.sys.apt.sources.empty?
   template "/etc/apt/sources.list" do
     source "etc_apt_sources.list.erb"
-    mode 644
+    mode "644"
     variables :config => node.sys.apt.sources.gsub(/^ */,'')
     notifies :run, "execute[#{apt_update}]", :immediately
   end
