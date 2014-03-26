@@ -22,7 +22,7 @@ describe 'sys::control' do
     end
 
     it 'manages /etc/sysctl.d/*.conf files' do
-      expect(chef_run).to create_file(@file_name).with_mode(0644)
+      expect(chef_run).to create_file(@file_name).with_mode('0644')
     end
 
     it 'triggers loading of changed /etc/sysctl.d/*.conf files' do

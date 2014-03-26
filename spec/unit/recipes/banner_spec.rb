@@ -17,7 +17,7 @@ describe 'sys::banner' do
     end
 
     it 'manages /etc/motd' do
-      expect(chef_run).to create_template('/etc/motd').with_mode(0644)
+      expect(chef_run).to create_template('/etc/motd').with_mode('0644')
     end
 
     it 'manages /etc/profile.d/info.sh' do
