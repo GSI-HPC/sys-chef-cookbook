@@ -69,8 +69,12 @@ describe 'sys::ssh' do
         }
       )
 
+      expect(chef_run).to create_directory("/home/jdoe/.ssh")
+
+      expect(chef_run).to create_file("/home/jdoe/.ssh/authorized_keys")
+
       expect(chef_run).to render_file('/etc/ssh/sshd_config').with_content(
-        "ChallengeResponseAuthentication no\nX11Forwarding overwritten",
+        "ChallengeResponseAuthentication no\nX11Forwarding overwritten"
       )
     end
   end
