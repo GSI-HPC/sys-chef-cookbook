@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-unless node.sys.autofs.maps.empty?
+if ! node.sys.autofs.maps.empty? && node.sys.autofs.ldap.empty?
 
   package 'autofs'
 
@@ -29,6 +29,7 @@ unless node.sys.autofs.maps.empty?
 
   template '/etc/auto.master' do
     source 'etc_auto.master.erb'
+    mode "0644"
     variables(
       :maps => node.sys.autofs.maps
     )
@@ -44,12 +45,21 @@ unless node.sys.autofs.maps.empty?
   service 'autofs' do
     supports :restart => true, :reload => true
   end
-
 end
 
 unless node.sys.autofs.ldap.empty?
+  package "autofs"
   package "autofs-ldap"
   package "kstart"
+
+  template "/etc/auto.master" do
+    source 'etc_auto.master.erb'
+    mode "0644"
+    variables(
+      :maps => node.sys.autofs.maps
+    )
+    notifies :reload, 'service[autofs]'
+  end
 
   template "/etc/autofs_ldap_auth.conf" do
     source "etc_autofs_ldap_auth.conf.erb"
@@ -63,7 +73,7 @@ unless node.sys.autofs.ldap.empty?
 
   template "/etc/default/autofs" do
     source "etc_default_autofs.erb"
-    mode "0600"
+    mode "0644"
     variables({
       :uris => node.sys.autofs.ldap.servers,
       :searchbase => node.sys.autofs.ldap.searchbase
@@ -75,5 +85,9 @@ unless node.sys.autofs.ldap.empty?
     source "etc_init.d_autofs"
     mode "0755"
     notifies :restart, 'service[autofs]', :delayed
+  end
+
+  service 'autofs' do
+    supports :restart => true, :reload => true
   end
 end
