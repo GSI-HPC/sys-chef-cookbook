@@ -1,11 +1,3 @@
-GIT
-  remote: https://github.com/dennisklein/mixlib-authentication.git
-  revision: ffe5357c987805ec3b14ed7c3131f0b70205881c
-  branch: CHEF-2381
-  specs:
-    mixlib-authentication (1.3.0)
-      mixlib-log
-
 GEM
   remote: http://rubygems.org/
   specs:
@@ -74,6 +66,8 @@ GEM
     lumberjack (1.0.5)
     method_source (0.8.2)
     mime-types (1.25.1)
+    mixlib-authentication (1.3.0)
+      mixlib-log
     mixlib-cli (1.4.0)
     mixlib-config (2.1.0)
     mixlib-log (1.6.0)
@@ -127,4 +121,3 @@ DEPENDENCIES
   chefspec (>= 3.4.0)
   guard-rspec
   libnotify
-  mixlib-authentication!
