@@ -61,6 +61,8 @@ unless node.sys.krb5.empty?
           Chef::Log.info "Put keytab #{key} to place #{place}"
           if kdc_node.krb5.keytabs.has_key?("#{key}_#{node.fqdn}")
             kt = decrypt(kdc_node.krb5.keytabs["#{key}_#{node.fqdn}"])
+            # decrypt returns nil if anything goes wrong
+            raise "Could not decrypt keytab #{key}" unless kt
             template "#{place}" do
               source "etc_keytab_generic.erb"
               owner owner
@@ -75,28 +77,34 @@ unless node.sys.krb5.empty?
     end
   elsif node.sys.krb5.distribution == "wallet"
     package "wallet-client"
-    if node.sys.krb5.has_key?(:"keytab_config") && File.exists?("/etc/krb5.keytab")
-      node.sys.krb5.keytab_config.each do |kh|
-        key = kh["keytab"]
-        owner = kh["owner"] || "root"
-        group = kh["group"] || "root"
-        mode = kh["mode"] || "0600"
-        place = kh["place"] || "/etc/#{key}.keytab"
-        principal = "#{key}/#{node.fqdn}@#{node.sys.krb5.realm.upcase}"
-        Chef::Log.info "Put keytab #{key} to place #{place}"
-        bash "deploy #{principal}" do
-          cwd "/etc/"
-          user "root"
-          code <<-EOH
+    if node.sys.krb5.has_key?(:"keytab_config")
+      if File.exists?("/etc/krb5.keytab")
+        node.sys.krb5.keytab_config.each do |kh|
+          key = kh["keytab"]
+          owner = kh["owner"] || "root"
+          group = kh["group"] || "root"
+          mode = kh["mode"] || "0600"
+          place = kh["place"] || "/etc/#{key}.keytab"
+          principal = "#{key}/#{node.fqdn}@#{node.sys.krb5.realm.upcase}"
+          Chef::Log.info "Put keytab #{key} to place #{place}"
+          bash "deploy #{principal}" do
+            cwd "/etc/"
+            user "root"
+            code <<-EOH
           kinit -t /etc/krb5.keytab host/#{node.fqdn}
           wallet get keytab #{principal} -f #{place}
           kdestroy
           chown #{owner}:#{group} #{place}
           chmod #{mode} #{place}
           EOH
-          not_if "ktutil -k #{place} list --keys | grep -q #{principal}"
-        end
-      end
-    end
+            not_if "ktutil -k #{place} list --keys | grep -q #{principal}"
+          end # bash "deploy #{principal}
+        end # node.sys.krb5.keytab_config.each
+      else # if File.exists?("/etc/krb5.keytab")
+        raise "/etc/krb5.keytab not found"
+      end # if File.exists?("/etc/krb5.keytab")
+    else # node.sys.krb5.has_key?(:"keytab_config")
+      raise "Distribution set to wallet, but no config found"
+    end # node.sys.krb5.has_key?(:"keytab_config")
   end
 end
