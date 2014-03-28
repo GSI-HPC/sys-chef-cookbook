@@ -14,11 +14,18 @@ describe 'sys::krb5' do
       master = 'master.example.com'
       slave = 'slave.example.com'
       fqdn = 'node.example.com'
+      ktutil_command = "ktutil -k /etc/krb5.conf list --keys | grep "
+      ktutil_command += "-q host/node.example.com@EXAMPLE.COM"
+      stub_command(ktutil_command).and_return(0)
       chef_run.node.default['sys']['krb5']['realm'] = 'example.com'
       chef_run.node.default['sys']['krb5']['master'] = master
       chef_run.node.default['sys']['krb5']['admin_server'] = master
       chef_run.node.default['sys']['krb5']['slave'] = slave
       chef_run.node.default['sys']['krb5']['distribution'] = 'wallet'
+      chef_run.node.default['sys']['krb5']['keytab_config'] = [
+        { :keytab => "host",
+          :place => "/etc/krb5.conf" }
+      ]
       chef_run.node.automatic['fqdn'] = fqdn
       chef_run.node.automatic['domain'] = "example.com"
       chef_run.converge(described_recipe)
@@ -68,6 +75,13 @@ describe 'sys::krb5' do
       master = 'master.example.com'
       slave = 'slave.example.com'
       fqdn = 'node.example.com'
+      ktutil_command = "ktutil -k /etc/krb5.conf list --keys | grep "
+      ktutil_command += "-q host/node.example.com@EXAMPLE.COM"
+      stub_command(ktutil_command).and_return(0)
+      chef_run.node.default['sys']['krb5']['keytab_config'] = [
+        { :keytab => "host",
+          :place => "/etc/krb5.conf" }
+      ]
       chef_run.node.default['sys']['krb5']['realm'] = 'example.com'
       chef_run.node.default['sys']['krb5']['master'] = master
       chef_run.node.default['sys']['krb5']['admin_server'] = master
