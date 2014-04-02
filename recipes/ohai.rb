@@ -20,6 +20,10 @@
 Ohai::Config[:plugin_path] << node['ohai']['plugin_path']
 Chef::Log.info("ohai plugins will be at: #{node['ohai']['plugin_path']}")
 
+ohai "reload" do
+  action :nothing
+end
+
 # Copy plugins into the plugin directory
 remote_directory node['ohai']['plugin_path'] do
   source 'ohai_plugins'
@@ -27,6 +31,7 @@ remote_directory node['ohai']['plugin_path'] do
   group 'root'
   mode "0755"
   action :create
+  notifies :reload, "ohai[reload]", :immediately
 end
 
 if node[:ohai][:update_pciids]
