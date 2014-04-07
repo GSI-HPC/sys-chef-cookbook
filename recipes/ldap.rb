@@ -26,7 +26,7 @@ unless node.sys.ldap.empty?
     ldap-utils
   ).each { |p| package p }
 
-  node.set[:sys][:ldap][:servers] = [ node.sys.ldap.master, node.sys.ldap.slave ]
+  node.default[:sys][:ldap][:servers] = [ node.sys.ldap.master, node.sys.ldap.slave ]
 
   # Environment variables for nslcd.  They mainly just configure k5start.
   template "/etc/default/nslcd" do
