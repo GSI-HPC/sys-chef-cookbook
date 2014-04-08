@@ -52,7 +52,7 @@ GEM
     guard-rspec (4.2.8)
       guard (~> 2.1)
       rspec (>= 2.14, < 4.0)
-    hashie (2.0.5)
+    hashie (2.1.0)
     highline (1.6.21)
     ipaddress (0.8.0)
     json (1.8.1)
