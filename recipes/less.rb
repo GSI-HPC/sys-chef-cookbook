@@ -6,8 +6,8 @@
 package 'less'
 
 #node[:sys][:env]['LESS']      = ' -R '
-node[:sys][:env]['LESSOPEN']  = '| /usr/bin/lesspipe %s'
-node[:sys][:env]['LESSCLOSE'] = '/usr/bin/lesspipe %s %s'
+node.default[:sys][:env]['LESSOPEN']  = '| /usr/bin/lesspipe %s'
+node.default[:sys][:env]['LESSCLOSE'] = '/usr/bin/lesspipe %s %s'
 
 # syntax highlighting - conflicts with lesspipe for now
 #if node[:sys][:less][:highlight] 
