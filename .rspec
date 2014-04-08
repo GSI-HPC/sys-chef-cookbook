@@ -1,3 +1,5 @@
 --color
 --format progress
 --require spec_helper
+-I libraries
+--require matchers
