@@ -11,6 +11,7 @@ describe 'sys::ldap' do
 
   context 'with some test attributes' do
     before do
+      stub_command("test -e /etc/init.d/nscd").and_return(true)
       master = 'master.example.com'
       slave = 'slave.example.com'
       fqdn = 'node.example.com'
@@ -81,6 +82,11 @@ describe 'sys::ldap' do
       )
       expect(chef_run).to render_file('/etc/ldap/ldap.conf').with_content(ldapservers)
       expect(chef_run).to render_file('/etc/ldap/ldap.conf').with_content("TLS_CACERT " + cacert)
+    end
+
+    it 'stops and disables nscd' do
+      expect(chef_run).to stop_service('nscd')
+      expect(chef_run).to disable_service('nscd')
     end
   end
 end
