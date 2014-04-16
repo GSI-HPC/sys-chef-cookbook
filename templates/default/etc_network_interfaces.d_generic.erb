@@ -9,6 +9,6 @@
 auto <%= @name %>
 <% end %>
 iface <%= @name %> inet <%= @inet %>
-<% unless @config.empty? %>
-<%= @config.join("\n") %>
+<% @config.each do |key,value| %>
+  <%= key %> <%= value %>
 <% end %>
