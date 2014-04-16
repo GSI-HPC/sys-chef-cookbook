@@ -54,20 +54,20 @@ unless interfaces.empty?
     inet = params.has_key?(:inet) ? params[:inet] : 'manual'
     auto = params.has_key?(:auto) ? params[:auto] : true
 
-    # try to get configuration of the default interface from Ohai
-    if name == node.network.default_interface and inet == 'static'
-      params[:address] = node.ipaddress unless params.has_key?(:address)
-      params[:gateway] = node.network.default_gateway unless params.has_key?(:gateway)
-      params[:broadcast] = node.network.interfaces[node.network.default_interface].addresses[params[:address]].broadcast unless params.has_key?(:broadcast)
-      params[:netmask] = node.network.interfaces[node.network.default_interface].addresses[params[:address]].netmask unless params.has_key?(:netmask)
-    end
-
     # merge the configuration
     config = Array.new
     params.each do |key,value| 
       unless ["inet", "auto"].include? key
         config << "  #{key} #{value}" 
       end
+    end
+
+    # try to get configuration of the default interface from Ohai
+    if name == node.network.default_interface and inet == 'static'
+      config[:address] = node.ipaddress unless config.has_key?(:address)
+      config[:gateway] = node.network.default_gateway unless config.has_key?(:gateway)
+      config[:broadcast] = node.network.interfaces[node.network.default_interface].addresses[config[:address]].broadcast unless config.has_key?(:broadcast)
+      config[:netmask] = node.network.interfaces[node.network.default_interface].addresses[config[:address]].netmask unless config.has_key?(:netmask)
     end
 
     template "/etc/network/interfaces.d/#{name}" do
