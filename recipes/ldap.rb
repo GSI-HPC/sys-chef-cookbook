@@ -73,5 +73,6 @@ unless node.sys.ldap.empty?
   # Should nscd run at all? Or just be removed from the system?
   service "nscd" do
     action [:stop, :disable]
+    only_if 'test -e /etc/init.d/nscd'
   end
 end
