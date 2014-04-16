@@ -55,10 +55,10 @@ unless interfaces.empty?
     auto = params.has_key?(:auto) ? params[:auto] : true
 
     # merge the configuration
-    config = Array.new
-    params.each do |key,value| 
+    config = Hash.new
+    params.each do |key,value|
       unless ["inet", "auto"].include? key
-        config << "  #{key} #{value}" 
+        config[key] = value
       end
     end
 
