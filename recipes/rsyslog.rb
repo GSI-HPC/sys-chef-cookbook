@@ -2,7 +2,7 @@
 # extremly basic loghost setup
 #
 
-if node[:rsyslog].has_key?('server_ip')
+if node[:rsyslog].has_key?('server_ip') and !node[:rsyslog][:server_ip].nil?
 
   package "rsyslog"
 
