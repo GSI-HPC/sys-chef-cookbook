@@ -16,7 +16,7 @@ validation_key   "<%= @validation_key %>"
 
 file_backup_path "/var/backups/chef"
 file_cache_path  "/var/cache/chef"
-pid_file         "/var/run/chef/chef-client.pid"
+pid_file         "/var/run/chef/client.pid"
 
 # configuration for Ohai:
 Ohai::Config[:disabled_plugins] = [ "<%= @odisable.join('","')%>" ]
