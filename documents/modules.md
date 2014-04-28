@@ -1,8 +1,19 @@
-Load a Linux kernel module with `sys_module` followed by
-the name of the module.
+Load kernel modules, and add the to `/etc/modules`.
 
 ↪ `definitions/sys_module.rb`
+↪ `definitions/sys_module.rb`
 
-    sys_module "ext3"
+**Attributes**
 
-The module will be added to `/etc/modules`.
+Add modules to the attribute `node.sys.modules`, e.g.:
+
+    :sys => {
+      :modules => ['fuse']
+    }
+
+**Resources**
+ 
+Load a Linux kernel module with `sys_module` resource:
+
+    sys_module 'fuse'
+
