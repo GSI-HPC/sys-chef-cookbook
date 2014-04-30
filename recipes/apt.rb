@@ -57,9 +57,9 @@ unless node.sys.apt.preferences.empty?
       end
       next
     end
-    pref[:package] = '*' unless pref.has_key? 'package'
+    pkg = '*' unless pref.has_key? 'package'
     sys_apt_preference name do
-      package pref[:package]
+      package pkg
       pin pref[:pin]
       priority pref[:priority]
     end
