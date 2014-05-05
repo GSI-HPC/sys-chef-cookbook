@@ -57,7 +57,7 @@ unless node.sys.apt.preferences.empty?
       end
       next
     end
-    pkg = '*' unless pref.has_key? 'package'
+    pkg = pref[:package] || '*'
     sys_apt_preference name do
       package pkg
       pin pref[:pin]
