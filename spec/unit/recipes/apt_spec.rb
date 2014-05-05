@@ -91,12 +91,18 @@ describe 'sys::apt' do
     end
 
     it 'manages /etc/apt/preferences.d/*' do
-      expect(chef_run).to set_sys_apt_preference('foopref')
+      expect(chef_run).to set_sys_apt_preference('foopref').with_package('foobar').with_pin('version 666').with_priority(1001)
 
       file = '/etc/apt/preferences.d/foopref'
       res = chef_run.find_resource(:template, file)
       expect(res).to notify("execute[#{@apt_update}]").to(:run).immediately
-      expect(chef_run).to create_template(file).with_mode('0644')
+      expect(chef_run).to create_template(file).with_mode('0644').with_variables({
+        :name => 'foopref',
+        :package => 'foobar',
+        :pin => 'version 666',
+        :priority => 1001
+      })
+      expect(chef_run).to render_file(file).with_content('Package: foobar')
     end
   end
 
