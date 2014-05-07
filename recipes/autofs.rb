@@ -74,9 +74,16 @@ unless node.sys.autofs.ldap.empty?
   template "/etc/default/autofs" do
     source "etc_default_autofs.erb"
     mode "0644"
+    if node.sys.autofs.ldap.browsemode
+      browsemode = "yes"
+    else
+      browsemode = "no"
+    end
+
     variables({
       :uris => node.sys.autofs.ldap.servers,
-      :searchbase => node.sys.autofs.ldap.searchbase
+      :searchbase => node.sys.autofs.ldap.searchbase,
+      :browsemode => browsemode
     })
     notifies :restart, 'service[autofs]', :delayed
   end

@@ -1,6 +1,6 @@
 MASTER_MAP_NAME=/etc/auto.master
 TIMEOUT=300
-BROWSE_MODE="no"
+BROWSE_MODE="<%= @browsemode %>"
 LOGGING="none"
 LDAP_URI="<% @uris.each do |uri| -%><%= "ldap://" + uri + "/"%> <% end -%>"
 SEARCH_BASE="<%= @searchbase %>"
