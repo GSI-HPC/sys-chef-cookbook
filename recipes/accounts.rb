@@ -29,25 +29,29 @@ unless (node.sys.accounts.empty? and node.sys.groups.empty?)
     end
   end
   
-  node.sys.accounts.each do |name,account|
-    
+  node.sys.accounts.each do |name,account|       
+
     # Currently data bags aren't supported when running chef-solo,
     # but this will be implemented in a coming version!
     unless Chef::Config[:solo]
       # merge with user specific data bag if existing
       if data_bag('accounts').include?(name)
         bag = data_bag_item('accounts', name)
-        if bag.has_key?('account')          
+        if bag.has_key?('account')
           Chef::Log.debug "data bag found for account #{name}."
-          node.default[:sys][:accounts][name][:account][:comment] = bag['comment'] unless account.has_key?('comment')
-          # make sure account hash exists
-          account = Hash.new unless account
+
+          # we have to turn the node object into a plain hash,
+          #  otherwise we cannot add data from a bag:
+          account = account ? account.to_hash : Hash.new
+
+          account[:comment] = bag['comment'] unless account.has_key?('comment')
+
           # Merge the existing account information with the data-bag
           bag['account'].each do |k,v|
             unless account[k]
-              node.default[:sys][:accounts][name][:account][k] = v
+              account[k] = v
               if k == 'home' and not account[:supports]
-                node.default[:sys][:accounts][name][:account][:supports] =  { :manage_home => true }
+                account[:supports] =  { :manage_home => true }
               end
               Chef::Log.debug "Adding info from data-bag: #{k}: #{v}"
             end
