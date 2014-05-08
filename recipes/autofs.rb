@@ -74,9 +74,10 @@ unless node.sys.autofs.ldap.empty?
   template "/etc/default/autofs" do
     source "etc_default_autofs.erb"
     mode "0644"
-    if node.sys.autofs.ldap.browsemode
+    begin
+      node.sys.autofs.ldap.browsemode
       browsemode = "yes"
-    else
+    rescue
       browsemode = "no"
     end
 
