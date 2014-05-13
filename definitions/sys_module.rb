@@ -19,8 +19,10 @@ define :sys_module do
     command %Q[echo "#{params[:name]}" >> /etc/modules]
     not_if %Q[grep "^#{params[:name]}$" /etc/modules]
   end
+
+  module_name = params[:name].split(' ').first
   execute "Load module #{params[:name]}" do
     command "modprobe #{params[:name]}"
-    not_if "lsmod | grep #{params[:name]}"
+    not_if "lsmod | grep #{module_name}"
   end
 end
