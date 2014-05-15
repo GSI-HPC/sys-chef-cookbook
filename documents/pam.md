@@ -16,6 +16,7 @@ All attributes in `node.sys.pam`:
 
 * `limits` holds an array of ulimits written to `/etc/security/limits.conf`.
 * `access` holds an array of rules written to `/etc/security/access.conf`.
+* `group` holds an array of rules written to `/etc/security/group.conf`.
 
 It is possible to write any file in the `/etc/pam.d/` directory using attributes in `node.sys.pamd`. The key needs to be called like the file to be altered (e.g. `common-session` or `common-auth`) and the value is a string containing the entire configuration. (A single string is used to prevent merge problems.)
 
@@ -29,10 +30,23 @@ For Example:
           "+:ALL:LOCAL",
           "-:ALL:ALL" 
         ],
+        "group" => [
+          # minimal specification using defaults:
+          { 'usr' => 'tschipfel', 'grp' => 'sudo' }
+          # complete example (allow dummbabbler to read syslog while 
+          #                   logging in via console tty1 on workhours)
+          {
+            'usr'  => 'dummbabbler',
+            'grp'  => 'adm',
+            'srv'  => 'login',
+            'tty'  => 'tty1',
+            'time' => 'Wk0900-1800'
+          }
+        ],
         "limits" => [
           "*    hard memlock unlimited",
           "*    soft memlock unlimited"
-        ]
+        ]        
       },
       "pamd" => {
         "common-session" => "
