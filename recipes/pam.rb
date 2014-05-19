@@ -81,3 +81,29 @@ unless node.sys.pamd.empty?
     end
   end
 end
+
+unless node.sys.pamupdate.empty?
+  begin
+    configs = Array.new
+
+    node.sys.pamupdate.each do |name, values|
+      configs << PamUpdate::Profile.new(name, values)
+    end
+
+    generator = PamUpdate::Writer.new(configs)
+
+    directory "/tmp/pam.d"
+
+    %w[ account auth password session session-noninteractive ].each do |type|
+      file "/etc/pam.d/common-#{type}" do
+        owner "root"
+        group "root"
+        mode "0644"
+        content generator.send(type)
+      end
+    end
+  rescue PamUpdateError => e
+    Chef::Log.info(e)
+    Chef::Log.info("Not changing /etc/common-*")
+  end
+end
