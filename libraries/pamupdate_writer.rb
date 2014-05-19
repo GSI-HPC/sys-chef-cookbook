@@ -66,7 +66,7 @@ class PamUpdate
 
       config = PamUpdate::Config.new(type)
 
-      %i[Primary Additional].each do |block|
+      [:Primary, :Additional].each do |block|
         stackposition = 0
         profiles.each do |profile|
           next unless profile.fields["#{type.capitalize}-Type"]
