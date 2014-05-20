@@ -92,14 +92,15 @@ unless node.sys.pamupdate.empty?
 
     generator = PamUpdate::Writer.new(configs)
 
-    directory "/tmp/pam.d"
-
     %w[ account auth password session session-noninteractive ].each do |type|
-      file "/etc/pam.d/common-#{type}" do
+      template "/etc/pam.d/common-#{type}" do
         owner "root"
         group "root"
         mode "0644"
-        content generator.send(type)
+        variables(
+          :rules => generator.send(type),
+          :name => "common-#{type}"
+        )
       end
     end
   rescue PamUpdateError => e
