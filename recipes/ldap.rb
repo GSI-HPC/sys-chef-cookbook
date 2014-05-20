@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-unless node.sys.ldap.empty?
+if ! node.sys.ldap.empty? && File.exists?("/etc/nslcd.keytab")
   %w(
     nslcd
     kstart

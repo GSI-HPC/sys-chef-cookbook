@@ -47,7 +47,7 @@ if ! node.sys.autofs.maps.empty? && node.sys.autofs.ldap.empty?
   end
 end
 
-unless node.sys.autofs.ldap.empty?
+if ! node.sys.autofs.ldap.empty? && File.exists?("/etc/autofs.keytab")
   package "autofs"
   package "autofs-ldap"
   package "kstart"
