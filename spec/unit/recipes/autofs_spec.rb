@@ -79,7 +79,8 @@ describe 'sys::autofs' do
       expect(chef_run).to create_template('/etc/default/autofs').with_mode("0644").with(
         :variables => {
           :uris => [ 'ldap01.example.com', 'ldap02.example.com' ],
-          :searchbase => 'dc=example,dc=com'
+          :searchbase => 'dc=example,dc=com',
+          :browsemode => 'no'
         }
       )
 
