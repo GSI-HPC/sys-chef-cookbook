@@ -94,6 +94,7 @@ unless node.sys.pamupdate.empty?
 
     %w[ account auth password session session-noninteractive ].each do |type|
       template "/etc/pam.d/common-#{type}" do
+        source "etc_pam.d_generic.erb"
         owner "root"
         group "root"
         mode "0644"
