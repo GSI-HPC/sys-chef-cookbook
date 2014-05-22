@@ -2,7 +2,18 @@ class PamUpdate
 
   class Profile
 
+    include Comparable
+
     attr_reader :fields
+
+    def <=>(another)
+      priority = another.fields()[:Priority] <=> fields()[:Priority]
+      if priority == 0
+        fields()[:Name] <=> another.fields()[:Name]
+      else
+        priority
+      end
+    end
 
     private
     attr_reader :directory, :filename, :content
@@ -20,8 +31,8 @@ class PamUpdate
       elsif source.kind_of?(Hash)
         self.fields = source
       else
-        raise ProfileError, "Wrong type of data to given to initialize object of
-      class profile"
+        raise ProfileError, "Wrong type of data to given to \
+initialize object of class profile"
       end
       validate()
     end # def initialize
@@ -29,12 +40,12 @@ class PamUpdate
     def validate
       if profile.nil? || profile.empty?
         raise ProfileError, "No profile specified."
-      elsif ! fields()["Name"]
+      elsif ! fields()[:Name]
         raise ProfileError, "#{profile} does not have a name."
-      elsif ! fields()["Default"]
-        raise ProfileError, "#{fields()['Name']} does not have a value for fields[Default]."
-      elsif ! fields()["Priority"]
-        raise ProfileError, "#{fields()['Name']} does not have a Priority set."
+      elsif ! fields()[:Default]
+        raise ProfileError, "#{fields()[:Name]} does not have a value for fields[:Default]."
+      elsif ! fields()[:Priority]
+        raise ProfileError, "#{fields()[:Name]} does not have a Priority set."
       end
     end
 
@@ -56,19 +67,19 @@ class PamUpdate
         if matches = %r{^(\S+):\s+(.*)$}.match(line)
           fieldname = matches[1]
           if fieldname == "Conflicts"
-            fields[fieldname] = matches[2].split(',').map { |c| c.strip}
+            fields[fieldname.to_sym] = matches[2].split(',').map { |c| c.strip}
           else
-            fields[fieldname] = matches[2]
+            fields[fieldname.to_sym] = matches[2]
           end # if
         elsif matches = %r{^\s+}.match(line)
-          fields[fieldname] = line.strip
+          fields[fieldname.to_sym] = line.strip
         end # if
       end # File
 
-      unless fields["Session-Interactive-Only"]
-        fields['Session-noninteractive-Type'] = fields['Session-Type'];
-        fields['Session-noninteractive'] = fields['Session'];
-        fields['Session-noninteractive-Initial'] = fields['Session-Initial'];
+      unless fields()[:"Session-Interactive-Only"]
+        self.fields[:'Session-noninteractive-Type'] = fields()[:'Session-Type'];
+        self.fields[:'Session-noninteractive'] = fields()[:'Session'];
+        self.fields[:'Session-noninteractive-Initial'] = fields()[:'Session-Initial'];
       end # end if
     end # def parse
   end # class Profile

@@ -18,11 +18,11 @@ class PamUpdate
     end
 
     def initialize(profiles)
+      @configs = Array.new
       self.profiles = profiles
     end # def initialize
 
     def add_config(config)
-      @configs ||= Array.new
       unless @configs.inject(false) { |acc, v| acc ||= v.type == config.type }
         @configs << config
       end
@@ -32,7 +32,7 @@ class PamUpdate
     def profiles=(values)
       # Throw away anything that has not Default set to yes
       @profiles = values.inject(Array.new) do |ps, p|
-        if p.fields["Default"] == "yes"
+        if p.fields[:Default] == "yes"
           ps << p
         else
           ps
@@ -40,22 +40,15 @@ class PamUpdate
       end
 
       # Sort everything
-      @profiles.sort! do |x,y|
-        priority = y.fields["Priority"] <=> x.fields["Priority"]
-        if priority == 0
-          x.fields["Name"] <=> y.fields["Name"]
-        else
-          priority
-        end
-      end
+      @profiles.sort!
     end
 
     def lines_for_module_and_type(profile, position, type)
       realtype = type.sub(/-noninteractive/, '')
-      if position == 0 && profile.fields["#{type.capitalize}-Initial"]
-        realtype + "\t\t" + profile.fields["#{type.capitalize}-Initial"]
+      if position == 0 && profile.fields[:"#{type.capitalize}-Initial"]
+        realtype + "\t\t" + profile.fields[:"#{type.capitalize}-Initial"]
       else
-        realtype + "\t\t" + profile.fields[type.capitalize]
+        realtype + "\t\t" + profile.fields[type.capitalize.to_sym]
       end
     end # lines_for_module_and_type
 
@@ -65,26 +58,33 @@ class PamUpdate
     def get_configs(type)
 
       config = PamUpdate::Config.new(type)
-
+      realtype = String.new
       [:Primary, :Additional].each do |block|
         stackposition = 0
         profiles.each do |profile|
-          next unless profile.fields["#{type.capitalize}-Type"]
-          next unless profile.fields["#{type.capitalize}-Type"] == block.to_s
+          next unless profile.fields[:"#{type.capitalize}-Type"]
+          next unless profile.fields[:"#{type.capitalize}-Type"] == block.to_s
           config.block[block] << lines_for_module_and_type(profile, stackposition, type)
           stackposition += 1
         end
         realtype = type.sub(/-noninteractive/, '')
-        if block.equal?(:Primary)
-          if config.block[block].length == 0
-            config.block[block] << "#{realtype}\t\t[default=1]\t\tpam_permit.so"
-          end
-          config.block[block] << "#{realtype}\t\trequisite\t\tpam_deny.so"
-          config.block[block] << "#{realtype}\t\trequired\t\tpam_permit.so"
-        end
       end
-      add_config(config)
-    end # def write_profiles
+
+      if config.block[:Additional].length == 0 &&
+          config.block[:Primary].length == 0
+        config = nil
+      elsif config.block[:Primary].length > 0
+        config.block[:Primary] << "#{realtype}\t\trequisite\t\tpam_deny.so"
+        config.block[:Primary] << "#{realtype}\t\trequired\t\tpam_permit.so"
+      elsif config.block[:Additional].length > 0 &&
+          config.block[:Primary].length == 0
+          config.block[:Primary] << "#{realtype}\t\t[default=1]\t\tpam_permit.so"
+          config.block[:Primary] << "#{realtype}\t\trequisite\t\tpam_deny.so"
+          config.block[:Primary] << "#{realtype}\t\trequired\t\tpam_permit.so"
+      end
+
+      add_config(config) if config
+    end
 
     # Assume strings to be in the correct order in the arrays. Now fix
     # jump-addresses and create contents of config files as string
@@ -105,7 +105,12 @@ class PamUpdate
           output += "#{entry}\n"
         end
       end
-      output
+
+      if ! output.empty?
+        output
+      else
+        nil
+      end
     end # create_configs
   end # class Writer
 end # class PamUpdate
