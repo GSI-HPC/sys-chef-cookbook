@@ -17,11 +17,10 @@ class PamUpdate
 
     private
     attr_reader :directory, :filename, :content
-    attr_accessor :profile, :filename
+    attr_accessor :filename
     attr_writer :fields
 
-    def initialize(profile, source="/etc/pam-configs")
-      self.profile = profile
+    def initialize(source="/etc/pam-configs")
       self.fields = Hash.new
       if source.kind_of?(String)
         self.directory = source
@@ -49,9 +48,7 @@ initialize object of class profile"
         end
       end
 
-      if profile.nil? || profile.empty?
-        raise ProfileError, "No profile specified."
-      elsif ! fields()[:Name]
+      if ! fields()[:Name]
         raise ProfileError, "#{profile} does not have a name."
       elsif ! fields()[:Default]
         raise ProfileError, "#{fields()[:Name]} does not have a value for fields[:Default]."
