@@ -101,4 +101,126 @@ describe 'sys::pam' do
       )
     end
   end
+
+  context "with attributes for active pam-updates" do
+    before do
+      chef_run.node.default['sys']['pamupdate'] = {
+        "access" => {
+          :Name => "access",
+          :Default => "yes",
+          :Priority => "256",
+          :"Account-Type" => "Additional",
+          :Account => "required			pam_access.so" },
+        "group" => {
+          :Name => "PAM group",
+          :Default => "yes",
+          :Priority => "256",
+          :"Auth-Type" => "Additional",
+          :Auth => "optional			pam_group.so" },
+        "unix" => {
+          :Name => "Unix authentication",
+          :Default => "yes",
+          :Priority => "256",
+          :"Auth-Type" => "Primary",
+          :Auth => "[success=end default=ignore]	pam_unix.so nullok_secure try_first_pass",
+          :"Auth-Initial" => "[success=end default=ignore]	pam_unix.so nullok_secure",
+          :"Account-Type" => "Primary",
+          :Account => "[success=end new_authtok_reqd=done default=ignore]	pam_unix.so",
+          :"Account-Initial" => "[success=end new_authtok_reqd=done default=ignore]	pam_unix.so",
+          :"Session-Type" => "Additional",
+          :Session => "required	pam_unix.so",
+          :"Session-Initial" => "required	pam_unix.so",
+          :"Password-Type" => "Primary",
+          :Password => "[success=end default=ignore]	pam_unix.so obscure use_authtok try_first_pass sha512",
+          :"Password-Initial" => "[success=end default=ignore]	pam_unix.so obscure sha512" },
+        "krb5" => {
+          :Name => "Kerberos authentication",
+          :Default => "yes",
+          :Priority => "704",
+          :Conflicts => "krb5-openafs",
+          :"Auth-Type" => "Primary",
+          :Auth => "[success=end default=ignore]	pam_krb5.so minimum_uid=1000 try_first_pass",
+          :"Auth-Initial" => "[success=end default=ignore]	pam_krb5.so minimum_uid=1000",
+          :"Account-Type" => "Additional",
+          :Account => "required			pam_krb5.so minimum_uid=1000",
+          :"Password-Type" => "Primary",
+          :Password => "[success=end default=ignore]	pam_krb5.so minimum_uid=1000 try_first_pass use_authtok",
+          :"Password-Initial" => "[success=end default=ignore]	pam_krb5.so minimum_uid=1000",
+          :"Session-Type" => "Additional",
+          :Session => "optional			pam_krb5.so minimum_uid=1000" }}
+      chef_run.converge(described_recipe)
+    end
+
+    it "should create /etc/pam.d/common-auth" do
+      expect(chef_run).to create_template('/etc/pam.d/common-auth')
+      expect(chef_run).to render_file('/etc/pam.d/common-auth').with_content(
+        "# /etc/pam.d/common-auth
+#
+# DO NOT CHANGE THIS FILE MANUALLY!
+#
+# This file is managed by the Chef `sys` cookbook.
+
+auth\t\t[success=2 default=ignore]\tpam_krb5.so minimum_uid=1000
+auth\t\t[success=1 default=ignore]\tpam_unix.so nullok_secure try_first_pass
+auth\t\trequisite\t\tpam_deny.so
+auth\t\trequired\t\tpam_permit.so
+auth\t\toptional\t\t\tpam_group.so"
+      )
+    end
+  end
+
+  context "with attributes for inactive pam-updates" do
+    before do
+      chef_run.node.default['sys']['pamupdate'] = {
+        "access" => {
+          :Name => "access",
+          :Default => "anything but yes",
+          :Priority => "256",
+          :"Account-Type" => "Additional",
+          Account: "required			pam_access.so" },
+        "group" => {
+          :Name => "PAM group",
+          :Default => "no",
+          :Priority => "256",
+          :"Auth-Type" => "Additional",
+          :Auth => "optional			pam_group.so" },
+        "unix" => {
+          :Name => "Unix authentication",
+          :Default => "false",
+          :Priority => "256",
+          :"Auth-Type" => "Primary",
+          :Auth => "[success=end default=ignore]	pam_unix.so nullok_secure try_first_pass",
+          :"Auth-Initial" => "[success=end default=ignore]	pam_unix.so nullok_secure",
+          :"Account-Type" => "Primary",
+          :Account => "[success=end new_authtok_reqd=done default=ignore]	pam_unix.so",
+          :"Account-Initial" => "[success=end new_authtok_reqd=done default=ignore]	pam_unix.so",
+          :"Session-Type" => "Additional",
+          :Session => "required	pam_unix.so",
+          :"Session-Initial" => "required	pam_unix.so",
+          :"Password-Type" => "Primary",
+          :Password => "[success=end default=ignore]	pam_unix.so obscure use_authtok try_first_pass sha512",
+          :"Password-Initial" => "[success=end default=ignore]	pam_unix.so obscure sha512" },
+        "krb5" => {
+          :Name => "Kerberos authentication",
+          :Default => "och noe",
+          :Priority => "704",
+          :Conflicts => "krb5-openafs",
+          :"Auth-Type" => "Primary",
+          :Auth => "[success=end default=ignore]	pam_krb5.so minimum_uid=1000 try_first_pass",
+          :"Auth-Initial" => "[success=end default=ignore]	pam_krb5.so minimum_uid=1000",
+          :"Account-Type" => "Additional",
+          :Account => "required			pam_krb5.so minimum_uid=1000 ignore_k5login",
+          :"Password-Type" => "Primary",
+          :Password => "[success=end default=ignore]	pam_krb5.so minimum_uid=1000 try_first_pass use_authtok",
+          :"Password-Initial" => "[success=end default=ignore]	pam_krb5.so minimum_uid=1000",
+          :"Session-Type" => "Additional",
+          :Session => "optional			pam_krb5.so minimum_uid=1000" }}
+      chef_run.converge(described_recipe)
+    end
+
+    it "should do nothing" do
+      expect(chef_run).to_not create_template('/etc/pam.d/common-auth')
+      expect(chef_run.run_context.resource_collection).to be_empty
+    end
+  end
 end
