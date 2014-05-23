@@ -22,14 +22,16 @@ class PamUpdate
 
     def initialize(profile, source="/etc/pam-configs")
       self.profile = profile
+      self.fields = Hash.new
       if source.kind_of?(String)
         self.directory = source
         self.filename = "#{directory}#{profile}"
         self.content = File.read(filename)
-        self.fields = Hash.new
         parse()
       elsif source.kind_of?(Hash)
-        self.fields = source
+        source.each do |k,v|
+          self.fields[k.to_sym] = v
+        end
       else
         raise ProfileError, "Wrong type of data to given to \
 initialize object of class profile"
@@ -38,6 +40,15 @@ initialize object of class profile"
     end # def initialize
 
     def validate
+
+      acc = true
+      fields().each_key do |k|
+        acc &&= k.instance_of?(Symbol)
+        if ! acc
+          raise ProfileError, "#{k} is not a symbol."
+        end
+      end
+
       if profile.nil? || profile.empty?
         raise ProfileError, "No profile specified."
       elsif ! fields()[:Name]
