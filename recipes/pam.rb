@@ -93,15 +93,18 @@ unless node.sys.pamupdate.empty?
     generator = PamUpdate::Writer.new(configs)
 
     %w[ account auth password session session-noninteractive ].each do |type|
-      template "/etc/pam.d/common-#{type}" do
-        source "etc_pam.d_generic.erb"
-        owner "root"
-        group "root"
-        mode "0644"
-        variables(
-          :rules => generator.send(type),
-          :name => "common-#{type}"
-        )
+      content = generator.send(type)
+      unless content.nil?
+        template "/etc/pam.d/common-#{type}" do
+          source "etc_pam.d_generic.erb"
+          owner "root"
+          group "root"
+          mode "0644"
+          variables(
+            :rules => content,
+            :name => "common-#{type}"
+          )
+        end
       end
     end
   rescue PamUpdateError => e
