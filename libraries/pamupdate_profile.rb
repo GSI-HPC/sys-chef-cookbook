@@ -16,15 +16,14 @@ class PamUpdate
     end
 
     private
-    attr_reader :directory, :filename, :content
+    attr_reader :filename, :content
     attr_accessor :filename
     attr_writer :fields
 
-    def initialize(source="/etc/pam-configs")
+    def initialize(source)
       self.fields = Hash.new
       if source.kind_of?(String)
-        self.directory = source
-        self.filename = "#{directory}#{profile}"
+         self.filename = source
         self.content = File.read(filename)
         parse()
       elsif source.kind_of?(Hash)
@@ -54,14 +53,6 @@ initialize object of class profile"
         raise ProfileError, "#{fields()[:Name]} does not have a value for fields[:Default]."
       elsif ! fields()[:Priority]
         raise ProfileError, "#{fields()[:Name]} does not have a Priority set."
-      end
-    end
-
-    def directory=(value)
-      if value =~ %r{^.*/$}
-        @directory = value
-      else
-        @directory = value << "/"
       end
     end
 
