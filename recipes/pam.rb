@@ -86,8 +86,8 @@ unless node.sys.pamupdate.empty?
   begin
     configs = Array.new
 
-    node.sys.pamupdate.each do |name, values|
-      configs << PamUpdate::Profile.new(name, values)
+    node.sys.pamupdate.each_value do |values|
+      configs << PamUpdate::Profile.new(values)
     end
 
     generator = PamUpdate::Writer.new(configs)
