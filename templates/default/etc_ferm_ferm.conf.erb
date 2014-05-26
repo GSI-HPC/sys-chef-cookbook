@@ -1,0 +1,17 @@
+# -*- shell-script -*-
+#
+#  Configuration file for ferm(1), created by Chef cookbook sys::ferm
+#
+
+<% node.sys.ferm.table.each do |table| -%>
+table <%= table %> {
+    <% table.keys.each do |chain| -%>
+    chain <%= chain %> {
+        <% chain.each do |rule| -%>
+        <%= rule %>
+        <% end -%>
+    }
+    <% end -%>
+}
+<% end -%>
+
