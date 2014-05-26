@@ -3,12 +3,16 @@
 #  Configuration file for ferm(1), created by Chef cookbook sys::ferm
 #
 
-<% node.sys.ferm.table.each do |table, chains| -%>
-table <%= table %> {
-    <% chains.each do |chain, rules| -%>
-    chain <%= chain %> {
-        <% rules.each do |rule| -%>
-        <%= rule %>
+<% node.sys.ferm.rules.each do |domain, tables| -%>
+domain <%= domain %> {
+    <% tables.each do |table, chains| -%>
+    table <%= table %> {
+        <% chains.each do |chain, rules| -%>
+        chain <%= chain %> {
+            <% rules.each do |rule| -%>
+            <%= rule %>
+            <% end -%>
+        }
         <% end -%>
     }
     <% end -%>
