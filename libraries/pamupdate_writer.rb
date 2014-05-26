@@ -47,8 +47,10 @@ class PamUpdate
       realtype = type.sub(/-noninteractive/, '')
       if position == 0 && profile.fields[:"#{type.capitalize}-Initial"]
         realtype + "\t\t" + profile.fields[:"#{type.capitalize}-Initial"]
-      else
+      elsif profile.fields[type.capitalize.to_sym]
         realtype + "\t\t" + profile.fields[type.capitalize.to_sym]
+      else
+        realtype + "\t\t" + profile.fields["#{type.capitalize}-Initial".to_sym]
       end
     end # lines_for_module_and_type
 
