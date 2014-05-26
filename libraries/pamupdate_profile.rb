@@ -31,8 +31,8 @@ class PamUpdate
           self.fields[k.to_sym] = v
         end
       else
-        raise ProfileError, "Wrong type of data to given to \
-initialize object of class profile"
+        raise ProfileError, "Wrong type of data to \
+initialize object of class profile."
       end
       validate()
     end # def initialize
@@ -48,7 +48,7 @@ initialize object of class profile"
       end
 
       if ! fields()[:Name]
-        raise ProfileError, "#{profile} does not have a name."
+        raise ProfileError, "Object #{self.object_id} does not have a name."
       elsif ! fields()[:Default]
         raise ProfileError, "#{fields()[:Name]} does not have a value for fields[:Default]."
       elsif ! fields()[:Priority]
