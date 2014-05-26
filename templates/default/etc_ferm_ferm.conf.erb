@@ -3,11 +3,11 @@
 #  Configuration file for ferm(1), created by Chef cookbook sys::ferm
 #
 
-<% node.sys.ferm.table.each do |table| -%>
+<% node.sys.ferm.table.each do |table, chains| -%>
 table <%= table %> {
-    <% table.keys.each do |chain| -%>
+    <% chains.each do |chain, rules| -%>
     chain <%= chain %> {
-        <% chain.each do |rule| -%>
+        <% rules.each do |rule| -%>
         <%= rule %>
         <% end -%>
     }
