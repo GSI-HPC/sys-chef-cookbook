@@ -165,7 +165,7 @@ linkUpDownNotifications  yes
 #  "Pass-through" MIB extension command
 #
 <% @extensions.each do |ext| -%>
-<%= ext[:type] <%= ext[:oid] %> <%= ext[:interpreter] %> <%= ext[:executable %> <%= ext[:params] %>
+<%= ext[:type] %> <%= ext[:oid] %> <%= ext[:interpreter] %> <%= ext[:executable] %> <%= ext[:params] %>
 <%- end %>
 
 #
