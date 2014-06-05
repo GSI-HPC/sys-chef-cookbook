@@ -10,6 +10,8 @@
 #  Listen for connections on these interfaces:
 agentAddress  <%= @agent_address || 'udp:127.0.0.1:161' %>
 
+<%= 'dontLogTCPWrappersConnects' unless @log_connects %>
+
 ###############################################################################
 #
 #  SNMPv3 AUTHENTICATION
@@ -93,6 +95,8 @@ proc  sendmail 10 1
 disk       /     10000
 disk       /var  5%
 includeAllDisks  10%
+
+<%= 'skipNFSInHostResources true' unless @report_nfs %>
 
 #  Walk the UCD-SNMP-MIB::dskTable to see the resulting output
 #  Note that this table will be empty if there are no "disk" entries in the snmpd.conf file
