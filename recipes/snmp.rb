@@ -37,7 +37,11 @@ if node['sys']['snmp']
         :sys_location  => node['sys']['snmp']['sys_location']
       })
   end
-  
+
+  # TODO: for now the defaultMonitors are turned off, they produce bogus error messages on service startup
+  #       unless MIBs are available (package 'snmp-mibs-downloader') 
+  #       and configured in /etc/default/snmpd ('export MIBS=/usr/share/mibs')
+
   service 'snmpd' do
     action [:enable, :start]
   end
