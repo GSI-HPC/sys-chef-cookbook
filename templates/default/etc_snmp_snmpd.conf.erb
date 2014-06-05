@@ -8,7 +8,7 @@
 #
 
 #  Listen for connections on these interfaces:
-agentAddress  <%= @agent_address %>
+agentAddress  <%= @agent_address || 'udp:127.0.0.1:161' %>
 
 ###############################################################################
 #
@@ -40,7 +40,7 @@ view   systemonly  included   .1.3.6.1.2.1.25.1
                                                  #  Full access from the local host
 #rocommunity public  localhost
                                                  #  Default access to basic system info
- rocommunity public  default    -V systemonly
+ rocommunity <%= @community || 'public' %>  default  <%= '-V systemonly' unless @full_access %>
 
                                                  #  Full access from an example network
                                                  #     Adjust this network address to match your local

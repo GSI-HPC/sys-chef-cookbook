@@ -16,11 +16,13 @@ if node['sys']['snmp']
     source 'etc_snmp_snmpd.conf.erb'
     notifies :restart, "service[snmpd]"
     variables({
-        # Default: Listen on loopback only 
-        :agent_address => node['sys']['snmp']['agent_address'] || 'udp:127.0.0.1:161',
-        :sys_contact   => node['sys']['snmp']['sys_contact']   || "Sysadmins <root@#{node['fqdn']}>",
-        :sys_location  => node['sys']['snmp']['sys_location' ], # no default here
-        :extensions    => node['sys']['snmp']['extensions'] || []
+        # Sane defaults are defined in the template if these are nil:
+        :agent_address => node['sys']['snmp']['agent_address'],
+        :community     => node['sys']['snmp']['community'],
+        :extensions    => node['sys']['snmp']['extensions'] || [],
+        :full_access   => node['sys']['snmp']['full_access'],
+        :sys_contact   => node['sys']['snmp']['sys_contact'] || "Sysadmins <root@#{node['fqdn']}>",
+        :sys_location  => node['sys']['snmp']['sys_location']
       })
   end
   
