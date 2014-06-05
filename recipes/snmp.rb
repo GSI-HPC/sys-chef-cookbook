@@ -13,7 +13,7 @@ if node['sys']['snmp']
   
   template '/etc/snmp/snmpd.conf' do
     mode 0600
-    source 'etc_snmp_snmpd_conf.erb'
+    source 'etc_snmp_snmpd.conf.erb'
     notifies :restart, "service[snmpd]"
     variables({
         # Default: Listen on loopback only 
