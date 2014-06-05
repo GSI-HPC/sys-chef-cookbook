@@ -136,7 +136,7 @@ load   12 10 5
 iquerySecName   internalUser       
 rouser          internalUser
                                    # generate traps on UCD error conditions
-defaultMonitors          yes
+defaultMonitors          <%= @default_monitors?'yes':'no' %>
                                    # generate traps on linkUp/Down
 linkUpDownNotifications  yes
 
