@@ -18,9 +18,9 @@ if node['sys']['snmp']
     variables({
         # Default: Listen on loopback only 
         :agent_address => node['sys']['snmp']['agent_address'] || 'udp:127.0.0.1:161',
-        :sys_contact   => node['sys']['snmp']['sys_contact']   || "Sysadmins <root@#{node['fqdn']}>"
-        :sys_location  => node['sys']['snmp']['sys_location' ] # no default here
-        :extensions    => { :pass => node['sys']['snmp']['extensions']['pass'] || []
+        :sys_contact   => node['sys']['snmp']['sys_contact']   || "Sysadmins <root@#{node['fqdn']}>",
+        :sys_location  => node['sys']['snmp']['sys_location' ], # no default here
+        :extensions    => node['sys']['snmp']['extensions'] || []
       })
   end
   

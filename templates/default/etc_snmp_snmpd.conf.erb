@@ -164,13 +164,9 @@ linkUpDownNotifications  yes
 #
 #  "Pass-through" MIB extension command
 #
-<% @extensions[:pass].each do |ext| -%>
-pass <%= ext[:oid] %> <%= ext[:interpreter] %> <%= ext[:executable %> <%= ext[:params] %>
+<% @extensions.each do |ext| -%>
+<%= ext[:type] <%= ext[:oid] %> <%= ext[:interpreter] %> <%= ext[:executable %> <%= ext[:params] %>
 <%- end %>
-
-
-#  Walk the NET-SNMP-PASS-MIB::netSnmpPassExamples subtree to see the resulting output
-
 
 #
 #  AgentX Sub-agents
