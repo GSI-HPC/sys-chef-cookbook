@@ -10,7 +10,7 @@
 #  Listen for connections on these interfaces:
 agentAddress  <%= @agent_address || 'udp:127.0.0.1:161' %>
 
-<%= 'dontLogTCPWrappersConnects' unless @log_connects %>
+<%= 'dontLogTCPWrappersConnects 1' unless @log_connects %>
 
 ###############################################################################
 #
