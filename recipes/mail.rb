@@ -46,7 +46,11 @@ unless relay.empty?
   template '/etc/postfix/main.cf' do
     source 'etc_postfix_main.cf.erb'
     mode "0644"
-    variables :relay => relay
+    variables({
+        :relay           => relay, 
+        :mynetworks      => node[:sys][:mail][:mynetworks],
+        :inet_interfaces => node[:sys][:mail][:inet_interfaces],
+      })
     notifies :reload, "service[postfix]"
   end
 
