@@ -49,6 +49,8 @@ class PamUpdate
         realtype + "\t\t" + profile.fields[:"#{type.capitalize}-Initial"]
       elsif profile.fields[type.capitalize.to_sym]
         realtype + "\t\t" + profile.fields[type.capitalize.to_sym]
+      elsif profile.fields[:"#{type.capitalize}-Final}"]
+        realtype + "\t\t" + profile.fields[:"#{type.capitalize}-Final}"]
       else
         realtype + "\t\t" + profile.fields["#{type.capitalize}-Initial".to_sym]
       end
@@ -80,9 +82,9 @@ class PamUpdate
         config.block[:Primary] << "#{realtype}\t\trequired\t\tpam_permit.so"
       elsif config.block[:Additional].length > 0 &&
           config.block[:Primary].length == 0
-          config.block[:Primary] << "#{realtype}\t\t[default=1]\t\tpam_permit.so"
-          config.block[:Primary] << "#{realtype}\t\trequisite\t\tpam_deny.so"
-          config.block[:Primary] << "#{realtype}\t\trequired\t\tpam_permit.so"
+        config.block[:Primary] << "#{realtype}\t\t[default=1]\t\tpam_permit.so"
+        config.block[:Primary] << "#{realtype}\t\trequisite\t\tpam_deny.so"
+        config.block[:Primary] << "#{realtype}\t\trequired\t\tpam_permit.so"
       end
 
       add_config(config) if config
