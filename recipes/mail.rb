@@ -51,7 +51,8 @@ unless relay.empty?
         :mynetworks      => node[:sys][:mail][:mynetworks],
         :inet_interfaces => node[:sys][:mail][:inet_interfaces],
       })
-    notifies :reload, "service[postfix]"
+    # after changes to main.cf postfix - sometimes - has to be restarted
+    notifies :restart, "service[postfix]"
   end
 
   node.sys.mail.aliases.each do |account,mail_address|
