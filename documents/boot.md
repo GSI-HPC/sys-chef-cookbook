@@ -10,6 +10,7 @@ apply changes.
 
 All attributes in `node.sys.boot`:
 
+* `grubdefault` (optional) Set GRUB_DEFAULT to 'saved' to boot selected kernel.
 * `params` (optional) list of Linux kernel boot parameters.
 * `config` (optional) additional configuration for Grub.
 
