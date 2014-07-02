@@ -18,6 +18,14 @@ if node[:rsyslog].has_key?('server_ip') and !node[:rsyslog][:server_ip].nil?
     content  "#{loghost_line}\n"
     notifies :restart, "service[rsyslog]"
   end
+  
+  # Include a complete rsyslog config file:
+  # 1) set log msgs rate limiting
+  # 2) all the mail.* event log will be directed only on /var/log/mail.*
+  template '/etc/rsyslog.conf'
+    source 'etc_rsyslog.conf.erb'
+    notifies :restart, "service[rsyslog]"
+  end
 
   service "rsyslog" do
     supports :restart => true, :status => true
