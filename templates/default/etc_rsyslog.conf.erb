@@ -16,8 +16,8 @@ $ModLoad imuxsock # provides support for local system logging
 #
 # Set the values for rate limiting the log messages.
 #
-<%= @rsyslog_ratelimit_interval ? "$SystemLogRateLimitInterval #{@rsyslog_ratelimit_interval}" : "$SystemLogRateLimitInterval 5" %>
-<%= @rsyslog_ratelimit_burst ? "$SystemLogRateLimitBurst #{@rsyslog_ratelimit_burst}" : "$SystemLogRateLimitBurst 200" %>
+<%= @ratelimit_interval ? "$SystemLogRateLimitInterval #{@ratelimit_interval}" : "$SystemLogRateLimitInterval 5" %>
+<%= @ratelimit_burst ? "$SystemLogRateLimitBurst #{@ratelimit_burst}" : "$SystemLogRateLimitBurst 200" %>
 
 $ModLoad imklog   # provides kernel logging support
 #$ModLoad immark  # provides --MARK-- message capability
