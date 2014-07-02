@@ -22,7 +22,7 @@ if node[:rsyslog].has_key?('server_ip') and !node[:rsyslog][:server_ip].nil?
   # Include a complete rsyslog config file:
   # 1) set log msgs rate limiting
   # 2) all the mail.* event log will be directed only on /var/log/mail.*
-  template '/etc/rsyslog.conf'
+  template '/etc/rsyslog.conf' do
     source 'etc_rsyslog.conf.erb'
     notifies :restart, "service[rsyslog]"
   end
