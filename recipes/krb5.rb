@@ -37,7 +37,7 @@ unless node.sys.krb5.empty?
       :servers => [ node.default.sys.krb5.master, node.default.sys.krb5.slave ],
       :domain => node.domain,
       :wallet_server => begin node.sys.krb5.wallet_server rescue nil end,
-      :use_pkinit => begin node.sys.krb5.use_pkinit rescue nil end,
+      :use_pkinit => begin node.sys.krb5.use_pkinit rescue nil end
     )
   end
 
