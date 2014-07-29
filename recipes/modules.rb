@@ -18,6 +18,9 @@
 #
 
 unless node.sys.modules.empty?
+
+  package "module-init-tools"
+
   node.sys.modules.each do |m|
     sys_module m
   end
