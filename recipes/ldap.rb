@@ -65,6 +65,19 @@ if ! node.sys.ldap.empty? && File.exists?("/etc/nslcd.keytab")
     )
   end
 
+  cookbook_file "/etc/init.d/nslcd" do
+    source "etc_init.d_nslcd"
+    owner "root"
+    group "root"
+    mode "0755"
+    notifies :run, "execute[update-run-levels]", :immediately
+  end
+
+  execute "update-run-levels" do
+    command "insserv /etc/init.d/nslcd"
+    action :nothing
+  end
+
   service "nslcd" do
     supports :restart => true
     action [:start, :enable]
