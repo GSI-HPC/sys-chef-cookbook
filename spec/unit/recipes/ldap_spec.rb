@@ -20,6 +20,7 @@ describe 'sys::ldap' do
       chef_run.node.default['sys']['ldap']['searchbase'] = 'dc=example,dc=com'
       chef_run.node.default['sys']['ldap']['realm'] = 'EXAMPLE.COM'
       chef_run.node.default['sys']['ldap']['cacert'] = "/etc/ssl/ca.cert"
+      chef_run.node.default['sys']['ldap']['nss_initgroups_ignoreusers'] = ['user1', 'user2']
       chef_run.node.automatic['fqdn'] = fqdn
       chef_run.converge(described_recipe)
     end
@@ -57,16 +58,19 @@ describe 'sys::ldap' do
       uris = uri_m + "\n" + uri_s
       authc = "sasl_authcid nslcd/node.example.com@EXAMPLE.COM"
       authz = "sasl_authzid u:nslcd/node.example.com"
+      nss_ignore = "nss_initgroups_ignoreusers user1, user2"
       expect(chef_run).to create_template('/etc/nslcd.conf').with(
         :variables => {
           :servers => [ chef_run.node.sys.ldap.master, chef_run.node.sys.ldap.slave ],
           :searchbase => chef_run.node.sys.ldap.searchbase,
-          :realm => chef_run.node.sys.ldap.realm.upcase
+          :realm => chef_run.node.sys.ldap.realm.upcase,
+          :nss_initgroups_ignoreusers => chef_run.node.sys.ldap.nss_initgroups_ignoreusers
         }
       )
       expect(chef_run).to render_file('/etc/nslcd.conf').with_content(uris)
       expect(chef_run).to render_file('/etc/nslcd.conf').with_content(authc)
       expect(chef_run).to render_file('/etc/nslcd.conf').with_content(authz)
+      expect(chef_run).to render_file('/etc/nslcd.conf').with_content(nss_ignore)
     end
 
     it 'defines ldap-servers in /etc/ldap/ldap.conf' do

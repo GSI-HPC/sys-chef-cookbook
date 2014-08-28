@@ -47,7 +47,8 @@ if ! node.sys.ldap.empty? && File.exists?("/etc/nslcd.keytab")
     variables(
       :servers => node.sys.ldap.servers,
       :searchbase => node.sys.ldap.searchbase,
-      :realm => node.sys.ldap.realm.upcase
+      :realm => node.sys.ldap.realm.upcase,
+      :nss_initgroups_ignoreusers => begin node.sys.ldap.nss_initgroups_ignoreusers rescue nil end
     )
   end
 
