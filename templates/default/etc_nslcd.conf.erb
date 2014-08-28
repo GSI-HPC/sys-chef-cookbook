@@ -15,6 +15,12 @@ URI ldap://<%= server %>
 
 # give up after 10 seconds
 timelimit 10
+# default for bind_timelimit
+bind_timelimit 10
+
+<% if @nss_initgroups_ignoreusers -%>
+nss_initgroups_ignoreusers <%= @nss_initgroups_ignoreusers.join(', ') %>
+<% end %>
 
 # The search base that will be used for all queries.
 base <%= @searchbase -%>
