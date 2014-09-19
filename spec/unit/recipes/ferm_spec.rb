@@ -1,5 +1,3 @@
-require 'chefspec'
-
 describe 'sys::ferm' do
   let(:chef_run) { ChefSpec::Runner.new }
 

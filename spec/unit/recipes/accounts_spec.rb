@@ -1,8 +1,11 @@
-require 'chefspec'
 require 'chefspec/server'
 
 describe 'sys::accounts' do
   let(:chef_run) { ChefSpec::Runner.new.converge(described_recipe) }
+
+  after(:all) do
+    ChefSpec::Server.stop!
+  end
 
   context 'node.sys.accounts.message is empty' do
     it 'does nothing' do

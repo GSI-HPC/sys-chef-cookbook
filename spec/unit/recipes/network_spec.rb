@@ -1,5 +1,3 @@
-require 'chefspec'
-
 describe 'sys::network' do
   let(:chef_run) { ChefSpec::Runner.new.converge(described_recipe) }
 

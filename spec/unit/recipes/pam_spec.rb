@@ -1,5 +1,3 @@
-require 'chefspec'
-
 describe 'sys::pam' do
   let(:chef_run) { ChefSpec::Runner.new.converge(described_recipe) }
 
