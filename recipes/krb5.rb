@@ -18,11 +18,11 @@
 #
 
 unless node.sys.krb5.empty?
+  # heimdal-docs 
   %w(
     heimdal-clients
     libpam-heimdal
     heimdal-kcm
-    heimdal-docs
     libsasl2-modules-gssapi-heimdal
   ).each { |p| package p }
 
