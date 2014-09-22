@@ -29,6 +29,7 @@ action :add do
         block do
           aliases_file = Chef::Util::FileEdit.new(new_resource.aliases_file)
           aliases_file.search_file_replace_line(alias_regexp, new_line)
+          aliases_file.write_file
         end
       end
 
@@ -48,6 +49,7 @@ action :add do
       block do
         aliases_file = Chef::Util::FileEdit.new(@new_resource.aliases_file)
         aliases_file.insert_line_if_no_match(alias_regexp, new_line)
+        aliases_file.write_file
       end
     end
 
@@ -64,6 +66,7 @@ action :remove do
       block do
         aliases_file = Chef::Util::FileEdit.new(new_resource.aliases_file)
         aliases_file.search_file_delete_line(alias_regexp, new_line)
+        aliases_file.write_file
       end
     end
 
