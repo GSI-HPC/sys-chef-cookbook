@@ -30,4 +30,12 @@ if defined?(ChefSpec)
   def remove_sys_apt_conf(name)
     ChefSpec::Matchers::ResourceMatcher.new(:sys_apt_conf, :remove, name)
   end
+
+  def add_sys_mail_alias(name)
+    ChefSpec::Matchers::ResourceMatcher.new(:sys_mail_alias, :add, name)
+  end
+
+  def remove_sys_mail_alias(name)
+    ChefSpec::Matchers::ResourceMatcher.new(:sys_mail_alias, :remove, name)
+  end
 end
