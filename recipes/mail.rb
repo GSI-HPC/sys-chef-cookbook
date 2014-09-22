@@ -3,6 +3,7 @@
 # Recipe:: mail
 #
 # Copyright 2012, Victor Penso
+# Copyright 2014, Dennis Klein
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -30,42 +31,46 @@ unless relay.empty?
     content "#{node.fqdn}\n"
   end
 
-  update_canonical = "Update Postfix canonicals"
+  update_canonical = 'Update Postfix canonicals'
   execute update_canonical do
     action :nothing
-    command "postmap /etc/postfix/canonical"
-    notifies :reload, "service[postfix]"
+    command 'postmap /etc/postfix/canonical'
+    notifies :reload, 'service[postfix]'
   end
 
   template '/etc/postfix/canonical' do
     source 'etc_postfix_canonical.erb'
-    mode "600"
-    notifies :run, "execute[#{update_canonical}]", :immediate
+    mode '0600'
+    notifies :run, "execute[#{update_canonical}]", :immediately
   end
 
   template '/etc/postfix/main.cf' do
     source 'etc_postfix_main.cf.erb'
-    mode "0644"
+    mode '0644'
     variables({
-        :relay           => relay, 
-        :mynetworks      => node[:sys][:mail][:mynetworks],
-        :inet_interfaces => node[:sys][:mail][:inet_interfaces],
-      })
+      :relay           => relay,
+      :mynetworks      => node.sys.mail.mynetworks,
+      :inet_interfaces => node.sys.mail.inet_interfaces,
+      :default_privs   => node.sys.mail.default_privs,
+      :mydestination   => node.sys.mail.mydestination
+    })
     # after changes to main.cf postfix - sometimes - has to be restarted
-    notifies :restart, "service[postfix]"
+    notifies :restart, 'service[postfix]'
   end
 
-  node.sys.mail.aliases.each do |account,mail_address|
+  update_aliases = 'Update Postfix aliases'
+  etc_aliases = '/etc/aliases'
+  execute update_aliases do
+    action :nothing
+    command "postalias #{etc_aliases}"
+    notifies :reload, 'service[postfix]'
+  end
+
+  node.sys.mail.aliases.each do |account, mail_address|
     sys_mail_alias account do
       to mail_address
+      aliases_file etc_aliases
+      notifies :run, "execute[#{update_aliases}]", :delayed
     end
   end
-
-  execute "Rebuild missing /etc/postfix/canonical" do
-    not_if do
-      ::File.exists? '/etc/postfix/canonical'
-    end
-    notifies :run, "execute[#{update_canonical}]", :immediate
-  end
-
 end
