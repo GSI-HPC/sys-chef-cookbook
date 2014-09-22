@@ -9,3 +9,4 @@ default[:sys][:chef][:server_url]     = nil
 default[:sys][:chef][:use_syslog]     = false
 default[:sys][:chef][:log_level]      = ':info'
 default[:sys][:chef][:overwrite_warning] = "DO NOT CHANGE THIS FILE MANUALLY! This file is managed by the Chef `sys` cookbook."
+default[:sys][:chef][:group]          = 'adm'

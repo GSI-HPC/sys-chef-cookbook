@@ -71,7 +71,7 @@ if server_url
   template '/etc/chef/client.rb' do
     source 'etc_chef_client.rb.erb'
     owner 'root'
-    group 'root'
+    group node[:sys][:chef][:group]
     mode "0644"
     variables v
 
@@ -95,10 +95,10 @@ file node.sys.chef.validation_key do
 end
 #end
 
-# make the client key readable for the adm group
+# make the client key group-readable
 #  (so its members can use 'knife .. -c /etc/chef/client.pem')
 file node.sys.chef.client_key do
-  group 'adm'
+  group node[:sys][:chef][:group]
   mode "0640"
 end
 
