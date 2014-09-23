@@ -47,7 +47,7 @@ action :add do
 
     ruby_block 'SysMailAlias action :add : insert alias' do
       block do
-        aliases_file = Chef::Util::FileEdit.new(@new_resource.aliases_file)
+        aliases_file = Chef::Util::FileEdit.new(new_resource.aliases_file)
         aliases_file.insert_line_if_no_match(alias_regexp, new_line)
         aliases_file.write_file
       end
@@ -98,5 +98,5 @@ def escape_value(value)
 end
 
 def alias_regexp
-  /^#{@new_resource.name}:/
+  /^#{new_resource.name}:/
 end
