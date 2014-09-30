@@ -21,8 +21,11 @@ action :add do
   newkey = new_resource.key
   # Remove leading white-spaces
   newkey = newkey.gsub(/^ */,'')
+
+  # FIXME: chef-client output contains the complete key - extremly ugly
+  #  unfortunately execute has not stdin attribute
   execute "Adding APT repository key" do
-    command "echo '#{newkey}' | apt-key add - >/dev/null" 
+    command "echo '#{newkey}' | apt-key add - >/dev/null"
   end
 end
 
