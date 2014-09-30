@@ -1,4 +1,22 @@
 require 'chefspec'
+require 'chefspec/server'
+
+class ChefSpec::Runner
+  alias_method :server_initialize, :initialize
+
+  def initialize(options = {}, &block)
+    case options[:mode]
+    when :solo
+      old_initialize(options, &block)
+    when :server
+      server_initialize(options, &block)
+    else
+      old_initialize(options, &block)
+    end
+  end
+end
+
+
 #ChefSpec::Coverage.start!
 
 RSpec.configure do |config|
