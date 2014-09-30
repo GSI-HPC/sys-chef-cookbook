@@ -31,39 +31,19 @@ unless (node.sys.accounts.empty? and node.sys.groups.empty?)
     end
   end
 
-  bag = data_bag('accounts') unless Chef::Config[:solo]
   node.sys.accounts.each do |name, account|
     begin
-      unless Chef::Config[:solo]
-        begin
-          raise "No data bag item for account '#{name}'" unless bag.include?(name)
-          item = data_bag_item('accounts', name)
-
-          account = account.to_hash
-
-          account['comment'] ||= item['comment']
-
-          item['account'].each do |key, value|
-            account[key] ||= value
-            if key == 'home'
-              account['supports'] ||= { 'manage_home' => true }
-            end
-          end
-        rescue Exception => e
-          log("Attribute merge with data bag 'accounts/#{name}' failed: #{e.message}"){ level :debug }
-        end
-      end
-
+      
       if account.has_key?(:gid)
         group_exists = (node.etc.group.has_key?(account[:gid]) or
           node.etc.group.values.detect { |e| e[:gid] == account[:gid] })
         was_just_created = (node.sys.groups.has_key?(account[:gid]) or
           node.sys.groups.values.detect { |e| e[:gid] == account[:gid] })
         unless group_exists or was_just_created
-          raise "The given group '#{account[:gid]}' does not exist"
+          raise "The given group '#{account[:gid]}' does not exist or wasn't defined"
         end
       end
-
+      
       user name do
         account.each { |key, value| send(key, value) }
       end
