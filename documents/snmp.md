@@ -18,7 +18,7 @@ Standard SNMP attributes for admin contact and location of the system.
 
 Other minor tweaks can be set via attributes, check the snmpd.conf template for hints.
 
-## Defining `snmpd` extensions
+## Defining snmpd extensions
 
 Extensions for snmpd can be configured via attributes, eg. 
 
@@ -44,4 +44,4 @@ node['sys']['hosts']['deny']  = [ "snmpd: ALL" ]
 node['sys']['hosts']['allow'] = [ "snmpd: 93.184.216.119" ]
 ```
 
-Apparently `snmpd` performs no DNS lookups so only IPs will work for tcpwrappers.
+Apparently snmpd performs no DNS lookups so only IPs will work for tcpwrappers.
