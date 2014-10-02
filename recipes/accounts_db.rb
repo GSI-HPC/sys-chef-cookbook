@@ -61,7 +61,7 @@ unless Chef::Config[:solo] or (node.sys.accounts.empty? and node.sys.groups.empt
     end
 
     data_bag_item('localgroups', grp).each do |key, value|
-      node.default_unless['sys']['groups'][group][key] = value
+      node.default_unless['sys']['groups'][grp][key] = value
     end
 
   end
