@@ -24,14 +24,12 @@ unless (node.sys.accounts.empty? and node.sys.groups.empty?)
   node.sys.groups.each do |name, grp|
     begin
       group name do
-        grp.each do |key, value|
-          begin
-            send(key, value)
-          rescue Exception => e
-            # most probably the resource does not know the key
-            log("send to resource group #{name} failed for #{key}: #{e.message}"){ level :info }
-          end
-        end
+        # grp.each{|k,v| send(k,v)} is elegant but hard to handle for account attributes
+        #  that we don't want to send to the group ressource
+        gid     grp['gid']     if grp['gid']
+        members grp['members'] if grp['members']
+        append  grp['append']  || false
+        system  grp['system']  || false
       end
     rescue Exception => e
       log("Creation of group resource '#{name}' failed: #{e.message}"){ level :error }
@@ -52,14 +50,16 @@ unless (node.sys.accounts.empty? and node.sys.groups.empty?)
       end
 
       user name do
-        account.each do |key, value|
-          begin
-            send(key, value)
-          rescue Exception => e
-            # most probably the resource does not know the key
-            log("send to resource user #{name} failed for #{key}: #{e.message}"){ level :info }
-          end
-        end
+        # account.each{|k,v| send(k,v)} is elegant but hard to handle for account attributes
+        #  that we don't want to send to the user ressource
+        comment  account['comment']  || 'managed by Chef via sys::accounts recipe'
+        uid      account['uid']      if account['uid']
+        gid      account['gid']      if account['gid']
+        password account['password'] if account['password']
+        home     account['home']     || "/home/#{name}"
+        shell    account['shell']    || '/bin/bash'
+        system   account['system']   || false
+        supports account['supports'] || { } # Default to {"manage_home"=>true} ???
       end
     rescue Exception => e
       log("Creation of user resource '#{name}' failed: #{e.message}"){ level :error }
