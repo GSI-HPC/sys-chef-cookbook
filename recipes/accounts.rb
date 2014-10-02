@@ -24,7 +24,14 @@ unless (node.sys.accounts.empty? and node.sys.groups.empty?)
   node.sys.groups.each do |name, grp|
     begin
       group name do
-        grp.each { |key, value| send(key, value) }
+        grp.each do |key, value|
+          begin
+            send(key, value)
+          rescue Exception => e
+            # most probably the resource does not know the key
+            log("send to resource group #{name} failed for #{key}: #{e.message}"){ level :info }
+          end
+        end
       end
     rescue Exception => e
       log("Creation of group resource '#{name}' failed: #{e.message}"){ level :error }
@@ -33,7 +40,7 @@ unless (node.sys.accounts.empty? and node.sys.groups.empty?)
 
   node.sys.accounts.each do |name, account|
     begin
-      
+
       if account.has_key?(:gid)
         group_exists = (node.etc.group.has_key?(account[:gid]) or
           node.etc.group.values.detect { |e| e[:gid] == account[:gid] })
@@ -43,9 +50,16 @@ unless (node.sys.accounts.empty? and node.sys.groups.empty?)
           raise "The given group '#{account[:gid]}' does not exist or wasn't defined"
         end
       end
-      
+
       user name do
-        account.each { |key, value| send(key, value) }
+        account.each do |key, value|
+          begin
+            send(key, value)
+          rescue Exception => e
+            # most probably the resource does not know the key
+            log("send to resource user #{name} failed for #{key}: #{e.message}"){ level :info }
+          end
+        end
       end
     rescue Exception => e
       log("Creation of user resource '#{name}' failed: #{e.message}"){ level :error }
