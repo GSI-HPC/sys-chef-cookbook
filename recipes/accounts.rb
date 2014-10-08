@@ -55,15 +55,13 @@ unless (node.sys.accounts.empty? and node.sys.groups.empty?)
         # account.each{|k,v| send(k,v)} is elegant but hard to handle for account attributes
         #  that we don't want to send to the user ressource
         comment  comment.gsub(/:+/, '_')  # gecos does not like colons
-        uid      account['uid']      if account['uid']
-        gid      account['gid']      if account['gid']
-        password account['password'] if account['password']
-        # default to /home/account for non-system accounts:
-        home     account['home']     || account['system']?nil:"/home/#{name}"
-        shell    account['shell']    || '/bin/bash'
-        system   account['system']   || false
-        # create a homedir for non-system accounts if not explicitly turned off
-        supports account['supports'] || account['system']?{}:{"manage_home"=>true}
+        uid      account['uid']
+        gid      account['gid']
+        password account['password']
+        home     account['home']
+        shell    account['shell']
+        system   account['system']
+        supports account['supports']
       end
     rescue Exception => e
       log("Creation of user resource '#{name}' failed: #{e.message}"){ level :error }
