@@ -109,8 +109,8 @@ end
 #end
 
 service 'chef-client' do
-  supports :restart => true
-  action :enable
+  supports { :restart => true, :status => true}
+  action   [ :enable, :start ]
 end
 
 # Periodically check if cron is running
