@@ -49,10 +49,12 @@ unless (node.sys.accounts.empty? and node.sys.groups.empty?)
         end
       end
 
+      comment = account['comment'] || 'managed by Chef via sys::accounts recipe'
+
       user name do
         # account.each{|k,v| send(k,v)} is elegant but hard to handle for account attributes
         #  that we don't want to send to the user ressource
-        comment  account['comment'].gsub(/:+/,'_')  || 'managed by Chef via sys_accounts recipe'
+        comment  comment.gsub(/:+/, '_')  # gecos does not like colons
         uid      account['uid']      if account['uid']
         gid      account['gid']      if account['gid']
         password account['password'] if account['password']
