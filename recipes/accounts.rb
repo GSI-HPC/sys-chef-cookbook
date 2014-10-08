@@ -52,11 +52,11 @@ unless (node.sys.accounts.empty? and node.sys.groups.empty?)
       user name do
         # account.each{|k,v| send(k,v)} is elegant but hard to handle for account attributes
         #  that we don't want to send to the user ressource
-        comment  account['comment']  || 'managed by Chef via sys::accounts recipe'
+        comment  account['comment'].gsub(/:+/,'_')  || 'managed by Chef via sys_accounts recipe'
         uid      account['uid']      if account['uid']
         gid      account['gid']      if account['gid']
         password account['password'] if account['password']
-        home     account['home']     || "/home/#{name}"
+        home     account['home']     || account['system']?nil:"/home/#{name}"
         shell    account['shell']    || '/bin/bash'
         system   account['system']   || false
         supports account['supports'] || { } # Default to {"manage_home"=>true} ???
