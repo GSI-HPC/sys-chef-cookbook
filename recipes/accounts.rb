@@ -56,10 +56,12 @@ unless (node.sys.accounts.empty? and node.sys.groups.empty?)
         uid      account['uid']      if account['uid']
         gid      account['gid']      if account['gid']
         password account['password'] if account['password']
+        # default to /home/account for non-system accounts:
         home     account['home']     || account['system']?nil:"/home/#{name}"
         shell    account['shell']    || '/bin/bash'
         system   account['system']   || false
-        supports account['supports'] || { } # Default to {"manage_home"=>true} ???
+        # create a homedir for non-system accounts if not explicitly turned off
+        supports account['supports'] || account['system']?{}:{"manage_home"=>true}
       end
     rescue Exception => e
       log("Creation of user resource '#{name}' failed: #{e.message}"){ level :error }
