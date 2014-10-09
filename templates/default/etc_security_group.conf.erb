@@ -1,11 +1,4 @@
-# /etc/security/group.conf
-#
-# DO NOT CHANGE THIS FILE MANUALLY!
-#
-# This file is managed by the Chef `sys` cookbook.
-
 <% @rules.each do |r| -%>
 <%- # FIXME: r['grp'] should be an array, not a String -%>
 <%= "#{r['srv'] || '*'};#{r['tty'] || '*' };#{r['usr'] || '*' };#{r['time'] || 'Al0000-2400' };#{r['grp'] || ''}" %>
-<% end -%>
-  
+<%- end %>
