@@ -24,7 +24,8 @@ unless (node.sys.accounts.empty? and node.sys.groups.empty?)
   node.sys.groups.each do |name, grp|
     begin
       group name do
-        # grp.each{|k,v| send(k,v)} is elegant but hard to handle for account attributes
+        # grp.each{|k,v| send(k,v)} is elegant
+        #  but hard to handle for account attributes
         #  that we don't want to send to the group ressource
         gid     grp['gid']     if grp['gid']
         members grp['members'] if grp['members']
@@ -32,7 +33,9 @@ unless (node.sys.accounts.empty? and node.sys.groups.empty?)
         system  grp['system']  || false
       end
     rescue Exception => e
-      log("Creation of group resource '#{name}' failed: #{e.message}"){ level :error }
+      log("Creation of group resource '#{name}' failed: #{e.message}"){
+        level :error
+      }
     end
   end
 
@@ -52,7 +55,8 @@ unless (node.sys.accounts.empty? and node.sys.groups.empty?)
       comment = account['comment'] || 'managed by Chef via sys::accounts recipe'
 
       user name do
-        # account.each{|k,v| send(k,v)} is elegant but hard to handle for account attributes
+        # account.each{|k,v| send(k,v)} is elegant
+        #  but hard to handle for account attributes
         #  that we don't want to send to the user ressource
         comment  comment.gsub(/:+/, '_')  # gecos does not like colons
         uid      account['uid']
@@ -61,10 +65,28 @@ unless (node.sys.accounts.empty? and node.sys.groups.empty?)
         home     account['home']
         shell    account['shell']
         system   account['system']
-        supports account['supports']
+        supports account['supports'] || {}
       end
+
+      if account.has_key?('sudo')
+        # FIXME: this will overwrite all previous invocations
+        #  rather set node['sys']['sudo'] attributes here
+        #  but did not get it to work for now :(
+        sys_sudo 'localadmin' do
+          rules [ "#{name} #{node['fqdn']} = #{account['sudo']}" ]
+        end
+      end
+
+      if account.has_key?('remote')
+        # FIXME: only adds last occurrence
+        node.force_override['sys']['pam']['access'] =
+          [ "+:#{name}:#{account['remote']} LOCAL" ]
+      end
+
     rescue Exception => e
-      log("Creation of user resource '#{name}' failed: #{e.message}"){ level :error }
+      log("Creation of user resource '#{name}' failed: #{e.message}"){
+        level :error
+      }
     end
   end
 end
