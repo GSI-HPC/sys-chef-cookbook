@@ -75,12 +75,11 @@ unless (node.sys.accounts.empty? and node.sys.groups.empty?)
         sys_sudo 'localadmin' do
           rules [ "#{name} #{node['fqdn']} = #{account['sudo']}" ]
         end
+        node
       end
 
       if account.has_key?('remote')
-        # FIXME: only adds last occurrence
-        node.force_override['sys']['pam']['access'] =
-          [ "+:#{name}:#{account['remote']} LOCAL" ]
+        node.force_override['sys']['pam']['access'] = [ "+:#{name}:#{account['remote']} LOCAL" ]
       end
 
     rescue Exception => e
