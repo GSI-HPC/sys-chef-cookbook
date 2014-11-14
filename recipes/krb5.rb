@@ -101,7 +101,7 @@ unless node.sys.krb5.empty?
           end # bash "deploy #{principal}
         end # node.sys.krb5.keytab_config.each
       else # if File.exists?("/etc/krb5.keytab")
-        raise "/etc/krb5.keytab not found"
+        Chef::Log.warn("/etc/krb5.keytab not found, not deploying keytabs.")
       end # if File.exists?("/etc/krb5.keytab")
     else # node.sys.krb5.has_key?(:"keytab_config")
       raise "Distribution set to wallet, but no config found"

@@ -87,7 +87,12 @@ unless node.sys.pamupdate.empty?
     configs = Array.new
 
     node.sys.pamupdate.each_value do |values|
-      configs << PamUpdate::Profile.new(values)
+      if ! values[:Name].eql?("Kerberos authentication") ||
+          File.exists?("/etc/krb5.keytab")
+        configs << PamUpdate::Profile.new(values)
+      else
+        Chef::Log.warn("/etc/krb5.keytab not present. Not configuring libpam-krb5.")
+      end
     end
 
     generator = PamUpdate::Writer.new(configs)
