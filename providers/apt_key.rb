@@ -18,24 +18,40 @@
 #
 
 action :add do
+  # Deploy the APT key if true
+  deploy_flag = true 
+  
   newkey = new_resource.key
   # Remove leading white-spaces
   newkey = newkey.gsub(/^ */,'')
-
-  # FIXME: chef-client output contains the complete key - extremly ugly
-  #  unfortunately execute has not stdin attribute
-  execute "Adding APT repository key" do
-    command "echo '#{newkey}' | apt-key add - >/dev/null"
+  
+  # fingerprint for the key as defined by the client code, remove white spaces
+  fingerprint = `echo '#{newkey}' | gpg --with-fingerprint --no-options 2>/dev/null | grep fingerprint | cut -d= -f2 | tr -d ' '`.chomp || nil
+  unless fingerprint.nil?
+    # Get a list of all key fingerprints in the system, remove white spaces
+    fingerprints = `apt-key finger | grep fingerprint | tr -s ' ' | cut -d' ' -f5-`.split("\n").map { |f| f.delete(' ') }
+    # If the fingerprints exists, assume the key is deployed already
+    deploy_flag = false if fingerprints.include? fingerprint
   end
+
+
+  # GUID for this block, prevent resource cloning warning
+  rands = (0..16).to_a.map{|a| rand(16).to_s(16)}.join
+  ruby_block "Add APT key with fingerpint #{fingerprint}" do
+    block do
+      system("echo '#{newkey}' | apt-key add - >/dev/null")
+    end
+    only_if do deploy_flag end
+  end
+
 end
 
 action :remove do
-  keyid = new_resource.key
-  # Remove leading white-spaces
-  keyid = keyid.gsub(/^ */,'')
-  execute "Remove APT repository key [#{keyid}]" do
-    command "apt-key del #{keyid} >/dev/null"
-    only_if "apt-key list | grep #{keyid} >/dev/null"
+  fingerprint = new_resource.key.gsub(/^ */,'')
+  fp_suffix = fingerprint[-8..-1]
+  execute "Remove APT key with fingerprint #{fingerprint}" do
+    command "apt-key del '#{fp_suffix}' >/dev/null"
+    only_if "apt-key list | grep '#{fp_suffix}' >/dev/null"
   end
 end
 
