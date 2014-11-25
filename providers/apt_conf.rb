@@ -14,31 +14,46 @@
 # limitations under the License.
 #
 
-path = '/etc/apt/apt.conf.d'
-apt_update = 'apt-get -qq update'
+base_path = '/etc/apt/apt.conf.d'
 
 action :set do
-  execute apt_update do
+
+  name = new_resource.name
+  path = "#{base_path}/#{name}"
+
+  update = "Update APT with new configuration: #{path}"
+  execute update do
+    command 'apt-get -qq update'
     action :nothing
   end
-  template "#{path}/#{new_resource.name}" do
+
+  template path do
     source "etc_apt_apt.conf.d_generic.erb"
     mode "0644"
     cookbook "sys"
     variables(
-      :name => new_resource.name,
+      :name => name,
       :config => new_resource.config
     )
-    notifies :run, "execute[#{apt_update}]", :immediately
+    notifies :run, "execute[#{update}]", :immediately
   end
+
 end
 
 action :remove do
-  execute apt_update do
+
+  name = new_resource.name
+  path = "#{base_path}/#{name}"
+
+  update = "Update APT with removing configuration: #{path}"
+  execute update do
+    command 'apt-get -qq update'
     action :nothing
   end
-  file "#{path}/#{new_resource.name}" do
+
+  file path do
     action :delete
-    notifies :run, "execute[#{apt_update}]", :immediately
+    notifies :run, "execute[#{update}]", :immediately
   end
+
 end

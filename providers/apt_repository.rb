@@ -14,15 +14,21 @@
 # limitations under the License.
 #
 
-path = '/etc/apt/sources.list.d'
+base_path = '/etc/apt/sources.list.d'
 apt_update = 'apt-get -qq update'
 
 action :add do
-  execute apt_update do
+
+  name = "#{new_resource.name}.list"
+  path = "#{base_path}/#{name}"
+
+  update = "Update APT with new source: #{path}"
+  execute update do
+    command 'apt-get -qq update'
     action :nothing
   end
-  name = "#{new_resource.name}.list"
-  template "#{path}/#{name}" do
+
+  template path do
     source 'etc_apt_sources.list.d_generic.erb'
     mode "0644"
     variables(
@@ -30,16 +36,24 @@ action :add do
       :config => new_resource.config.gsub(/^ */,'')
     )
     cookbook "sys"
-    notifies :run, "execute[#{apt_update}]", :immediately
+    notifies :run, "execute[#{update}]", :immediately
   end
+
 end
 
 action :remove do
-  execute apt_update do
+
+  name = "#{new_resource.name}.list"
+  path = "#{base_path}/#{name}"
+
+  update = "Update APT after removing source: #{path}"
+  execute update do
+    command 'apt-get -qq update'
     action :nothing
   end
-  file "#{path}/#{new_resource.name}.list" do
+
+  file path do
     action :delete
-    notifies :run, "execute[#{apt_update}]", :immediately
+    notifies :run, "execute[#{update}]", :immediately
   end
 end
