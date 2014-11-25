@@ -14,33 +14,48 @@
 # limitations under the License.
 #
 
-path = '/etc/apt/preferences.d'
-apt_update = 'apt-get -qq update'
+base_path = '/etc/apt/preferences.d'
 
 action :set do
-  execute apt_update do
+
+  name = new_resource.name
+  path = "#{base_path}/#{name}"
+
+  update = "Update APT with new perferences: #{path}"
+  execute update do
+    command 'apt-get -qq update'
     action :nothing
   end
-  template "#{path}/#{new_resource.name}" do
+
+  template path do
     source 'etc_apt_preferences.d_generic.erb'
     mode "0644"
     variables(
-      :name => new_resource.name,
+      :name => name,
       :package => new_resource.package,
       :pin => new_resource.pin,
       :priority => new_resource.priority
     )
     cookbook "sys"
-    notifies :run, "execute[#{apt_update}]", :immediately
+    notifies :run, "execute[#{update}]", :immediately
   end
+
 end
 
 action :remove do
-  execute apt_update do
+
+  name = new_resource.name
+  path = "#{base_path}/#{name}"
+
+  update = "Update APT after removing perferences: #{path}"
+  execute update do
+    command 'apt-get -qq update'
     action :nothing
   end
-  file "#{path}/#{new_resource.name}" do
+
+  file path do
     action :delete
-    notifies :run, "execute[#{apt_update}]", :immediately
+    notifies :run, "execute[#{update}]", :immediately
   end
+
 end
