@@ -14,28 +14,52 @@
 # limitations under the License.
 #
 
-path = "/usr/local/share/ca-certificates"
+base_path = '/usr/local/share/ca-certificates'
+crt_pkg = 'ca-certificates'
 
 action :add do
-  package 'ca-certificates'
-  execute 'update-ca-certificates' do
+ 
+  name = new_resource.name
+  path ="#{base_path}/#{name}"
+
+
+  if node.run_context.resource_collection.select{ |e| e.name == crt_pkg }.empty?
+    package crt_pkg
+  end
+  
+  update = "Update CAs with new certificate: #{path}"
+  execute update do
     command 'update-ca-certificates > /dev/null 2>&1'
     action :nothing
   end
-  cookbook_file "#{path}/#{new_resource.name}" do
+
+  cookbook_file path do
     source new_resource.source
     mode '0644'
-    notifies :run, 'execute[update-ca-certificates]'
+    notifies :run, "execute[#{update}]", :immediately
   end
+
 end
 
 action :remove do
-  execute 'update-ca-certificates' do
+
+  name = new_resource.name
+  path ="#{base_path}/#{name}"
+
+  if node.run_context.resource_collection.select{ |e| e.name == crt_pkg }.empty?
+    package crt_pkg
+  end
+  
+  update = "Update CAs after removing certificate: #{path}"
+
+  execute update do
     command 'update-ca-certificates > /dev/null 2>&1'
     action :nothing
   end
-  file "#{path}/#{new_resource.name}" do
+
+  file path do
     action :delete
-    notifies :run, 'execute[update-ca-certificates]'
+    notifies :run, "execute[#{update}]", :immediately
   end
+
 end
