@@ -34,10 +34,14 @@ define :sys_ssh_authorize, :keys => Array.new, :managed => false do
         else
           raise "#{account} has no home dir"
         end
-        directory dot_ssh do
-          owner account
-          group gid if gid
-          mode "0700"
+
+        # Create the ~/.ssh directory if missing
+        if node.run_context.resource_collection.select{ |e| e.name == dot_ssh }.empty?
+          directory dot_ssh do
+            owner account
+            group gid if gid
+            mode "0700"
+          end
         end
 
         # path to the user keys file
@@ -63,12 +67,15 @@ define :sys_ssh_authorize, :keys => Array.new, :managed => false do
           end
         end
 
+        if node.run_context.resource_collection.select{ |e| e.name == authorized_keys }.empty?
         #the file needs to have right ownership and permissions
-        file authorized_keys do
-          owner account
-          group gid if gid
-          mode "0644"
+          file authorized_keys do
+            owner account
+            group gid if gid
+            mode "0644"
+          end
         end
+
       end
     else
       log "User account #{account} missing. SSH public key not deployed." do
