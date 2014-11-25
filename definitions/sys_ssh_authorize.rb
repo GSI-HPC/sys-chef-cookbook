@@ -17,8 +17,10 @@
 define :sys_ssh_authorize, :keys => Array.new, :managed => false do
   account = params[:name]
   begin
-    # does the user exist?
+
+    # Does the user exist?
     if node.etc.passwd.has_key?(account) or node[:sys][:accounts].has_key?(account)
+
       if params[:keys].empty?
         raise "key(s) missing for account [#{account}]"
       else
@@ -37,24 +39,30 @@ define :sys_ssh_authorize, :keys => Array.new, :managed => false do
           group gid if gid
           mode "0700"
         end
+
         # path to the user keys file
         authorized_keys = "#{dot_ssh}/authorized_keys"
         # overwrite deviating keys
         if params[:managed]
-          file "Deploying SSH keys for account [#{account}]" do
+          file "Deploying SSH keys for account #{account} to #{authorized_keys}" do
             path authorized_keys
             content params[:keys].join("\n") << "\n"
           end
-          # append keys if missing
+
+        # Append SSH keys to authorized keys file if the file isn't managed  
         else
-          params[:keys].each do |key|
-            execute "Deploying SSH authorized key for account [#{account}]" do
+          # Iterate over the key list
+          params[:keys].each_index do |index|
+            key = params[:keys][index]
+            # Append the key unless existing already
+            execute "Append SSH key #{index+1} for account #{account} to #{authorized_keys}" do
               command %[echo "#{key}" >> #{authorized_keys}]
-              # the key is a string not a regex!
-            not_if %Q[grep -q -F "#{key}" #{authorized_keys}]
+              # The key is a string not a regex!
+              not_if %Q[grep -q -F "#{key}" #{authorized_keys}]
             end
           end
         end
+
         #the file needs to have right ownership and permissions
         file authorized_keys do
           owner account
@@ -63,7 +71,9 @@ define :sys_ssh_authorize, :keys => Array.new, :managed => false do
         end
       end
     else
-    log("Can't deploy SSH keys: account [#{account}] missing") { level :warn }
+      log "User account #{account} missing. SSH public key not deployed." do
+        level :warn 
+      end
     end
   rescue Exception => e
     log("Can't deploy SSH keys: " + e.to_s) { level :error }
