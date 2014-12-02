@@ -37,7 +37,6 @@ describe 'sys::krb5' do
       expect(chef_run).to install_package('heimdal-clients')
       expect(chef_run).to install_package('libpam-heimdal')
       expect(chef_run).to install_package('heimdal-kcm')
-      expect(chef_run).to install_package('heimdal-docs')
       expect(chef_run).to install_package('libsasl2-modules-gssapi-heimdal')
     end
 
