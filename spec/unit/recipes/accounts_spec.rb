@@ -91,6 +91,7 @@ describe 'sys::accounts_db' do
           'v1' => @v1item,
           'v2' => @v2item
         })
+      ChefSpec::Server.create_data_bag('localgroups', { })
       chef_run.converge(described_recipe)
     end
 
