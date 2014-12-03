@@ -26,7 +26,7 @@ It defining and `User_Alias` called "ADMIN" and a pair of rules for this group o
          "IB" => [ "/usr/sbin/perfquery" ],
          "NET" => [ "/bin/netstat", "/usr/sbin/iftop", "/sbin/ifconfig" ]
        )
-       rules "mon LOCAL = NOPASSWD: IB, NET"
+       rules ["mon LOCAL = NOPASSWD: IB, NET"]
     end
 
 The `sys_sudo` resource supports `users`, `hosts`, `commands`, and `rules`.
