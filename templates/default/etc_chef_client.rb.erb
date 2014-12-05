@@ -4,15 +4,24 @@
 #
 # This file is managed by the Chef `sys` cookbook.
 
-chef_server_url  '<%= @server_url %>'
-client_key       "<%= @client_key %>"
 node_name        '<%= node.fqdn %>'
 
-log_level        <%= @log_level %>
-log_location     <%= @use_syslog?'SyslogLogger.new("chef-client")':'STDOUT' %>
+chef_server_url  '<%= @server_url %>'
+client_key       "<%= @client_key %>"
+
+<%- if @verify_ssl == 'all' -%>
+# Verify all HTTPS connections
+ssl_verify_mode :verify_peer
+<%- elsif @verify_ssl == 'chef-server' -%>
+# Verify only connections to chef-server
+verify_api_cert true
+<%- end -%>
 
 validation_client_name "chef-validator"
 validation_key   "<%= @validation_key %>"
+
+log_level        <%= @log_level %>
+log_location     <%= @use_syslog?'SyslogLogger.new("chef-client")':'STDOUT' %>
 
 file_backup_path "/var/backups/chef"
 file_cache_path  "/var/cache/chef"
