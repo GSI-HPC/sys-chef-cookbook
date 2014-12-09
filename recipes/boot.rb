@@ -25,11 +25,20 @@ unless node.sys.boot.params.empty? and node.sys.boot.config.empty?
     action :nothing
   end
 
+
   update_grub = 'Updating Grub boot configuration'
   execute update_grub  do
     action :nothing
     command 'update-grub2'
-    notifies :reboot, "sys_shutdown[now]", :immediately
+#    notifies :reboot, "sys_shutdown[now]", :immediately
+    if platform_family?('debian')
+      file "/var/run/reboot-required" do
+        owner 'root'
+        group 'root'
+        mode '0755'
+        action :create
+      end
+    end
   end
 
   template '/etc/default/grub' do
