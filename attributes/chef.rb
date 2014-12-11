@@ -10,3 +10,5 @@ default[:sys][:chef][:use_syslog]     = false
 default[:sys][:chef][:log_level]      = ':info'
 default[:sys][:chef][:overwrite_warning] = "DO NOT CHANGE THIS FILE MANUALLY! This file is managed by the Chef `sys` cookbook."
 default[:sys][:chef][:group]          = 'adm'
+default[:sys][:chef][:verify_ssl]     = 'all'
+default[:sys][:chef][:trusted_certs_dir] = '/etc/ssl/certs'
