@@ -33,3 +33,5 @@ pid_file         "/var/run/chef/client.pid"
 # configuration for Ohai:
 Ohai::Config[:disabled_plugins] = [ "<%= @odisable.join('","')%>" ]
 Ohai::Config[:plugin_path]      << "<%= @opath %>"
+
+<%= @custom_config %>
