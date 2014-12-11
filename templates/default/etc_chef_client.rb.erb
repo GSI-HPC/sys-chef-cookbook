@@ -10,7 +10,7 @@ chef_server_url  '<%= @server_url %>'
 client_key       "<%= @client_key %>"
 
 <% if @trusted_certs_dir -%>
-trusted_certs_dir @trusted_certs_dir
+trusted_certs_dir "<%= @trusted_certs_dir %>"
 <% end -%>
 <%- if @verify_ssl == 'all' -%>
 # Verify all HTTPS connections
