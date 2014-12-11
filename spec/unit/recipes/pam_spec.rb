@@ -165,6 +165,26 @@ auth\t\trequired\t\tpam_permit.so
 auth\t\toptional\t\t\tpam_group.so"
       )
     end
+
+    it "should not configure Kerberos if /etc/krb5.keytab is not present" do
+      #Allow(File).to receive(:exists?).and_return(false)
+      allow(File).to receive(:exists?).and_call_original
+      allow(File).to receive(:exists?).with("/etc/krb5.keytab").and_return(false)
+      chef_run.converge(described_recipe)
+      expect(chef_run).to create_template('/etc/pam.d/common-auth')
+      expect(chef_run).to render_file('/etc/pam.d/common-auth').with_content(
+        "# /etc/pam.d/common-auth
+#
+# DO NOT CHANGE THIS FILE MANUALLY!
+#
+# This file is managed by the Chef `sys` cookbook.
+
+auth\t\t[success=1 default=ignore]\tpam_unix.so nullok_secure
+auth\t\trequisite\t\tpam_deny.so
+auth\t\trequired\t\tpam_permit.so
+auth\t\toptional\t\t\tpam_group.so"
+      )
+    end
   end
 
   context "with attributes for inactive pam-updates" do

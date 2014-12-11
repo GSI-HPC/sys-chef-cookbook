@@ -7,7 +7,7 @@ class PamUpdate
     def remove_profile_byname(name)
       @profiles.each do |p|
         if p.fields[:Name].eql?(name.to_s)
-          @profiles -= p
+          @profiles -= [p]
         end
       end
     end
