@@ -87,15 +87,16 @@ unless node.sys.pamupdate.empty?
     configs = Array.new
 
     node.sys.pamupdate.each_value do |values|
-      if ! values[:Name].eql?("Kerberos authentication") ||
-          File.exists?("/etc/krb5.keytab")
-        configs << PamUpdate::Profile.new(values)
-      else
-        Chef::Log.warn("/etc/krb5.keytab not present. Not configuring libpam-krb5.")
-      end
+      configs << PamUpdate::Profile.new(values)
     end
 
     generator = PamUpdate::Writer.new(configs)
+
+    if ! File.exists?("/etc/krb5.keytab")
+      # Remove pam_krb5 from profiles
+      generator.remove_profile_byname("Kerberos authentication")
+      Chef::Log.warn("/etc/krb5.keytab not present. Not configuring libpam-krb5.")
+    end
 
     %w[ account auth password session session-noninteractive ].each do |type|
       content = generator.send(type)

@@ -4,6 +4,14 @@ class PamUpdate
 
     alias_method :method_missing_old, :method_missing
 
+    def remove_profile_byname(name)
+      @profiles.each do |p|
+        if p.fields[:Name].eql?(name.to_s)
+          @profiles -= p
+        end
+      end
+    end
+
     private
 
     attr_reader :profiles, :configs
