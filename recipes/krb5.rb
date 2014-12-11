@@ -18,8 +18,8 @@
 #
 
 unless node.sys.krb5.empty?
-  # heimdal-docs 
   %w(
+    heimdal-docs
     heimdal-clients
     libpam-heimdal
     heimdal-kcm
