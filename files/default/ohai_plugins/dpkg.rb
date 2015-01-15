@@ -22,24 +22,38 @@
 
 require 'json'
 
-# useless unless we are on a debian derivative
-if platform_family.eql?('debian')
+Ohai.plugin(:Dpkg) do
 
-  # read a list of installed packages:
+  depends 'platform_family'
+
   provides 'debian'
+  # useless unless we are on a debian derivative
+  collect_data(:linux) do
 
-  # dpkg-query can be told to produce arbitrary output
-  #  inspired by https://github.com/demonccc/chef-repo/blob/master/plugins/ohai/linux/dpkg.rb
-  #  but instead of eval'ing the output, we produce JSON and parse it, which is much more secure
-  #  as it prevents us from running arbitrary Ruby code via a forged dpkg-query ...
-  debian Mash.new
-  debian['packages'] = JSON.parse('{' + `dpkg-query -W -f='"${Package}": {"version":"${Version}", "status":"${Status}"}\n'`.split("\n").join(',') + '}')
-  
-  # figure out the debian architecture (not neccessarily equal to node.kernel.machine!)
-  debian["architecture"]          = `dpkg --print-architecture`.chomp
-  # list of enabled multiarch architectures (eg. i386 on amd64):
-  debian["foreign_architectures"] = `dpkg  --print-foreign-architectures`.split("\n")
+    if platform_family.eql?('debian')
 
-  # this is already provided by the LSB plugin:
-  debian["codename"]     = `lsb_release -cs`.chomp
+      # read a list of installed packages:
+      # dpkg-query can be told to produce arbitrary output
+      #  inspired by https://github.com/demonccc/chef-repo/blob/master/plugins/ohai/linux/dpkg.rb
+      #  but instead of eval'ing the output, we produce JSON and parse it, which is much more secure
+      #  as it prevents us from running arbitrary Ruby code via a forged dpkg-query ...
+      debian Mash.new
+      debian['packages'] = JSON.parse('{' + `dpkg-query -W -f='"${Package}": {"version":"${Version}", "status":"${Status}"}\n'`.split("\n").join(',') + '}')
+
+      # figure out the debian architecture (not neccessarily equal to node.kernel.machine!)
+      debian["architecture"]          = `dpkg --print-architecture`.chomp
+      # list of enabled multiarch architectures (eg. i386 on amd64):
+      debian["foreign_architectures"] = `dpkg  --print-foreign-architectures`.split("\n")
+
+      # this is already provided by the LSB plugin:
+      debian["codename"]     = `lsb_release -cs`.chomp
+
+    else
+
+      Ohai::Log.warn("Not a debian derivative, #{__FILE__} only collects data for nodes with platform_family.eq? 'debian'.")
+
+    end
+
+  end
+
 end
