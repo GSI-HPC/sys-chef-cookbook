@@ -22,14 +22,25 @@
 
 require 'json'
 
+# New 'header' for Ohai plugins
 Ohai.plugin(:Dpkg) do
 
+  # Are there any attributes this plugin depends on?
   depends 'platform_family'
 
+  # Which attribute name space will this plugin take care of?
   provides 'debian'
-  # useless unless we are on a debian derivative
+
+  # Start populating the attribute name space this plugin is
+  # responsible for.
+  # You can differentiate between platforms for data collection, e.g.
+  # collect_data(:windows) and then have a separate
+  # collect_data(:linux). If you don't want to distinguish, simply use
+  # one collect_data method without an argument.
   collect_data(:linux) do
 
+    # Only within the collect_data methods you can access the
+    # attributes you declared with 'depends' above
     if platform_family.eql?('debian')
 
       # read a list of installed packages:
@@ -50,6 +61,8 @@ Ohai.plugin(:Dpkg) do
 
     else
 
+      # Print a warning that this plugin is probably not usefule if
+      # platform_family != debian
       Ohai::Log.warn("Not a debian derivative, #{__FILE__} only collects data for nodes with platform_family.eq? 'debian'.")
 
     end
