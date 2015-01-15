@@ -36,7 +36,7 @@ Ohai.plugin(:Dpkg) do
   # You can differentiate between platforms for data collection, e.g.
   # collect_data(:windows) and then have a separate
   # collect_data(:linux). If you don't want to distinguish, simply use
-  # one collect_data method without an argument.
+  # one collect_data(:default).
   collect_data(:linux) do
 
     # Only within the collect_data methods you can access the
