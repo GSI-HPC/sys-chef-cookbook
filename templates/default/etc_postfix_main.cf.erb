@@ -36,14 +36,16 @@ myhostname = <%= node.fqdn %>
 alias_maps = hash:/etc/aliases
 alias_database = hash:/etc/aliases
 myorigin = /etc/mailname
-mydestination = <%= node.fqdn %>, localhost.<%= node.domain %>, localhost<%= @mydestination ? ", #{@mydestination}" : '' %>
+mydestination = <%= node.fqdn %>, localhost.<%= node.domain %>, localhost <%= @mydestination ? ", #{@mydestination}" : '' %>
+<%# TODO: no MX lookups as long as brackets are hard-coded here -%>
 relayhost = [<%= @relay %>]
+<%= "relay_domains = #{relay_domains.join(', ')}" if relay_domains %>
 mynetworks = 127.0.0.0/8 [::ffff:127.0.0.0]/104 [::1]/128 <%= @mynetworks %>
 mailbox_size_limit = 0
 recipient_delimiter = +
 <%= @default_privs ? "default_privs = #{@default_privs}\n" : '' -%>
 
-# don't listen for remote connections:
+# listen for remote connections?
 inet_interfaces = <%= @inet_interfaces || @mynetworks?'all':'loopback-only' %>
 <% if @ipv4_only -%>
 inet_protocols = ipv4
