@@ -39,7 +39,7 @@ myorigin = /etc/mailname
 mydestination = <%= node.fqdn %>, localhost.<%= node.domain %>, localhost <%= @mydestination ? ", #{@mydestination}" : '' %>
 <%# TODO: no MX lookups as long as brackets are hard-coded here -%>
 relayhost = [<%= @relay %>]
-<%= "relay_domains = #{relay_domains.join(', ')}" if relay_domains %>
+<%= "relay_domains = #{@relay_domains.join(', ')}" if @relay_domains %>
 mynetworks = 127.0.0.0/8 [::ffff:127.0.0.0]/104 [::1]/128 <%= @mynetworks %>
 mailbox_size_limit = 0
 recipient_delimiter = +
