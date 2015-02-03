@@ -1,5 +1,4 @@
 require 'chefspec'
-require 'chefspec/server'
 
 class ChefSpec::Runner
   alias_method :server_initialize, :initialize
