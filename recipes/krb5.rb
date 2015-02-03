@@ -94,11 +94,17 @@ unless node.sys.krb5.empty?
           kinit -t /etc/krb5.keytab host/#{node.fqdn}
           wallet get keytab #{principal} -f #{place}
           kdestroy
-          chown #{owner}:#{group} #{place}
-          chmod #{mode} #{place}
           EOH
             not_if "ktutil -k #{place} list --keys | grep -q #{principal}"
           end # bash "deploy #{principal}
+
+          file place do
+            mode mode
+            owner owner
+            group group
+            only_if { File.exists?(place) }
+          end
+
         end # node.sys.krb5.keytab_config.each
       else # if File.exists?("/etc/krb5.keytab")
         Chef::Log.warn("/etc/krb5.keytab not found, not deploying keytabs.")
