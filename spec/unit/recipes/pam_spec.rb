@@ -149,8 +149,21 @@ describe 'sys::pam' do
       chef_run.converge(described_recipe)
     end
 
-    it "should create /etc/pam.d/common-auth" do
-      expect(chef_run).to create_template('/etc/pam.d/common-auth')
+    it "should create /etc/pam.d/common-*" do
+      expect(chef_run).to render_file('/etc/pam.d/common-account').with_content(
+        "# /etc/pam.d/common-account
+#
+# DO NOT CHANGE THIS FILE MANUALLY!
+#
+# This file is managed by the Chef `sys` cookbook.
+
+account\t\t[success=1 new_authtok_reqd=done default=ignore]\tpam_unix.so
+account\t\trequisite\t\tpam_deny.so
+account\t\trequired\t\tpam_permit.so
+account\t\trequired\t\t\tpam_krb5.so minimum_uid=1000
+account\t\trequired\t\t\tpam_access.so"
+      )
+
       expect(chef_run).to render_file('/etc/pam.d/common-auth').with_content(
         "# /etc/pam.d/common-auth
 #
@@ -164,10 +177,36 @@ auth\t\trequisite\t\tpam_deny.so
 auth\t\trequired\t\tpam_permit.so
 auth\t\toptional\t\t\tpam_group.so"
       )
+
+      expect(chef_run).to render_file('/etc/pam.d/common-password').with_content(
+        "# /etc/pam.d/common-password
+#
+# DO NOT CHANGE THIS FILE MANUALLY!
+#
+# This file is managed by the Chef `sys` cookbook.
+
+password\t\t[success=2 default=ignore]\tpam_krb5.so minimum_uid=1000
+password\t\t[success=1 default=ignore]\tpam_unix.so obscure use_authtok try_first_pass sha512
+password\t\trequisite\t\tpam_deny.so
+password\t\trequired\t\tpam_permit.so"
+      )
+
+      expect(chef_run).to render_file('/etc/pam.d/common-session').with_content(
+        "# /etc/pam.d/common-session
+#
+# DO NOT CHANGE THIS FILE MANUALLY!
+#
+# This file is managed by the Chef `sys` cookbook.
+
+session\t\t[default=1]\t\tpam_permit.so
+session\t\trequisite\t\tpam_deny.so
+session\t\trequired\t\tpam_permit.so
+session\t\toptional\t\t\tpam_krb5.so minimum_uid=1000
+session\t\trequired\tpam_unix.so"
+      )
     end
 
     it "should not configure Kerberos if /etc/krb5.keytab is not present" do
-      #Allow(File).to receive(:exists?).and_return(false)
       allow(File).to receive(:exists?).and_call_original
       allow(File).to receive(:exists?).with("/etc/krb5.keytab").and_return(false)
       chef_run.converge(described_recipe)
