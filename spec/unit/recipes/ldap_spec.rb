@@ -36,9 +36,9 @@ describe 'sys::ldap' do
     end
 
     it 'installs packages' do
+      expect(chef_run).to install_package('nscd')
       expect(chef_run).to install_package('nslcd')
       expect(chef_run).to install_package('kstart')
-      expect(chef_run).to install_package('libpam-ldapd')
       expect(chef_run).to install_package('libnss-ldapd')
       expect(chef_run).to install_package('ldap-utils')
     end
@@ -86,9 +86,36 @@ describe 'sys::ldap' do
       expect(chef_run).to render_file('/etc/ldap/ldap.conf').with_content("TLS_CACERT " + cacert)
     end
 
-    it 'stops and disables nscd' do
-      expect(chef_run).to stop_service('nscd')
-      expect(chef_run).to disable_service('nscd')
+    it 'updates the init-file of nslcd' do
+      expect(chef_run).to render_file('/etc/init.d/nslcd')
+    end
+
+    it 'updates the starting point of nslcd' do
+      expect(chef_run).to_not run_execute('insserv /etc/init.d/nslcd')
+    end
+
+    it 'sends notifications' do
+      etc_nslcd_default = chef_run.template('/etc/default/nslcd')
+      expect(etc_nslcd_default).to notify('service[nslcd]').to(:restart).delayed
+
+      etc_nslcd_conf = chef_run.template('/etc/nslcd.conf')
+      expect(etc_nslcd_conf).to notify('service[nslcd]').to(:restart).delayed
+
+      etc_init_d_nslcd = chef_run.cookbook_file('/etc/init.d/nslcd')
+      expect(etc_init_d_nslcd).to notify('execute[update-run-levels]').to(:run).immediately
+
+      nslcd = chef_run.service('nslcd')
+      expect(nslcd).to notify('service[nscd]').to(:restart).delayed
+    end
+
+    it 'starts and enables nslcd' do
+      expect(chef_run).to start_service('nslcd')
+      expect(chef_run).to enable_service('nslcd')
+    end
+
+    it 'starts and enables nscd' do
+      expect(chef_run).to start_service('nscd')
+      expect(chef_run).to enable_service('nscd')
     end
   end
 end
