@@ -1,5 +1,5 @@
 describe 'sys::ferm' do
-  let(:chef_run) { ChefSpec::Runner.new }
+  let(:chef_run) { ChefSpec::SoloRunner.new }
 
   context 'node.sys.ferm.table is empty' do
     before do

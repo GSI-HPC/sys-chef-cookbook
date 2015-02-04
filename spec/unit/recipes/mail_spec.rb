@@ -1,5 +1,5 @@
 describe 'sys::mail' do
-  let(:chef_run) { ChefSpec::Runner.new.converge(described_recipe) }
+  let(:chef_run) { ChefSpec::SoloRunner.new.converge(described_recipe) }
 
   context 'node.sys.mail.relay is empty' do
     it 'does nothing' do
@@ -8,7 +8,7 @@ describe 'sys::mail' do
   end
 
   context 'with some test attributes' do
-    let(:chef_run) { ChefSpec::Runner.new(step_into: ['sys_mail_alias']) }
+    let(:chef_run) { ChefSpec::SoloRunner.new(step_into: ['sys_mail_alias']) }
 
     before do
       chef_run.node.default[:sys][:mail][:relay] = 'smtp.example.net'
