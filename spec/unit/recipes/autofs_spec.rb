@@ -1,5 +1,5 @@
 describe 'sys::autofs' do
-  let(:chef_run) { ChefSpec::Runner.new.converge(described_recipe) }
+  let(:chef_run) { ChefSpec::SoloRunner.new.converge(described_recipe) }
 
   context 'node.sys.autofs.maps and node.sys.autofs.ldap is empty' do
     it 'does nothing' do

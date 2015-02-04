@@ -1,5 +1,5 @@
 describe 'sys::apt' do
-  let(:chef_run) { ChefSpec::Runner.new.converge(described_recipe) }
+  let(:chef_run) { ChefSpec::SoloRunner.new.converge(described_recipe) }
 
   before do
     @apt_update = 'apt-get -qq update'
@@ -36,7 +36,7 @@ describe 'sys::apt' do
   end
 
   context 'node.sys.apt.keys is not empty' do
-    let(:chef_run) {ChefSpec::Runner.new(step_into: ['sys_apt_key']) }
+    let(:chef_run) {ChefSpec::SoloRunner.new(step_into: ['sys_apt_key']) }
 
     before do
       stub_command("apt-key list | grep '74EFCA61' >/dev/null").and_return(true)
@@ -95,7 +95,7 @@ describe 'sys::apt' do
   end
 
   context 'node.sys.apt.repositories is not empty' do
-    let(:chef_run) {ChefSpec::Runner.new(log_level: :error, step_into: ['sys_apt_repository']) }
+    let(:chef_run) {ChefSpec::SoloRunner.new(log_level: :error, step_into: ['sys_apt_repository']) }
 
     before do
       chef_run.node.default['sys']['apt']['repositories']['foo'] = 'bar'
@@ -113,7 +113,7 @@ describe 'sys::apt' do
   end
 
   context 'node.sys.apt.preferences is not empty' do
-    let(:chef_run) {ChefSpec::Runner.new(log_level: :error, step_into: ['sys_apt_preference']) }
+    let(:chef_run) {ChefSpec::SoloRunner.new(log_level: :error, step_into: ['sys_apt_preference']) }
 
     before do
       chef_run.node.default['sys']['apt']['preferences']['foopref'] = {
@@ -141,7 +141,7 @@ describe 'sys::apt' do
   end
 
   context 'node.sys.apt.config is not empty' do
-    let(:chef_run) {ChefSpec::Runner.new(log_level: :error, step_into: ['sys_apt_conf']) }
+    let(:chef_run) {ChefSpec::SoloRunner.new(log_level: :error, step_into: ['sys_apt_conf']) }
 
     before do
       chef_run.node.default['sys']['apt']['config']['fooconf'] = { 'foo' => 'bar' }

@@ -8,7 +8,7 @@ describe 'lwrp: sys_mail_alias' do
   end
 
   let(:runner) do
-    ChefSpec::Runner.new(
+    ChefSpec::ServerRunner.new(
       :cookbook_path => cookbook_paths,
       :step_into => ['sys_mail_alias']
     )

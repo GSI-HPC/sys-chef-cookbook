@@ -1,5 +1,5 @@
 describe 'sys::pam' do
-  let(:chef_run) { ChefSpec::Runner.new.converge(described_recipe) }
+  let(:chef_run) { ChefSpec::SoloRunner.new.converge(described_recipe) }
 
   context 'node.sys.pam is empty' do
     it 'does nothing' do
