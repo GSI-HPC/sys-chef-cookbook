@@ -19,12 +19,12 @@
 
 unless node.sys.nis.servers.empty?
 
-  node.default[:ohai][:disabled_plugins] << 'passwd'
+  node.default['ohai']['disabled_plugins'] << 'passwd'
 
   package 'nis'
 
   if node.sys.nis.domain.empty?
-    node.default[:sys][:nis][:domain] = node.domain
+    node.default['sys']['nis']['domain'] = node.domain
   else
     # we don't use a template here because this file must only contain
     #  the NIS domain on a single line - and no comments
@@ -35,9 +35,9 @@ unless node.sys.nis.servers.empty?
 
   template '/etc/yp.conf' do
     source 'etc_yp.conf.erb'
-    variables( 
+    variables(
       :domain => node.sys.nis.domain.chomp,
-      :servers => node.sys.nis.servers 
+      :servers => node.sys.nis.servers
     )
     notifies :restart, 'service[nis]'
   end

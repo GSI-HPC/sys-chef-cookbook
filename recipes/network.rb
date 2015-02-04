@@ -27,7 +27,7 @@ end
 
 interfaces = node.sys.network.interfaces
 unless interfaces.empty?
-  
+
   # FIXME: we only need these packages if we actually mess with VLANs
   package 'vlan'
   package 'bridge-utils'
@@ -36,8 +36,8 @@ unless interfaces.empty?
 
   directory '/etc/network/interfaces.d'
 
-  if node[:sys][:network][:keep_interfaces]
-    unless system('grep -q "^source /etc/network/interfaces\.d/*" /etc/network/interfaces') 
+  if node['sys']['network']['keep_interfaces']
+    unless system('grep -q "^source /etc/network/interfaces\.d/*" /etc/network/interfaces')
       File.open("/etc/network/interfaces", "a") do |intf|
         intf.puts "\n#added by Chef:\nsource /etc/network/interfaces.d/*"
       end
@@ -47,7 +47,7 @@ unless interfaces.empty?
       source 'etc_network_interfaces'
     end
   end
-  
+
   interfaces.each do |name,params|
 
     # set defaults

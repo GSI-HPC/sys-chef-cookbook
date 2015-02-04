@@ -21,7 +21,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # All rights reserved - Do Not Redistribute
 
-if node[:sys][:cfengine]
+if node['sys']['cfengine']
 
   package 'cfengine2'
 
