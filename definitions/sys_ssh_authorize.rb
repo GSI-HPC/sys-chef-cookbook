@@ -19,18 +19,18 @@ define :sys_ssh_authorize, :keys => Array.new, :managed => false do
   begin
 
     # Does the user exist?
-    if node.etc.passwd.has_key?(account) or node[:sys][:accounts].has_key?(account)
+    if node['etc']['passwd'].has_key?(account) or node['sys']['accounts'].has_key?(account)
 
       if params[:keys].empty?
         raise "key(s) missing for account [#{account}]"
       else
-        if node[:etc][:passwd].has_key?(account)
+        if node['etc']['passwd'].has_key?(account)
           # path to the user SSH configuration
-          dot_ssh = "#{node.etc.passwd[account].dir}/.ssh"
-          gid     = node.etc.passwd[account].gid
-        elsif node[:sys][:accounts].has_key?(account)
-          dot_ssh = "#{node[:sys][:accounts][account][:home]}/.ssh"
-          gid     = node[:sys][:accounts][account][:gid]
+          dot_ssh = "#{node['etc']['passwd'][account].dir}/.ssh"
+          gid     = node['etc']['passwd'][account].gid
+        elsif node['sys']['accounts'].has_key?(account)
+          dot_ssh = "#{node['sys']['accounts'][account]['home']}/.ssh"
+          gid     = node['sys']['accounts'][account]['gid']
         else
           raise "#{account} has no home dir"
         end

@@ -29,19 +29,19 @@ end
 
 # Default APT source file
 
-unless node.sys.apt.sources.empty?
+unless node['sys']['apt']['sources'].empty?
   template "/etc/apt/sources.list" do
     source "etc_apt_sources.list.erb"
     mode "644"
-    variables :config => node.sys.apt.sources.gsub(/^ */,'')
+    variables :config => node['sys']['apt']['sources'].gsub(/^ */,'')
     notifies :run, "execute[#{apt_update}]", :immediately
   end
 end
 
 # APT configuration
 
-unless node.sys.apt.config.empty?
-  node.sys.apt.config.each do |name,conf|
+unless node['sys']['apt']['config'].empty?
+  node['sys']['apt']['config'].each do |name,conf|
     sys_apt_conf name do
       config conf
     end
@@ -49,25 +49,25 @@ unless node.sys.apt.config.empty?
 end
 
 
-unless node.sys.apt.preferences.empty?
-  node.sys.apt.preferences.each do |name,pref|
+unless node['sys']['apt']['preferences'].empty?
+  node['sys']['apt']['preferences'].each do |name,pref|
     if pref.empty?
       sys_apt_preference name do
         action :remove
       end
       next
     end
-    pkg = pref[:package] || '*'
+    pkg = pref['package'] || '*'
     sys_apt_preference name do
       package pkg
-      pin pref[:pin]
-      priority pref[:priority]
+      pin pref['pin']
+      priority pref['priority']
     end
   end
 end
 
-unless node.sys.apt.repositories.empty?
-  node.sys.apt.repositories.each do |name,conf|
+unless node['sys']['apt']['repositories'].empty?
+  node['sys']['apt']['repositories'].each do |name,conf|
     sys_apt_repository name do
       config conf
     end
@@ -78,26 +78,26 @@ end
 # Manage APT keys
 # ------
 # Then add new keys from attributes
-unless node.sys.apt['keys'].add.empty?
-  node.sys.apt['keys'].add.each_index do |i|
+unless node['sys']['apt']['keys']['add'].empty?
+  node['sys']['apt']['keys']['add'].each_index do |i|
     sys_apt_key "#{i}: Deploy APT package signing key" do
-      key node.sys.apt['keys'].add[i]
+      key node['sys']['apt']['keys']['add'][i]
     end
   end
 end
 # Remove keys specified via attributes first
-unless node.sys.apt['keys'].remove.empty?
-  node.sys.apt['keys'].remove.each_index do |i|
+unless node['sys']['apt']['keys']['remove'].empty?
+  node['sys']['apt']['keys']['remove'].each_index do |i|
     sys_apt_key "#{i}: Remove APT apckage signing key" do
-      key node.sys.apt['keys'].remove[i]
+      key node['sys']['apt']['keys']['remove'][i]
       action :remove
     end
   end
 end
 
 # Install additional packages defined by attribute
-unless node.sys.apt.packages.empty?
-  node.sys.apt.packages.each do |pkg|
+unless node['sys']['apt']['packages'].empty?
+  node['sys']['apt']['packages'].each do |pkg|
     package pkg
   end
 end
