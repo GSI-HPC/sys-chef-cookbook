@@ -48,10 +48,10 @@ unless Chef::Config[:solo] or (node.sys.accounts.empty? and node.sys.groups.empt
   bag = data_bag('localgroups')
 
   # this is a list of groups defined in account attributes:
-  groups = node[:sys][:accounts].values.map{|x| x[:gid]}.compact
+  groups = node['sys']['accounts'].values.map{|x| x[:gid]}.compact
 
   # Add groups from node attributes
-  groups |= node[:sys][:groups].keys
+  groups |= node['sys']['groups'].keys
 
   groups.each do |grp|
 
@@ -70,19 +70,3 @@ unless Chef::Config[:solo] or (node.sys.accounts.empty? and node.sys.groups.empt
   include_recipe "sys::accounts"
 
 end
-
-
-
-
- 
-  
-   
-    
-     
-      
-       
-        
-      
-    
-  
-

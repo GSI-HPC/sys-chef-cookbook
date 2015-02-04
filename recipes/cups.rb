@@ -19,21 +19,21 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # All rights reserved - Do Not Redistribute
 
-if node.sys[:cups]
+if node['sys']['cups']
 
   package 'cups-client'
 
   directory '/etc/cups' do
     mode 0755
   end
-  
-  if node[:sys][:cups][:server]
+
+  if node['sys']['cups']['server']
     template '/etc/cups/client.conf' do
       source    'etc_generic.erb'
       cookbook  'sys'
       mode      0644
       variables ({
-        :content => "ServerName #{node[:sys][:cups][:server]}"
+        :content => "ServerName #{node['sys']['cups']['server']}"
       })
     end
   end

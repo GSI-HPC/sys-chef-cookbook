@@ -2,7 +2,7 @@
 # Cookbook Name:: sys
 # Recipe:: dhcprelay
 #
-# Copyright 2012, GSI 
+# Copyright 2012, GSI
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -20,16 +20,16 @@
 # recipe for DHCP relay setup
 #  FIXME: not really suitable for sys - should go to a separate dhcp recipe
 
-if node[:sys][:dhcprelay]
+if node['sys']['dhcprelay']
 
   # 'dhcp-helper' is a valid alternative here
-  pkg = node[:sys][:dhcprelay][:package] || 'isc-dhcp-relay'
+  pkg = node['sys']['dhcprelay']['package'] || 'isc-dhcp-relay'
 
   package pkg
-  
-  servers    = node[:sys][:dhcprelay][:servers]
-  interfaces = node[:sys][:dhcprelay][:interfaces]
-  
+
+  servers    = node['sys']['dhcprelay']['servers']
+  interfaces = node['sys']['dhcprelay']['interfaces']
+
   template "/etc/default/#{pkg}" do
     source "etc_default_#{pkg}.erb"
     variables ({
@@ -37,7 +37,7 @@ if node[:sys][:dhcprelay]
         :interfaces => interfaces
       })
     end
-  
+
   service pkg do
     action [ :enable, :start ]
   end

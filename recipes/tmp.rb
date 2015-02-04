@@ -18,13 +18,12 @@
 #
 
 unless node.sys.tmp.empty?
-
   unless node.sys.tmp.reaper.empty?
 
     package 'tmpreaper'
 
     unless node.sys.tmp.reaper.has_key? 'disabled'
-      node.set[:sys][:tmp][:reaper][:disabled] = false
+      node.set['sys']['tmp']['reaper']['disabled'] = false
     end
 
     template '/etc/tmpreaper.conf' do
@@ -38,9 +37,5 @@ unless node.sys.tmp.empty?
         :options => node.sys.tmp.reaper.options
       )
     end
-
-  end 
-
+  end
 end
-
-

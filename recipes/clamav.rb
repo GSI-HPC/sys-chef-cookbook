@@ -6,9 +6,9 @@ package 'clamav'
 
 params = { }
 
-if node[:http_proxy]
-  params[:proxy_srv]  = node[:http_proxy][:name]
-  params[:proxy_name] = node[:http_proxy][:port]
+if node['http_proxy']
+  params[:proxy_srv]  = node['http_proxy']['name']
+  params[:proxy_name] = node['http_proxy']['port']
 end
 
 template '/etc/clamav/freshclam.conf' do

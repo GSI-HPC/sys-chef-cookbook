@@ -56,7 +56,7 @@ unless node.sys.pam.limits.empty?
   end
 end
 
-unless node.sys.pam[:group].empty?
+unless node.sys.pam.group.empty?
   template '/etc/security/group.conf' do
     source 'etc_security_group.conf.erb'
     owner 'root'

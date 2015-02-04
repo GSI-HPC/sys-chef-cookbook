@@ -27,9 +27,9 @@ if node.sys.serial.port > 0
   end
 
   # add the serial console to the grub boot configuration
-  node.default[:sys][:boot][:params] << "console=tt1"
-  node.default[:sys][:boot][:params] << "console=ttyS#{port},#{speed}n8"
-  node.default[:sys][:boot][:config]['GRUB_SERIAL_COMMAND'] =
+  node.default['sys']['boot']['params'] << "console=tt1"
+  node.default['sys']['boot']['params'] << "console=ttyS#{port},#{speed}n8"
+  node.default['sys']['boot']['config']['GRUB_SERIAL_COMMAND'] =
     "serial --speed=#{speed} --unit=#{port} --word=8 --parity=no --stop=1"
 
 end

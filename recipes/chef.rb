@@ -47,10 +47,10 @@ server_url = node.sys.chef.server_url
 
 begin
   unless server_url or not node.chef.server.fqdn
-    # fallback for figuring out the chef server url following the "old" conventions 
+    # fallback for figuring out the chef server url following the "old" conventions
     #  introduced by the chef cookbook
     if server = node.chef.server.ssl
-      server_url = 'https://#{server}:443'    
+      server_url = 'https://#{server}:443'
     else
       server_url = 'http://#{server}:4000'
     end
@@ -63,15 +63,15 @@ end
 if server_url
 
   # compile attributes for the client.rb template:
-  v              = node[:sys][:chef].to_hash
+  v              = node['sys']['chef'].to_hash
   v[:server_url] = server_url
-  v[:opath]      = node[:ohai][:plugin_path]
-  v[:odisable]   = node[:ohai][:disabled_plugins].clone || [ ]
+  v[:opath]      = node['ohai']['plugin_path']
+  v[:odisable]   = node['ohai']['disabled_plugins'].clone || [ ]
 
   template '/etc/chef/client.rb' do
     source 'etc_chef_client.rb.erb'
     owner 'root'
-    group node[:sys][:chef][:group]
+    group node['sys']['chef']['group']
     mode "0644"
     variables v
 
@@ -83,7 +83,7 @@ end
 
 # Delete the validation credential if the machines
 # has already registered with the server, unless
-# the node is a server itself, since if this is the 
+# the node is a server itself, since if this is the
 # case, the validation key would be regenerated on
 # each chef-server restart.
 # For now we assume that the chef server does not run sys::chef
@@ -98,7 +98,7 @@ end
 # make the client key group-readable
 #  (so its members can use 'knife .. -c /etc/chef/client.pem')
 file node.sys.chef.client_key do
-  group node[:sys][:chef][:group]
+  group node['sys']['chef']['group']
   mode "0640"
 end
 

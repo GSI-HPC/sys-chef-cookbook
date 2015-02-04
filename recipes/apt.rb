@@ -78,18 +78,18 @@ end
 # Manage APT keys
 # ------
 # Then add new keys from attributes
-unless node.sys.apt[:keys].add.empty?
-  node.sys.apt[:keys].add.each_index do |i|
+unless node.sys.apt['keys'].add.empty?
+  node.sys.apt['keys'].add.each_index do |i|
     sys_apt_key "#{i}: Deploy APT package signing key" do
-      key node.sys.apt[:keys].add[i]
+      key node.sys.apt['keys'].add[i]
     end
   end
 end
 # Remove keys specified via attributes first
-unless node.sys.apt[:keys].remove.empty?
-  node.sys.apt[:keys].remove.each_index do |i|
+unless node.sys.apt['keys'].remove.empty?
+  node.sys.apt['keys'].remove.each_index do |i|
     sys_apt_key "#{i}: Remove APT apckage signing key" do
-      key node.sys.apt[:keys].remove[i]
+      key node.sys.apt['keys'].remove[i]
       action :remove
     end
   end
@@ -104,8 +104,8 @@ end
 
 # add multiarch support if desired:
 #  this is statically pinned to i386 on amd64 for now
-execute 'dpkg --add-architecture i386' do   
-  only_if { node[:sys][:apt][:multiarch] and node[:debian][:architecture] == 'amd64' }
-  not_if  { node[:debian][:foreign_architectures].include?('i386') }
+execute 'dpkg --add-architecture i386' do
+  only_if { node['sys']['apt']['multiarch'] and node['debian']['architecture'] == 'amd64' }
+  not_if  { node['debian']['foreign_architectures'].include?('i386') }
   notifies :run, "execute[#{apt_update}]", :immediately
 end
