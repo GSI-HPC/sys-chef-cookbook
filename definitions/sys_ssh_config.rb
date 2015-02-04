@@ -17,15 +17,15 @@
 define :sys_ssh_config, :config => Hash.new do
   account = params[:name]
   # does the user exists?
-  if node.etc.passwd.has_key? account
+  if node['etc']['passwd'].has_key? account
     if params[:config].empty?
       log("Can't deploy SSH config: configuration for account [#{account}] missing") { level :warn }
     else
       # path to the user SSH configuration
-      dot_ssh = "#{node.etc.passwd[account].dir}/.ssh"
+      dot_ssh = "#{node['etc']['passwd'][account].dir}/.ssh"
       directory dot_ssh do
         owner account
-        group node.etc.passwd[account].gid
+        group node['etc']['passwd'][account].gid
         mode "0700"
       end
       # path to the user keys file
@@ -33,11 +33,11 @@ define :sys_ssh_config, :config => Hash.new do
       template ssh_config do
         source 'user_ssh_config_generic.erb'
         owner account
-        group node.etc.passwd[account].gid
+        group node['etc']['passwd'][account].gid
         cookbook 'sys'
         mode "0600"
         variables( 
-          :path => node.etc.passwd[account].dir,
+          :path => node['etc']['passwd'][account].dir,
           :config => params[:config] 
         )
       end

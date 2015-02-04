@@ -21,7 +21,7 @@ define :sys_network_vlan_bridge, :interface => 'eth0' do
     end
     # FAI is now creating this file in case of the default interface,
     # so let's not touch this file for more resilience against chef screw-ups.
-    unless interface == node.network.default_interface
+    unless interface == node['network']['default_interface']
       node.default.sys.network.interfaces[interface] = { "inet" => "static" }
     end
   end
