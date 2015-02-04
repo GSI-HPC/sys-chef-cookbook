@@ -12,6 +12,8 @@ describe 'sys::autofs' do
       chef_run.node.default['sys']['autofs']['maps'] = {
         "/mount/point" => { "path" => "config"}
       }
+      allow(File).to receive(:exists?).and_call_original
+      allow(File).to receive(:exists?).with('/mount/point').and_return(false)
       chef_run.converge(described_recipe)
     end
 
@@ -25,6 +27,14 @@ describe 'sys::autofs' do
           :maps => { "/mount/point" => { "path" => "config" }}
         }
       )
+    end
+
+    it 'creates necessary mount-points' do
+      expect(chef_run).to create_directory('/mount/point')
+    end
+
+    it 'does not start the autofs-service' do
+      expect(chef_run).to_not start_service('autofs')
     end
   end
 
@@ -94,6 +104,24 @@ describe 'sys::autofs' do
 
     it 'manages /etc/init.d/autofs' do
       expect(chef_run).to create_cookbook_file('/etc/init.d/autofs').with_mode("0755")
+    end
+
+    it 'not start the autofs-service' do
+      expect(chef_run).to_not start_service('autofs')
+    end
+
+    it 'does reload autofs-service on config-change' do
+      resource = chef_run.template('/etc/auto.master')
+      expect(resource).to notify('service[autofs]').to(:reload).delayed
+    end
+
+    it 'does restart autofs-service on config-change' do
+      a = chef_run.template('/etc/autofs_ldap_auth.conf')
+      expect(a).to notify('service[autofs]').to(:restart).delayed
+      b = chef_run.template('/etc/default/autofs')
+      expect(b).to notify('service[autofs]').to(:restart).delayed
+      c = chef_run.cookbook_file('/etc/init.d/autofs')
+      expect(c).to notify('service[autofs]').to(:restart).delayed
     end
   end
 end
