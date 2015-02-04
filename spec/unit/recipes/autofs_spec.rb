@@ -40,6 +40,7 @@ describe 'sys::autofs' do
       chef_run.node.default['sys']['autofs']['ldap'] = {:omg => :lol}
       chef_run.node.default['sys']['krb5']['realm'] = 'EXAMPLE.COM'
       chef_run.node.default['sys']['autofs']['ldap']['searchbase'] = 'dc=example,dc=com'
+      chef_run.node.automatic['fqdn'] = 'node.example.com'
       chef_run.converge(described_recipe)
     end
 
