@@ -19,9 +19,9 @@
 
 if ! node.sys.ldap.empty? && File.exists?("/etc/nslcd.keytab")
   %w(
+    nscd
     nslcd
     kstart
-    libpam-ldapd
     libnss-ldapd
     ldap-utils
   ).each { |p| package p }
@@ -82,11 +82,13 @@ if ! node.sys.ldap.empty? && File.exists?("/etc/nslcd.keytab")
   service "nslcd" do
     supports :restart => true
     action [:start, :enable]
+    notifies :restart, "service[nscd]", :delayed
   end
 
-  # Should nscd run at all? Or just be removed from the system?
+  # nscd turned out to greatly improve performance
   service "nscd" do
-    action [:stop, :disable]
+    supports :restart => true
+    action [:start, :enable]
     only_if 'test -e /etc/init.d/nscd'
   end
 end
