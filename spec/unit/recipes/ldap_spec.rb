@@ -15,6 +15,7 @@ describe 'sys::ldap' do
       fqdn = 'node.example.com'
       chef_run.node.default['sys']['ldap']['master'] = master
       chef_run.node.default['sys']['ldap']['slave'] = slave
+      chef_run.node.default['sys']['ldap']['servers'] = [ master, slave ]
       chef_run.node.default['sys']['ldap']['searchbase'] = 'dc=example,dc=com'
       chef_run.node.default['sys']['ldap']['realm'] = 'EXAMPLE.COM'
       chef_run.node.default['sys']['ldap']['cacert'] = "/etc/ssl/ca.cert"
