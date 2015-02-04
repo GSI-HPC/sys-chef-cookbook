@@ -1,1 +1,1 @@
-default_unless[:sys][:route] = Hash.new
+default_unless['sys']['route'] = Hash.new

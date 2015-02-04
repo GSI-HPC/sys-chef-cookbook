@@ -1,1 +1,1 @@
-default_unless[:sys][:control] = Mash.new
+default_unless['sys']['control'] = Mash.new

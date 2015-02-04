@@ -1,1 +1,1 @@
-default_unless[:sys][:ldap] = Hash.new
+default_unless['sys']['ldap'] = Hash.new

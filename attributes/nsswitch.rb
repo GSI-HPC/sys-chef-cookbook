@@ -1,1 +1,1 @@
-default_unless[:sys][:nsswitch] = String.new
+default_unless['sys']['nsswitch'] = String.new

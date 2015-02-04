@@ -63,7 +63,7 @@ unless node.sys.krb5.empty?
             kt = decrypt(kdc_node.krb5.keytabs["#{key}_#{node.fqdn}"])
             # decrypt returns nil if anything goes wrong
             raise "Could not decrypt keytab #{key}" unless kt
-            template "#{place}" do
+            template place do
               source "etc_keytab_generic.erb"
               owner owner
               group group

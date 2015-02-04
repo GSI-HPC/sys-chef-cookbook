@@ -1,1 +1,1 @@
-default_unless[:sys][:directory] = Mash.new
+default_unless['sys']['directory'] = Mash.new
