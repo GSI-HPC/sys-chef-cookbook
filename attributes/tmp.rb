@@ -1,1 +1,1 @@
-default_unless[:sys][:tmp][:reaper] = Hash.new
+default_unless['sys']['tmp']['reaper'] = Hash.new

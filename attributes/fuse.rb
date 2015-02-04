@@ -1,1 +1,1 @@
-default_unless[:sys][:fuse][:config] = Hash.new
+default_unless['sys']['fuse']['config'] = Hash.new

@@ -1,1 +1,1 @@
-default_unless[:sys][:mount] = Hash.new
+default_unless['sys']['mount'] = Hash.new
