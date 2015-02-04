@@ -3,6 +3,7 @@
 # Recipe:: accounts
 #
 # Copyright 2013, Victor Penso
+# Copyright 2015, Dennis Klein
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,11 +18,24 @@
 # limitations under the License.
 #
 
-unless (node.sys.accounts.empty? and node.sys.groups.empty?)
+unless (node['sys']['accounts'].empty? and node['sys']['groups'].empty?)
 
   package 'ruby-shadow'
 
-  node.sys.groups.each do |name, grp|
+  bag = data_bag('localgroups') unless Chef::Config[:solo]
+  node['sys']['groups'].each do |name, grp|
+    unless Chef::Config[:solo]
+      begin
+        raise "No data bag item for group '#{name}'" unless bag.include?(name)
+
+        item = data_bag_item('localgroups', name)
+        grp = grp.to_hash
+        grp['gid']     ||= item['gid']
+      rescue Exception => e
+        log("Attribute merge with data bag 'localgroups/#{name}' failed: #{e.message}"){ level :debug }
+      end
+    end
+
     begin
       group name do
         # grp.each{|k,v| send(k,v)} is elegant
@@ -39,16 +53,35 @@ unless (node.sys.accounts.empty? and node.sys.groups.empty?)
     end
   end
 
-  node.sys.accounts.each do |name, account|
-    begin
+  bag = data_bag('accounts') unless Chef::Config[:solo]
+  node['sys']['accounts'].each do |name, account|
+    unless Chef::Config[:solo]
+      begin
+        raise "No data bag item for account '#{name}'" unless bag.include?(name)
 
-      if account.has_key?(:gid)
-        group_exists = (node.etc.group.has_key?(account[:gid]) or
-          node.etc.group.values.detect { |e| e[:gid] == account[:gid] })
-        was_just_created = (node.sys.groups.has_key?(account[:gid]) or
-          node.sys.groups.values.detect { |e| e[:gid] == account[:gid] })
+        item = data_bag_item('accounts', name)
+        account = account.to_hash
+        account['comment'] ||= item['comment']
+        item['account'].each do |key, value|
+          account[key] ||= value
+          if key == 'home'
+            account['supports'] ||= { 'manage_home' => true }
+          end
+        end
+      rescue Exception => e
+        log("Attribute merge with data bag 'accounts/#{name}' failed: #{e.message}"){ level :debug }
+      end
+    end
+
+    begin
+      if account.has_key?('gid')
+        group_exists = (node['etc']['group'].has_key?(account['gid']) or
+          node['etc']['group'].values.detect { |g| g['gid'] == account['gid'] })
+        was_just_created = (node['sys']['groups'].has_key?(account['gid']) or
+          node['sys']['groups'].values.detect { |g| g['gid'] == account['gid'] })
+
         unless group_exists or was_just_created
-          raise "The given group '#{account[:gid]}' does not exist or wasn't defined"
+          raise "The given group '#{account['gid']}' does not exist or wasn't defined"
         end
       end
 
