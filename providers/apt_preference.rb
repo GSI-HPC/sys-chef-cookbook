@@ -40,6 +40,8 @@ action :set do
     notifies :run, "execute[#{update}]", :immediately
   end
 
+  new_resource.updated_by_last_action(true)
+
 end
 
 action :remove do
@@ -57,5 +59,7 @@ action :remove do
     action :delete
     notifies :run, "execute[#{update}]", :immediately
   end
+
+  new_resource.updated_by_last_action(true)
 
 end

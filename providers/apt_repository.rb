@@ -15,7 +15,6 @@
 #
 
 base_path = '/etc/apt/sources.list.d'
-apt_update = 'apt-get -qq update'
 
 action :add do
 
@@ -39,6 +38,8 @@ action :add do
     notifies :run, "execute[#{update}]", :immediately
   end
 
+  new_resource.updated_by_last_action(true)
+
 end
 
 action :remove do
@@ -56,4 +57,7 @@ action :remove do
     action :delete
     notifies :run, "execute[#{update}]", :immediately
   end
+
+  new_resource.updated_by_last_action(true)
+
 end

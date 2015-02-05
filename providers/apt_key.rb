@@ -19,24 +19,21 @@
 
 action :add do
   # Deploy the APT key if true
-  deploy_flag = true 
-  
+  deploy_flag = true
+
   newkey = new_resource.key
   # Remove leading white-spaces
   newkey = newkey.gsub(/^ */,'')
-  
+
   # fingerprint for the key as defined by the client code, remove white spaces
   fingerprint = `echo '#{newkey}' | gpg --with-fingerprint --no-options 2>/dev/null | grep fingerprint | cut -d= -f2 | tr -d ' '`.chomp || nil
   unless fingerprint.nil?
     # Get a list of all key fingerprints in the system, remove white spaces
-    fingerprints = `apt-key finger | grep fingerprint | tr -s ' ' | cut -d' ' -f5-`.split("\n").map { |f| f.delete(' ') }
+    fingerprints = `apt-key finger 2>/dev/null | grep fingerprint | tr -s ' ' | cut -d' ' -f2 | cut -d'/' -f2`.split("\n").map { |f| f.delete(' ') }
     # If the fingerprints exists, assume the key is deployed already
     deploy_flag = false if fingerprints.include? fingerprint
   end
 
-
-  # GUID for this block, prevent resource cloning warning
-  rands = (0..16).to_a.map{|a| rand(16).to_s(16)}.join
   ruby_block "Add APT key with fingerpint #{fingerprint}" do
     block do
       system("echo '#{newkey}' | apt-key add - >/dev/null")
@@ -44,6 +41,7 @@ action :add do
     only_if do deploy_flag end
   end
 
+  new_resource.updated_by_last_action(deploy_flag)
 end
 
 action :remove do
@@ -53,5 +51,7 @@ action :remove do
     command "apt-key del '#{fp_suffix}' >/dev/null"
     only_if "apt-key list | grep '#{fp_suffix}' >/dev/null"
   end
+
+  new_resource.updated_by_last_action(true)
 end
 

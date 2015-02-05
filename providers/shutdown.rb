@@ -20,10 +20,14 @@ action :reboot do
   execute "Reboot" do
     command %Q[#{_command} -r #{new_resource.time} "#{new_resource.message}\n"]
   end
+
+  new_resource.updated_by_last_action(true)
 end
 
 action :shutdown do
   execute "Shutdown" do
     command %Q[#{_command} -h #{new_resource.time} "#{new_resource.message}\n" ]
   end
+
+  new_resource.updated_by_last_action(true)
 end
