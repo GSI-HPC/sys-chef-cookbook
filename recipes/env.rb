@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-unless node['sys']['env'].empty?
+unless node['sys']['env'].empty? # ~FC023 Do not break conventions in sys
 
   # fill the /etc/environment file:
   template '/etc/environment' do

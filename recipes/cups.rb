@@ -27,15 +27,14 @@ if node['sys']['cups']
     mode 0755
   end
 
-  if node['sys']['cups']['server']
-    template '/etc/cups/client.conf' do
-      source    'etc_generic.erb'
-      cookbook  'sys'
-      mode      0644
-      variables ({
-        :content => "ServerName #{node['sys']['cups']['server']}"
-      })
-    end
+  template '/etc/cups/client.conf' do
+    source    'etc_generic.erb'
+    cookbook  'sys'
+    mode      0644
+    variables ({
+      :content => "ServerName #{node['sys']['cups']['server']}"
+    })
+    only_if { node['sys']['cups']['server'] }
   end
 
   #TODO: setup a /etc/cups/lpoptions ?!

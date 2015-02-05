@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-unless node['sys']['hosts']['file'].empty?
+unless node['sys']['hosts']['file'].empty? # ~FC023 Do not break conventions in sys
   template '/etc/hosts' do
     source 'etc_hosts.erb'
     mode '0664'
@@ -25,7 +25,7 @@ unless node['sys']['hosts']['file'].empty?
   end
 end
 
-unless node['sys']['hosts']['allow'].empty?
+unless node['sys']['hosts']['allow'].empty? # ~FC023 Do not break conventions in sys
   template '/etc/hosts.allow' do
     source 'etc_hosts.allow.erb'
     mode '0644'
@@ -33,7 +33,7 @@ unless node['sys']['hosts']['allow'].empty?
   end
 end
 
-unless node['sys']['hosts']['deny'].empty?
+unless node['sys']['hosts']['deny'].empty? # ~FC023 Do not break conventions in sys
   template '/etc/hosts.deny' do
     source 'etc_hosts.deny.erb'
     mode '0644'

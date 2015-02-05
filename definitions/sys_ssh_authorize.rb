@@ -53,7 +53,7 @@ define :sys_ssh_authorize, :keys => Array.new, :managed => false do
             content params[:keys].join("\n") << "\n"
           end
 
-        # Append SSH keys to authorized keys file if the file isn't managed  
+        # Append SSH keys to authorized keys file if the file isn't managed
         else
           # Iterate over the key list
           params[:keys].each_index do |index|
@@ -67,19 +67,19 @@ define :sys_ssh_authorize, :keys => Array.new, :managed => false do
           end
         end
 
-        if node.run_context.resource_collection.select{ |e| e.name == authorized_keys }.empty?
         #the file needs to have right ownership and permissions
-          file authorized_keys do
-            owner account
-            group gid if gid
-            mode "0644"
-          end
+        file authorized_keys do
+          owner account
+          group gid if gid
+          mode "0644"
+          only_if { node.run_context.resource_collection.select{ |e|
+              e.name == authorized_keys }.empty? }
         end
 
       end
     else
       log "User account #{account} missing. SSH public key not deployed." do
-        level :warn 
+        level :warn
       end
     end
   rescue Exception => e
