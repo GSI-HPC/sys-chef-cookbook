@@ -17,27 +17,27 @@
 # limitations under the License.
 #
 
-unless node.sys.nis.servers.empty?
+unless node['sys']['nis']['servers'].empty?
 
   node.default['ohai']['disabled_plugins'] << 'passwd'
 
   package 'nis'
 
-  if node.sys.nis.domain.empty?
-    node.default['sys']['nis']['domain'] = node.domain
+  if node['sys']['nis']['domain'].empty?
+    node.default['sys']['nis']['domain'] = node['domain']
   else
     # we don't use a template here because this file must only contain
     #  the NIS domain on a single line - and no comments
     file '/etc/defaultdomain' do
-      content node.sys.nis.domain << "\n"
+      content node['sys']['nis']['domain'] << "\n"
     end
   end
 
   template '/etc/yp.conf' do
     source 'etc_yp.conf.erb'
     variables(
-      :domain => node.sys.nis.domain.chomp,
-      :servers => node.sys.nis.servers
+      :domain => node['sys']['nis']['domain'].chomp,
+      :servers => node['sys']['nis']['servers']
     )
     notifies :restart, 'service[nis]'
   end
@@ -49,4 +49,4 @@ unless node.sys.nis.servers.empty?
 
 end
 
-package 'nscd' if node.sys.nscd.enable
+package 'nscd' if node['sys']['nscd']['enable']

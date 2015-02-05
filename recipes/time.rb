@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-timezone = node.sys.time.zone
+timezone = node['sys']['time']['zone']
 
 unless timezone.empty?
 
@@ -38,7 +38,7 @@ unless timezone.empty?
 
 end
 
-time_servers = node.sys.time.servers
+time_servers = node['sys']['time']['servers']
 
 unless time_servers.empty?
 

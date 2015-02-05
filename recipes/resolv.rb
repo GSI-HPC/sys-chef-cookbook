@@ -17,15 +17,15 @@
 # limitations under the License.
 #
 
-unless node.sys.resolv.servers.empty?
+unless node['sys']['resolv']['servers'].empty?
 
   template '/etc/resolv.conf' do
     source 'etc_resolv.conf.erb'
     mode "0644"
     variables(
-      :servers => node.sys.resolv.servers,
-      :domain => node.sys.resolv.domain,
-      :search => node.sys.resolv.search
+      :servers => node['sys']['resolv']['servers'],
+      :domain => node['sys']['resolv']['domain'],
+      :search => node['sys']['resolv']['search']
     )
   end
 

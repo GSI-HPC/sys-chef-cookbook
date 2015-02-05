@@ -33,23 +33,23 @@ template '/etc/default/chef-client' do
   group 'root'
   mode "0644"
   variables(
-    :interval => node.sys.chef.interval,
-    :splay    => node.sys.chef.splay
+    :interval => node['sys']['chef']['interval'],
+    :splay    => node['sys']['chef']['splay']
   )
   notifies :restart, "service[chef-client]"
 end
 
-if node.sys.chef.use_syslog
+if node['sys']['chef']['use_syslog']
   package 'ruby-sysloglogger'
 end
 
-server_url = node.sys.chef.server_url
+server_url = node['sys']['chef']['server_url']
 
 begin
-  unless server_url or not node.chef.server.fqdn
+  unless server_url or not node['chef']['server']['fqdn']
     # fallback for figuring out the chef server url following the "old" conventions
     #  introduced by the chef cookbook
-    if server = node.chef.server.ssl
+    if server = node['chef']['server']['ssl']
       server_url = 'https://#{server}:443'
     else
       server_url = 'http://#{server}:4000'
@@ -78,7 +78,7 @@ if server_url
     notifies :restart, "service[chef-client]"
   end
 else
-  log("No chef server defined. Please set node.sys.chef.server_url to point to your chef server") { level :warn }
+  log("No chef server defined. Please set node['sys']['chef']['server_url'] to point to your chef server") { level :warn }
 end
 
 # Delete the validation credential if the machines
@@ -87,17 +87,17 @@ end
 # case, the validation key would be regenerated on
 # each chef-server restart.
 # For now we assume that the chef server does not run sys::chef
-#unless node.chef.is_server
-file node.sys.chef.validation_key do
+#unless node['chef']['is_server']
+file node['sys']['chef']['validation_key'] do
   action :delete
   backup false
-  only_if do ::File.exists? node.sys.chef.client_key end
+  only_if do ::File.exists? node['sys']['chef']['client_key'] end
 end
 #end
 
 # make the client key group-readable
 #  (so its members can use 'knife .. -c /etc/chef/client.pem')
-file node.sys.chef.client_key do
+file node['sys']['chef']['client_key'] do
   group node['sys']['chef']['group']
   mode "0640"
 end

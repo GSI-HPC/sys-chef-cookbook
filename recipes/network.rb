@@ -17,15 +17,15 @@
 # limitations under the License.
 #
 
-unless node.sys.network.vlan_bridges.empty?
-  node.sys.network.vlan_bridges.each do |bridge|
+unless node['sys']['network']['vlan_bridges'].empty?
+  node['sys']['network']['vlan_bridges'].each do |bridge|
     sys_network_vlan_bridge bridge do
-      interface node.network.default_interface
+      interface node['network']['default_interface']
     end
   end
 end
 
-interfaces = node.sys.network.interfaces
+interfaces = node['sys']['network']['interfaces']
 unless interfaces.empty?
 
   # FIXME: we only need these packages if we actually mess with VLANs
@@ -63,11 +63,11 @@ unless interfaces.empty?
     end
 
     # try to get configuration of the default interface from Ohai
-    if name == node.network.default_interface and inet == 'static'
-      config[:address] = node.ipaddress unless config.has_key?(:address)
-      config[:gateway] = node.network.default_gateway unless config.has_key?(:gateway)
-      config[:broadcast] = node.network.interfaces[node.network.default_interface].addresses[config[:address]].broadcast unless config.has_key?(:broadcast)
-      config[:netmask] = node.network.interfaces[node.network.default_interface].addresses[config[:address]].netmask unless config.has_key?(:netmask)
+    if name == node['network']['default_interface'] and inet == 'static'
+      config[:address] = node['ipaddress'] unless config.has_key?(:address)
+      config[:gateway] = node['network']['default_gateway'] unless config.has_key?(:gateway)
+      config[:broadcast] = node['network']['interfaces'][node['network']['default_interface']]['addresses'][config[:address]]['broadcast'] unless config.has_key?(:broadcast)
+      config[:netmask] = node['network']['interfaces'][node['network']['default_interface']]['addresses'][config[:address]]['netmask'] unless config.has_key?(:netmask)
     end
 
     template "/etc/network/interfaces.d/#{name}" do
@@ -79,7 +79,7 @@ unless interfaces.empty?
         :inet => inet,
         :config => config
       )
-      if node.sys.network.restart
+      if node['sys']['network']['restart']
         notifies :restart, 'service[networking]'
       end
     end

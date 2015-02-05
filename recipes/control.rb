@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-unless node.sys.control.empty?
+unless node['sys']['control'].empty?
 
   header = <<-EOF
   #
@@ -29,7 +29,7 @@ unless node.sys.control.empty?
 
   header = header.gsub(/^ */,'')
 
-  node.sys.control.each do |name,values|
+  node['sys']['control'].each do |name,values|
 
     filename = "/etc/sysctl.d/#{name.gsub(/\./,'_')}.conf"
     sysctl = "Set Linux kernel variables from #{filename}"
@@ -56,4 +56,3 @@ unless node.sys.control.empty?
   end
 
 end
-

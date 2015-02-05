@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-if ! node.sys.ldap.empty? && File.exists?("/etc/nslcd.keytab")
+if ! node['sys']['ldap'].empty? && File.exists?("/etc/nslcd.keytab")
   %w(
     nscd
     nslcd
@@ -43,10 +43,10 @@ if ! node.sys.ldap.empty? && File.exists?("/etc/nslcd.keytab")
     mode "0644"
     notifies :restart, "service[nslcd]", :delayed
     variables(
-      :servers => node.sys.ldap.servers,
-      :searchbase => node.sys.ldap.searchbase,
-      :realm => node.sys.ldap.realm.upcase,
-      :nss_initgroups_ignoreusers => begin node.sys.ldap.nss_initgroups_ignoreusers rescue nil end
+      :servers => node['sys']['ldap']['servers'],
+      :searchbase => node['sys']['ldap']['searchbase'],
+      :realm => node['sys']['ldap']['realm'].upcase,
+      :nss_initgroups_ignoreusers => begin node['sys']['ldap']['nss_initgroups_ignoreusers'] rescue nil end
     )
   end
 
@@ -57,10 +57,10 @@ if ! node.sys.ldap.empty? && File.exists?("/etc/nslcd.keytab")
     group "root"
     mode "0644"
     variables(
-      :servers => node.sys.ldap.servers,
-      :searchbase => node.sys.ldap.searchbase,
-      :realm => node.sys.ldap.realm.upcase,
-      :cacert => begin node.sys.ldap.cacert rescue nil end
+      :servers => node['sys']['ldap']['servers'],
+      :searchbase => node['sys']['ldap']['searchbase'],
+      :realm => node['sys']['ldap']['realm'].upcase,
+      :cacert => begin node['sys']['ldap']['cacert'] rescue nil end
     )
   end
 

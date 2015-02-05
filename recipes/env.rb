@@ -17,13 +17,13 @@
 # limitations under the License.
 #
 
-unless node.sys.env.empty?
+unless node['sys']['env'].empty?
 
   # fill the /etc/environment file:
   template '/etc/environment' do
     source 'etc_environment.erb'
     owner 'root'
     group 'root'
-    mode "0644"    
+    mode "0644"
   end
 end

@@ -17,12 +17,12 @@
 # limitations under the License.
 #
 
-unless node.sys.nsswitch.empty?
+unless node['sys']['nsswitch'].empty?
 
   template "/etc/nsswitch.conf" do
     source "etc_nsswitch.conf.erb"
     mode '0644'
-    variables :rules => node.sys.nsswitch.gsub(/^ */,'')
+    variables :rules => node['sys']['nsswitch'].gsub(/^ */,'')
   end
 
 end

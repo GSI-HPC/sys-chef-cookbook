@@ -52,13 +52,13 @@ sshd_config = {
 }
 
 # only if SSH daemon configuration is defined
-unless node.sys.sshd.config.empty?
+unless node['sys']['sshd']['config'].empty?
   package "openssh-server"
   service "ssh" do
     supports :reload => true
   end
   # overwrite the default configuration
-  sshd_config.merge! node.sys.sshd.config
+  sshd_config.merge! node['sys']['sshd']['config']
   template '/etc/ssh/sshd_config' do
     source 'etc_ssh_sshd_config.erb'
     mode "0644"
@@ -67,8 +67,8 @@ unless node.sys.sshd.config.empty?
   end
 end
 
-unless node.sys.ssh.authorize.empty?
-  node.sys.ssh.authorize.each do |account,params|
+unless node['sys']['ssh']['authorize'].empty?
+  node['sys']['ssh']['authorize'].each do |account,params|
     sys_ssh_authorize account do
       keys params[:keys]
       managed params[:managed] if params.has_key? :managed
@@ -76,8 +76,8 @@ unless node.sys.ssh.authorize.empty?
   end
 end
 
-unless node.sys.ssh.config.empty?
-  node.sys.ssh.config.each do |account,params|
+unless node['sys']['ssh']['config'].empty?
+  node['sys']['ssh']['config'].each do |account,params|
     sys_ssh_config account do
       config params
     end
