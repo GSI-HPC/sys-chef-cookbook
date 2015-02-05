@@ -66,14 +66,15 @@ describe 'sys::ssh' do
           :config => sshd_config
         }
       )
-
-      expect(chef_run).to create_directory("/home/jdoe/.ssh")
-
-      expect(chef_run).to create_file("/home/jdoe/.ssh/authorized_keys")
-
       expect(chef_run).to render_file('/etc/ssh/sshd_config').with_content(
         "ChallengeResponseAuthentication no\nX11Forwarding overwritten"
       )
+    end
+
+    it 'manages ssh-user-config' do
+      expect(chef_run).to create_directory("/home/jdoe/.ssh")
+
+      expect(chef_run).to create_file("/home/jdoe/.ssh/authorized_keys")
     end
   end
 end
