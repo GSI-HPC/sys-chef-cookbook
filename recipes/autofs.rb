@@ -75,8 +75,11 @@ if ! node['sys']['autofs']['ldap'].empty? && File.exists?("/etc/autofs.keytab")
     source "etc_default_autofs.erb"
     mode "0644"
     begin
-      node.sys.autofs.ldap.browsemode
-      browsemode = "yes"
+      if node['sys']['autofs']['ldap']['browsemode']
+        browsemode = "yes"
+      else
+        browsemode = "no"
+      end
     rescue
       browsemode = "no"
     end
