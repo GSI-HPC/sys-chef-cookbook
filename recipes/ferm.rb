@@ -8,9 +8,9 @@
 class Chef::Recipe::SysFermSanityCheckError < Exception
 end
 
-unless node.sys.ferm.rules.empty?
+unless node['sys']['ferm']['rules'].empty?
   # Sanity checks
-  node.sys.ferm.rules.each do |domain, tables|
+  node['sys']['ferm']['rules'].each do |domain, tables|
     unless /^((\((ip6?|eb|arp)( (ip6?|eb|arp))*\))|(ip6?|eb|arp))$/.match domain.to_s
       raise Chef::Recipe::SysFermSanityCheckError, "Insane ferm domain '#{domain}'."
     end
@@ -38,12 +38,12 @@ unless node.sys.ferm.rules.empty?
   fermserviceaction = :enable
   fermaction = :start
 
-  unless node.sys.ferm.active
+  unless node['sys']['ferm']['active']
     fermserviceaction = :disable
     fermaction = :stop
   end
 
-  unless node.sys.ferm.foreign_config
+  unless node['sys']['ferm']['foreign_config']
     template '/etc/ferm/ferm.conf' do
       source 'etc_ferm_ferm.conf.erb'
       mode   '0644'

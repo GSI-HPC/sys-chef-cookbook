@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #
 # Cookbook Name:: sys
 # Recipe:: resolv
@@ -19,26 +20,26 @@
 # limitations under the License.
 #
 
-unless node.sys.mount.empty?
+unless node['sys']['mount'].empty?
 
   # Make sure to install NFS support if it is required
   # by the configuration.
   nfs_required = false
-  node.sys.mount.each_value do |config|
-    if config.has_key? :fstype 
+  node['sys']['mount'].each_value do |config|
+    if config.has_key? :fstype
       nfs_required = true if config[:fstype] == 'nfs'
     end
   end
   package 'nfs-common' if nfs_required
 
-  node.sys.mount.each do |path,config|
+  node['sys']['mount'].each do |path,config|
 
     # Make sure the mount point exists
     directory path do
       recursive true
     end
     # Call the mount resource
-    mount path do 
+    mount path do
       # Pass all configuration options to the mount resource
       config.each { |key,value| send(key,value) }
     end

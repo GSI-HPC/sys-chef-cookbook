@@ -17,26 +17,26 @@
 # limitations under the License.
 #
 
-unless node.sys.banner.message.empty?
-  if node.sys.banner.message.kind_of?(Array)
-    message = node.sys.banner.message.join("\n")
+unless node['sys']['banner']['message'].empty?
+  if node['sys']['banner']['message'].kind_of?(Array)
+    message = node['sys']['banner']['message'].join("\n")
   else
-    message = node.sys.banner.message
+    message = node['sys']['banner']['message']
   end
 
   template '/etc/motd' do
     source 'etc_motd.erb'
     mode "0644"
     variables(
-      :header => node.sys.banner.header,
+      :header => node['sys']['banner']['header'],
       :message => message,
-      :service_properties => node.sys.banner.service_properties,
-      :footer => node.sys.banner.footer
+      :service_properties => node['sys']['banner']['service_properties'],
+      :footer => node['sys']['banner']['footer']
     )
   end
 end
 
-if node.sys.banner.info
+if node['sys']['banner']['info']
 
   package 'lsb-release'
 

@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-unless node.sys.sudo.empty?
+unless node['sys']['sudo'].empty?
 
     package 'sudo'
 
@@ -37,7 +37,7 @@ unless node.sys.sudo.empty?
       mode "0755"
     end
 
-    node.sys.sudo.each_pair do |name,config|
+    node['sys']['sudo'].each_pair do |name,config|
       sys_sudo name do
         users config[:users] if config.has_key? 'users'
         hosts config[:hosts] if config.has_key? 'hosts'

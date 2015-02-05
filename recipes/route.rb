@@ -19,16 +19,16 @@
 # limitations under the License.
 #
 
-unless node.sys.route.empty?
-  node.sys.route.each_pair do |target,config|
-    # Add a route for each target by default 
-    act = :add 
+unless node['sys']['route'].empty?
+  node['sys']['route'].each_pair do |target,config|
+    # Add a route for each target by default
+    act = :add
     act = :delete if config[:delete]
     # At least a gateway is required
     unless config.has_key? :gateway
       log "No gateway defined for target #{target}" do level :warn end
       next
-    end 
+    end
     route target do
       gateway config[:gateway]
       netmask config[:netmask] if config.has_key? :netmask

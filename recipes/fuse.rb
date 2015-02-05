@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-unless node.sys.fuse.config.empty?
+unless node['sys']['fuse']['config'].empty?
 
   package 'fuse-utils'
 
@@ -26,7 +26,7 @@ unless node.sys.fuse.config.empty?
     mode '0640'
     owner 'root'
     group 'fuse'
-    variables :config => node.sys.fuse.config
+    variables :config => node['sys']['fuse']['config']
     notifies :restart, 'service[udev]'
   end
 

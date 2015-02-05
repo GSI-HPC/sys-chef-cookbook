@@ -21,8 +21,8 @@
 #
 
 # Manage directories
-unless node.sys.directory.empty?
-  node.sys.directory.each do |name, dir|
+unless node['sys']['directory'].empty?
+  node['sys']['directory'].each do |name, dir|
     directory name do
       dir.each do |key, value|
         send(key, value)

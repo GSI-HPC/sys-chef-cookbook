@@ -17,16 +17,16 @@
 # limitations under the License.
 #
 
-unless node.sys.pam.access.empty?
+unless node['sys']['pam']['access'].empty?
   template '/etc/security/access.conf' do
     source 'etc_security_access.conf.erb'
     owner 'root'
     group 'root'
     mode "0600"
-    variables :rules => node.sys.pam.access
+    variables :rules => node['sys']['pam']['access']
   end
 
-  unless node.sys.pamd.has_key?('sshd')
+  unless node['sys']['pamd'].has_key?('sshd')
     cookbook_file '/etc/pam.d/sshd' do
       source 'etc_pam.d_sshd'
       owner 'root'
@@ -36,7 +36,7 @@ unless node.sys.pam.access.empty?
     end
   end
 
-  unless node.sys.pamd.has_key?('login')
+  unless node['sys']['pamd'].has_key?('login')
     cookbook_file '/etc/pam.d/login' do
       source 'etc_pam.d_login'
       owner 'root'
@@ -46,28 +46,28 @@ unless node.sys.pam.access.empty?
   end
 end
 
-unless node.sys.pam.limits.empty?
+unless node['sys']['pam']['limits'].empty?
   template '/etc/security/limits.conf' do
     source 'etc_security_limits.conf.erb'
     owner 'root'
     group 'root'
     mode "0644"
-    variables :rules => node.sys.pam.limits
+    variables :rules => node['sys']['pam']['limits']
   end
 end
 
-unless node.sys.pam.group.empty?
+unless node['sys']['pam']['group'].empty?
   template '/etc/security/group.conf' do
     source 'etc_security_group.conf.erb'
     owner 'root'
     group 'root'
     mode "0644"
-    variables :rules => node.sys.pam.group
+    variables :rules => node['sys']['pam']['group']
   end
 end
 
-unless node.sys.pamd.empty?
-  node.sys.pamd.each do |name, contents|
+unless node['sys']['pamd'].empty?
+  node['sys']['pamd'].each do |name, contents|
     template "/etc/pam.d/#{name}" do
       source 'etc_pam.d_generic.erb'
       owner 'root'
@@ -82,11 +82,11 @@ unless node.sys.pamd.empty?
   end
 end
 
-unless node.sys.pamupdate.empty?
+unless node['sys']['pamupdate'].empty?
   begin
     configs = Array.new
 
-    node.sys.pamupdate.each_value do |values|
+    node['sys']['pamupdate'].each_value do |values|
       configs << PamUpdate::Profile.new(values)
     end
 

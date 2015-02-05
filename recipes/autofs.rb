@@ -17,11 +17,11 @@
 # limitations under the License.
 #
 
-if ! node.sys.autofs.maps.empty? && node.sys.autofs.ldap.empty?
+if ! node['sys']['autofs']['maps'].empty? && node['sys']['autofs']['ldap'].empty?
 
   package 'autofs'
 
-  node.sys.autofs.maps.each_key do |mountpoint|
+  node['sys']['autofs']['maps'].each_key do |mountpoint|
     directory mountpoint do
       not_if { File.exists?(mountpoint) }
     end
@@ -31,12 +31,12 @@ if ! node.sys.autofs.maps.empty? && node.sys.autofs.ldap.empty?
     source 'etc_auto.master.erb'
     mode "0644"
     variables(
-      :maps => node.sys.autofs.maps
+      :maps => node['sys']['autofs']['maps']
     )
     notifies :reload, 'service[autofs]'
   end
 
-  #  node.sys.autofs.maps.each_key do |path|
+  #  node['sys']['autofs']['maps'].each_key do |path|
   #    directory path do
   #      recursive true
   #    end
@@ -47,7 +47,7 @@ if ! node.sys.autofs.maps.empty? && node.sys.autofs.ldap.empty?
   end
 end
 
-if ! node.sys.autofs.ldap.empty? && File.exists?("/etc/autofs.keytab")
+if ! node['sys']['autofs']['ldap'].empty? && File.exists?("/etc/autofs.keytab")
   package "autofs"
   package "autofs-ldap"
   package "kstart"
@@ -56,7 +56,7 @@ if ! node.sys.autofs.ldap.empty? && File.exists?("/etc/autofs.keytab")
     source 'etc_auto.master.erb'
     mode "0644"
     variables(
-      :maps => node.sys.autofs.maps
+      :maps => node['sys']['autofs']['maps']
     )
     notifies :reload, 'service[autofs]'
   end
@@ -65,8 +65,8 @@ if ! node.sys.autofs.ldap.empty? && File.exists?("/etc/autofs.keytab")
     source "etc_autofs_ldap_auth.conf.erb"
     mode "0600"
     variables({
-      :principal => node.fqdn,
-      :realm => node.sys.krb5.realm.upcase
+      :principal => node['fqdn'],
+      :realm => node['sys']['krb5']['realm'].upcase
     })
     notifies :restart, 'service[autofs]', :delayed
   end
@@ -82,8 +82,8 @@ if ! node.sys.autofs.ldap.empty? && File.exists?("/etc/autofs.keytab")
     end
 
     variables({
-      :uris => node.sys.autofs.ldap.servers,
-      :searchbase => node.sys.autofs.ldap.searchbase,
+      :uris => node['sys']['autofs']['ldap']['servers'],
+      :searchbase => node['sys']['autofs']['ldap']['searchbase'],
       :browsemode => browsemode
     })
     notifies :restart, 'service[autofs]', :delayed

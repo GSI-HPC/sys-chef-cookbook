@@ -17,12 +17,11 @@
 # limitations under the License.
 #
 
-unless node.sys.modules.empty?
+unless node['sys']['modules'].empty?
 
   package "module-init-tools"
 
-  node.sys.modules.each do |m|
+  node['sys']['modules'].each do |m|
     sys_module m
   end
 end
-

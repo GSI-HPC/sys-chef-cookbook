@@ -18,7 +18,7 @@
 # limitations under the License.
 #
 
-relay = node.sys.mail.relay
+relay = node['sys']['mail']['relay']
 
 unless relay.empty?
 
@@ -28,7 +28,7 @@ unless relay.empty?
   end
 
   file '/etc/mailname' do
-    content "#{node.fqdn}\n"
+    content "#{node['fqdn']}\n"
   end
 
   update_canonical = 'Update Postfix canonicals'
@@ -49,10 +49,10 @@ unless relay.empty?
     mode '0644'
     variables({
       :relay           => relay,
-      :mynetworks      => node.sys.mail.mynetworks,
-      :inet_interfaces => node.sys.mail.inet_interfaces,
-      :default_privs   => node.sys.mail.default_privs,
-      :mydestination   => node.sys.mail.mydestination,
+      :mynetworks      => node['sys']['mail']['mynetworks'],
+      :inet_interfaces => node['sys']['mail']['inet_interfaces'],
+      :default_privs   => node['sys']['mail']['default_privs'],
+      :mydestination   => node['sys']['mail']['mydestination'],
       :relay_domains   => node['sys']['mail']['relay_domains']
     })
     # after changes to main.cf postfix - sometimes - has to be restarted
@@ -67,7 +67,7 @@ unless relay.empty?
     notifies :reload, 'service[postfix]'
   end
 
-  node.sys.mail.aliases.each do |account, mail_address|
+  node['sys']['mail']['aliases'].each do |account, mail_address|
     sys_mail_alias account do
       to mail_address
       aliases_file etc_aliases

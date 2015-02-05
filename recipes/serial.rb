@@ -16,10 +16,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-if node.sys.serial.port > 0
+if node['sys']['serial']['port'] > 0
 
-  port = node.sys.serial.port
-  speed = node.sys.serial.speed
+  port = node['sys']['serial']['port']
+  speed = node['sys']['serial']['speed']
 
   template '/etc/inittab' do
     source 'etc_inittab.erb'
