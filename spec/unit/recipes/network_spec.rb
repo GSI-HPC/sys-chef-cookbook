@@ -7,6 +7,28 @@ describe 'sys::network' do
     end
   end
 
+  context 'keeps interfaces' do
+    let(:shellout) { double('shellout')}
+    before do
+      chef_run.node.default['sys']['network']['interfaces'] = {"eth0" => { "inet" => "dhcp" }}
+      chef_run.converge(described_recipe)
+    end
+
+    it 'creates /etc/network/interfaces' do
+      expect(chef_run).to render_file('/etc/network/interfaces')
+    end
+
+    it 'does not create /etc/network/interfaces' do
+      chef_run.node.default['sys']['network']['keep_interfaces'] = true
+      expect(Mixlib::ShellOut).to receive(:new).and_return(shellout)
+      expect(shellout).to receive(:run_command).and_return(nil)
+      shellout.stub(:status).and_return(0)
+      chef_run.converge(described_recipe)
+
+      expect(chef_run).to_not render_file('/etc/network/interfaces')
+    end
+  end
+
   context 'with some test attributes' do
     before do
       chef_run.node.default['sys']['network']['interfaces'] = {
