@@ -22,7 +22,7 @@ describe 'sys::network' do
       chef_run.node.default['sys']['network']['keep_interfaces'] = true
       expect(Mixlib::ShellOut).to receive(:new).and_return(shellout)
       expect(shellout).to receive(:run_command).and_return(nil)
-      shellout.stub(:status).and_return(0)
+      expect(shellout).to receive(:status).and_return(0)
       chef_run.converge(described_recipe)
 
       expect(chef_run).to_not render_file('/etc/network/interfaces')

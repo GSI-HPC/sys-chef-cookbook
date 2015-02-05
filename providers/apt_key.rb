@@ -26,10 +26,22 @@ action :add do
   newkey = newkey.gsub(/^ */,'')
 
   # fingerprint for the key as defined by the client code, remove white spaces
-  fingerprint = `echo '#{newkey}' | gpg --with-fingerprint --no-options 2>/dev/null | grep fingerprint | cut -d= -f2 | tr -d ' '`.chomp || nil
+  fingerprint_command = "echo '#{newkey}' | gpg --with-fingerprint --no-options"
+  fingerprint_command += " 2>/dev/null | grep fingerprint | cut -d= -f2 | tr -d ' '"
+  cmd = Mixlib::ShellOut.new(fingerprint_command)
+  cmd.run_command
+  # TODO:
+  #cmd.error!
+  fingerprint = cmd.stdout.chomp || nil
+
   unless fingerprint.nil?
     # Get a list of all key fingerprints in the system, remove white spaces
-    fingerprints = `apt-key finger 2>/dev/null | grep fingerprint | tr -s ' ' | cut -d' ' -f2 | cut -d'/' -f2`.split("\n").map { |f| f.delete(' ') }
+    fingerprints_command = "apt-key finger 2>/dev/null | grep fingerprint |"
+    fingerprints_command += " tr -s ' ' | cut -d' ' -f2 | cut -d'/' -f2"
+    cmd.run_command
+    # TODO:
+    #cmd.error!
+    fingerprints = cmd.stdout.split("\n").map { |f| f.delete(' ') }
     # If the fingerprints exists, assume the key is deployed already
     deploy_flag = false if fingerprints.include? fingerprint
   end
