@@ -36,7 +36,9 @@ action :add do
 
   ruby_block "Add APT key with fingerpint #{fingerprint}" do
     block do
-      system("echo '#{newkey}' | apt-key add - >/dev/null")
+      cmd = Mixlib::ShellOut.new("echo '#{newkey}' | apt-key add - >/dev/null")
+      cmd.run_command
+      cmd.error!
     end
     only_if do deploy_flag end
   end
@@ -54,4 +56,3 @@ action :remove do
 
   new_resource.updated_by_last_action(true)
 end
-

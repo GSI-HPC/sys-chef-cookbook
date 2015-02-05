@@ -97,7 +97,7 @@ unless (node['sys']['accounts'].empty? and node['sys']['groups'].empty?)
         password account['password']
         home     account['home']
         shell    account['shell']
-        system   account['system']
+        system   account['system'] # ~FC048 No command is issued here
         supports account['supports'] || {}
       end
 
