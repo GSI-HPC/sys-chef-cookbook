@@ -18,7 +18,7 @@ base_path = '/usr/local/share/ca-certificates'
 crt_pkg = 'ca-certificates'
 
 action :add do
- 
+
   name = new_resource.name
   path ="#{base_path}/#{name}"
 
@@ -26,7 +26,7 @@ action :add do
   if node.run_context.resource_collection.select{ |e| e.name == crt_pkg }.empty?
     package crt_pkg
   end
-  
+
   update = "Update CAs with new certificate: #{path}"
   execute update do
     command 'update-ca-certificates > /dev/null 2>&1'
@@ -39,6 +39,8 @@ action :add do
     notifies :run, "execute[#{update}]", :immediately
   end
 
+  new_resource.updated_by_last_action(true)
+
 end
 
 action :remove do
@@ -49,7 +51,7 @@ action :remove do
   if node.run_context.resource_collection.select{ |e| e.name == crt_pkg }.empty?
     package crt_pkg
   end
-  
+
   update = "Update CAs after removing certificate: #{path}"
 
   execute update do
@@ -61,5 +63,7 @@ action :remove do
     action :delete
     notifies :run, "execute[#{update}]", :immediately
   end
+
+  new_resource.updated_by_last_action(true)
 
 end

@@ -41,9 +41,7 @@ describe 'sys::apt' do
     before do
       stub_command("apt-key list | grep '74EFCA61' >/dev/null").and_return(true)
       chef_run.node.default['sys']['apt']['keys']['remove'] = ['8619D7577AD88F7DE0A9DD018353CCB474EFCA61']
-      chef_run.node.default['sys']['apt']['keys']['add'] = [
-        '
-        -----BEGIN PGP PUBLIC KEY BLOCK-----
+      @key = '-----BEGIN PGP PUBLIC KEY BLOCK-----
         Version: GnuPG v1.4.10 (GNU/Linux)
 
         mQGiBEtwDoURBACtcaK80IOtBaLtvJvwUYDy2gVD5W05vfx9fSSil8hZDpDL4ZMn
@@ -74,7 +72,7 @@ describe 'sys::apt' do
         =GI6g
         -----END PGP PUBLIC KEY BLOCK-----
         '.gsub(/^ */,'')
-      ]
+      chef_run.node.default['sys']['apt']['keys']['add'] = [ @key ]
       chef_run.converge(described_recipe)
     end
 
