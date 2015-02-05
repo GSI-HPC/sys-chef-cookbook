@@ -3,3 +3,4 @@
 --require spec_helper
 -I libraries
 --require matchers
+--default-path test
