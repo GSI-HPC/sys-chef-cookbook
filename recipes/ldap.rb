@@ -26,8 +26,6 @@ if ! node.sys.ldap.empty? && File.exists?("/etc/nslcd.keytab")
     ldap-utils
   ).each { |p| package p }
 
-  node.default['sys']['ldap']['servers'] = [ node.sys.ldap.master, node.sys.ldap.slave ]
-
   # Environment variables for nslcd.  They mainly just configure k5start.
   template "/etc/default/nslcd" do
     source "etc_default_nslcd.conf.erb"

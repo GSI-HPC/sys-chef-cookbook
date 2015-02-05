@@ -10,12 +10,10 @@ describe 'sys::ldap' do
   context 'with some test attributes' do
     before do
       stub_command("test -e /etc/init.d/nscd").and_return(true)
-      master = 'master.example.com'
-      slave = 'slave.example.com'
+      ldap01 = 'ldap01.example.com'
+      ldap02 = 'ldap02.example.com'
       fqdn = 'node.example.com'
-      chef_run.node.default['sys']['ldap']['master'] = master
-      chef_run.node.default['sys']['ldap']['slave'] = slave
-      chef_run.node.default['sys']['ldap']['servers'] = [ master, slave ]
+      chef_run.node.default['sys']['ldap']['servers'] = [ ldap01, ldap02 ]
       chef_run.node.default['sys']['ldap']['searchbase'] = 'dc=example,dc=com'
       chef_run.node.default['sys']['ldap']['realm'] = 'EXAMPLE.COM'
       chef_run.node.default['sys']['ldap']['cacert'] = "/etc/ssl/ca.cert"
@@ -52,15 +50,15 @@ describe 'sys::ldap' do
     end
 
     it 'defines ldap-servers and auth-data in /etc/nslcd.conf' do
-      uri_m = "URI ldap://master.example.com"
-      uri_s = "URI ldap://slave.example.com"
+      uri_m = "URI ldap://ldap01.example.com"
+      uri_s = "URI ldap://ldap02.example.com"
       uris = uri_m + "\n" + uri_s
       authc = "sasl_authcid nslcd/node.example.com@EXAMPLE.COM"
       authz = "sasl_authzid u:nslcd/node.example.com"
       nss_ignore = "nss_initgroups_ignoreusers user1, user2"
       expect(chef_run).to create_template('/etc/nslcd.conf').with(
         :variables => {
-          :servers => [ chef_run.node.sys.ldap.master, chef_run.node.sys.ldap.slave ],
+          :servers => chef_run.node.sys.ldap.servers,
           :searchbase => chef_run.node.sys.ldap.searchbase,
           :realm => chef_run.node.sys.ldap.realm.upcase,
           :nss_initgroups_ignoreusers => chef_run.node.sys.ldap.nss_initgroups_ignoreusers
@@ -73,11 +71,11 @@ describe 'sys::ldap' do
     end
 
     it 'defines ldap-servers in /etc/ldap/ldap.conf' do
-      ldapservers = "URI ldap://master.example.com ldap://slave.example.com"
+      ldapservers = "URI ldap://ldap01.example.com ldap://ldap02.example.com"
       cacert = "/etc/ssl/ca.cert"
       expect(chef_run).to create_template('/etc/ldap/ldap.conf').with(
         :variables => {
-          :servers => [ chef_run.node.sys.ldap.master, chef_run.node.sys.ldap.slave ],
+          :servers => chef_run.node.sys.ldap.servers,
           :searchbase => chef_run.node.sys.ldap.searchbase,
           :realm => chef_run.node.sys.ldap.realm.upcase,
           :cacert => cacert
