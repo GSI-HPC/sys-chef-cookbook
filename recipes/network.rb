@@ -37,7 +37,9 @@ unless interfaces.empty?
   directory '/etc/network/interfaces.d'
 
   if node['sys']['network']['keep_interfaces']
-    unless system('grep -q "^source /etc/network/interfaces\.d/*" /etc/network/interfaces')
+    cmd = Mixlib::ShellOut.new('grep -q "^source /etc/network/interfaces\.d/*" /etc/network/interfaces')
+    cmd.run_command
+    if cmd.status != 0
       File.open("/etc/network/interfaces", "a") do |intf|
         intf.puts "\n#added by Chef:\nsource /etc/network/interfaces.d/*"
       end
