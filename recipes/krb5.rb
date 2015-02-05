@@ -41,35 +41,39 @@ unless node['sys']['krb5'].empty?
     )
   end
 
-  # use a secret or manual distribution of keytabs
+  # use a secret or wallet distribution of keytabs
+  # Should all of this be in a recipe?
   if node.default['sys']['krb5']['distribution'] == "secret"
+    if Chef::Config[:solo]
+      Chef::Log.warn("Sys::Secret uses search. Chef Solo does not support search.")
+    else
+      class Chef::Recipe
+        include Sys::Secret
+      end
 
-    class Chef::Recipe
-      include Sys::Secret
-    end
-
-    Chef::Log.info("search for node #{node['sys']['krb5']['master']}")
-    kdc_node = search(:node, "fqdn:#{node['sys']['krb5']['master']}")[0]
-    if kdc_node
-      if node['sys']['krb5'].has_key?(:"keytab_config")
-        node['sys']['krb5']['keytab_config'].each do |kh|
-          key = kh["keytab"]
-          owner = kh["owner"] || "root"
-          group = kh["group"] || "root"
-          mode = kh["mode"] || "0600"
-          place = kh["place"] || "/etc/#{key}.keytab"
-          Chef::Log.info "Put keytab #{key} to place #{place}"
-          if kdc_node['krb5']['keytabs'].has_key?("#{key}_#{node['fqdn']}")
-            kt = decrypt(kdc_node['krb5']['keytabs']["#{key}_#{node['fqdn']}"])
-            # decrypt returns nil if anything goes wrong
-            raise "Could not decrypt keytab #{key}" unless kt
-            template place do
-              source "etc_keytab_generic.erb"
-              owner owner
-              group group
-              mode mode
-              variables :keytab => kt
-              only_if "getent passwd #{owner} && getent group #{group}"
+      Chef::Log.info("search for node #{node['sys']['krb5']['master']}")
+      kdc_node = search(:node, "fqdn:#{node['sys']['krb5']['master']}")[0]
+      if kdc_node
+        if node['sys']['krb5'].has_key?(:"keytab_config")
+          node['sys']['krb5']['keytab_config'].each do |kh|
+            key = kh["keytab"]
+            owner = kh["owner"] || "root"
+            group = kh["group"] || "root"
+            mode = kh["mode"] || "0600"
+            place = kh["place"] || "/etc/#{key}.keytab"
+            Chef::Log.info "Put keytab #{key} to place #{place}"
+            if kdc_node['krb5']['keytabs'].has_key?("#{key}_#{node['fqdn']}")
+              kt = decrypt(kdc_node['krb5']['keytabs']["#{key}_#{node['fqdn']}"])
+              # decrypt returns nil if anything goes wrong
+              raise "Could not decrypt keytab #{key}" unless kt
+              template place do
+                source "etc_keytab_generic.erb"
+                owner owner
+                group group
+                mode mode
+                variables :keytab => kt
+                only_if "getent passwd #{owner} && getent group #{group}"
+              end
             end
           end
         end
