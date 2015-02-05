@@ -43,14 +43,13 @@ unless node['sys']['ferm']['rules'].empty?
     fermaction = :stop
   end
 
-  unless node['sys']['ferm']['foreign_config']
-    template '/etc/ferm/ferm.conf' do
-      source 'etc_ferm_ferm.conf.erb'
-      mode   '0644'
-      owner  'root'
-      group  'adm'
-      notifies :reload, 'service[ferm]', :immediately
-    end
+  template '/etc/ferm/ferm.conf' do
+    source 'etc_ferm_ferm.conf.erb'
+    mode   '0644'
+    owner  'root'
+    group  'adm'
+    notifies :reload, 'service[ferm]', :immediately
+    not_if { node['sys']['ferm']['foreign_config'] }
   end
 
   service 'ferm' do

@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-unless node['sys']['tmp'].empty?
+unless node['sys']['tmp'].empty? # ~FC023 Do not break conventions in sys
   unless node['sys']['tmp']['reaper'].empty?
 
     package 'tmpreaper'

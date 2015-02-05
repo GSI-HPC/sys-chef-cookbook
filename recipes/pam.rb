@@ -36,17 +36,16 @@ unless node['sys']['pam']['access'].empty?
     end
   end
 
-  unless node['sys']['pamd'].has_key?('login')
-    cookbook_file '/etc/pam.d/login' do
-      source 'etc_pam.d_login'
-      owner 'root'
-      group 'root'
-      mode "0644"
-    end
+  cookbook_file '/etc/pam.d/login' do
+    source 'etc_pam.d_login'
+    owner 'root'
+    group 'root'
+    mode "0644"
+    not_if { node['sys']['pamd'].has_key?('login') }
   end
 end
 
-unless node['sys']['pam']['limits'].empty?
+unless node['sys']['pam']['limits'].empty? # ~FC023 do not break conventions in sys
   template '/etc/security/limits.conf' do
     source 'etc_security_limits.conf.erb'
     owner 'root'
@@ -56,7 +55,7 @@ unless node['sys']['pam']['limits'].empty?
   end
 end
 
-unless node['sys']['pam']['group'].empty?
+unless node['sys']['pam']['group'].empty? # ~FC023 Do not break conventions in sys
   template '/etc/security/group.conf' do
     source 'etc_security_group.conf.erb'
     owner 'root'
@@ -82,7 +81,7 @@ unless node['sys']['pamd'].empty?
   end
 end
 
-unless node['sys']['pamupdate'].empty?
+unless node['sys']['pamupdate'].empty? # ~FC023 Do not break conventions in sys
   begin
     configs = Array.new
 
@@ -100,7 +99,7 @@ unless node['sys']['pamupdate'].empty?
 
     %w[ account auth password session session-noninteractive ].each do |type|
       content = generator.send(type)
-      unless content.nil?
+      unless content.nil? # ~FC023 Do not break conventions in sys
         template "/etc/pam.d/common-#{type}" do
           source "etc_pam.d_generic.erb"
           owner "root"

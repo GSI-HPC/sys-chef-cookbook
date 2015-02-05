@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-unless node['sys']['resolv']['servers'].empty?
+unless node['sys']['resolv']['servers'].empty? # ~FC023 Do not break conventions in sys
 
   template '/etc/resolv.conf' do
     source 'etc_resolv.conf.erb'

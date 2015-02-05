@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-unless node['sys']['nsswitch'].empty?
+unless node['sys']['nsswitch'].empty? # ~FC023 Do not break conventions in sys
 
   template "/etc/nsswitch.conf" do
     source "etc_nsswitch.conf.erb"

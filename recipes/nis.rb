@@ -29,7 +29,7 @@ unless node['sys']['nis']['servers'].empty?
     # we don't use a template here because this file must only contain
     #  the NIS domain on a single line - and no comments
     file '/etc/defaultdomain' do
-      content node['sys']['nis']['domain'] << "\n"
+      content node.default['sys']['nis']['domain'] << "\n"
     end
   end
 

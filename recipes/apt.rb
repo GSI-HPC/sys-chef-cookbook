@@ -29,7 +29,7 @@ end
 
 # Default APT source file
 
-unless node['sys']['apt']['sources'].empty?
+unless node['sys']['apt']['sources'].empty? # ~FC023 Do not break conventions in sys
   template "/etc/apt/sources.list" do
     source "etc_apt_sources.list.erb"
     mode "644"
