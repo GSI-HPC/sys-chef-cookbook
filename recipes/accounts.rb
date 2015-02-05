@@ -112,7 +112,7 @@ unless (node['sys']['accounts'].empty? and node['sys']['groups'].empty?)
       end
 
       if account.has_key?('remote')
-        node.force_override['sys']['pam']['access'] = [ "+:#{name}:#{account['remote']} LOCAL" ]
+        node.force_override['sys']['pam']['access'] = [ "+:#{name}:#{account['remote']} LOCAL" ] # ~FC019 (Bug in foodcritic)
       end
 
     rescue Exception => e
