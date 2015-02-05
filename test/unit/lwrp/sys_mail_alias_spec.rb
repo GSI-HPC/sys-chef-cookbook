@@ -3,7 +3,7 @@ describe 'lwrp: sys_mail_alias' do
   let(:cookbook_paths) do
     [
       File.expand_path("#{File.dirname(__FILE__)}/../../../../"),
-      File.expand_path("#{File.dirname(__FILE__)}/../../")
+      File.expand_path("#{File.dirname(__FILE__)}/../")
     ]
   end
 

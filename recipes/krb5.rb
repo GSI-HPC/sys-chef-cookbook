@@ -45,7 +45,7 @@ unless node['sys']['krb5'].empty?
   # Should all of this be in a recipe?
   if node.default['sys']['krb5']['distribution'] == "secret"
     if Chef::Config[:solo]
-      Chef::Log.warn("Sys::Secret uses search. Chef Solo does not support search.")
+      Chef::Log.info("Sys::Secret uses search. Chef Solo does not support search.")
     else
       class Chef::Recipe
         include Sys::Secret
@@ -111,7 +111,7 @@ unless node['sys']['krb5'].empty?
 
         end # node['sys']['krb5']['keytab_config'].each
       else # if File.exists?("/etc/krb5.keytab")
-        Chef::Log.warn("/etc/krb5.keytab not found, not deploying keytabs.")
+        Chef::Log.info("/etc/krb5.keytab not found, not deploying keytabs.")
       end # if File.exists?("/etc/krb5.keytab")
     else # node['sys']['krb5'].has_key?(:"keytab_config")
       raise "Distribution set to wallet, but no config found"
