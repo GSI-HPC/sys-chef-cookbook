@@ -1,27 +1,39 @@
-provides 'etc', 'current_user'
+Ohai.plugin(:LocalPasswd) do
+  provides 'etc', 'etc/passwd', 'etc/group', 'current_user'
 
-require 'etc'
+  collect_data(:default) do
+    require 'etc'
 
-unless etc
-  etc Mash.new
+    etc Mash.new unless etc
+    current_user Etc.getlogin unless current_user
 
-  etc[:passwd] = Mash.new
-  etc[:group] = Mash.new
+    etc['passwd'] = Mash.new
+    etc['group'] = Mash.new
 
-  File.readlines("/etc/passwd").each do |line|
-    splitline = line.chomp.split(":")
-    etc[:passwd][splitline[0]] = Mash.new(:dir => splitline[5], :uid => splitline[2].to_i, :gid => splitline[3].to_i, :shell => splitline[6], :gecos => splitline[4])
+    File.readlines('/etc/passwd').each do |line|
+      splitline = line.chomp.split(':')
+      etc['passwd'][splitline[0]] = Mash.new(
+        'dir' => splitline[5],
+        'uid' => splitline[2].to_i,
+        'gid' => splitline[3].to_i,
+        'shell' => splitline[6],
+        'gecos' => splitline[4]
+      )
+    end
+
+    File.readlines('/etc/group').each do |line|
+      splitline = line.chomp.split(':')
+      g_members = []
+      begin
+        splitline[3].split(',').each do |mem|
+          g_members << mem
+        end
+      rescue # no members
+      end
+      etc['group'][splitline[0]] = Mash.new(
+        'gid' => splitline[2].to_i,
+        'members' => g_members
+      )
+    end
   end
-
-  File.readlines("/etc/group").each do |line|
-    splitline = line.chomp.split(":")
-    g_members = []
-    splitline[3].split(",").each{ |mem| g_members << mem }
-    etc[:group][splitline[0]] = Mash.new(:gid => splitline[2].to_i, :members => g_members)
-  end
-
-end
-
-unless current_user
-  current_user Etc.getlogin
 end
