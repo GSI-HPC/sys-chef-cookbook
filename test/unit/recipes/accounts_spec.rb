@@ -12,12 +12,12 @@ describe 'sys::accounts' do
         'home' => '/home/u1',
         'password' => '$asdf',
         'system' => true,
-        'supports' => { 'manage_home' => true }
+        'supports' => { :manage_home => true }
       }
       @u2 = { 'password' => 'asdf' }
       @u3 = { 'gid' => 0 } # the fauxhai group has gid 0
       @u4 = { 'gid' => 1337 }
-      @u5 = { 'supports' => { 'manage_home' => true } }
+      @u5 = { 'supports' => { :manage_home => true } }
       @u6 = { 'gid' => 'doesnotexist' }
       node.default['sys']['accounts']['u1'] = @u1
       node.default['sys']['accounts']['u2'] = @u2
@@ -89,9 +89,9 @@ describe 'sys::accounts' do
       expect(chef_run).to_not create_user('u6')
     end
 
-    it 'adds and honors manage_home flag' do
+    it 'adds and honors :manage_home flag' do
       expect(chef_run).to create_user('u5').with_supports(@u5['supports'])
-      expect(chef_run).to create_user('u2').with_supports({ 'manage_home' => true })
+      expect(chef_run).to create_user('u2').with_supports({ :manage_home => true })
     end
 
     it 'merges attributes with data bag item' do

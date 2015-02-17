@@ -65,7 +65,7 @@ unless (node['sys']['accounts'].empty? and node['sys']['groups'].empty?)
         item['account'].each do |key, value|
           account[key] ||= value
           if key == 'home'
-            account['supports'] ||= { 'manage_home' => true }
+            account['supports'] ||= { :manage_home => true }
           end
         end
       rescue Exception => e
