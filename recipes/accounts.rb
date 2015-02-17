@@ -32,7 +32,7 @@ unless (node['sys']['accounts'].empty? and node['sys']['groups'].empty?)
         grp = grp.to_hash
         grp['gid']     ||= item['gid']
       rescue Exception => e
-        log("Attribute merge with data bag 'localgroups/#{name}' failed: #{e.message}"){ level :debug }
+        Chef::Log.debug("Attribute merge with data bag 'localgroups/#{name}' failed: #{e.message}")
       end
     end
 
@@ -47,29 +47,27 @@ unless (node['sys']['accounts'].empty? and node['sys']['groups'].empty?)
         system  grp['system']  || false
       end
     rescue Exception => e
-      log("Creation of group resource '#{name}' failed: #{e.message}"){
-        level :error
-      }
+      Chef::Log.error("Creation of group resource '#{name}' failed: #{e.message}")
     end
   end
-
+require 'pp'
   bag = data_bag('accounts') unless Chef::Config[:solo]
-  node['sys']['accounts'].each do |name, account|
+  node['sys']['accounts'].each do |name, _account|
+    account = _account.merge({}) # gives us a mutable copy of the ImmutableMash
     unless Chef::Config[:solo]
       begin
         raise "No data bag item for account '#{name}'" unless bag.include?(name)
 
         item = data_bag_item('accounts', name)
-        account = account.to_hash
         account['comment'] ||= item['comment']
         item['account'].each do |key, value|
-          account[key] ||= value
+          account[key] = value unless account.has_key?(key)
           if key == 'home'
-            account['supports'] ||= { :manage_home => true }
+            account['supports'] = { :manage_home => true }
           end
         end
       rescue Exception => e
-        log("Attribute merge with data bag 'accounts/#{name}' failed: #{e.message}"){ level :debug }
+        Chef::Log.debug("Attribute merge with data bag 'accounts/#{name}' failed: #{e.message}")
       end
     end
 
@@ -87,6 +85,14 @@ unless (node['sys']['accounts'].empty? and node['sys']['groups'].empty?)
 
       comment = account['comment'] || 'managed by Chef via sys::accounts recipe'
 
+      supports_hash = Hash.new
+      if account.has_key? 'supports'
+        account['supports'].each do |key, value|
+          supports_hash[key.to_s] = value
+          supports_hash[key.to_sym] = value
+        end
+      end
+
       user name do
         # account.each{|k,v| send(k,v)} is elegant
         #  but hard to handle for account attributes
@@ -98,7 +104,7 @@ unless (node['sys']['accounts'].empty? and node['sys']['groups'].empty?)
         home     account['home']
         shell    account['shell']
         system   account['system'] # ~FC048 No command is issued here
-        supports account['supports'] || {}
+        supports supports_hash
       end
 
       if account.has_key?('sudo')
@@ -116,9 +122,7 @@ unless (node['sys']['accounts'].empty? and node['sys']['groups'].empty?)
       end
 
     rescue Exception => e
-      log("Creation of user resource '#{name}' failed: #{e.message}"){
-        level :error
-      }
+      Chef::Log.error("Creation of user resource '#{name}' failed: #{e.message}")
     end
   end
 end

@@ -1,6 +1,6 @@
 describe 'sys::accounts' do
   let(:chef_run) do
-    ChefSpec::ServerRunner.new do |node, server|
+    ChefSpec::ServerRunner.new(log_level: :fatal) do |node, server|
       @g1 = { 'gid' => 1337 }
       @g2 = {}
       node.default['sys']['groups']['g1'] = @g1
@@ -11,8 +11,8 @@ describe 'sys::accounts' do
         'shell' => '/bin/zsh',
         'home' => '/home/u1',
         'password' => '$asdf',
-        'system' => true,
-        'supports' => { :manage_home => true }
+        'supports' => { :manage_home => true },
+        'system' => true
       }
       @u2 = { 'password' => 'asdf' }
       @u3 = { 'gid' => 0 } # the fauxhai group has gid 0
@@ -72,16 +72,16 @@ describe 'sys::accounts' do
     end
 
     it 'manages users' do
-      expect(chef_run).to create_user('u1').with({
-        :uid => @u1['uid'],
-        :gid => @u1['gid'],
-        :home => @u1['home'],
-        :shell => @u1['shell'],
-        :password => @u1['password'],
-        :comment => 'managed by Chef via sys_accounts recipe',
-        :supports => @u1['supports'],
-        :system => @u1['system']
-      })
+      expect(chef_run).to create_user('u1')
+      u1 = chef_run.find_resource(:user, 'u1')
+      expect(u1.uid).to eq @u1['uid']
+      expect(u1.gid).to eq @u1['gid']
+      expect(u1.home).to eq @u1['home']
+      expect(u1.shell).to eq @u1['shell']
+      expect(u1.password).to eq @u1['password']
+      expect(u1.comment).to eq 'managed by Chef via sys_accounts recipe'
+      expect(u1.system).to eq @u1['system']
+      expect(u1.supports[:manage_home]).to be
       expect(chef_run).to create_user('u2')
       expect(chef_run).to create_user('u3')
       expect(chef_run).to create_user('u4')
@@ -90,8 +90,12 @@ describe 'sys::accounts' do
     end
 
     it 'adds and honors :manage_home flag' do
-      expect(chef_run).to create_user('u5').with_supports(@u5['supports'])
-      expect(chef_run).to create_user('u2').with_supports({ :manage_home => true })
+      expect(chef_run).to create_user('u5')
+      u5 = chef_run.find_resource(:user, 'u5')
+      expect(u5.supports[:manage_home]).to be
+      expect(chef_run).to create_user('u2')
+      u2 = chef_run.find_resource(:user, 'u2')
+      expect(u2.supports[:manage_home]).to be
     end
 
     it 'merges attributes with data bag item' do
