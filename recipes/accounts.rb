@@ -121,7 +121,7 @@ require 'pp'
       end
 
       if account.has_key?('remote')
-        node.override['sys']['pam']['access'].push("+:#{name}:#{account['remote']} LOCAL") # ~FC019 (Bug in foodcritic)
+        node.default['sys']['pam']['access'].push("+:#{name}:#{account['remote']} LOCAL")
       end
 
     rescue Exception => e
