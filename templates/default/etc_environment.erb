@@ -4,7 +4,7 @@
 #
 # This file is managed by the Chef `sys` cookbook.
 
-<% node['sys']['env'].each_pair do |key,value| %>
+<% node['sys']['env'].keys.sort_by(&:downcase) do |key| %>
 <% raise "Whitespace in environment variable name" if key =~ /\s/ %>
-<%= key %>="<%= value %>"
+<%= key %>="<%= node['sys']['env'][key] %>
 <% end %>
