@@ -4,6 +4,7 @@
 #
 # Copyright 2013, Victor Penso
 # Copyright 2015, Dennis Klein
+# Copyright 2015, Christopher Huhn
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -22,6 +23,8 @@ unless (node['sys']['accounts'].empty? and node['sys']['groups'].empty?)
 
   package 'ruby-shadow'
 
+  # TODO: we might want to create groups only implictly defined
+  #       from accounts...gid attributes but described in a databag
   bag = data_bag('localgroups') unless Chef::Config[:solo]
   node['sys']['groups'].each do |name, grp|
     unless Chef::Config[:solo]
@@ -118,7 +121,7 @@ require 'pp'
       end
 
       if account.has_key?('remote')
-        node.force_override['sys']['pam']['access'] = [ "+:#{name}:#{account['remote']} LOCAL" ] # ~FC019 (Bug in foodcritic)
+        node.override['sys']['pam']['access'].push("+:#{name}:#{account['remote']} LOCAL") # ~FC019 (Bug in foodcritic)
       end
 
     rescue Exception => e
