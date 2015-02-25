@@ -98,7 +98,7 @@ require 'pp'
 
       # If attribute local exists and is set to false,
       #  we skip the creation of the account itself
-      unless account['local'] == false # nil ~= true
+      if account['local'] != false # nil ~= true
         user name do
           # account.each{|k,v| send(k,v)} is elegant
           #  but hard to handle for account attributes
@@ -111,6 +111,13 @@ require 'pp'
           shell    account['shell']
           system   account['system'] # ~FC048 No command is issued here
           supports supports_hash
+        end
+      elsif account['supports']['manage_home']
+        # don't create the account but only its homedir:
+        directory account['home'] do
+          owner account['uid']
+          group account['gid']
+          mode 0750
         end
       end
 
