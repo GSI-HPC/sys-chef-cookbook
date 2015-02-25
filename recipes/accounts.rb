@@ -75,16 +75,6 @@ require 'pp'
     end
 
     begin
-      if account.has_key?('gid')
-        group_exists = (node['etc']['group'].has_key?(account['gid']) or
-          node['etc']['group'].values.detect { |g| g['gid'] == account['gid'] })
-        was_just_created = (node['sys']['groups'].has_key?(account['gid']) or
-          node['sys']['groups'].values.detect { |g| g['gid'] == account['gid'] })
-
-        unless group_exists or was_just_created
-          raise "The given group '#{account['gid']}' does not exist or wasn't defined"
-        end
-      end
 
       comment = account['comment'] || 'managed by Chef via sys::accounts recipe'
 
@@ -99,6 +89,19 @@ require 'pp'
       # If attribute local exists and is set to false,
       #  we skip the creation of the account itself
       if account['local'] != false # nil ~= true
+
+        # make sure the given group exists
+        if account.has_key?('gid')
+          group_exists = (node['etc']['group'].has_key?(account['gid']) or
+            node['etc']['group'].values.detect { |g| g['gid'] == account['gid'] })
+          was_just_created = (node['sys']['groups'].has_key?(account['gid']) or
+            node['sys']['groups'].values.detect { |g| g['gid'] == account['gid'] })
+        end
+
+        unless group_exists or was_just_created
+          raise "The given group '#{account['gid']}' does not exist or wasn't defined"
+        end
+
         user name do
           # account.each{|k,v| send(k,v)} is elegant
           #  but hard to handle for account attributes
