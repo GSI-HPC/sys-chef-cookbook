@@ -96,18 +96,22 @@ require 'pp'
         end
       end
 
-      user name do
-        # account.each{|k,v| send(k,v)} is elegant
-        #  but hard to handle for account attributes
-        #  that we don't want to send to the user ressource
-        comment  comment.gsub(/:+/, '_')  # gecos does not like colons
-        uid      account['uid']
-        gid      account['gid']
-        password account['password']
-        home     account['home']
-        shell    account['shell']
-        system   account['system'] # ~FC048 No command is issued here
-        supports supports_hash
+      # If attribute local exists and is set to false,
+      #  we skip the creation of the account itself
+      unless account['local'] == false # nil ~= true
+        user name do
+          # account.each{|k,v| send(k,v)} is elegant
+          #  but hard to handle for account attributes
+          #  that we don't want to send to the user ressource
+          comment  comment.gsub(/:+/, '_')  # gecos does not like colons
+          uid      account['uid']
+          gid      account['gid']
+          password account['password']
+          home     account['home']
+          shell    account['shell']
+          system   account['system'] # ~FC048 No command is issued here
+          supports supports_hash
+        end
       end
 
       if account.has_key?('sudo')
