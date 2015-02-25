@@ -29,6 +29,7 @@ define :sys_ssh_authorize, :keys => Array.new, :managed => false do
           dot_ssh = "#{node['etc']['passwd'][account].dir}/.ssh"
           gid     = node['etc']['passwd'][account].gid
         elsif node['sys']['accounts'].has_key?(account)
+          # FIXME: account may not have a key home and we accidentally create '/.ssh' ...
           dot_ssh = "#{node['sys']['accounts'][account]['home']}/.ssh"
           gid     = node['sys']['accounts'][account]['gid']
         else
