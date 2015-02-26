@@ -125,13 +125,14 @@ require 'pp'
       end
 
       if account.has_key?('sudo')
-        # FIXME: this will overwrite all previous invocations
-        #  rather set node['sys']['sudo'] attributes here
-        #  but did not get it to work for now :(
-        sys_sudo 'localadmin' do
-          rules [ "#{name} #{node['fqdn']} = #{account['sudo']}" ]
+        rule = "#{name} #{node['fqdn']} = #{account['sudo']}"
+        if node['sys']['sudo'].has_key?('localadmin')
+          node.default['sys']['sudo']['localadmin']['rules'].push(rule)
+          Chef::Log.debug("Adding #{name} to localadmin sudoers")
+        else
+          node.default['sys']['sudo']['localadmin'] = { 'rules' => [ rule ] }
+          Chef::Log.debug("Creating localadmin sudoers for #{name}")
         end
-        node
       end
 
       if account.has_key?('remote')
