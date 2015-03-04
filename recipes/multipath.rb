@@ -3,6 +3,7 @@
 # Recipe:: multipath
 #
 # Copyright 2014, Thomas Roth
+# Copyright 2015, Dennis Klein
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,9 +18,20 @@
 # limitations under the License.
 #
 
-package 'multipath-tools'
+unless node['sys']['multipath'].empty?
+  package 'multipath-tools'
 
-template '/etc/multipath.conf' do
-  source 'etc_multipath.erb'
-  mode '0664'
+  service 'multipath-tools' do
+    supports :reload => true
+    action [:enable, :start]
+  end
+
+  template '/etc/multipath.conf' do
+    source 'etc_multipath.conf.erb'
+    mode '0664'
+    variables({
+      :config => node['sys']['multipath']
+    })
+    notifies :reload, 'service[multipath-tools]'
+  end
 end
