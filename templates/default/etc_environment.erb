@@ -6,5 +6,5 @@
 
 <% node['sys']['env'].keys.sort_by!(&:downcase).each do |key| %>
 <% raise "Whitespace in environment variable name" if key =~ /\s/ %>
-<%= key %>="<%= node['sys']['env'][key] %>
+<%= key %>="<%= node['sys']['env'][key] %>"
 <% end %>
