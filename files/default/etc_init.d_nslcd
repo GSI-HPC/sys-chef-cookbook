@@ -69,6 +69,19 @@ fi
 # read defaults
 [ -f /etc/default/nslcd ] && . /etc/default/nslcd
 
+check_nslcd_cache()
+    {
+    ret=3
+    if [ -f $K5START_CCFILE ]; then
+    chown root:root $K5START_CCFILE && klist -c $K5START_CCFILE -t
+    ret=$?
+    chown nslcd:nslcd $K5START_CCFILE;
+    else
+    ret=2
+    fi
+    return $ret
+    }
+
 k5start_start()
 {
   if [ "$K5START_START" = "yes" ]
@@ -117,6 +130,23 @@ start)
                                 chown nslcd:nslcd "$NSLCD_STATEDIR" )
   # start k5start if needed
   k5start_start
+
+  # check nslcd cache
+  check_nslcd_cache
+    
+  ret=$?
+  
+  count=0
+  while [ $ret -ne 0 -a $count -lt 5 ]; do
+    count=$((count+1))
+    log_daemon_msg "Waiting for valid ticket in $K5START_CCFILE" "k5start"
+    sleep 5;
+    k5start_stop
+    k5start_start
+    check_nslcd_cache
+    ret=$?
+  done
+
   # start nslcd
   log_daemon_msg "Starting $NSLCD_DESC" "nslcd"
   start-stop-daemon --start --oknodo \
