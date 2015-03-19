@@ -6,19 +6,6 @@ if node['rsyslog'].has_key?('server_ip') and !node['rsyslog']['server_ip'].nil?
 
   package "rsyslog"
 
-  loghost_line = "*.*\t@"
-  loghost_line += '@' if node['rsyslog']['protocol'] == 'tcp'
-  loghost_line += node['rsyslog']['server_ip']
-  if node['rsyslog'].has_key?('port')
-    loghost_line += node['rsyslog']['port'] unless node['rsyslog']['port'] == 514
-  end
-
-  # forward everything to the loghost:
-  file '/etc/rsyslog.d/loghost.conf' do
-    content  "#{loghost_line}\n"
-    notifies :restart, "service[rsyslog]"
-  end
-
   # Include a complete rsyslog config file:
   # 1) set log msgs rate limiting
   # 2) all the mail.* event log will be directed only on /var/log/mail.*
@@ -31,6 +18,15 @@ if node['rsyslog'].has_key?('server_ip') and !node['rsyslog']['server_ip'].nil?
 	      :ratelimit_burst => node['sys']['rsyslog']['ratelimit_burst'],
 	      :ratelimit_interval => node['sys']['rsyslog']['ratelimit_interval']
     )
+    notifies :restart, "service[rsyslog]"
+  end
+
+  # Configuration file for the remote loghost:
+  template '/etc/rsyslog.d/loghost.conf' do
+    source 'etc_rsyslog.d_loghost.conf.erb'
+    owner "root"
+    group "root"
+    mode "0600"
     notifies :restart, "service[rsyslog]"
   end
 
