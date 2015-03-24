@@ -106,7 +106,7 @@ unless node['sys']['krb5'].empty?
             mode mode
             owner owner
             group group
-            only_if { File.exists?(place) }
+            only_if { File.exists?(place) && File.exists?('/usr/sbin/nslcd') }
           end
 
         end # node['sys']['krb5']['keytab_config'].each
