@@ -39,7 +39,7 @@ For example:
       "mail" => {
         "relay" => "smtp.devops.test",
         "aliases => {
-          "root" => jdoe@devops.test",
+          "root" => "jdoe@devops.test",
           "logcheck" => "root"
         }
       }
