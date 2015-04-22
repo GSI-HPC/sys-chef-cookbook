@@ -12,11 +12,11 @@
 [appdefaults]
 	<%= "pkinit_anchors = #{@pkinit_anchor}" if @pkinit_anchor %>
 	<% if @use_pkinit %>
-	use_pkinit = <%= node.default.sys.krb5.use_pkinit %>
-	try_pkinit = <%= node.default.sys.krb5.try_pkinit %>
-	pkinit_prompt = <%= node.default.sys.krb5.pkinit_prompt %>
-	pkinit_user = <%= node.default.sys.krb5.pkinit_user %>
-	pkinit_anchors = <%= node.default.sys.krb5.pkinit_anchors %>
+	use_pkinit = <%= node['sys']['krb5']['use_pkinit'] %>
+	try_pkinit = <%= node['sys']['krb5']['try_pkinit'] %>
+	pkinit_prompt = <%= node['sys']['krb5']['pkinit_prompt'] %>
+	pkinit_user = <%= node['sys']['krb5']['pkinit_user'] %>
+	pkinit_anchors = <%= node['sys']['krb5']['pkinit_anchors'] %>
 	<% end %>
 	default_realm = <%= @realm %>
 	forwardable = true
@@ -37,8 +37,8 @@
 		kdc = <%= kdc %>
 		<% end -%>
 		<% if @use_pkinit %>
-		pkinit_require_eku = <%= node.default.sys.krb5.pkinit_require_eku %>
-		pkinit_require_krbtgt_otherName = <%= node.default.sys.krb5.pkinit_require_krbtgt_otherName %>
+		pkinit_require_eku = <%= node['sys']['krb5']['pkinit_require_eku'] %>
+		pkinit_require_krbtgt_otherName = <%= node['sys']['krb5']['pkinit_require_krbtgt_otherName'] %>
 		<% end %>
 		admin_server = <%= @admin_server %>
 	}
