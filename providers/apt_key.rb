@@ -2,7 +2,7 @@
 # Author:: Dennis Klein
 # Author:: Victor Penso
 #
-# Copyright:: 2013, GSI HPC department
+# Copyright:: 2013-15, GSI HPC department
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -37,7 +37,7 @@ action :add do
   unless fingerprint.nil?
     # Get a list of all key fingerprints in the system, remove white spaces
     fingerprints_command = "apt-key finger 2>/dev/null | grep fingerprint |"
-    fingerprints_command += " tr -s ' ' | cut -d' ' -f2 | cut -d'/' -f2"
+    fingerprints_command += " tr -s ' ' | cut -d= -f2"
     cmd.run_command
     # TODO:
     #cmd.error!
