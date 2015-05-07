@@ -1,0 +1,3 @@
+#!/bin/bash
+# Make sure the chef-client service keeps running
+invoke-rc.d chef-client status &> /dev/null || invoke-rc.d chef-client restart 1> /dev/null
