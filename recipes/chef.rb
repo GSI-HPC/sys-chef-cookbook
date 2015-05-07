@@ -103,17 +103,15 @@ file node['sys']['chef']['client_key'] do
 end
 
 # Create a script in cron.hourly to make sure chef-client keeps running
-#cookbook_file "/etc/cron.hourly/chef-client-service" do
-#  source "chefclientcronjob"
-#  mode "0755"
-#end
+if node['sys']['chef']['restart_via_cron']
+  cookbook_file "/etc/cron.hourly/chef-client" do
+    source "etc_cron.hourly_chef-client"
+    mode "0755"
+  end
+end
 
 service 'chef-client' do
   supports  :restart => true, :status => true
   action   [ :enable, :start ]
 end
 
-# Periodically check if cron is running
-#service "cron" do
-#  action [ :enable, :start ]
-#end

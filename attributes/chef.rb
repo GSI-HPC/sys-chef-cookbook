@@ -12,3 +12,5 @@ default['sys']['chef']['overwrite_warning'] = "DO NOT CHANGE THIS FILE MANUALLY!
 default['sys']['chef']['group']          = 'adm'
 default['sys']['chef']['verify_ssl']     = 'all'
 default['sys']['chef']['trusted_certs_dir'] = '/etc/ssl/certs'
+
+default['sys']['chef']['restart_via_cron'] = false
