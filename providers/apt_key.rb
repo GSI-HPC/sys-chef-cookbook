@@ -38,6 +38,7 @@ action :add do
     # Get a list of all key fingerprints in the system, remove white spaces
     fingerprints_command = "apt-key finger 2>/dev/null | grep fingerprint |"
     fingerprints_command += " tr -s ' ' | cut -d= -f2"
+    cmd = Mixlib::ShellOut.new(fingerprints_command)
     cmd.run_command
     # TODO:
     #cmd.error!
