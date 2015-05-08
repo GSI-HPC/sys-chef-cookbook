@@ -90,17 +90,23 @@ require 'pp'
       #  we skip the creation of the account itself
       if account['local'] != false # nil ~= true
 
-        # make sure the given group exists
+        # In case a group ID is specified
         if account.has_key?('gid')
+
+          # Make sure that it exists already...
           group_exists = (node['etc']['group'].has_key?(account['gid']) or
             node['etc']['group'].values.detect { |g| g['gid'] == account['gid'] })
+          # ...or that it has been create during this Chef run
           was_just_created = (node['sys']['groups'].has_key?(account['gid']) or
             node['sys']['groups'].values.detect { |g| g['gid'] == account['gid'] })
+         
+          # If this isn't the case something went wrong!
+          unless group_exists or was_just_created
+            raise "The given group '#{account['gid']}' does not exist or wasn't defined"
+          end
+
         end
 
-        unless group_exists or was_just_created
-          raise "The given group '#{account['gid']}' does not exist or wasn't defined"
-        end
 
         user name do
           # account.each{|k,v| send(k,v)} is elegant
