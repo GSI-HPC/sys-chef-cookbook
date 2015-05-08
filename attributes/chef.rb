@@ -4,6 +4,7 @@ default['sys']['chef']['interval']       = 1800
 default['sys']['chef']['splay']          = 300
 default['sys']['chef']['client_key']     = '/etc/chef/client.pem'
 default['sys']['chef']['validation_key'] = '/etc/chef/validation.pem'
+default['sys']['chef']['validation_client_name'] = 'chef-validator'
 # this definition is bogus, not?
 default['sys']['chef']['server_url']     = nil
 default['sys']['chef']['use_syslog']     = false

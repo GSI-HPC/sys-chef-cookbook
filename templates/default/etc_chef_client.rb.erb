@@ -20,7 +20,7 @@ ssl_verify_mode :verify_peer
 verify_api_cert true
 <%- end -%>
 
-validation_client_name "chef-validator"
+validation_client_name "<%= @validation_client_name %>"
 validation_key   "<%= @validation_key %>"
 
 log_level        <%= @log_level %>
