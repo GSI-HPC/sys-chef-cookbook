@@ -66,7 +66,7 @@ if server_url
   v              = node['sys']['chef'].to_hash
   v[:server_url] = server_url
   v[:opath]      = node['ohai']['plugin_path']
-  v[:odisable]   = node['ohai']['disabled_plugins'].clone || [ ]
+  v[:odisable]   = node['ohai']['disabled_plugins']
 
   template '/etc/chef/client.rb' do
     source 'etc_chef_client.rb.erb'
