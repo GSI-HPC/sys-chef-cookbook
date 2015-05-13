@@ -32,7 +32,9 @@ pid_file         "/var/run/chef/client.pid"
 
 # configuration for Ohai:
 <%- unless @odisable.empty? -%>
-Ohai::Config[:disabled_plugins] = <%= @odisable %>
+<%#   Make sure to write symbols into the configuration file %>
+<%-   plugins = @odisable.map { |p| p.capitalize.to_sym } -%>
+Ohai::Config[:disabled_plugins] =  <%= plugins %> 
 <%- end %>
 Ohai::Config[:plugin_path]      << "<%= @opath %>"
 

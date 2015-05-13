@@ -8,6 +8,6 @@ default_attributes(
     }
   },
   :ohai => {
-    :disabled_plugins => [ :Passwd, :Filesystem ]
+    :disabled_plugins => [ :Passwd, :Filesystem, 'etc' ]
   }
 )
