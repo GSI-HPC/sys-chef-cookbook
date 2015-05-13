@@ -49,13 +49,13 @@ begin
   unless server_url or not node['chef']['server']['fqdn']
     # fallback for figuring out the chef server url following the "old" conventions
     #  introduced by the chef cookbook
-    if server = node['chef']['server']['ssl']
+    if node['chef']['server']['ssl']
       server_url = 'https://#{server}:443'
     else
       server_url = 'http://#{server}:4000'
     end
   end
-rescue ArgumentError => e
+rescue ArgumentError
   # ignore
 end
 
