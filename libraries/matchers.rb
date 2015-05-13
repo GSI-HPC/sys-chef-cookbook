@@ -38,4 +38,16 @@ if defined?(ChefSpec)
   def remove_sys_mail_alias(name)
     ChefSpec::Matchers::ResourceMatcher.new(:sys_mail_alias, :remove, name)
   end
+
+  def set_sys_sdparm(name)
+    ChefSpec::Matchers::ResourceMatcher.new(:sys_sdparm, :set, name)
+  end
+
+  def clear_sys_sdparm(name)
+    ChefSpec::Matchers::ResourceMatcher.new(:sys_sdparm, :clear, name)
+  end
+
+  def restore_default_sys_sdparm(name)
+    ChefSpec::Matchers::ResourceMatcher.new(:sys_sdparm, :restore_default, name)
+  end
 end
