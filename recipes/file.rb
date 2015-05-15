@@ -23,7 +23,11 @@ unless node['sys']['file'].empty?
   node['sys']['file'].each do |name, config|
     file name do
       config.each do |key, value|
-        send(key, value)
+        if (key.to_sym == :content) && value.kind_of?(Array)
+          send(key, value.join("\n"))
+        else
+          send(key, value)
+        end
       end
     end
   end

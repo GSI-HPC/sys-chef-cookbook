@@ -15,15 +15,27 @@ describe 'sys::file' do
     test_file_mode = '0644'
 
     before do
-      chef_run.node.default['sys']['file'][test_file] = {content: test_file_content, mode: test_file_mode} 
+      chef_run.node.default['sys']['file'][test_file] = {content: test_file_content, mode: test_file_mode}
       chef_run.converge(described_recipe)
     end
 
     it "Create #{test_file} " do
       expect(chef_run).to create_file(test_file).with(content: test_file_content, mode: test_file_mode)
     end
+  end
 
+  context 'with multiline content passed as Array' do
+    before do
+      @file = '/tmp/file'
+      @content = [ 'line1', 'line2' ]
 
+      chef_run.node.default['sys']['file'][@file]['content'] = @content
+      chef_run.converge(described_recipe)
+    end
+
+    it "joins array" do
+      expect(chef_run).to render_file(@file).with_content(@content.join("\n"))
+    end
   end
 
 end
