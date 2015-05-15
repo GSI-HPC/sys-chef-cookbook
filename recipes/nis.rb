@@ -19,7 +19,7 @@
 
 unless node['sys']['nis']['servers'].empty?
 
-  node.default['ohai']['disabled_plugins'] << 'passwd'
+  node.default['ohai']['disabled_plugins'] = [ :Passwd ]
 
   package 'nis'
 
