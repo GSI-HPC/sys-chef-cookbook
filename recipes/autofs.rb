@@ -47,10 +47,14 @@ if ! node['sys']['autofs']['maps'].empty? && node['sys']['autofs']['ldap'].empty
   end
 end
 
-if ! node['sys']['autofs']['ldap'].empty? && File.exists?("/etc/autofs.keytab")
+if ! node['sys']['autofs']['ldap'].empty?
   package "autofs"
   package "autofs-ldap"
   package "kstart"
+
+  sys_wallet "autofsclient/#{node['fqdn']}" do
+    place "/etc/autofs.keytab"
+  end
 
   template "/etc/auto.master" do
     source 'etc_auto.master.erb'

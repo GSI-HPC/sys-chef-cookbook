@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-if ! node['sys']['ldap'].empty? && File.exists?("/etc/nslcd.keytab")
+if ! node['sys']['ldap'].empty?
   %w(
     nscd
     nslcd
@@ -25,6 +25,12 @@ if ! node['sys']['ldap'].empty? && File.exists?("/etc/nslcd.keytab")
     libnss-ldapd
     ldap-utils
   ).each { |p| package p }
+
+  sys_wallet "nslcd/#{node['fqdn']}" do
+    place "/etc/nslcd.keytab"
+    owner "nslcd"
+    group "nslcd"
+  end
 
   # Environment variables for nslcd.  They mainly just configure k5start.
   template "/etc/default/nslcd" do
