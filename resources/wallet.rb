@@ -15,5 +15,4 @@ attribute :place,
   required: true
 attribute :principal,
   kind_of: String,
-  required: true,
   name_attribute: true

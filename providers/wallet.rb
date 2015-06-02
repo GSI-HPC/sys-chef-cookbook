@@ -9,17 +9,16 @@ use_inline_resources
 
 action :deploy do
   converge_by("Deploy keytab for #{new_resource.principal} to #{new_resource.place}") do
-    if ! File.exists?(new_resource.place) || ! check_keytab()
+    if ! ::File.exists?(new_resource.place) || ! check_keytab()
       bash "deploy #{new_resource.principal}" do
         cwd "/"
-        user "root"
         code <<-EOH
           kinit -t /etc/krb5.keytab host/#{node['fqdn']}
           wallet get keytab #{new_resource.principal} -f #{new_resource.place}
           kdestroy
         EOH
       end
-      updated_by_last_action(true)
+      new_resource.updated_by_last_action(true)
     end
 
     unless check_stat()
@@ -50,15 +49,15 @@ end
 
 def check_owner(stat)
   user = Etc.getpwuid(stat.uid).name
-  return user.eql?(new_resource.user)
+  return user.eql?(new_resource.owner)
 end
 
 def check_group(stat)
-  group =  Etc.getgrgid(s.gid).name
+  group =  Etc.getgrgid(stat.gid).name
   return group.eql?(new_resource.group)
 end
 
 def check_stat()
-  stat = File.stat(new_resource.place)
-  return check_mode(stat) && check_user(stat) && check_group(stat)
+  stat = ::File.stat(new_resource.place)
+  return check_mode(stat) && check_owner(stat) && check_group(stat)
 end
