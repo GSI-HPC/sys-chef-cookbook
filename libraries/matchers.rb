@@ -50,4 +50,8 @@ if defined?(ChefSpec)
   def restore_default_sys_sdparm(name)
     ChefSpec::Matchers::ResourceMatcher.new(:sys_sdparm, :restore_default, name)
   end
+
+  def deploy_sys_wallet(name)
+    ChefSpec::Matchers::ResourceMatcher.new(:sys_wallet, :deploy, name)
+  end
 end
