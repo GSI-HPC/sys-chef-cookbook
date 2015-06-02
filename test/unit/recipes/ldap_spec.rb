@@ -93,6 +93,10 @@ describe 'sys::ldap' do
       expect(chef_run).to_not run_execute('insserv /etc/init.d/nslcd')
     end
 
+    it 'deploys a keytab for nslcd' do
+      expect(chef_run).to run_sys_wallet('nslcd/node.exmample.com')
+    end
+
     it 'sends notifications' do
       etc_nslcd_default = chef_run.template('/etc/default/nslcd')
       expect(etc_nslcd_default).to notify('service[nslcd]').to(:restart).delayed
