@@ -41,80 +41,10 @@ unless node['sys']['krb5'].empty?
     )
   end
 
-  # use a secret or wallet distribution of keytabs
-  # Should all of this be in a recipe?
-  if node.default['sys']['krb5']['distribution'] == "secret"
-    if Chef::Config[:solo]
-      Chef::Log.info("Sys::Secret uses search. Chef Solo does not support search.")
-    else
-      class Chef::Recipe
-        include Sys::Secret
-      end
+  package "wallet-client"
 
-      Chef::Log.info("search for node #{node['sys']['krb5']['master']}")
-      kdc_node = search(:node, "fqdn:#{node['sys']['krb5']['master']}")[0]
-      if kdc_node
-        if node['sys']['krb5'].has_key?(:"keytab_config")
-          node['sys']['krb5']['keytab_config'].each do |kh|
-            key = kh["keytab"]
-            owner = kh["owner"] || "root"
-            group = kh["group"] || "root"
-            mode = kh["mode"] || "0600"
-            place = kh["place"] || "/etc/#{key}.keytab"
-            Chef::Log.info "Put keytab #{key} to place #{place}"
-            if kdc_node['krb5']['keytabs'].has_key?("#{key}_#{node['fqdn']}")
-              kt = decrypt(kdc_node['krb5']['keytabs']["#{key}_#{node['fqdn']}"])
-              # decrypt returns nil if anything goes wrong
-              raise "Could not decrypt keytab #{key}" unless kt
-              template place do
-                source "etc_keytab_generic.erb"
-                owner owner
-                group group
-                mode mode
-                variables :keytab => kt
-                only_if "getent passwd #{owner} && getent group #{group}"
-              end
-            end
-          end
-        end
-      end
-    end
-  elsif node['sys']['krb5']['distribution'] == "wallet"
-    package "wallet-client"
-    if node['sys']['krb5'].has_key?(:"keytab_config")
-      if File.exists?("/etc/krb5.keytab")
-        node['sys']['krb5']['keytab_config'].each do |kh|
-          key = kh["keytab"]
-          owner = kh["owner"] || "root"
-          group = kh["group"] || "root"
-          mode = kh["mode"] || "0600"
-          place = kh["place"] || "/etc/#{key}.keytab"
-          principal = "#{key}/#{node['fqdn']}@#{node['sys']['krb5']['realm'].upcase}"
-          Chef::Log.info "Put keytab #{key} to place #{place}"
-          bash "deploy #{principal}" do
-            cwd "/etc/"
-            user "root"
-            code <<-EOH
-          kinit -t /etc/krb5.keytab host/#{node['fqdn']}
-          wallet get keytab #{principal} -f #{place}
-          kdestroy
-          EOH
-            not_if "ktutil -k #{place} list --keys | grep -q #{principal}"
-          end # bash "deploy #{principal}
-
-          file place do
-            mode mode
-            owner owner
-            group group
-            only_if { File.exists?(place) && File.exists?('/usr/sbin/nslcd') }
-          end
-
-        end # node['sys']['krb5']['keytab_config'].each
-      else # if File.exists?("/etc/krb5.keytab")
-        Chef::Log.info("/etc/krb5.keytab not found, not deploying keytabs.")
-      end # if File.exists?("/etc/krb5.keytab")
-    else # node['sys']['krb5'].has_key?(:"keytab_config")
-      raise "Distribution set to wallet, but no config found"
-    end # node['sys']['krb5'].has_key?(:"keytab_config")
+  sys_wallet "host/#{node['fqdn']}" do
+    place "/etc/krb5.keytab"
   end
+
 end
