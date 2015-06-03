@@ -58,6 +58,10 @@ def check_group(stat)
 end
 
 def check_stat()
-  stat = ::File.stat(new_resource.place)
-  return check_mode(stat) && check_owner(stat) && check_group(stat)
+  check = false
+  if ::File.exists?(new_resource.place)
+    stat = ::File.stat(new_resource.place)
+    check = check_mode(stat) && check_owner(stat) && check_group(stat)
+  end
+  return check
 end
