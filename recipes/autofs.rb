@@ -63,7 +63,7 @@ if ! node['sys']['autofs']['ldap'].empty?
 
     node['sys']['autofs']['maps'].each do |path, map|
       name = path[1..-1].gsub(/\//,'_').downcase
-      template "/etc/auto.master.d/auto.#{name}.conf" do
+      template "/etc/auto.master.d/#{name}.autofs" do
         source 'etc_auto.master.d.erb'
         mode "0644"
         variables(
