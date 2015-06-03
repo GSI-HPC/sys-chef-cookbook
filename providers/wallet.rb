@@ -14,7 +14,7 @@ action :deploy do
         cwd "/"
         code <<-EOH
           kinit -t /etc/krb5.keytab host/#{node['fqdn']}
-          wallet get keytab #{new_resource.principal} -f #{new_resource.place}
+          wallet get keytab #{new_resource.principal}@#{node['sys']['krb5']['realm'].upcase} -f #{new_resource.place}
           kdestroy
         EOH
       end
