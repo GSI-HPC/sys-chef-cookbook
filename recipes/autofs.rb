@@ -62,7 +62,7 @@ if ! node['sys']['autofs']['ldap'].empty?
     directory '/etc/auto.master.d'
 
     node['sys']['autofs']['maps'].each do |path, map|
-      name = path[1..-1].gsub(/\//,'_')
+      name = path[1..-1].gsub(/\//,'_').downcase
       template "/etc/auto.master.d/auto.#{name}.conf" do
         source 'etc_auto.master.d.erb'
         mode "0644"
