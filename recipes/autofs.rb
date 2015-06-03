@@ -48,7 +48,7 @@ if ! node['sys']['autofs']['maps'].empty? && node['sys']['autofs']['ldap'].empty
   end
 end
 
-if ! node['sys']['autofs']['ldap'].empty?
+if ! node['sys']['autofs']['ldap'].empty? && File.exists?('/usr/bin/kinit')
   package "autofs"
   package "autofs-ldap"
   package "kstart"

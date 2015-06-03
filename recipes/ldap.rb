@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-if ! node['sys']['ldap'].empty?
+if ! node['sys']['ldap'].empty? && File.exists?('/usr/bin/kinit')
   %w(
     nscd
     nslcd
