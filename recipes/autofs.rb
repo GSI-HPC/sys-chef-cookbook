@@ -28,31 +28,13 @@ if ! node['sys']['autofs']['maps'].empty? && node['sys']['autofs']['ldap'].empty
     end
   end
 
-  if node.platform_version.to_i >= 8
-
-    directory '/etc/auto.master.d'
-
-    node['sys']['autofs']['maps'].each do |path, map|
-      name = path[1..-1].gsub(/\//,'_')
-      template "/etc/auto.master.d/auto.#{name}.conf" do
-        source 'etc_auto.master.d.erb'
-        mode "0644"
-        variables(
-          :map => map,
-          :path => path
-        )
-        notifies :reload, 'service[autofs]', :delayed
-      end
-    end
-  else
-    template '/etc/auto.master' do
-      source 'etc_auto.master.erb'
-      mode "0644"
-      variables(
-        :maps => node['sys']['autofs']['maps']
-      )
-      notifies :reload, 'service[autofs]'
-    end
+  template '/etc/auto.master' do
+    source 'etc_auto.master.erb'
+    mode "0644"
+    variables(
+      :maps => node['sys']['autofs']['maps']
+    )
+    notifies :reload, 'service[autofs]'
   end
 
   #  node['sys']['autofs']['maps'].each_key do |path|
@@ -75,13 +57,31 @@ if ! node['sys']['autofs']['ldap'].empty?
     place "/etc/autofs.keytab"
   end
 
-  template "/etc/auto.master" do
-    source 'etc_auto.master.erb'
-    mode "0644"
-    variables(
-      :maps => node['sys']['autofs']['maps']
-    )
-    notifies :reload, 'service[autofs]'
+  if node.platform_version.to_i >= 8
+
+    directory '/etc/auto.master.d'
+
+    node['sys']['autofs']['maps'].each do |path, map|
+      name = path[1..-1].gsub(/\//,'_')
+      template "/etc/auto.master.d/auto.#{name}.conf" do
+        source 'etc_auto.master.d.erb'
+        mode "0644"
+        variables(
+          :map => map,
+          :path => path
+        )
+        notifies :reload, 'service[autofs]', :delayed
+      end
+    end
+  else
+    template "/etc/auto.master" do
+      source 'etc_auto.master.erb'
+      mode "0644"
+      variables(
+        :maps => node['sys']['autofs']['maps']
+      )
+      notifies :reload, 'service[autofs]'
+    end
   end
 
   template "/etc/autofs_ldap_auth.conf" do
