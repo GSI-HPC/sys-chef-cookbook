@@ -23,15 +23,19 @@ if ! node['sys']['autofs']['maps'].empty? && node['sys']['autofs']['ldap'].empty
 
   node['sys']['autofs']['maps'].each_key do |mountpoint|
     directory mountpoint do
+      recursive true
       not_if { File.exists?(mountpoint) }
     end
   end
 
   if node.platform_version.to_i >= 8
+
+    directory '/etc/auto.master.d'
+
     node['sys']['autofs']['maps'].each do |path, map|
       name = path[1..-1].gsub(/\//,'_')
       template "/etc/auto.master.d/auto.#{name}.conf" do
-        source 'etc_auto.master.erb'
+        source 'etc_auto.master.d.erb'
         mode "0644"
         variables(
           :map => map,
