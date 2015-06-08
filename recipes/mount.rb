@@ -41,7 +41,14 @@ unless node['sys']['mount'].empty?
     # Call the mount resource
     mount path do
       # Pass all configuration options to the mount resource
-      config.each { |key,value| send(key,value) }
+      config.each do |key,value|
+        case key.to_s
+        when 'provider'
+          send(key, Module.const_get(value))
+        else
+          send(key, value)
+        end
+      end
     end
   end
 
