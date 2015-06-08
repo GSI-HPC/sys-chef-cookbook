@@ -36,7 +36,7 @@ class Chef
             systemd_file = systemd_substitute(@new_resource.mount_point)
             if ::File.exists?("/etc/systemd/system/" + systemd_file)
               begin
-                if shell_out!("/usr/bin/systemctl is-enabled #{Shellwords.escape(systemd_file)}").exitstatus == 0
+                if shell_out!("systemctl is-enabled #{Shellwords.escape(systemd_file)}").exitstatus == 0
                   @current_resource.enabled(true)
                 end
               rescue Mixlib::ShellOut::ShellCommandFailed, SystemCallError
@@ -70,7 +70,7 @@ class Chef
           end
 
           begin
-            shell_out!("/usr/bin/systemctl enable #{Shellwords.escape(systemd_substitute(mp))}")
+            shell_out!("systemctl enable #{Shellwords.escape(systemd_substitute(mp))}")
           rescue Mixlib::ShellOut::ShellCommandFailed, SystemCallError
             #TODO
           end
@@ -83,7 +83,7 @@ class Chef
             systemd_file = systemd_substitute(@new_resource.mount_point)
             if ::File.exists?("/etc/systemd/system/" + systemd_file)
               begin
-                shell_out!("/usr/bin/systemctl disable #{Shellwords.escape(systemd_file)}")
+                shell_out!("systemctl disable #{Shellwords.escape(systemd_file)}")
                 ::File.unlink("/etc/systemd/system/" + systemd_file)
               rescue Mixlib::ShellOut::ShellCommandFailed, SystemCallError
                  #TODO
