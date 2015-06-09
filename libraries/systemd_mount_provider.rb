@@ -61,10 +61,10 @@ class Chef
           options = @new_resource.options.nil? ? "defaults" : @new_resource.options.join(",")
           mp = @new_resource.mount_point
           type_entry = @new_resource.fstype == "auto" ? "" : "Type=#{@new_resource.fstype}\n"
-          requires = options =~ /_netdev/ ? "Requires=network.target\n" : "\n"
+          requires = options =~ /_netdev/ ? "Requires=network-online.target\nWants=systemd-networkd-wait-online.service\nAfter=network-online.target\n" : "\n"
 
           ::File.open("/etc/systemd/system/" + systemd_substitute(mp), "w") do |sm|
-            sm.puts("[Unit]\nDescription=Mount for #{mp}\nDefaultDependencies=no\n#{requires}\n")
+            sm.puts("[Unit]\nDescription=Mount for #{mp}\n#{requires}\n")
             sm.puts("[Install]\nWantedBy=#{wanted_by}\n\n")
             sm.puts("[Mount]\nWhat=#{device_systemd}\nWhere=#{mp}\n#{type_entry}Options=#{options}")
           end
