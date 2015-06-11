@@ -6,77 +6,72 @@ use_inline_resources
 
 action :set do
   install_sdparm
-  converge_by("Setting sdparm #{new_resource.flag} on #{new_resource.disk}") do
-    todo = []
-    load_sdparm.each do |disk, params|
-      todo << disk if params[:save] == '0'
-    end
 
-    unless todo.empty?
-      cmdStr = "sdparm --set=#{new_resource.flag} --save --quiet #{todo.join(' ')}"
-      execute cmdStr do
-        Chef::Log.debug "sdparm_action_set: #{cmdStr}"
-        Chef::Log.info "Setting sdparm #{new_resource.flag} on #{todo.join(' ')}."
-        new_resource.updated_by_last_action(true)
-      end
-    else
-      Chef::Log.info "#{new_resource} is already set - nothing to do."
+  todo = []
+  load_sdparm.each do |disk, params|
+    todo << disk if params[:save] == '0'
+  end
+
+  unless todo.empty?
+    cmdStr = "sdparm --set=#{new_resource.flag} --save --quiet #{todo.join(' ')}"
+    execute cmdStr do
+      Chef::Log.debug "sdparm_action_set: #{cmdStr}"
+      Chef::Log.info "Setting sdparm #{new_resource.flag} on #{todo.join(' ')}."
+      new_resource.updated_by_last_action(true)
     end
+  else
+    Chef::Log.info "#{new_resource} is already set - nothing to do."
   end
 end
 
 action :clear do
   install_sdparm
-  converge_by("Clear sdparm #{new_resource.flag} on #{new_resource.disk}") do
-    todo = []
-    load_sdparm.each do |disk, params|
-      todo << disk if params[:save] == '1'
-    end
 
-    unless todo.empty?
-      cmdStr = "sdparm --clear=#{new_resource.flag} --save --quiet #{todo.join(' ')}"
-      execute cmdStr do
-        Chef::Log.debug "sdparm_action_clear: #{cmdStr}"
-        Chef::Log.info "Clearing sdparm #{new_resource.flag} on #{todo.join(' ')}."
-        new_resource.updated_by_last_action(true)
-      end
-    else
-      Chef::Log.info "#{new_resource} is already cleared - nothing to do."
+  todo = []
+  load_sdparm.each do |disk, params|
+    todo << disk if params[:save] == '1'
+  end
+
+  unless todo.empty?
+    cmdStr = "sdparm --clear=#{new_resource.flag} --save --quiet #{todo.join(' ')}"
+    execute cmdStr do
+      Chef::Log.debug "sdparm_action_clear: #{cmdStr}"
+      Chef::Log.info "Clearing sdparm #{new_resource.flag} on #{todo.join(' ')}."
+      new_resource.updated_by_last_action(true)
     end
+  else
+    Chef::Log.info "#{new_resource} is already cleared - nothing to do."
   end
 end
 
 action :restore_default do
   install_sdparm
-  converge_by("Restore default sdparm #{new_resource.flag} on #{new_resource.disk}") do
-    todo = []
-    load_sdparm.each do |disk, params|
-      if params[:save] != params[:default]
-        todo << {
-          disk: disk,
-          value: params[:default]
-        }
-      end
-    end
 
-    todo.each do |item|
-      method = item[:value] == '1' ? 'set' : 'clear'
-      cmdStr = "sdparm --#{method}=#{new_resource.flag} --save --quiet #{item[:disk]}"
-      execute cmdStr do
-        Chef::Log.debug "sdparm_action_restore_default: #{cmdStr}"
-        Chef::Log.info "Restoring default sdparm #{new_resource.flag} on #{item[:disk]}."
-        new_resource.updated_by_last_action(true)
-      end
+  todo = []
+  load_sdparm.each do |disk, params|
+    if params[:save] != params[:default]
+      todo << {
+        disk: disk,
+        value: params[:default]
+      }
     end
-
-    Chef::Log.info "#{new_resource} is already in default state - nothing to do." if todo.empty?
   end
+
+  todo.each do |item|
+    method = item[:value] == '1' ? 'set' : 'clear'
+    cmdStr = "sdparm --#{method}=#{new_resource.flag} --save --quiet #{item[:disk]}"
+    execute cmdStr do
+      Chef::Log.debug "sdparm_action_restore_default: #{cmdStr}"
+      Chef::Log.info "Restoring default sdparm #{new_resource.flag} on #{item[:disk]}."
+      new_resource.updated_by_last_action(true)
+    end
+  end
+
+  Chef::Log.info "#{new_resource} is already in default state - nothing to do." if todo.empty?
 end
 
 def install_sdparm
-  converge_by("Install sdparm") do
-    package 'sdparm'
-  end
+  package 'sdparm'
 end
 
 def load_sdparm
