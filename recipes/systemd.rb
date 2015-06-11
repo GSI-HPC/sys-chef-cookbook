@@ -32,7 +32,7 @@ if systemd? # We do not install systemd for now, just detect if it is available
     end
 
     file '/etc/network/interfaces' do
-      content '# No longer used, see SYSTEMD-NETWORKD.SERVICE(8)'
+      content "# No longer used, see SYSTEMD-NETWORKD.SERVICE(8)\n"
     end
   end
 
