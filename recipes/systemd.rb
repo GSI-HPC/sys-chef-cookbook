@@ -51,7 +51,36 @@ if systemd? # We do not install systemd for now, just detect if it is available
   # This is e.g. needed for the systemd-networkd-wait-online.service to work.
   if node['sys']['systemd']['networkd']['enable']
     service 'systemd-networkd' do
-      action [:enable, :start]
+      supports restart: true, reload: true
+      action [ :enable, :start ]
+    end
+  end
+
+  if node['sys']['systemd']['networkd']['make_primary_interface_persistent']
+    # This uses ohai data, so any manual change to the network interface
+    # will be made permanent. This flag is intended to be used by a one-time
+    # mechanism like an OS installer.
+
+    interface = node['network']['default_interface'].to_s
+    ipaddress = node['ipaddress'].to_s
+    gateway = node['network']['default_gateway'].to_s
+    cidr = node['network']['interfaces'][interface][ipaddress]['prefixlen'].to_s
+
+    unless interface.empty? || ipaddress.empty? || gateway.empty? || cidr.empty?
+      sys_systemd_unit "#{interface}.network" do
+        directory '/etc/systemd/network'
+        config({
+          'Match' => {
+            'Name' => interface
+          },
+          'Network' => {
+            'Address' => "#{ipaddress}/#{cidr}",
+            'Gateway' => gateway
+          }
+        })
+        action :create
+        notifies :reload, 'service[systemd-networkd]', :delayed
+      end
     end
   end
 
