@@ -1,97 +1,73 @@
-def whyrun_supported?
-  true
-end
-
 use_inline_resources
 
 action :create do
-  converge_by("Create systemd unit #{absolute_path}:") do
-    debug_log('systemd_unit_action_create')
+  debug_log('systemd_unit_action_create')
 
-    t = template absolute_path do
-      source 'systemd_unit_generic.erb'
-      mode new_resource.mode
-      owner new_resource.owner
-      group new_resource.group
-      variables({
-        path: absolute_path,
-        config: new_resource.config
-      })
-      action :create
-    end
-
-    execute 'systemctl daemon-reload' if t.updated_by_last_action?
+  t = template absolute_path do
+    source 'systemd_unit_generic.erb'
+    mode new_resource.mode
+    owner new_resource.owner
+    group new_resource.group
+    variables({
+      path: absolute_path,
+      config: new_resource.config
+    })
+    action :create
   end
+
+  execute 'systemctl daemon-reload' if t.updated_by_last_action?
 end
 
 action :delete do
-  converge_by("Delete systemd unit #{absolute_path}:") do
-    debug_log('systemd_unit_action_delete')
+  debug_log('systemd_unit_action_delete')
 
-    t = template "#{absolute_path}" do
-      action :delete
-    end
-
-    execute 'systemctl daemon-reload' if t.updated_by_last_action?
+  t = template "#{absolute_path}" do
+    action :delete
   end
+
+  execute 'systemctl daemon-reload' if t.updated_by_last_action?
 end
 
 action :enable do
-  converge_by("Enable systemd unit #{unit}:") do
-    debug_log('systemd_unit_action_enable')
-    unless state_or?([:enabled, :linked, :static])
-      execute "systemctl enable #{unit}"
-    end
+  debug_log('systemd_unit_action_enable')
+  unless state_or?([:enabled, :linked, :static])
+    execute "systemctl enable #{unit}"
   end
 end
 
 action :disable do
-  converge_by("Disable systemd unit #{unit}:") do
-    debug_log('systemd_unit_action_disable')
-    execute "systemctl disable #{unit}" if state_or? [:enabled, :linked]
-  end
+  debug_log('systemd_unit_action_disable')
+  execute "systemctl disable #{unit}" if state_or? [:enabled, :linked]
 end
 
 action :start do
-  converge_by("Start systemd unit #{unit}:") do
-    debug_log('systemd_unit_action_start')
-    execute "systemctl start #{unit}" unless is_active?
-  end
+  debug_log('systemd_unit_action_start')
+  execute "systemctl start #{unit}" unless is_active?
 end
 
 action :stop do
-  converge_by("Stop systemd unit #{unit}:") do
-    debug_log('systemd_unit_action_stop')
-    execute "systemctl stop #{unit}" if is_active?
-  end
+  debug_log('systemd_unit_action_stop')
+  execute "systemctl stop #{unit}" if is_active?
 end
 
 action :reload do
-  converge_by("Reload systemd unit #{unit}:") do
-    debug_log('systemd_unit_action_reload')
-    execute "systemctl reload #{unit}" if is_active?
-  end
+  debug_log('systemd_unit_action_reload')
+  execute "systemctl reload #{unit}" if is_active?
 end
 
 action :restart do
-  converge_by("Restart systemd unit #{unit}:") do
-    debug_log('systemd_unit_action_restart')
-    execute "systemctl restart #{unit}"
-  end
+  debug_log('systemd_unit_action_restart')
+  execute "systemctl restart #{unit}"
 end
 
 action :mask do
-  converge_by("Mask systemd unit #{unit}:") do
-    debug_log('systemd_unit_action_mask')
-    execute "systemctl mask #{unit}" unless state_or? [:masked]
-  end
+  debug_log('systemd_unit_action_mask')
+  execute "systemctl mask #{unit}" unless state_or? [:masked]
 end
 
 action :unmask do
-  converge_by("Unmask systemd unit #{unit}:") do
-    debug_log('systemd_unit_action_mask')
-    execute "systemctl unmask #{unit}" if state_or? [:masked]
-  end
+  debug_log('systemd_unit_action_mask')
+  execute "systemctl unmask #{unit}" if state_or? [:masked]
 end
 
 def unit
