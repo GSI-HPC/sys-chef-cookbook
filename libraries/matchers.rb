@@ -54,4 +54,44 @@ if defined?(ChefSpec)
   def deploy_sys_wallet(name)
     ChefSpec::Matchers::ResourceMatcher.new(:sys_wallet, :deploy, name)
   end
+
+  def create_sys_systemd_unit(name)
+    ChefSpec::Matchers::ResourceMatcher.new(:sys_systemd_unit, :create, name)
+  end
+
+  def delete_sys_systemd_unit(name)
+    ChefSpec::Matchers::ResourceMatcher.new(:sys_systemd_unit, :delete, name)
+  end
+
+  def enable_sys_systemd_unit(name)
+    ChefSpec::Matchers::ResourceMatcher.new(:sys_systemd_unit, :enable, name)
+  end
+
+  def disable_sys_systemd_unit(name)
+    ChefSpec::Matchers::ResourceMatcher.new(:sys_systemd_unit, :disable, name)
+  end
+
+  def start_sys_systemd_unit(name)
+    ChefSpec::Matchers::ResourceMatcher.new(:sys_systemd_unit, :start, name)
+  end
+
+  def stop_sys_systemd_unit(name)
+    ChefSpec::Matchers::ResourceMatcher.new(:sys_systemd_unit, :stop, name)
+  end
+
+  def reload_sys_systemd_unit(name)
+    ChefSpec::Matchers::ResourceMatcher.new(:sys_systemd_unit, :reload, name)
+  end
+
+  def restart_sys_systemd_unit(name)
+    ChefSpec::Matchers::ResourceMatcher.new(:sys_systemd_unit, :restart, name)
+  end
+
+  def mask_sys_systemd_unit(name)
+    ChefSpec::Matchers::ResourceMatcher.new(:sys_systemd_unit, :mask, name)
+  end
+
+  def unmask_sys_systemd_unit(name)
+    ChefSpec::Matchers::ResourceMatcher.new(:sys_systemd_unit, :unmask, name)
+  end
 end
