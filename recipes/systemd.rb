@@ -64,7 +64,7 @@ if systemd? # We do not install systemd for now, just detect if it is available
     interface = node['network']['default_interface'].to_s
     ipaddress = node['ipaddress'].to_s
     gateway = node['network']['default_gateway'].to_s
-    cidr = node['network']['interfaces'][interface][ipaddress]['prefixlen'].to_s
+    cidr = node['network']['interfaces'][interface]['addresses'][ipaddress]['prefixlen'].to_s
 
     unless interface.empty? || ipaddress.empty? || gateway.empty? || cidr.empty?
       sys_systemd_unit "#{interface}.network" do
