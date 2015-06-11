@@ -51,7 +51,7 @@ if systemd? # We do not install systemd for now, just detect if it is available
   # This is e.g. needed for the systemd-networkd-wait-online.service to work.
   if node['sys']['systemd']['networkd']['enable']
     service 'systemd-networkd' do
-      supports restart: true, reload: true
+      supports restart: true
       action [ :enable, :start ]
     end
   end
@@ -79,7 +79,7 @@ if systemd? # We do not install systemd for now, just detect if it is available
           }
         })
         action :create
-        notifies :reload, 'service[systemd-networkd]', :delayed
+        notifies :restart, 'service[systemd-networkd]', :delayed
       end
     end
   end
