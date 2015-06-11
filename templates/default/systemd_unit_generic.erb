@@ -1,0 +1,15 @@
+#<%= @path %>
+#
+# DO NOT CHANGE THIS FILE MANUALLY!
+#
+# This file is managed by the Chef `sys` cookbook.
+#
+
+<% Hash[@config.sort].each do |section, attributes| -%>
+[<%= section %>]
+<%   Hash[attributes.sort].each do |key, value|
+       value = value.join(' ') if value.kind_of?(Array) -%>
+<%= key %>=<%= value %>
+<%   end -%>
+
+<% end -%>
