@@ -1,34 +1,28 @@
 require 'etc'
 require 'open3'
 
-def whyrun_supported?
-  true
-end
-
 use_inline_resources
 
 action :deploy do
-  converge_by("Deploy keytab for #{new_resource.principal} to #{new_resource.place}") do
-    if ! ::File.exists?(new_resource.place) || ! check_keytab()
-      bash "deploy #{new_resource.principal}" do
-        cwd "/"
-        code <<-EOH
-          kinit -t /etc/krb5.keytab host/#{node['fqdn']}
-          wallet get keytab #{new_resource.principal}@#{node['sys']['krb5']['realm'].upcase} -f #{new_resource.place}
-          kdestroy
-        EOH
-      end
-      new_resource.updated_by_last_action(true)
+  if ! ::File.exists?(new_resource.place) || ! check_keytab()
+    bash "deploy #{new_resource.principal}" do
+      cwd "/"
+      code <<-EOH
+        kinit -t /etc/krb5.keytab host/#{node['fqdn']}
+        wallet get keytab #{new_resource.principal}@#{node['sys']['krb5']['realm'].upcase} -f #{new_resource.place}
+        kdestroy
+      EOH
     end
+    new_resource.updated_by_last_action(true)
+  end
 
-    unless check_stat()
-      file new_resource.place do
-        mode new_resource.mode
-        owner new_resource.owner
-        group new_resource.group
-      end
-      new_resource.updated_by_last_action(true)
+  unless check_stat()
+    file new_resource.place do
+      mode new_resource.mode
+      owner new_resource.owner
+      group new_resource.group
     end
+    new_resource.updated_by_last_action(true)
   end
 end
 
