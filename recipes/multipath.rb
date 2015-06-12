@@ -23,6 +23,7 @@ unless node['sys']['multipath'].empty?
 
   service 'multipath-tools' do
     supports :reload => true
+    status_command 'ps -p $(cat /var/run/multipathd.pid)'
     action [:enable, :start]
   end
 
