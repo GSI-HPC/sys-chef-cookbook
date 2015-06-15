@@ -19,7 +19,7 @@
 
 Chef::Recipe.send(:include, Sys::Helper)
 
-if systemd? # We do not install systemd for now, just detect if it is available
+if systemd_installed? # We do not install systemd for now, just detect if it is available
 
   if node['sys']['systemd']['networkd']['clean_legacy']
     # This works for current usecases, but may be too radical. Probably needs
@@ -50,8 +50,7 @@ if systemd? # We do not install systemd for now, just detect if it is available
   # Enable/Start systemd-networkd
   # This is e.g. needed for the systemd-networkd-wait-online.service to work.
   if node['sys']['systemd']['networkd']['enable']
-    cmd = Mixlib::ShellOut.new('cat /proc/1/comm').run_command
-    if cmd.stdout.chomp == 'systemd'
+    if systemd_active?
       service 'systemd-networkd' do
         supports restart: true
         action [ :enable, :start ]
@@ -85,7 +84,7 @@ if systemd? # We do not install systemd for now, just detect if it is available
           }
         })
         action :create
-        notifies :restart, 'service[systemd-networkd]', :delayed
+        notifies(:restart, 'service[systemd-networkd]', :delayed) if systemd_active?
       end
     end
   end
