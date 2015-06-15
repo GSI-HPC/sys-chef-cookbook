@@ -18,6 +18,7 @@
 #
 
 Chef::Recipe.send(:include, Sys::Helper)
+Chef::Resource.send(:include, Sys::Helper)
 
 if systemd_installed? # We do not install systemd for now, just detect if it is available
 
