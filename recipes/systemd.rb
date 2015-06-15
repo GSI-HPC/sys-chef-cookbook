@@ -50,9 +50,15 @@ if systemd? # We do not install systemd for now, just detect if it is available
   # Enable/Start systemd-networkd
   # This is e.g. needed for the systemd-networkd-wait-online.service to work.
   if node['sys']['systemd']['networkd']['enable']
-    service 'systemd-networkd' do
-      supports restart: true
-      action [ :enable, :start ]
+    cmd = Mixlib::ShellOut.new('cat /proc/1/comm').run_command
+    if cmd.stdout.chomp == 'systemd'
+      service 'systemd-networkd' do
+        supports restart: true
+        action [ :enable, :start ]
+      end
+    else
+      # We might be in a chroot
+      execute 'systemctl enable systemd-networkd.service'
     end
   end
 
