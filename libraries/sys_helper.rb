@@ -3,9 +3,9 @@ module Sys
 
     # Detect active systemd instance
     def systemd?
-      cmd = Mixlib::ShellOut.new('cat /proc/1/comm')
+      cmd = Mixlib::ShellOut.new('dpkg -s systemd-sysv')
       cmd.run_command
-      cmd.stdout.chomp == 'systemd'
+      cmd.exitstatus == 0
     end
   end
 end
