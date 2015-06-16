@@ -27,6 +27,7 @@ unless node['sys']['resolv']['servers'].empty? # ~FC023 Do not break conventions
       :domain => node['sys']['resolv']['domain'],
       :search => node['sys']['resolv']['search']
     )
+    not_if 'test -L /etc/resolv.conf' # -> managed by resolvconf
   end
 
 end
