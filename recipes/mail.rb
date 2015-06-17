@@ -53,7 +53,8 @@ unless relay.empty?
       :inet_interfaces => node['sys']['mail']['inet_interfaces'],
       :default_privs   => node['sys']['mail']['default_privs'],
       :mydestination   => node['sys']['mail']['mydestination'],
-      :relay_domains   => node['sys']['mail']['relay_domains']
+      :relay_domains   => node['sys']['mail']['relay_domains'],
+      :message_size_limit => node['sys']['mail']['message_size_limit']
     })
     # after changes to main.cf postfix - sometimes - has to be restarted
     notifies :restart, 'service[postfix]'
