@@ -42,6 +42,7 @@ relayhost = [<%= @relay %>]
 <%= "relay_domains = #{@relay_domains.join(', ')}" if @relay_domains %>
 mynetworks = 127.0.0.0/8 [::ffff:127.0.0.0]/104 [::1]/128 <%= @mynetworks %>
 mailbox_size_limit = 0
+<%= "message_size_limit = #{@message_size_limit}" if @message_size_limit %>
 recipient_delimiter = +
 <%= @default_privs ? "default_privs = #{@default_privs}\n" : '' -%>
 
