@@ -8,8 +8,10 @@ action :deploy do
     bash "deploy #{new_resource.principal}" do
       cwd "/"
       code <<-EOH
+        rm -f #{new_resource.place}.tmp
         kinit -t /etc/krb5.keytab host/#{node['fqdn']}
-        wallet get keytab #{new_resource.principal}@#{node['sys']['krb5']['realm'].upcase} -f #{new_resource.place}
+        wallet get keytab #{new_resource.principal}@#{node['sys']['krb5']['realm'].upcase} -f #{new_resource.place}.tmp
+        mv #{new_resource.place}.tmp #{new_resource.place}
         kdestroy
       EOH
     end
