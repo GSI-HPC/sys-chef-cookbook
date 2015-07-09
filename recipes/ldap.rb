@@ -21,7 +21,6 @@ if ! node['sys']['ldap'].empty? && File.exists?('/usr/bin/kinit')
   %w(
     nscd
     nslcd
-    kstart
     libnss-ldapd
     ldap-utils
   ).each { |p| package p }
