@@ -37,7 +37,6 @@ describe 'sys::ldap' do
     it 'installs packages' do
       expect(chef_run).to install_package('nscd')
       expect(chef_run).to install_package('nslcd')
-      expect(chef_run).to install_package('kstart')
       expect(chef_run).to install_package('libnss-ldapd')
       expect(chef_run).to install_package('ldap-utils')
     end
