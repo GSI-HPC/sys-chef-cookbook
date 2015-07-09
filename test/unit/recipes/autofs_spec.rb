@@ -54,10 +54,9 @@ describe 'sys::autofs' do
       chef_run.converge(described_recipe)
     end
 
-    it 'install autofs, autofs-ldap and kstart' do
+    it 'installs autofs and autofs-ldap' do
       expect(chef_run).to install_package('autofs')
       expect(chef_run).to install_package('autofs-ldap')
-      expect(chef_run).to install_package('kstart')
     end
 
     it 'manages /etc/auto.master' do
