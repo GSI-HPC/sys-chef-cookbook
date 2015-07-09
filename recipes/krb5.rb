@@ -24,6 +24,7 @@ unless node['sys']['krb5'].empty?
     libpam-heimdal
     heimdal-kcm
     libsasl2-modules-gssapi-heimdal
+    kstart
   ).each { |p| package p }
 
   template "/etc/krb5.conf" do

@@ -51,7 +51,6 @@ end
 if ! node['sys']['autofs']['ldap'].empty? && File.exists?('/usr/bin/kinit')
   package "autofs"
   package "autofs-ldap"
-  package "kstart"
 
   sys_wallet "autofsclient/#{node['fqdn']}" do
     place "/etc/autofs.keytab"
