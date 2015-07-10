@@ -18,10 +18,13 @@ Ohai.plugin(:Ipmi) do
 
     ipmi Mash.new
     ipmi['bmc-config'] = bmc_config
-    
+
   end
 
   # try to load the IPMI modules:
+  #  TODO: this produces a lot of noise in the kern.log
+  #        should not be run every time
+  #        Set a normal attribute (node.ipmi.available) instead?
   def load_modules
     if shell_out('modprobe ipmi_devintf').exitstatus == 0
       if shell_out('modprobe ipmi_si').exitstatus == 0
@@ -34,11 +37,11 @@ Ohai.plugin(:Ipmi) do
   # parse the output of bmc-config from freeipmi-tools
   def bmc_config
     output = shell_out('bmc-config --checkout')
-    
+
     result = {}
 
     sections = Hash[output.stdout.scan(/^Section\s+(.*?)\s*\n+(.*?)EndSection/m)]
-    
+
     sections.each do |name,config|
       h = {}
       config.each_line do |line|
@@ -50,7 +53,7 @@ Ohai.plugin(:Ipmi) do
       next if h['Enable_User'] == 'No'
       result[name] = h
     end
-    
+
     result
   end
 
