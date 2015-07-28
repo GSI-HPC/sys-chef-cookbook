@@ -27,6 +27,7 @@ Ohai.plugin(:Dpkg) do
 
   # Are there any attributes this plugin depends on?
   depends 'platform_family'
+  depends 'platform_version'
 
   # Which attribute name space will this plugin take care of?
   provides 'debian'
@@ -53,8 +54,12 @@ Ohai.plugin(:Dpkg) do
 
       # figure out the debian architecture (not neccessarily equal to node.kernel.machine!)
       debian["architecture"]          = `dpkg --print-architecture`.chomp
+
       # list of enabled multiarch architectures (eg. i386 on amd64):
-      debian["foreign_architectures"] = `dpkg  --print-foreign-architectures`.split("\n")
+      #  no multiarch before Wheezy
+      if platform_version.to_i > 6
+        debian["foreign_architectures"] = `dpkg  --print-foreign-architectures`.split("\n")
+      end
 
       # this is already provided by the LSB plugin:
       debian["codename"]     = `lsb_release -cs`.chomp
