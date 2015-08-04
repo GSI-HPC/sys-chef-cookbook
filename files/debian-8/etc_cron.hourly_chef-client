@@ -1,0 +1,8 @@
+#!/bin/bash
+#
+# DO NOT CHANGE THIS FILE MANUALLY!
+#
+# This file is managed by the Chef `sys` cookbook.
+
+# Make sure the chef-client service keeps running
+systemctl is-active chef-client &>/dev/null || systemctl restart chef-client
