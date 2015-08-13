@@ -19,11 +19,11 @@
 # limitations under the License.
 #
 
-%w(set clear restore_default).each do |_action|
-  node['sys']['sdparm'][_action].each do |_flag, disks|
+%w(set clear restore_default).each do |paction|
+  node['sys']['sdparm'][paction].each do |pflag, disks|
     sys_sdparm disks.join(' ') do
-      flag _flag
-      action _action.to_sym
+      flag pflag
+      action paction.to_sym
     end
   end
 end

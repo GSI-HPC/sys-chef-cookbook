@@ -32,7 +32,7 @@ unless node['sys']['pam']['access'].empty?
       owner 'root'
       group 'root'
       mode "0644"
-      only_if do ::File.exists? '/etc/ssh/sshd_config' end
+      only_if do ::File.exist? '/etc/ssh/sshd_config' end
     end
   end
 
@@ -91,7 +91,7 @@ unless node['sys']['pamupdate'].empty? # ~FC023 Do not break conventions in sys
 
     generator = PamUpdate::Writer.new(configs)
 
-    if ! File.exists?("/etc/krb5.keytab")
+    if ! File.exist?("/etc/krb5.keytab")
       # Remove pam_krb5 from profiles
       generator.remove_profile_byname("Kerberos authentication")
       Chef::Log.warn("/etc/krb5.keytab not present. Not configuring libpam-krb5.")

@@ -34,13 +34,13 @@ class Chef
         def enabled?
           unless @current_resource.enabled == true
             systemd_file = systemd_substitute(@new_resource.mount_point)
-            if ::File.exists?("/etc/systemd/system/" + systemd_file)
+            if ::File.exist?("/etc/systemd/system/" + systemd_file)
               begin
                 if shell_out!("systemctl is-enabled #{Shellwords.escape(systemd_file)}").exitstatus == 0
                   @current_resource.enabled(true)
                 end
-              rescue Mixlib::ShellOut::ShellCommandFailed, SystemCallError
-                #TODO
+              rescue Mixlib::ShellOut::ShellCommandFailed, SystemCallError => e
+                Chef::Log.debug e
               end
             end
           end
@@ -71,8 +71,8 @@ class Chef
 
           begin
             shell_out!("systemctl enable #{Shellwords.escape(systemd_substitute(mp))}")
-          rescue Mixlib::ShellOut::ShellCommandFailed, SystemCallError
-            #TODO
+          rescue Mixlib::ShellOut::ShellCommandFailed, SystemCallError => e
+            Chef::Log.debug e
           end
 
           Chef::Log.debug("#{@new_resource} is enabled at #{mp}")
@@ -81,12 +81,12 @@ class Chef
         def disable_fs
           if @current_resource.enabled
             systemd_file = systemd_substitute(@new_resource.mount_point)
-            if ::File.exists?("/etc/systemd/system/" + systemd_file)
+            if ::File.exist?("/etc/systemd/system/" + systemd_file)
               begin
                 shell_out!("systemctl disable #{Shellwords.escape(systemd_file)}")
                 ::File.unlink("/etc/systemd/system/" + systemd_file)
-              rescue Mixlib::ShellOut::ShellCommandFailed, SystemCallError
-                 #TODO
+              rescue Mixlib::ShellOut::ShellCommandFailed, SystemCallError => e
+                Chef::Log.debug e
               end
             end
           else

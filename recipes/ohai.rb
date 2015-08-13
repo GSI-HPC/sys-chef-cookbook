@@ -41,6 +41,6 @@ if node['ohai']['update_pciids']
     weekday 6
     hour 12
     command 'update-pciids -q'
-    only_if File.exists?('/usr/bin/update-pciids')
+    only_if File.exist?('/usr/bin/update-pciids')
   end
 end

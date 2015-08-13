@@ -43,7 +43,7 @@ action :add do
     file "mail_alias #{new_resource.aliases_file}" do
       path new_resource.aliases_file
       action :create
-      not_if { ::File.exists?(new_resource.aliases_file) }
+      not_if { ::File.exist?(new_resource.aliases_file) }
     end
 
     ruby_block 'SysMailAlias action :add : insert alias' do
@@ -79,7 +79,7 @@ def load_current_resource
   @current_resource = Chef::Resource::SysMailAlias.new(new_resource.name)
   @current_resource.exists = false
 
-  if ::File.exists? new_resource.aliases_file
+  if ::File.exist? new_resource.aliases_file
     lines = ::File.readlines(new_resource.aliases_file).select { |line| line =~ /^#{@current_resource.name}:/ }
     unless lines.empty?
       @current_resource.to(lines.first.match(/:(.*)$/)[1].strip)

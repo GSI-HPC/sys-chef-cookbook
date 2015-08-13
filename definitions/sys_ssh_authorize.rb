@@ -83,7 +83,7 @@ define :sys_ssh_authorize, :keys => Array.new, :managed => false do
         level :warn
       end
     end
-  rescue Exception => e
+  rescue StandardError => e
     log("Can't deploy SSH keys: " + e.to_s) { level :error }
   end
 end

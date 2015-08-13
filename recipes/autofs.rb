@@ -24,7 +24,7 @@ if ! node['sys']['autofs']['maps'].empty? && node['sys']['autofs']['ldap'].empty
   node['sys']['autofs']['maps'].each_key do |mountpoint|
     directory mountpoint do
       recursive true
-      not_if { File.exists?(mountpoint) }
+      not_if { File.exist?(mountpoint) }
     end
   end
 
@@ -48,7 +48,7 @@ if ! node['sys']['autofs']['maps'].empty? && node['sys']['autofs']['ldap'].empty
   end
 end
 
-if ! node['sys']['autofs']['ldap'].empty? && File.exists?('/usr/bin/kinit')
+if ! node['sys']['autofs']['ldap'].empty? && File.exist?('/usr/bin/kinit')
   package "autofs"
   package "autofs-ldap"
 

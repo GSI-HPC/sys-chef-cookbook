@@ -55,8 +55,8 @@ begin
       server_url = 'http://#{server}:4000'
     end
   end
-rescue ArgumentError
-  # ignore
+rescue ArgumentError => e
+  Chef::Log.debug e
 end
 
 # configuring the chef client only makes sense if the server is defined:
@@ -91,7 +91,7 @@ end
 file node['sys']['chef']['validation_key'] do
   action :delete
   backup false
-  only_if do ::File.exists? node['sys']['chef']['client_key'] end
+  only_if do ::File.exist? node['sys']['chef']['client_key'] end
 end
 #end
 

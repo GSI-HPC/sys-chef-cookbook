@@ -42,7 +42,7 @@ unless node['sys']['cgroups']['path'].empty?
   config_cgroups = "Loading cgroups configuration"
   execute config_cgroups do
     command "cgclear; cgconfigparser -l /etc/cgconfig.conf"
-    only_if do ::File.exists? '/etc/cgconfig.conf' and run_config_cgroups end
+    only_if do ::File.exist? '/etc/cgconfig.conf' and run_config_cgroups end
   end
 
   template '/etc/cgconfig.conf' do
