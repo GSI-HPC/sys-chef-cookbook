@@ -103,7 +103,7 @@ file node['sys']['chef']['client_key'] do
 end
 
 # Create a script in cron.hourly to make sure chef-client keeps running
-if node['sys']['chef']['restart_via_cron']
+if node['sys']['chef']['restart_via_cron'] # ~FC023
   cookbook_file "/etc/cron.hourly/chef-client" do
     source "etc_cron.hourly_chef-client"
     mode "0755"

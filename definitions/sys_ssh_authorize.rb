@@ -37,7 +37,7 @@ define :sys_ssh_authorize, :keys => Array.new, :managed => false do
         end
 
         # Create the ~/.ssh directory if missing
-        if node.run_context.resource_collection.select{ |e| e.name == dot_ssh }.empty?
+        if node.run_context.resource_collection.select{ |e| e.name == dot_ssh }.empty? # ~FC023
           directory dot_ssh do
             owner account
             group gid if gid
