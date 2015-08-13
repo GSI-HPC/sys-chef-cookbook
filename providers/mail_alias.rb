@@ -40,7 +40,8 @@ action :add do
     #  * create new aliases file, if missing
     #  * insert mail alias
 
-    file new_resource.aliases_file do
+    file "mail_alias #{new_resource.aliases_file}" do
+      path new_resource.aliases_file
       action :create
       not_if { ::File.exists?(new_resource.aliases_file) }
     end
