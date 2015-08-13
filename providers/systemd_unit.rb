@@ -21,7 +21,7 @@ end
 action :delete do
   debug_log('systemd_unit_action_delete')
 
-  t = template "#{absolute_path}" do
+  t = template absolute_path do
     action :delete
   end
 
