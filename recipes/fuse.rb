@@ -19,7 +19,7 @@
 
 unless node['sys']['fuse']['config'].empty?
 
-  case node.platform_version
+  case node['platform_version']
 
   when /^7.*/
 
