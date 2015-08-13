@@ -63,14 +63,14 @@ initialize object of class profile."
     def parse
       fieldname = String.new
       content.each_line do |line|
-        if matches = %r{^(\S+):\s+(.*)$}.match(line)
+        if (matches = %r{^(\S+):\s+(.*)$}.match(line))
           fieldname = matches[1]
           if fieldname == "Conflicts"
             fields[fieldname.to_sym] = matches[2].split(',').map { |c| c.strip}
           else
             fields[fieldname.to_sym] = matches[2]
           end # if
-        elsif matches = %r{^\s+}.match(line)
+        elsif %r{^\s+}.match(line)
           fields[fieldname.to_sym] = line.strip
         end # if
       end # File

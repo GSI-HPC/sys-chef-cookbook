@@ -28,7 +28,7 @@ Ohai.plugin(:Ipmi) do
   def load_modules
     if shell_out('modprobe ipmi_devintf').exitstatus == 0
       if shell_out('modprobe ipmi_si').exitstatus == 0
-        return File.exists?('/dev/ipmi0')
+        return File.exist?('/dev/ipmi0')
       end
     end
     false

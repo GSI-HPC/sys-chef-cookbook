@@ -24,11 +24,8 @@ Ohai.plugin(:LocalPasswd) do
     File.readlines('/etc/group').each do |line|
       splitline = line.chomp.split(':')
       g_members = []
-      begin
-        splitline[3].split(',').each do |mem|
-          g_members << mem
-        end
-      rescue # no members
+      String(splitline[3]).split(',').each do |mem|
+        g_members << mem
       end
       etc['group'][splitline[0]] = Mash.new(
         'gid' => splitline[2].to_i,

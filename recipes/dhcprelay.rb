@@ -32,11 +32,11 @@ if node['sys']['dhcprelay']
 
   template "/etc/default/#{pkg}" do
     source "etc_default_#{pkg}.erb"
-    variables ({
-        :servers    => servers,
-        :interfaces => interfaces
-      })
-    end
+    variables({
+      :servers    => servers,
+      :interfaces => interfaces
+    })
+  end
 
   service pkg do
     action [ :enable, :start ]

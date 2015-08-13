@@ -31,7 +31,7 @@ class PamUpdate
     end # def initialize
 
     def add_config(config)
-      unless @configs.inject(false) { |acc, v| acc ||= v.type == config.type }
+      unless @configs.inject(false) { |acc, v| acc || v.type == config.type }
         @configs << config
       end
       self

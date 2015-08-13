@@ -34,7 +34,7 @@ unless (node['sys']['accounts'].empty? and node['sys']['groups'].empty?)
         item = data_bag_item('localgroups', name)
         grp = grp.to_hash
         grp['gid']     ||= item['gid']
-      rescue Exception => e
+      rescue StandardError => e
         Chef::Log.debug("Attribute merge with data bag 'localgroups/#{name}' failed: #{e.message}")
       end
     end
@@ -49,14 +49,14 @@ unless (node['sys']['accounts'].empty? and node['sys']['groups'].empty?)
         append  grp['append']  || false
         system  grp['system']  || false
       end
-    rescue Exception => e
+    rescue StandardError => e
       Chef::Log.error("Creation of group resource '#{name}' failed: #{e.message}")
     end
   end
 require 'pp'
   bag = data_bag('accounts') unless Chef::Config[:solo]
-  node['sys']['accounts'].each do |name, _account|
-    account = _account.merge({}) # gives us a mutable copy of the ImmutableMash
+  node['sys']['accounts'].each do |name, caccount|
+    account = caccount.merge({}) # gives us a mutable copy of the ImmutableMash
     unless Chef::Config[:solo]
       begin
         raise "No data bag item for account '#{name}'" unless bag.include?(name)
@@ -69,7 +69,7 @@ require 'pp'
             account['supports'] = { :manage_home => true }
           end
         end
-      rescue Exception => e
+      rescue StandardError => e
         Chef::Log.debug("Attribute merge with data bag 'accounts/#{name}' failed: #{e.message}")
       end
     end
@@ -145,7 +145,7 @@ require 'pp'
         node.default['sys']['pam']['access'].push("+:#{name}:#{account['remote']} LOCAL")
       end
 
-    rescue Exception => e
+    rescue StandardError => e
       Chef::Log.error("Creation of user resource '#{name}' failed: #{e.message}")
     end
   end

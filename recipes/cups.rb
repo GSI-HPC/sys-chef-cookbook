@@ -31,7 +31,7 @@ if node['sys']['cups']
     source    'etc_generic.erb'
     cookbook  'sys'
     mode      0644
-    variables ({
+    variables({
       :content => "ServerName #{node['sys']['cups']['server']}"
     })
     only_if { node['sys']['cups']['server'] }

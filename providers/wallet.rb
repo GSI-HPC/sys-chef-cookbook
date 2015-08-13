@@ -4,7 +4,7 @@ require 'open3'
 use_inline_resources
 
 action :deploy do
-  if ! ::File.exists?(new_resource.place) || ! check_keytab()
+  if ! ::File.exist?(new_resource.place) || ! check_keytab()
     bash "deploy #{new_resource.principal}" do
       cwd "/"
       code <<-EOH
@@ -31,7 +31,7 @@ end
 def check_keytab()
   cmd = "ktutil -k #{new_resource.place} list --keys | grep -q #{new_resource.principal}"
   exit_status = 1
-  Open3.popen3(cmd) do |stdin, stdout, stderr, wait_thr|
+  Open3.popen3(cmd) do |_stdin, _stdout, _stderr, wait_thr|
     exit_status = wait_thr.value
   end
 
@@ -55,7 +55,7 @@ end
 
 def check_stat()
   check = false
-  if ::File.exists?(new_resource.place)
+  if ::File.exist?(new_resource.place)
     stat = ::File.stat(new_resource.place)
     check = check_mode(stat) && check_owner(stat) && check_group(stat)
   end

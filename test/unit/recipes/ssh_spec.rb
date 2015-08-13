@@ -10,7 +10,6 @@ describe 'sys::ssh' do
   context 'with basic attributes' do
     before do
       stub_command("grep -q -F \"BBB\" /home/jdoe/.ssh/authorized_keys").and_return(0)
-      fqdn = 'node.example.com'
       chef_run.node.default['sys']['sshd']['config'] = {
         'variable' => "value",
         'X11Forwarding' => "overwritten" }
