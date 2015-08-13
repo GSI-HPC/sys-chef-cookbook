@@ -58,7 +58,7 @@ if ! node['sys']['autofs']['ldap'].empty? && File.exists?('/usr/bin/kinit')
 
 
   # on Jessie the maps go to /etc/auto.master.d/
-  if node.platform_version.to_i >= 8
+  if node['platform_version'].to_i >= 8
 
     directory '/etc/auto.master.d'
 
@@ -80,7 +80,7 @@ if ! node['sys']['autofs']['ldap'].empty? && File.exists?('/usr/bin/kinit')
     source 'etc_auto.master.erb'
     mode "0644"
     variables(
-      :maps => (node.platform_version.to_i < 8)?node['sys']['autofs']['maps']:{}
+      :maps => (node['platform_version'].to_i < 8)?node['sys']['autofs']['maps']:{}
     )
     notifies :reload, 'service[autofs]'
   end
