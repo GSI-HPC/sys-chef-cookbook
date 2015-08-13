@@ -86,13 +86,13 @@ describe 'lwrp: sys_mail_alias' do
 end
 
 def etc_aliases_exists
-  allow(::File).to receive(:exists?).and_call_original
-  allow(::File).to receive(:exists?).with('/etc/aliases') { true }
+  allow(::File).to receive(:exist?).and_call_original
+  allow(::File).to receive(:exist?).with('/etc/aliases') { true }
 end
 
 def etc_aliases_does_not_exist
-  allow(::File).to receive(:exists?).and_call_original
-  allow(::File).to receive(:exists?).with('/etc/aliases') { false }
+  allow(::File).to receive(:exist?).and_call_original
+  allow(::File).to receive(:exist?).with('/etc/aliases') { false }
 end
 
 def contains_alias(alias_line)
