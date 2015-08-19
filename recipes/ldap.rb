@@ -40,6 +40,14 @@ if ! node['sys']['ldap'].empty? && File.exist?('/usr/bin/kinit')
     notifies :restart, "service[nslcd]", :delayed
   end
 
+  template "/etc/nscd.conf" do
+    source "etc_nscd.conf.erb"
+    user "root"
+    group "root"
+    mode "0644"
+    notifies :restart, "service[nscd]", :delayed
+  end
+
   # Configuration for nslcd.  nlscd queries an ldap-server for user-information.
   template "/etc/nslcd.conf" do
     source "etc_nslcd.conf.erb"
