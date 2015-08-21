@@ -59,7 +59,8 @@ if ! node['sys']['ldap'].empty? && File.exist?('/usr/bin/kinit')
       :servers => node['sys']['ldap']['servers'],
       :searchbase => node['sys']['ldap']['searchbase'],
       :realm => node['sys']['ldap']['realm'].upcase,
-      :nss_initgroups_ignoreusers => begin node['sys']['ldap']['nss_initgroups_ignoreusers'] rescue nil end
+      :nss_initgroups_ignoreusers => begin node['sys']['ldap']['nss_initgroups_ignoreusers'] rescue nil end,
+      :nslcd => begin node['sys']['ldap']['nslcd'] rescue nil end
     )
   end
 

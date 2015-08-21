@@ -22,6 +22,12 @@ bind_timelimit 10
 nss_initgroups_ignoreusers <%= @nss_initgroups_ignoreusers.join(', ') %>
 <% end %>
 
+<% if @nslcd %>
+<% @nslcd.each do |k,v| %>
+<%= "#{k} #{v}" %>
+<% end %>
+<% end %>
+
 # The search base that will be used for all queries.
 base <%= @searchbase -%>
 
