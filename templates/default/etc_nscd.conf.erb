@@ -10,14 +10,14 @@
 	persistent		passwd		no
 	shared			passwd		yes
 	max-db-size		passwd		33554432
-	auto-propagate		passwd		yes
+	auto-propagate		passwd		no
 
 	enable-cache		group		yes
-	positive-time-to-live	group		3600
-	negative-time-to-live	group		60
+	positive-time-to-live	group		600
+	negative-time-to-live	group		10
 	suggested-size		group		503
 	check-files		group		yes
 	persistent		group		no
 	shared			group		yes
 	max-db-size		group		33554432
-	auto-propagate		group		yes
+	auto-propagate		group		no
