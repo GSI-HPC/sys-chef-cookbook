@@ -17,6 +17,7 @@ URI ldap://<%= server %>
 timelimit 10
 # default for bind_timelimit
 bind_timelimit 10
+idle_timelimit 30
 
 <% if @nss_initgroups_ignoreusers -%>
 nss_initgroups_ignoreusers <%= @nss_initgroups_ignoreusers.join(', ') %>
