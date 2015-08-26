@@ -1,9 +1,15 @@
 # 
-# stuff to set up for IPMI BMC configuration
+# Install the packages needed to configure/grab data from the IPMI cards.
 #
 
-# the simple tool:
-package 'ipmitool'
+ipmi = node['sys']['ipmi']['install_packages']
 
-# the powerful tools (used by the supplied IPMI ohai plugin):
-package 'freeipmi-tools'
+unless ipmi.empty?
+
+   # Install the command line tool to access BMC data:
+   package 'ipmitool'
+
+   # Tools used by the supplied IPMI Ohai plugin (bmc-config):
+   package 'freeipmi-tools'
+
+end
