@@ -1,0 +1,10 @@
+#
+# /etc/updatedb.conf
+#
+# DO NOT CHANGE THIS FILE MANUALLY!
+#
+# This file is managed by the Chef `gsi-sys` cookbook.                                                                                                                                                             
+PRUNE_BIND_MOUNTS=<%= @prunebindmounts %> #"yes"
+# PRUNENAMES=".git .bzr .hg .svn"
+PRUNEPATHS= <%= @prunepaths %>  #"/tmp /var/spool /media"
+PRUNEFS=<%= @prunefs %> #"NFS nfs nfs4 rpc_pipefs afs binfmt_misc proc smbfs autofs iso9660 ncpfs coda devpts ftpfs devfs mfs shfs sysfs cifs lustre ldiskfs tmpfs usbfs udf fuse.glusterfs fuse.sshfs curlftpfs"
