@@ -67,6 +67,14 @@ unless node['sys']['sshd']['config'].empty?
   end
 end
 
+unless node['sys']['ssh']['ssh_config'].empty?
+  template '/etc/ssh/ssh_config' do
+    source 'etc_ssh_ssh_config.erb'
+    mode '0644'
+    variables :config => node['sys']['ssh']['ssh_config']
+  end
+end
+
 unless node['sys']['ssh']['authorize'].empty?
   node['sys']['ssh']['authorize'].each do |account,params|
     sys_ssh_authorize account do
