@@ -18,8 +18,10 @@ define :sys_ssh_authorize, :keys => Array.new, :managed => false do
   account = params[:name]
   begin
 
+    getent_passwd = shell_out("getent passwd #{params[:name]}")
+
     # Does the user exist?
-    if node['etc']['passwd'].has_key?(account) or node['sys']['accounts'].has_key?(account)
+    if node['etc']['passwd'].has_key?(account) or node['sys']['accounts'].has_key?(account) or (getent_passwd.exitstatus == 0)
 
       if params[:keys].empty?
         raise "key(s) missing for account [#{account}]"
@@ -32,6 +34,17 @@ define :sys_ssh_authorize, :keys => Array.new, :managed => false do
           # FIXME: account may not have a key home and we accidentally create '/.ssh' ...
           dot_ssh = "#{node['sys']['accounts'][account]['home']}/.ssh"
           gid     = node['sys']['accounts'][account]['gid']
+        elsif getent_passwd.exitstatus == 0
+          parts = getent_passwd.stdout.split(':')
+          dot_ssh = "#{parts[5]}/.ssh"
+          gid = parts[3].to_i
+
+          directory parts[5] do
+            owner account
+            group gid
+            mode "0750"
+            recursive true
+          end
         else
           raise "#{account} has no home dir"
         end
