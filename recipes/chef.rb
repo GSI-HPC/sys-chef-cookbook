@@ -76,6 +76,7 @@ if server_url
     variables v
 
     notifies :restart, "service[chef-client]"
+    ignore_failure true
   end
 else
   log("No chef server defined. Please set node['sys']['chef']['server_url'] to point to your chef server") { level :warn }
