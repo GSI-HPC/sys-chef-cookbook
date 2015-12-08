@@ -15,17 +15,18 @@ Ohai.plugin(:Ipmi) do
    end
 
    # 1. Verify if there's IPMI HW available.
-   # 2. Only if it's the case then we'll try to load IPMI modules. 
-   if ipmi_hw_avail 
+   # 2. Only if it's the case then we'll try to load IPMI modules.
+   if ipmi_hw_avail
     unless kernel[:modules][:ipmi_si]
       unless load_modules
         Ohai::Log.debug("IPMI modules could not be loaded")
       end
     end
-     
+
      # Fill the IPMI mash with the output of the 'bmc-config' cmd:
      ipmi Mash.new
      ipmi['bmc-config'] = bmc_config
+     ipmi['pef-config'] = pef_config
    else
      Ohai::Log.debug("No IPMI HW is available or the dmidecode cmd reported a non zero exit status")
    end
@@ -42,18 +43,18 @@ Ohai.plugin(:Ipmi) do
     ipmi_available = ""
     result = shell_out('dmidecode -t 38') # '38' is the DMI type reported for IPMI HW on the dmidecode man page.
     if result.exitstatus == 0
-       result.stdout.lines do |line|
-          case line
-	  when /IPMI Device Information/
-              ipmi_available = "yes"
-          end
-       end
+      result.stdout.lines do |line|
+        case line
+        when /IPMI Device Information/
+          ipmi_available = "yes"
+        end
+      end
 
-       if ipmi_available.eql?("yes")
-         true
-       end
+      if ipmi_available.eql?("yes")
+        true
+      end
     else
-       false # No IPMI HW available or the exit status of 'dmidecode' reported something different from zero.
+      false # No IPMI HW available or the exit status of 'dmidecode' reported something different from zero.
     end
   end
 
@@ -68,8 +69,8 @@ Ohai.plugin(:Ipmi) do
   end
 
   # Parse the output of bmc-config from freeipmi-tools:
-  def bmc_config
-    output = shell_out('bmc-config --checkout')
+  def ipmi_config(component = 'bmc')
+    output = shell_out("#{component}-config --checkout")
 
     result = {}
 
@@ -82,12 +83,32 @@ Ohai.plugin(:Ipmi) do
         next if key =~ /^#/   #skip comments
         h[key] = value
       end
-      # skip disabled users:
-      next if h['Enable_User'] == 'No'
       result[name] = h
     end
 
-    result
+    return result
+  end
+
+  def bmc_config()
+    # skip disabled users:
+    ipmi_config.delete_if{|k,v| v['Enable_User'] == 'No'}
+  end
+
+  def pef_config()
+
+    h = ipmi_config('pef')
+
+    # select enabled event filters:
+    event_filters = h.select{ |k,v|
+      k =~ /^Event_Filter_\d+$/ and
+        v['Enable_Filter'] != 'No'
+    }
+
+    # TODO: aad alert destinations and strings that aren't mentioned in any
+    #       event filter definition
+    return h.select{ |k,v|
+      k == 'PEF_Conf' or k == 'Community_String'
+    }.merge(event_filters)
   end
 
 end
