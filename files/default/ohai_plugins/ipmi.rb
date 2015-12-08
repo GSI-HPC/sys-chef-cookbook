@@ -27,6 +27,7 @@ Ohai.plugin(:Ipmi) do
      ipmi Mash.new
      ipmi['bmc-config'] = bmc_config
      ipmi['pef-config'] = pef_config
+     ipmi['sensors-config'] = ipmi_config('ipmi-sensors')
    else
      Ohai::Log.debug("No IPMI HW is available or the dmidecode cmd reported a non zero exit status")
    end
