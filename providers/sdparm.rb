@@ -5,7 +5,7 @@ action :set do
 
   todo = []
   load_sdparm.each do |disk, params|
-    todo << disk if params[:save] == '0'
+    todo << disk if params[:value] == '0'
   end
 
   unless todo.empty?
@@ -25,7 +25,7 @@ action :clear do
 
   todo = []
   load_sdparm.each do |disk, params|
-    todo << disk if params[:save] == '1'
+    todo << disk if params[:value] == '1'
   end
 
   unless todo.empty?
@@ -45,7 +45,7 @@ action :restore_default do
 
   todo = []
   load_sdparm.each do |disk, params|
-    if params[:save] != params[:default]
+    if params[:value] != params[:default]
       todo << {
         disk: disk,
         value: params[:default]
@@ -78,11 +78,12 @@ def load_sdparm
   Chef::Log.debug "load_sdparm: #{cmd.stdout}"
 
   sdparm = {}
-  cmd.stdout.scan(/(\S+):.*\n.*#{new_resource.flag}.*def:\s*(\S+), sav:\s*(\S+)\]/) do |scan|
-    disk, default, save = scan
+  cmd.stdout.scan(/(\S+):.*\n.*#{new_resource.flag}\s*(\S+).*def:\s*(\S+), sav:\s*(\S+)\]/) do |scan|
+    disk, value, default, save = scan
     sdparm[disk] = {
       default: default,
-      save: save
+      save: save,
+      value: value
     }
   end
 
