@@ -26,8 +26,8 @@ describe 'lwrp: sys_sdparm' do
         @flag = 'WCE'
         @disks = '/dev/sd*'
         @fake_disks = {
-          '/dev/sda' => { save: '0', default: '0' },
-          '/dev/sdb' => { save: '0', default: '0' }
+          '/dev/sda' => { value: '0', save: '0', default: '0' },
+          '/dev/sdb' => { value: '0', save: '0', default: '0' }
         }
         prepare_disks(@flag, @disks, @fake_disks)
       end
@@ -42,8 +42,8 @@ describe 'lwrp: sys_sdparm' do
         @flag = 'WCE'
         @disks = '/dev/sd*'
         @fake_disks = {
-          '/dev/sda' => { save: '0', default: '0' },
-          '/dev/sdb' => { save: '1', default: '0' }
+          '/dev/sda' => { value: '0', save: '0', default: '0' },
+          '/dev/sdb' => { value: '1', save: '1', default: '0' }
         }
         prepare_disks(@flag, @disks, @fake_disks)
       end
@@ -58,8 +58,8 @@ describe 'lwrp: sys_sdparm' do
         @flag = 'WCE'
         @disks = '/dev/sd*'
         @fake_disks = {
-          '/dev/sda' => { save: '1', default: '0' },
-          '/dev/sdb' => { save: '1', default: '0' }
+          '/dev/sda' => { value: '1', save: '1', default: '0' },
+          '/dev/sdb' => { value: '1', save: '1', default: '0' }
         }
         prepare_disks(@flag, @disks, @fake_disks)
       end
@@ -84,9 +84,9 @@ describe 'lwrp: sys_sdparm' do
         @flag = 'WCE'
         @disks = '/dev/sd*'
         @fake_disks = {
-          '/dev/sda' => { save: '1', default: '0' },
-          '/dev/sdb' => { save: '1', default: '0' },
-          '/dev/sdc' => { save: '1', default: '0' }
+          '/dev/sda' => { value: '1', save: '1', default: '0' },
+          '/dev/sdb' => { value: '1', save: '1', default: '0' },
+          '/dev/sdc' => { value: '1', save: '1', default: '0' }
         }
         prepare_disks(@flag, @disks, @fake_disks)
       end
@@ -101,8 +101,8 @@ describe 'lwrp: sys_sdparm' do
         @flag = 'WCE'
         @disks = '/dev/sd*'
         @fake_disks = {
-          '/dev/sda' => { save: '0', default: '0' },
-          '/dev/sdb' => { save: '1', default: '0' }
+          '/dev/sda' => { value: '0', save: '0', default: '0' },
+          '/dev/sdb' => { value: '1', save: '1', default: '0' }
         }
         prepare_disks(@flag, @disks, @fake_disks)
       end
@@ -117,10 +117,10 @@ describe 'lwrp: sys_sdparm' do
         @flag = 'WCE'
         @disks = '/dev/sd*'
         @fake_disks = {
-          '/dev/sda' => { save: '0', default: '0' },
-          '/dev/sdb' => { save: '0', default: '0' },
-          '/dev/sdc' => { save: '0', default: '0' },
-          '/dev/sdd' => { save: '0', default: '0' }
+          '/dev/sda' => { value: '0', save: '0', default: '0' },
+          '/dev/sdb' => { value: '0', save: '0', default: '0' },
+          '/dev/sdc' => { value: '0', save: '0', default: '0' },
+          '/dev/sdd' => { value: '0', save: '0', default: '0' }
         }
         prepare_disks(@flag, @disks, @fake_disks)
       end
@@ -145,10 +145,10 @@ describe 'lwrp: sys_sdparm' do
         @flag = 'WCE'
         @disks = '/dev/sd*'
         @fake_disks = {
-          '/dev/sda' => { save: '1', default: '1' },
-          '/dev/sdb' => { save: '0', default: '1' },
-          '/dev/sdc' => { save: '1', default: '0' },
-          '/dev/sde' => { save: '0', default: '0' }
+          '/dev/sda' => { value: '1', save: '1', default: '1' },
+          '/dev/sdb' => { value: '0', save: '0', default: '1' },
+          '/dev/sdc' => { value: '1', save: '1', default: '0' },
+          '/dev/sde' => { value: '0', save: '0', default: '0' }
         }
         prepare_disks(@flag, @disks, @fake_disks)
       end
@@ -168,7 +168,7 @@ def prepare_disks(flag, disks, fake_disks)
   # Generate fake output
   fakeout = ''
   fake_disks.each do |disk, prop|
-    fakeout << "    #{disk}: WD        WD3001FYYG-01SL3  VR07\n#{flag}         #{prop[:save]}  [cha: y, def:  #{prop[:default]}, sav:  #{prop[:save]}]\n"
+    fakeout << "    #{disk}: WD        WD3001FYYG-01SL3  VR07\n#{flag}         #{prop[:value]}  [cha: y, def:  #{prop[:default]}, sav:  #{prop[:save]}]\n"
   end
 
   # Mock sdparm --get call
