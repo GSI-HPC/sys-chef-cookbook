@@ -2,7 +2,11 @@
 #
 # DO NOT CHANGE THIS FILE MANUALLY!
 #
-# This file is managed by the Chef `sys` cookbook.
+# This file is managed by the Chef `sys::chef` cookbook.
 
 # Make sure the chef-client service keeps running
+<% if systemd_active? %>
 systemctl show --property=SubState chef-client | grep running >$- || systemctl restart chef-client
+<% else %>
+invoke-rc.d chef-client status &> /dev/null || invoke-rc.d chef-client restart 1> /dev/null
+<% end %>
