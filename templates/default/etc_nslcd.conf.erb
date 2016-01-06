@@ -1,39 +1,21 @@
 <%= node['warning'] %>
 
-# /etc/nslcd.conf
-# nslcd configuration file. See nslcd.conf(5)
-# for details.
-# The user and group nslcd should run as.
-
-uid nslcd
-gid nslcd
-
-# The location at which the LDAP server(s) should be reachable.
-<% @servers.each do |server| -%>
-URI ldap://<%= server %>
-<% end -%>
-
-# give up after 10 seconds
-timelimit 10
-# default for bind_timelimit
-bind_timelimit 10
-idle_timelimit 30
-
-<% if @nss_initgroups_ignoreusers -%>
-nss_initgroups_ignoreusers <%= @nss_initgroups_ignoreusers.join(', ') %>
-<% end %>
-
 <% if @nslcd %>
 <% @nslcd.each do |k,v| %>
 <%= "#{k} #{v}" %>
 <% end %>
 <% end %>
 
+<% @servers.each do |server| -%>
+URI ldap://<%= server %>
+<% end -%>
+
+<% if @nss_initgroups_ignoreusers -%>
+nss_initgroups_ignoreusers <%= @nss_initgroups_ignoreusers.join(', ') %>
+<% end %>
+
 # The search base that will be used for all queries.
 base <%= @searchbase -%>
-
-# The search scope.
-scope sub
 
 sasl_mech GSSAPI
 sasl_realm <%= @realm %>
