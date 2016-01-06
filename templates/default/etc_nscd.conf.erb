@@ -1,23 +1,9 @@
-	debug-level		0
-	paranoia		yes
-	restart-interval	3600
-
-	enable-cache		passwd		yes
-	positive-time-to-live	passwd		600
-	negative-time-to-live	passwd		20
-	suggested-size		passwd		16001
-	check-files		passwd		yes
-	persistent		passwd		no
-	shared			passwd		yes
-	max-db-size		passwd		33554432
-	auto-propagate		passwd		no
-
-	enable-cache		group		yes
-	positive-time-to-live	group		600
-	negative-time-to-live	group		10
-	suggested-size		group		503
-	check-files		group		yes
-	persistent		group		no
-	shared			group		yes
-	max-db-size		group		33554432
-	auto-propagate		group		no
+<% node.sys.nscd.each do |map, config| -%>
+<% config.each do |k,v| -%>
+<% if map.eql?("config") -%>
+<%= "#{k}	#{v}" %>
+<% else -%>
+<%= "#{k}	#{map}	#{v}" %>
+<% end -%>
+<% end -%>
+<% end -%>
