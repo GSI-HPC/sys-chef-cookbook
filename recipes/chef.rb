@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-15 -*-
+# -*- coding: utf-8 -*-
 #
 # Cookbook Name:: sys
 # Recipe:: chef
@@ -7,7 +7,7 @@
 #
 # $Id$
 #
-# Copyright 2011-2013 GSI Helmholtzzentrum für Schwerionenforschung GmbH <hpc@gsi.de>
+# Copyright 2011-2013 GSI Helmholtzzentrum fÃ¼r Schwerionenforschung GmbH <hpc@gsi.de>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
