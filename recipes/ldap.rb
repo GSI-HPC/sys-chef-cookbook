@@ -19,7 +19,6 @@
 
 if ! node['sys']['ldap'].empty? && File.exist?('/usr/bin/kinit')
   %w(
-    nscd
     nslcd
     libnss-ldapd
     ldap-utils
@@ -38,14 +37,6 @@ if ! node['sys']['ldap'].empty? && File.exist?('/usr/bin/kinit')
     group "root"
     mode "0644"
     notifies :restart, "service[nslcd]", :delayed
-  end
-
-  template "/etc/nscd.conf" do
-    source "etc_nscd.conf.erb"
-    user "root"
-    group "root"
-    mode "0644"
-    notifies :restart, "service[nscd]", :delayed
   end
 
   # Configuration for nslcd.  nlscd queries an ldap-server for user-information.
@@ -94,13 +85,5 @@ if ! node['sys']['ldap'].empty? && File.exist?('/usr/bin/kinit')
   service "nslcd" do
     supports :restart => true
     action [:start, :enable]
-    notifies :restart, "service[nscd]", :delayed
-  end
-
-  # nscd turned out to greatly improve performance
-  service "nscd" do
-    supports :restart => true
-    action [:start, :enable]
-    only_if 'test -e /etc/init.d/nscd'
   end
 end
