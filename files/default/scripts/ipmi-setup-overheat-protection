@@ -1,0 +1,118 @@
+#!/bin/sh
+#
+# configure IPMI overheat protection on all IPMI nodes
+#
+# Requires: freeipmi-tools
+#
+# $Id: setup-ipmi-overheat-protection 38403 2016-01-15 10:44:20Z christo $
+#
+
+# abort on error
+set -e
+
+usage() {
+    cat <<EOF >&2
+setup-ipmi-overheat-protection [-h HOSTNAME] [-u USERNAME] [-p PASSWORD] [-s SENSOR_NAME] [-w WARNING_THRESHOLD ] [-c CRITICAL_THRESHOLD] [-e FILTER_NUMBER]
+EOF
+}
+
+# some defaults:
+THRESH_WARN=55
+THRESH_CRIT=58
+USERNAME=ADMIN
+FILTER_NUM=16
+
+## processing of cmdline arguments
+while getopts "c:e:h:u:p:s:w:" OPTION; do
+    case $OPTION in
+        c)
+            THRESH_CRIT=$((OPTARG))
+            ;;
+        e)
+            FILTER_NUM=$((OPTARG))
+            ;;
+        u)
+            USERNAME="$OPTARG"
+            REMOTE="$REMOTE -u $USERNAME"
+            ;;
+        h)
+            REM_HOST="$OPTARG"
+            REMOTE="$REMOTE -h $REM_HOST"
+            ;;
+        p)
+            REMOTE="$REMOTE -p $OPTARG"
+            ;;
+        s)
+            SENSOR="$OPTARG"
+            ;;
+        w)
+            THRESH_WARN=$((OPTARG))
+            ;;
+        *)
+            echo "Unknown argument -$OPTION" >&2
+            usage
+            exit 1
+            ;;
+    esac
+done
+
+shift $(($OPTIND - 1))
+
+if [ "$REMOTE" ] && ! echo $REMOTE | grep -q " -p "; then
+    # fetch the user's password for all following upload operations - not very
+    # secure - but better than typing ten times the password!
+    echo -n "Enter IPMI password for user $USERNAME: "
+    stty -echo
+    read PASSWORD
+    stty echo
+    echo
+    REMOTE="$REMOTE -p $PASSWORD"
+fi
+
+if echo $REM_HOST | grep -q "[.*]" && [ -z "$SENSOR" ]; then
+    # dynamic detection does not work for HOSTRANGE operations
+    #  therefore we hardcode this default:
+    SENSOR=4_System_Temp
+else
+    # we take the first sensor that suits our naming schema:
+    SENSOR=`/usr/sbin/ipmi-sensors-config ${REMOTE} --listsections | egrep  "^[0-9]+_(Sys(tem)?|Ambient|Baseboard)_Temp\.?$" | head -1`
+fi
+
+if [ -z "$SENSOR" ]; then
+   echo "No suitable sensor for overheat protection found" >&2
+   exit 1
+fi
+
+# The number contained in ipmi-sensors-config's output is the "Sensor Record ID"
+#  this is not neccessarily the sensor number required for pef-config
+#  therefore we have to obtain the right number:
+SENSOR_NUM=`/usr/sbin/ipmi-sensors -vs ${SENSOR%%_*} | sed -ne "s/^Sensor Number: \([0-9]\+\)/\1/p"`
+
+# setup sane temperature thresholds
+#  somtimes these thresholds are volatile and have to be reset after power loss/reset of the BMC
+/usr/sbin/ipmi-sensors-config ${REMOTE} --commit -e ${SENSOR}:Upper_Non_Critical_Threshold=${THRESH_WARN}
+/usr/sbin/ipmi-sensors-config ${REMOTE} --commit -e ${SENSOR}:Upper_Critical_Threshold=${THRESH_CRIT}
+
+# we use rule #16 as the default , because event filters  #1 - #15 are
+#  "Manufacturer_Pre_Configured" on some BMCs and therefore read-only
+EVENT_FILTER="Event_Filter_${FILTER_NUM}"
+
+/usr/sbin/pef-config ${REMOTE} --commit -e ${EVENT_FILTER}:Sensor_Type=Temperature
+/usr/sbin/pef-config ${REMOTE} --commit -e ${EVENT_FILTER}:Event_Severity=Critical
+/usr/sbin/pef-config ${REMOTE} --commit -e ${EVENT_FILTER}:Event_Filter_Action_Power_Off=yes
+/usr/sbin/pef-config ${REMOTE} --commit -e ${EVENT_FILTER}:Enable_Filter=yes
+
+/usr/sbin/pef-config ${REMOTE} --commit -e ${EVENT_FILTER}:Generator_Id_Byte_1=0xFF
+/usr/sbin/pef-config ${REMOTE} --commit -e ${EVENT_FILTER}:Generator_Id_Byte_2=0xFF
+/usr/sbin/pef-config ${REMOTE} --commit -e ${EVENT_FILTER}:Sensor_Number=${SENSOR_NUM}
+/usr/sbin/pef-config ${REMOTE} --commit -e ${EVENT_FILTER}:Event_Trigger=0xFF
+/usr/sbin/pef-config ${REMOTE} --commit -e ${EVENT_FILTER}:Event_Data1_Offset_Mask=0xFFFF
+/usr/sbin/pef-config ${REMOTE} --commit -e ${EVENT_FILTER}:Event_Data1_Compare1=0xFF
+/usr/sbin/pef-config ${REMOTE} --commit -e ${EVENT_FILTER}:Event_Data2_Compare1=0xFF
+/usr/sbin/pef-config ${REMOTE} --commit -e ${EVENT_FILTER}:Event_Data3_Compare1=0xFF
+
+# clean up
+PASSWORD="_____oh_____yes_____this_____once_____was_____a_____password_____"
+REMOTE="_____oh_____yes_____this_____once_____was_____a_____password_____"
+unset PASSWORD
+unset REMOTE
