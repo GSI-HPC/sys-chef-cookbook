@@ -29,9 +29,9 @@ if node['sys']['ipmi']['overheat_protection']['enable']
 
     execute 'Setup IPMI Overheat Protection' do
       cmd = '/usr/local/sbin/ipmi-setup-overheat-protection'
-      cmd =+ " -w #{node['sys']['ipmi']['overheat_protection']['warn_threshold']}" if
+      cmd += " -w #{node['sys']['ipmi']['overheat_protection']['warn_threshold']}" if
         node['sys']['ipmi']['overheat_protection']['warn_threshold']
-      cmd =+ " -c #{node['sys']['ipmi']['overheat_protection']['crit_threshold']}" if
+      cmd += " -c #{node['sys']['ipmi']['overheat_protection']['crit_threshold']}" if
         node['sys']['ipmi']['overheat_protection']['crit_threshold']
       command cmd
       # only run if no such filter already exists:
