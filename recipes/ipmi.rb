@@ -20,7 +20,7 @@ if node['sys']['ipmi']['overheat_protection']['enable']
 
   # this data structure will be filled by IPMI ohai plugin
   #  (files/default/ohai_plugins/ipmi.rb)
-  if node['ipmi']['pef-config']
+  if node['ipmi'] and node['ipmi']['pef-config']
 
     cookbook_file '/usr/local/sbin/ipmi-setup-overheat-protection' do
       source 'scripts/ipmi-setup-overheat-protection'
