@@ -67,7 +67,7 @@ unless node['sys']['sshd']['config'].empty?
   end
 end
 
-unless node['sys']['ssh']['ssh_config'].empty?
+unless node['sys']['ssh']['ssh_config'].empty? # ~FC023
   template '/etc/ssh/ssh_config' do
     source 'etc_ssh_ssh_config.erb'
     mode '0644'
