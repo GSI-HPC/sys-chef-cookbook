@@ -12,7 +12,7 @@ group :development do
 end
 
 group :vagrant do
-  gem "vagrant", :git => "https://github.com/mitchellh/vagrant.git"
+  gem "vagrant", :git => "https://github.com/mitchellh/vagrant.git", :tag => 'v1.7.4'
 end
 
 group :plugins do
