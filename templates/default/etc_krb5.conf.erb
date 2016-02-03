@@ -9,6 +9,11 @@
 	verify_ap_req_nofail = true
 	# Use heimdal-kcm as Ticket cache
 	# default_cc_type = KCM
+	<% if @libdefaults -%>
+	<% @libdefaults.each do |k,v| -%>
+	<%= "#{k} = #{v}" %>
+	<% end -%>
+	<% end -%>
 [appdefaults]
 	<%= "pkinit_anchors = #{@pkinit_anchor}" if @pkinit_anchor %>
 	<% if @use_pkinit %>
