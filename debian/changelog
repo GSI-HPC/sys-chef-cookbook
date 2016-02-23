@@ -1,15 +1,5 @@
-chef-cookbook-sys (1.36.1-1) UNRELEASED; urgency=medium
-
-  [ Christopher Huhn, GSI ]
-  * Upgrade to newest version
-
-  [ Christopher Huhn ]
-  * Package 1.36.1
-
- -- Christopher Huhn <christo@arthur.knollhuhn.de>  Sun, 29 Oct 2017 12:28:48 +0100
-
 chef-cookbook-sys (1.7.3-1) unstable; urgency=low
 
-  * Initial release
+  * Initial release (Closes: #nnnn)  <nnnn is the bug number of your ITP>
 
- -- Christopher Huhn <C.Huhn@gsi.de>  Tue, 23 Feb 2016 17:51:49 +0100
+ -- Christopher Huhn <christo@vroomfondel>  Tue, 23 Feb 2016 17:51:49 +0100
