@@ -1,0 +1,15 @@
+Source: chef-cookbook-sys
+Section: unknown
+Priority: optional
+Maintainer: Christopher Huhn <christo@vroomfondel>
+Build-Depends: debhelper (>= 9)
+Standards-Version: 3.9.5
+Homepage: <insert the upstream URL, if relevant>
+#Vcs-Git: git://anonscm.debian.org/collab-maint/chef-cookbook-sys.git
+#Vcs-Browser: http://anonscm.debian.org/?p=collab-maint/chef-cookbook-sys.git;a=summary
+
+Package: chef-cookbook-sys
+Architecture: all
+Depends: ${misc:Depends}
+Description: <insert up to 60 chars description>
+ <insert long description, indented with spaces>
