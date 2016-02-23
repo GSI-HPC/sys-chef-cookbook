@@ -1,5 +1,5 @@
 chef-cookbook-sys (1.7.3-1) unstable; urgency=low
 
-  * Initial release (Closes: #nnnn)  <nnnn is the bug number of your ITP>
+  * Initial release
 
- -- Christopher Huhn <christo@vroomfondel>  Tue, 23 Feb 2016 17:51:49 +0100
+ -- Christopher Huhn <C.Huhn@gsi.de>  Tue, 23 Feb 2016 17:51:49 +0100

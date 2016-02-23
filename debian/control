@@ -11,7 +11,7 @@ Vcs-Browser: https://github.com/GSI-HPC/sys-chef-cookbook
 Package: chef-cookbook-sys
 Architecture: all
 Depends: ${misc:Depends}, chef
-Description: Chef cookbook sys
- The "sys" cookbook helps integrating a node into a computing site.
+Description: 'sys' cookbook for Chef configuration management system
+ The 'sys' cookbook helps integrating a node into a computing site.
  It configures various services but concentrates on the client side,
  eg. apt repositories, automount, NTP, IPMI BMCs, postfix, SNMP, aso.
