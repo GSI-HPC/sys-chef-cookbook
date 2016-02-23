@@ -1,15 +1,17 @@
 Source: chef-cookbook-sys
-Section: unknown
+Section: admin
 Priority: optional
-Maintainer: Christopher Huhn <christo@vroomfondel>
+Maintainer: Christopher Huhn <C.Huhn@gsi.de>
 Build-Depends: debhelper (>= 9)
-Standards-Version: 3.9.5
-Homepage: <insert the upstream URL, if relevant>
-#Vcs-Git: git://anonscm.debian.org/collab-maint/chef-cookbook-sys.git
-#Vcs-Browser: http://anonscm.debian.org/?p=collab-maint/chef-cookbook-sys.git;a=summary
+Standards-Version: 3.9.6
+Homepage: https://github.com/GSI-HPC/sys-chef-cookbook
+Vcs-Git: https://github.com/GSI-HPC/sys-chef-cookbook.git
+Vcs-Browser: https://github.com/GSI-HPC/sys-chef-cookbook 
 
 Package: chef-cookbook-sys
 Architecture: all
-Depends: ${misc:Depends}
-Description: <insert up to 60 chars description>
- <insert long description, indented with spaces>
+Depends: ${misc:Depends}, chef
+Description: Chef cookbook sys
+ The "sys" cookbook helps integrating a node into a computing site.
+ It configures various services but concentrates on the client side,
+ eg. apt repositories, automount, NTP, IPMI BMCs, postfix, SNMP, aso.
