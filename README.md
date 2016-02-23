@@ -1,6 +1,9 @@
 # Description
 
-The "sys" cookbook integrates a node into the site-infrastructure.
+The "sys" cookbook helps integrating a (Debian) node into a computing site.
+It configures various services in a single cookbook eg. apt repositories, automount, NTP, IPMI BMCs, postfix, SNMP, aso.
+*But* it concentrates on the client side and does not configure the respective central services.
+
 
 **Requirements**
 
@@ -9,8 +12,10 @@ The "sys" cookbook integrates a node into the site-infrastructure.
 
 **Platforms**
 
-* Debian (Wheezy)
-* No other platforms supported yet.
+The "sys" cookbook development is focussed on Debian GNU/Linux.
+Debian derivatives as Ubuntu probably work with minor tweaks but are untested.
+
+* Supported flavors: Debian _Wheezy_ and _Jessie_ and partially _Squeeze_
 
 # Motivation
 
