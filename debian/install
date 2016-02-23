@@ -7,3 +7,4 @@ recipes      /usr/share/chef/cookbooks/sys
 resources    /usr/share/chef/cookbooks/sys
 templates    /usr/share/chef/cookbooks/sys
 metadata.rb  /usr/share/chef/cookbooks/sys
+README.md    /usr/share/chef/cookbooks/sys
