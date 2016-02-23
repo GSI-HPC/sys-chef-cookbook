@@ -1,0 +1,9 @@
+attributes   /usr/share/chef/cookbooks/sys
+definitions  /usr/share/chef/cookbooks/sys
+files        /usr/share/chef/cookbooks/sys
+libraries    /usr/share/chef/cookbooks/sys
+providers    /usr/share/chef/cookbooks/sys
+recipes      /usr/share/chef/cookbooks/sys
+resources    /usr/share/chef/cookbooks/sys
+templates    /usr/share/chef/cookbooks/sys
+metadata.rb  /usr/share/chef/cookbooks/sys
