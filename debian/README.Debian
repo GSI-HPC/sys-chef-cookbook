@@ -1,0 +1,5 @@
+This package contains the Chef cookbook 'sys'.
+It is located beneath /usr/share/chef/cookbooks.
+To use it, all that directory to your cookbook_path.
+
+ -- Christopher Huhn <C.Huhn@gsi.de>  Tue, 23 Feb 2016 17:51:49 +0100
