@@ -35,6 +35,7 @@ readme_directory = no
 myhostname = <%= node.fqdn %>
 alias_maps = hash:/etc/aliases
 alias_database = hash:/etc/aliases
+virtual_alias_maps = <%= @virtual_alias_maps %>
 myorigin = /etc/mailname
 mydestination = <%= node.fqdn %>, localhost.<%= node.domain %>, localhost <%= @mydestination ? ", #{@mydestination}" : '' %>
 <%# TODO: no MX lookups as long as brackets are hard-coded here -%>

@@ -42,6 +42,15 @@ describe 'sys::mail' do
       expect(chef_run.execute(update_canonical)).to notify("service[#{postfix}]").to(:reload).delayed
     end
 
+    etc_postfix_virtual = '/etc/postfix/virtual'
+    update_virtual = 'Update Postfix virtual aliases'
+    it "manages #{etc_postfix_virtual}" do
+      expect(chef_run).to create_template(etc_postfix_virtual).with_mode('0600')
+      expect(chef_run.template(etc_postfix_virtual)).to notify("execute[#{update_virtual}]").to(:run).immediately
+      expect(chef_run.execute(update_virtual)).to do_nothing
+      expect(chef_run.execute(update_virtual)).to notify("service[#{postfix}]").to(:reload).delayed
+    end
+
     etc_postfix_main_cf = '/etc/postfix/main.cf'
     it "manages #{etc_postfix_main_cf}" do
       expect(chef_run).to create_template(etc_postfix_main_cf).with_mode('0644')
