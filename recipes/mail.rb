@@ -3,7 +3,7 @@
 # Recipe:: mail
 #
 # Copyright 2012, Victor Penso
-# Copyright 2014, Dennis Klein
+# Copyright 2014-16, Dennis Klein
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -44,6 +44,23 @@ unless relay.empty?
     notifies :run, "execute[#{update_canonical}]", :immediately
   end
 
+  update_virtual = 'Update Postfix virtual aliases'
+  etc_postfix_virtual = '/etc/postfix/virtual'
+  execute update_virtual do
+    action :nothing
+    command "postmap #{etc_postfix_virtual}"
+    notifies :reload, 'service[postfix]'
+  end
+
+  template etc_postfix_virtual do
+    source 'etc_postfix_virtual.erb'
+    mode '0600'
+    variables({
+      :map => node['sys']['mail']['virtual'] || {}
+    })
+    notifies :run, "execute[#{update_virtual}]", :immediately
+  end
+
   template '/etc/postfix/main.cf' do
     source 'etc_postfix_main.cf.erb'
     mode '0644'
@@ -54,7 +71,8 @@ unless relay.empty?
       :default_privs   => node['sys']['mail']['default_privs'],
       :mydestination   => node['sys']['mail']['mydestination'],
       :relay_domains   => node['sys']['mail']['relay_domains'],
-      :message_size_limit => node['sys']['mail']['message_size_limit']
+      :message_size_limit => node['sys']['mail']['message_size_limit'],
+      :virtual_alias_maps => "hash:#{etc_postfix_virtual}"
     })
     # after changes to main.cf postfix - sometimes - has to be restarted
     notifies :restart, 'service[postfix]'
@@ -75,4 +93,5 @@ unless relay.empty?
       notifies :run, "execute[#{update_aliases}]", :delayed
     end
   end
+
 end
