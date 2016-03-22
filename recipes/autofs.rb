@@ -111,7 +111,8 @@ if ! node['sys']['autofs']['ldap'].empty? && File.exist?('/usr/bin/kinit')
     variables({
       :uris => node['sys']['autofs']['ldap']['servers'],
       :searchbase => node['sys']['autofs']['ldap']['searchbase'],
-      :browsemode => browsemode
+      :browsemode => browsemode,
+      :logging    => node['sys']['autofs']['logging']
     })
     notifies :restart, 'service[autofs]', :delayed
   end
