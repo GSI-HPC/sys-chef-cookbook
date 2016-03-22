@@ -2,7 +2,7 @@ MASTER_MAP_NAME=/etc/auto.master
 TIMEOUT=300
 BROWSE_MODE="<%= @browsemode %>"
 LOGGING="<%= @logging || 'none' %>"
-LDAP_URI="<% @uris.map{|uri| "ldap://#{uri}/"}.join(' ')%>"
+LDAP_URI="<%= @uris.map{|uri| "ldap://#{uri}/"}.join(' ')%>"
 SEARCH_BASE="<%= @searchbase %>"
 MAP_OBJECT_CLASS="*"
 ENTRY_OBJECT_CLASS="automount"
