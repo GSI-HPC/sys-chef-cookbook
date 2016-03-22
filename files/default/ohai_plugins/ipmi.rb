@@ -6,32 +6,35 @@ Ohai.plugin(:Ipmi) do
   provides 'ipmi'
   depends 'kernel/modules'
 
+  stamp_file = '/tmp/ohai_ipmi_check'
+
   collect_data(:default) do
 
-   # Check if 'dmidecode' is available on the node:
-   unless cmd_avail("dmidecode")
-    Ohai::Log.debug("The dmidecode cmd is not available: no check for IPMI HW will be performed")
-    false
-   end
-
-   # 1. Verify if there's IPMI HW available.
-   # 2. Only if it's the case then we'll try to load IPMI modules.
-   if ipmi_hw_avail
-    unless kernel[:modules][:ipmi_si]
-      unless load_modules
-        Ohai::Log.debug("IPMI modules could not be loaded")
-      end
+    # Check if 'dmidecode' is available on the node:
+    unless cmd_avail("dmidecode")
+      Ohai::Log.debug("The dmidecode cmd is not available: " +
+                      "no check for IPMI HW will be performed")
+      false
     end
 
-     # Fill the IPMI mash with the output of the 'bmc-config' cmd:
-     ipmi Mash.new
-     ipmi['bmc-config'] = bmc_config
-     ipmi['pef-config'] = pef_config
-     ipmi['sensors-config'] = ipmi_config('ipmi-sensors').delete_if{ |k,v| v.empty? }
-   else
-     Ohai::Log.debug("No IPMI HW is available or the dmidecode cmd reported a non zero exit status")
-   end
-
+    # No IPMI modules loaded:
+    unless kernel[:modules][:ipmi_si]
+      # 1. Verify if there's IPMI HW available and we have not tried yet (stamp file)
+      if ipmi_hw_avail and not File.exist?(stamp_file)
+        # 2. Only if it's the case then we'll try to load IPMI modules.
+        unless load_modules
+          Ohai::Log.debug("IPMI modules could not be loaded")
+        end
+      end
+    else
+      # we have IPMI!: Fill the mash with the info from `bmc-config` etc:
+      ipmi Mash.new
+      ipmi['bmc-config'] = bmc_config
+      ipmi['pef-config'] = pef_config
+      ipmi['sensors-config'] = ipmi_config('ipmi-sensors').delete_if{ |k,v|
+        v.empty?
+      }
+    end
   end
 
   # Check if a command is available on the PATH:
@@ -40,9 +43,11 @@ Ohai.plugin(:Ipmi) do
   end
 
   # Attempt to verify if IPMI HW is available:
+  #  Attention: false positives do occur ...
   def ipmi_hw_avail
     ipmi_available = ""
-    result = shell_out('dmidecode -t 38') # '38' is the DMI type reported for IPMI HW on the dmidecode man page.
+    # 38: DMI type for IPMI HW (cf. man dmidecode):
+    result = shell_out('dmidecode -t 38')
     if result.exitstatus == 0
       result.stdout.lines do |line|
         case line
@@ -55,7 +60,7 @@ Ohai.plugin(:Ipmi) do
         true
       end
     else
-      false # No IPMI HW available or the exit status of 'dmidecode' reported something different from zero.
+      false # No IPMI HW detect or non-zero exit status pf dmidecode.
     end
   end
 
@@ -66,6 +71,7 @@ Ohai.plugin(:Ipmi) do
         return File.exist?('/dev/ipmi0')
       end
     end
+    FileUtils.touch(stamp_file)
     false
   end
 
