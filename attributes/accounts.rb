@@ -1,2 +1,2 @@
-default_unless['sys']['accounts'] = Hash.new
-default_unless['sys']['groups']   = Hash.new
+default_unless['sys']['accounts'] = {}
+default_unless['sys']['groups']   = {}
