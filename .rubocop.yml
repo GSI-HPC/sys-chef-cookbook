@@ -5,6 +5,10 @@ AllCops:
 Style/AlignHash:
   EnforcedHashRocketStyle: table
 
+# Don't force [] instead of Array.new etc.
+Style/EmptyLiteral:
+  Enabled: false
+
 Style/ExtraSpacing:
   ForceEqualSignAlignment: true
 
