@@ -11,6 +11,8 @@ Style/EmptyLiteral:
 
 Style/ExtraSpacing:
   ForceEqualSignAlignment: true
+  # EqualSignAlignment does not work as expected
+  Enabled: false
 
 # don't enforce {key: value, ...}
 Style/HashSyntax:
@@ -19,3 +21,7 @@ Style/HashSyntax:
 # Don't check for double quotes vs single quotes for now:
 Style/StringLiterals:
   Enabled: false
+
+# allow lines longer than 80 characters
+Metrics/LineLength:
+  Max: 120
