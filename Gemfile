@@ -1,4 +1,4 @@
-#source 'http://rubygems.org'
+source 'http://rubygems.org'
 
 group :development do
   gem 'rake'
