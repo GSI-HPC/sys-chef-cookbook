@@ -1,6 +1,6 @@
 name "sys_ssh_test"
 description "Use to test the sys::ssh recipe."
-run_list( 
+run_list(
   'recipe[sys::accounts]',
   'recipe[sys::ssh]'
 )
