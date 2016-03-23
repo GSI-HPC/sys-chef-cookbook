@@ -12,6 +12,10 @@ Style/EmptyLiteral:
 Style/ExtraSpacing:
   ForceEqualSignAlignment: true
 
+# don't enforce {key: value, ...}
+Style/HashSyntax:
+  Enabled: false
+
 # Don't check for double quotes vs single quotes for now:
 Style/StringLiterals:
   Enabled: false
