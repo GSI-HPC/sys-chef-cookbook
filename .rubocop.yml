@@ -1,0 +1,13 @@
+AllCops:
+  DisplayCopNames: true
+  DisplayStyleGuide: true
+
+Style/AlignHash:
+  EnforcedHashRocketStyle: table
+
+Style/ExtraSpacing:
+  ForceEqualSignAlignment: true
+
+# Don't check for double quotes vs single quotes for now:
+Style/StringLiterals:
+  Enabled: false
