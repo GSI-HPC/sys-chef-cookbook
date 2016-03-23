@@ -16,8 +16,8 @@
 
 define :sys_module do
   execute "Enable module #{params[:name]} in /etc/modules" do
-    command %Q[echo "#{params[:name]}" >> /etc/modules]
-    not_if %Q[grep "^#{params[:name]}$" /etc/modules]
+    command %(echo "#{params[:name]}" >> /etc/modules)
+    not_if %(grep "^#{params[:name]}$" /etc/modules)
   end
 
   module_name = params[:name].split(' ').first
