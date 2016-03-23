@@ -1,6 +1,6 @@
 name "sys_script_test"
 description "Use to test the [sys::script] recipe."
-run_list( "recipe[sys::script]" )
+run_list("recipe[sys::script]")
 default_attributes(
   sys: {
     script: {
