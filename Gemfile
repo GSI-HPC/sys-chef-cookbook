@@ -1,6 +1,7 @@
 #source 'http://rubygems.org'
 
 group :development do
+  gem 'rake'
 #  gem 'chefspec', '>= 4.2.0'
 #  gem 'guard-rspec', require: false
 #  gem 'libnotify'
