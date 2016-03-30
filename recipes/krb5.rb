@@ -33,9 +33,9 @@ unless node['sys']['krb5'].empty?
     group "root"
     mode "0644"
     variables(
-      :realm => node.default['sys']['krb5']['realm'].upcase,
-      :admin_server => node.default['sys']['krb5']['admin_server'],
-      :servers => [ node.default['sys']['krb5']['master'], node.default['sys']['krb5']['slave'] ],
+      :realm => node['sys']['krb5']['realm'].upcase,
+      :admin_server => node['sys']['krb5']['admin_server'],
+      :servers => [ node['sys']['krb5']['master'], node['sys']['krb5']['slave'] ],
       :domain => node['domain'],
       :wallet_server => begin node['sys']['krb5']['wallet_server'] rescue nil end,
       :use_pkinit => begin node['sys']['krb5']['use_pkinit'] rescue nil end,
