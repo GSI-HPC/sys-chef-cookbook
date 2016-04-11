@@ -4,6 +4,7 @@ AllCops:
 
 Style/AlignHash:
   EnforcedHashRocketStyle: table
+  Enabled: false
 
 # Don't force [] instead of Array.new etc.
 Style/EmptyLiteral:
