@@ -41,8 +41,8 @@ describe 'sys::krb5' do
           :servers => [ 'master.example.com', 'slave.example.com'],
           :domain => "example.com",
           :wallet_server => nil,
-          :libdefaults => nil,
-          :use_pkinit => nil
+          :use_pkinit => nil,
+          :libdefaults => nil
         }
       )
       expect(chef_run).to render_file("/etc/krb5.conf").with_content(

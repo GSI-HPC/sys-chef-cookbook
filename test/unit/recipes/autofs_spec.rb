@@ -43,6 +43,11 @@ describe 'sys::autofs' do
   end
 
   context 'with ldap attributes' do
+    before do
+      allow(File).to receive(:exist?).and_call_original
+      allow(File).to receive(:exist?).with('/usr/bin/kinit').and_return(true)
+    end
+
     cached(:chef_run) do
       ChefSpec::SoloRunner.new do |node|
         node.automatic['fqdn'] = 'node.example.com'
@@ -59,11 +64,6 @@ describe 'sys::autofs' do
       end.converge(described_recipe)
     end
 
-    before do
-      allow(File).to receive(:exist?).and_call_original
-      allow(File).to receive(:exist?).with('/usr/bin/kinit').and_return(true)
-    end
-
     it 'installs autofs-ldap' do
       expect(chef_run).to install_package('autofs-ldap')
     end
@@ -71,10 +71,18 @@ describe 'sys::autofs' do
     it 'manages /etc/auto.master' do
       expect(chef_run).to create_template('/etc/auto.master').with_mode("0644").with(
         :variables => {
-          :maps => { "/mount/point" => { "map" => "ldap:ou=autofs.mount,dc=example,dc=com" }}
+          :maps => {}
+        })
+    end
+
+    it 'manages /etc/auto.master.d' do
+      expect(chef_run).to create_template('/etc/auto.master.d/mount_point.autofs').with_mode("0644").with(
+        :variables => {
+          :path => "/mount/point",
+          :map => { 'map' => "ldap:ou=autofs.mount,dc=example,dc=com" }
         })
 
-      expect(chef_run).to render_file('/etc/auto.master').with_content(
+      expect(chef_run).to render_file('/etc/auto.master.d/mount_point.autofs').with_content(
         "/mount/point ldap:ou=autofs.mount,dc=example,dc=com"
       )
     end

@@ -1,5 +1,7 @@
 describe 'sys::ldap' do
-  let(:chef_run) { ChefSpec::SoloRunner.new.converge(described_recipe) }
+  let(:chef_run) do
+    ChefSpec::SoloRunner.new.converge(described_recipe)
+  end
 
   context 'node.sys.ldap is empty' do
     it 'does nothing' do
@@ -116,5 +118,6 @@ describe 'sys::ldap' do
       expect(chef_run).to start_service('nslcd')
       expect(chef_run).to enable_service('nslcd')
     end
+
   end
 end
