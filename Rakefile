@@ -4,6 +4,10 @@ RuboCop::RakeTask.new do |task|
 end
 
 require 'foodcritic'
-FoodCritic::Rake::LintTask.new
+FoodCritic::Rake::LintTask.new do |task|
+  task.options = {
+    :exclude_paths => ['example_config/**/*']
+  }
+end
 
 task default: [:rubocop, :foodcritic]
