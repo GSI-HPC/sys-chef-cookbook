@@ -13,7 +13,7 @@ describe 'sys::krb5' do
   context 'with basic attributes' do
     cached(:chef_run) do
       ChefSpec::SoloRunner.new do |node|
-        node.default.sys.krb5.realm = "example.com"
+        node.default['sys']['krb5']['realm'] = "example.com"
         node.default['sys']['krb5']['admin_server'] = "master.example.com"
         node.default['sys']['krb5']['master'] = "master.example.com"
         node.default['sys']['krb5']['slave'] = "slave.example.com"
