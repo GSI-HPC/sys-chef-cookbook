@@ -31,7 +31,7 @@ Ohai.plugin(:Ipmi) do
       ipmi Mash.new
       ipmi['bmc-config'] = bmc_config
       ipmi['pef-config'] = pef_config
-      ipmi['sensors-config'] = ipmi_config('ipmi-sensors').delete_if{ |k,v|
+      ipmi['sensors-config'] = ipmi_config('ipmi-sensors').delete_if{ |_k,v|
         v.empty?
       }
     end
@@ -98,7 +98,7 @@ Ohai.plugin(:Ipmi) do
 
   def bmc_config()
     # skip disabled users:
-    ipmi_config.delete_if{|k,v| v['Enable_User'] == 'No'}
+    ipmi_config.delete_if{|_k,v| v['Enable_User'] == 'No'}
   end
 
   def pef_config()
@@ -113,7 +113,7 @@ Ohai.plugin(:Ipmi) do
 
     # TODO: aad alert destinations and strings that aren't mentioned in any
     #       event filter definition
-    return h.select{ |k,v|
+    return h.select{ |k,_v|
       k == 'PEF_Conf' or k == 'Community_String'
     }.merge(event_filters)
   end
