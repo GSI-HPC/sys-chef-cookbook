@@ -4,7 +4,7 @@ group :development do
   gem 'rake'
   gem 'rubocop'
   gem 'foodcritic'
-  # gem 'chefspec', '>= 4.2.0'
+  gem 'chefspec'
   # gem 'guard-rspec', require: false
   # gem 'libnotify'
   # gem "kitchen-vagrant",
