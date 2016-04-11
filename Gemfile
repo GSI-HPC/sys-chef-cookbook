@@ -4,13 +4,13 @@ group :development do
   gem 'rake'
   gem 'rubocop'
   gem 'foodcritic'
+  gem "berkshelf"
   gem 'chefspec'
   # gem 'guard-rspec', require: false
   # gem 'libnotify'
   # gem "kitchen-vagrant",
   #    :git => "https://github.com/test-kitchen/kitchen-vagrant.git"
   # gem "serverspec"
-  # gem "berkshelf"
 end
 
 # group :vagrant do
