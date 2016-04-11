@@ -11,6 +11,8 @@ FoodCritic::Rake::LintTask.new do |task|
 end
 
 require 'rspec/core/rake_task'
-RSpec::Core::RakeTask.new(:chefspec)
+RSpec::Core::RakeTask.new(:chefspec) do |task|
+  task.pattern = 'test/unit/**/*'
+end
 
 task default: [:rubocop, :foodcritic, :chefspec]
