@@ -17,6 +17,8 @@
 # limitations under the License.
 #
 
+use_inline_resources
+
 action :add do
   # Deploy the APT key if true
   deploy_flag = true
