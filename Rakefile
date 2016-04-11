@@ -10,4 +10,7 @@ FoodCritic::Rake::LintTask.new do |task|
   }
 end
 
-task default: [:rubocop, :foodcritic]
+require 'rspec/core/rake_task'
+RSpec::Core::RakeTask.new(:chefspec)
+
+task default: [:rubocop, :foodcritic, :chefspec]
