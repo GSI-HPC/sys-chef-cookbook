@@ -14,6 +14,8 @@
 # limitations under the License.
 #
 
+use_inline_resources
+
 base_path = '/etc/apt/sources.list.d'
 
 action :add do
