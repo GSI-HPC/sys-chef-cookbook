@@ -13,7 +13,7 @@ describe 'sys::krb5' do
   context 'with basic attributes' do
 
     before do
-      chef_run.node.default.sys.krb5.realm = "example.com"
+      chef_run.node.default['sys']['krb5']['realm'] = "example.com"
       chef_run.node.default['sys']['krb5']['admin_server'] = "master.example.com"
       chef_run.node.default['sys']['krb5']['master'] = "master.example.com"
       chef_run.node.default['sys']['krb5']['slave'] = "slave.example.com"
