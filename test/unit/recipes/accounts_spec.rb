@@ -1,6 +1,6 @@
 describe 'sys::accounts' do
   let(:chef_run) do
-    ChefSpec::ServerRunner.new(log_level: :fatal) do |node, server|
+    ChefSpec::ServerRunner.new() do |node, server|
       @g1 = { 'gid' => 1337 }
       @g2 = {}
       node.default['sys']['groups']['g1'] = @g1
