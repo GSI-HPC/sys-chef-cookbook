@@ -49,7 +49,7 @@ describe 'sys::autofs' do
       }
       chef_run.node.default['sys']['autofs']['ldap'] = {:omg => :lol}
       chef_run.node.default['sys']['krb5']['realm'] = 'EXAMPLE.COM'
-      chef_run.node.default['sys']['autofs']['ldap']['searchbase'] = 'dc=example,dc=com'
+      chef_run.node.default['sys']['autofs']['ldap']['searchbase'] ='dc=example,dc=com'
       chef_run.node.automatic['fqdn'] = 'node.example.com'
       chef_run.converge(described_recipe)
     end
@@ -62,10 +62,18 @@ describe 'sys::autofs' do
     it 'manages /etc/auto.master' do
       expect(chef_run).to create_template('/etc/auto.master').with_mode("0644").with(
         :variables => {
-          :maps => { "/mount/point" => { "map" => "ldap:ou=autofs.mount,dc=example,dc=com" }}
+          :maps => {}
+        })
+    end
+
+    it 'manages /etc/auto.master.d' do
+      expect(chef_run).to create_template('/etc/auto.master.d/mount_point.autofs').with_mode("0644").with(
+        :variables => {
+          :path => "/mount/point",
+          :map => { 'map' => "ldap:ou=autofs.mount,dc=example,dc=com" }
         })
 
-      expect(chef_run).to render_file('/etc/auto.master').with_content(
+      expect(chef_run).to render_file('/etc/auto.master.d/mount_point.autofs').with_content(
         "/mount/point ldap:ou=autofs.mount,dc=example,dc=com"
       )
     end
@@ -88,7 +96,8 @@ describe 'sys::autofs' do
         :variables => {
           :uris => [ 'ldap01.example.com', 'ldap02.example.com' ],
           :searchbase => 'dc=example,dc=com',
-          :browsemode => 'no'
+          :browsemode => 'no',
+          :logging => nil
         }
       )
 

@@ -1,5 +1,7 @@
 describe 'sys::ldap' do
-  let(:chef_run) { ChefSpec::SoloRunner.new.converge(described_recipe) }
+  let(:chef_run) do
+    ChefSpec::SoloRunner.new.converge(described_recipe)
+  end
 
   context 'node.sys.ldap is empty' do
     it 'does nothing' do
@@ -35,7 +37,6 @@ describe 'sys::ldap' do
     end
 
     it 'installs packages' do
-      expect(chef_run).to install_package('nscd')
       expect(chef_run).to install_package('nslcd')
       expect(chef_run).to install_package('libnss-ldapd')
       expect(chef_run).to install_package('ldap-utils')
@@ -60,7 +61,8 @@ describe 'sys::ldap' do
           :servers => chef_run.node.sys.ldap.servers,
           :searchbase => chef_run.node.sys.ldap.searchbase,
           :realm => chef_run.node.sys.ldap.realm.upcase,
-          :nss_initgroups_ignoreusers => chef_run.node.sys.ldap.nss_initgroups_ignoreusers
+          :nss_initgroups_ignoreusers => chef_run.node.sys.ldap.nss_initgroups_ignoreusers,
+          :nslcd => nil
         }
       )
       expect(chef_run).to render_file('/etc/nslcd.conf').with_content(uris)
@@ -93,7 +95,7 @@ describe 'sys::ldap' do
     end
 
     it 'deploys a keytab for nslcd' do
-      expect(chef_run).to run_sys_wallet('nslcd/node.exmample.com')
+      expect(chef_run).to deploy_sys_wallet('nslcd/node.example.com')
     end
 
     it 'sends notifications' do
@@ -105,9 +107,6 @@ describe 'sys::ldap' do
 
       etc_init_d_nslcd = chef_run.cookbook_file('/etc/init.d/nslcd')
       expect(etc_init_d_nslcd).to notify('execute[update-run-levels]').to(:run).immediately
-
-      nslcd = chef_run.service('nslcd')
-      expect(nslcd).to notify('service[nscd]').to(:restart).delayed
     end
 
     it 'starts and enables nslcd' do
@@ -115,9 +114,5 @@ describe 'sys::ldap' do
       expect(chef_run).to enable_service('nslcd')
     end
 
-    it 'starts and enables nscd' do
-      expect(chef_run).to start_service('nscd')
-      expect(chef_run).to enable_service('nscd')
-    end
   end
 end
