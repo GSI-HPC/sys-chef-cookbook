@@ -28,6 +28,7 @@ describe 'sys::krb5' do
       expect(chef_run).to install_package('heimdal-docs')
       expect(chef_run).to install_package('libsasl2-modules-gssapi-heimdal')
       expect(chef_run).to install_package('kstart')
+      expect(chef_run).to install_package('wallet-client')
     end
 
     it 'manages /etc/krb5.conf' do
@@ -39,7 +40,8 @@ describe 'sys::krb5' do
           :servers => [ 'master.example.com', 'slave.example.com'],
           :domain => "example.com",
           :wallet_server => nil,
-          :use_pkinit => nil
+          :use_pkinit => nil,
+          :libdefaults => nil
         }
       )
       expect(chef_run).to render_file("/etc/krb5.conf").with_content(
@@ -73,7 +75,8 @@ describe 'sys::krb5' do
           :servers => [ 'master.example.com', 'slave.example.com'],
           :domain => "example.com",
           :wallet_server => "wallet.example.com",
-          :use_pkinit => true
+          :use_pkinit => true,
+          :libdefaults => nil
         }
       )
       expect(chef_run).to render_file("/etc/krb5.conf").with_content("\tuse_pkinit = true")
