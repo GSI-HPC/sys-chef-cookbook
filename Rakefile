@@ -4,6 +4,10 @@ begin
     task.options = ['--lint']
   end
 rescue LoadError
+  desc 'rubocop rake task not available'
+  task :rubocop do
+    abort 'Rubocop rake task is not available. Be sure to install rubocop'
+  end
 end
 
 begin
@@ -14,6 +18,10 @@ begin
     }
   end
 rescue LoadError
+  desc 'foodcritic rake task not available'
+  task :foodcritic do
+    abort 'Foodcritic rake task is not available. Be sure to install foodcritic'
+  end
 end
 
 begin
@@ -22,6 +30,10 @@ begin
     task.pattern = 'test/unit/**/*.rb'
   end
 rescue LoadError
+  desc 'chefspec rake task not available'
+  task :chefspec do
+    abort 'Chefspec rake task is not available. Be sure to install chefspec'
+  end
 end
 
 task default: [:rubocop, :foodcritic, :chefspec]
