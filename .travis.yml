@@ -1,87 +1,11 @@
----
-language: ruby
-cache: bundler
-
 sudo: required
-dist: xenial
 
-services: docker
+services:
+  - docker
 
-# bundler in the travis image is too old:
-before_install:
-  - gem install bundler
+script:
+  - wget -O- http://travis.debian.net/script.sh | sh -
 
-bundler_args: --without vagrant
-
-before_script:
-  # integration test for sys::autofs will start automounter
-  #  this will fail inside docker container because autofs4 cannot be loaded
-  #  pre-loading autofs4 on the host fixes this issue
-  - sudo modprobe autofs4
-  - bundle exec kitchen list
-
-env:
-  global:
-    - KITCHEN_LOCAL_YAML=.kitchen.docker.yml
-  matrix:
-    - CHEF_VERSION=12.3
-    - CHEF_VERSION=12.14
-    - CHEF_VERSION=13
-    - CHEF_VERSION=14
-
-rvm:
-# - system # does not work with `gem install bundler`
-  - 2.3
-  - 2.4
-# - 2.1
-#     before_install:
-#        - gem install bundler -v ‘< 2’
-
-# cf. https://travis-ci.com/chuhn/chef-install-test/
-matrix:
-  exclude:
-    - rvm: 1.9
-      env: CHEF_VERSION=12
-    - rvm: 2.1
-      env: CHEF_VERSION=13
-    - rvm: 2.1
-      env: CHEF_VERSION=14
-    - rvm: 2.3
-      env: CHEF_VERSION=14
-
-stages:
-  - rubocop
-  - foodcritic
-  - test
-  - kitchen
-
-# this is the script for the test stage, where the matrix is expanded
-script: bundle exec rake chefspec
-
-jobs:
-  fast_finish: true
-  include:
-    - stage: rubocop
-      script: bundle exec rake rubocop
-    - stage: foodcritic
-      script: bundle exec rake foodcritic
-    - stage: kitchen
-      env: KITCHEN_PLATFORM=debian-stretch
-      script: bundle exec kitchen test $KITCHEN_PLATFORM
-    - env: KITCHEN_PLATFORM=debian-jessie
-      script: bundle exec kitchen test $KITCHEN_PLATFORM
-    - env: KITCHEN_PLATFORM=debian-buster
-      script: bundle exec kitchen test $KITCHEN_PLATFORM
-    - env: KITCHEN_PLATFORM=debian-wheezy
-      script: bundle exec kitchen test $KITCHEN_PLATFORM
-    - env: KITCHEN_PLATFORM=ubuntu-18.04
-      script: bundle exec kitchen test $KITCHEN_PLATFORM
-    - env: KITCHEN_PLATFORM=centos-7
-      script: bundle exec kitchen test $KITCHEN_PLATFORM
-  allow_failures:
-    - rvm: 2.4
-    - rvm: 1.9
-    - env: CHEF_VERSION=14
-    - env: CHEF_VERSION=13
-    - env: KITCHEN_PLATFORM=centos-7
-    - stage: test
+branches:
+  except:
+    - /^debian\/\d/
