@@ -28,6 +28,7 @@ begin
   require 'rspec/core/rake_task'
   RSpec::Core::RakeTask.new(:chefspec) do |task|
     task.pattern = 'test/unit/**/*_spec.rb'
+    task.full_backtrace = true
     task.rspec_opts = '--color --format documentation --require spec_helper -I libraries --default-path test/unit'
   end
 rescue LoadError
