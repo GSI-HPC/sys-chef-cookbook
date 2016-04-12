@@ -16,6 +16,8 @@ describe 'sys::mail' do
       @example_alias_value = 'foo@bar.mail'
       @expected_alias_value = '"foo@bar.mail"'
       chef_run.node.default[:sys][:mail][:aliases][@example_alias_name.to_sym] = @example_alias_value
+      allow(::File).to receive(:exist?).and_call_original
+      allow(::File).to receive(:exist?).with('/etc/aliases').and_return(false)
       chef_run.converge(described_recipe)
     end
 
@@ -59,11 +61,14 @@ describe 'sys::mail' do
 
     etc_aliases = '/etc/aliases'
     update_aliases = 'Update Postfix aliases'
+    action_add = 'SysMailAlias action :add : insert alias'
     it "manages #{etc_aliases}" do
       expect(chef_run).to add_sys_mail_alias(@example_alias_name).with_to(@expected_alias_value).with_aliases_file(etc_aliases)
       expect(chef_run.find_resource(:sys_mail_alias, @example_alias_name)).to notify("execute[#{update_aliases}]").to(:run).delayed
       expect(chef_run).to run_execute(update_aliases)
       expect(chef_run.execute(update_aliases)).to notify("service[#{postfix}]").to(:reload).delayed
+      expect(chef_run).to create_file(etc_aliases)
+      expect(chef_run).to run_ruby_block(action_add)
     end
   end
 end
