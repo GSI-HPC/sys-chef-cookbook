@@ -1,0 +1,27 @@
+{
+  "sys": {
+    "apt": {
+      "conf": {
+        "10periodic": {
+          "APT::Periodic::Update-Package-Lists": 1,
+          "APT::Periodic::Download-Upgradeable-Packages": 1,
+          "APT::Periodic::AutocleanInterval": 1
+        }
+      },
+      "multiarch": true,
+      "packages": [
+        "unattended-upgrades"
+      ],
+      "preferences": {
+        "jessie-backports": {
+          "pin": "release a=jessie-backports",
+          "priority": 200
+        }
+      },
+      "repositories": {
+        "jessie-backports": "deb http://httpredir.debian.org/debian jessie-backports main contrib non-free"
+      },
+      "sources": "\ndeb http://httpredir.debian.org/debian/ jessie         main contrib non-free\ndeb http://security.debian.org/         jessie/updates main contrib non-free\ndeb http://httpredir.debian.org/debian/ jessie-updates main contrib non-free"
+    }
+  }
+}
