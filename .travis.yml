@@ -11,3 +11,6 @@ script:
 branches:
   except:
     - /^debian\/\d/
+
+env:
+  - TRAVIS_DEBIAN_DISTRIBUTION=unstable
