@@ -4,4 +4,6 @@ maintainer_email 'hpc@gsi.de'
 license          'Apache 2.0'
 description      'System Software configuration and maintenance'
 long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
-version          '1.14.4'
+version          '1.14.2'
+source_url       'https://github.com/GSI-HPC/sys-chef-cookbook'
+issues_url       'https://github.com/GSI-HPC/sys-chef-cookbook/issues'
