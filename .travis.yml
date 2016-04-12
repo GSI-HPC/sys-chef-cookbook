@@ -1,5 +1,3 @@
-language: bash
-
 sudo: required
 
 services:
@@ -11,6 +9,3 @@ script:
 branches:
   except:
     - /^debian\/\d/
-
-env:
-  - TRAVIS_DEBIAN_DISTRIBUTION=sid
