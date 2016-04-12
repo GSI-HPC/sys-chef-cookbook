@@ -12,9 +12,6 @@ describe 'sys::systemd' do
     allow(Mixlib::ShellOut).to receive(:new).with('dpkg -s systemd-sysv').and_return(
       double(run_command: nil, exitstatus: 0)
     )
-    allow(Mixlib::ShellOut).to receive(:new).with('systemctl').and_return(
-      double(run_command: nil, exitstatus: 0)
-    )
   end
 
   context 'node.sys.systemd is empty' do
