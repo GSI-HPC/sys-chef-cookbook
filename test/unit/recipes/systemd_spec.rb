@@ -57,6 +57,8 @@ describe 'sys::systemd' do
       expect(chef_run).to enable_sys_systemd_unit('test')
       expect(chef_run).to start_sys_systemd_unit('test')
       expect(chef_run).to reload_sys_systemd_unit('test')
+      expect(chef_run).to run_execute('systemctl enable test.mount')
+      expect(chef_run).to run_execute('systemctl start test.mount')
     end
   end
 end
