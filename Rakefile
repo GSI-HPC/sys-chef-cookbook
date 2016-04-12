@@ -27,11 +27,8 @@ end
 begin
   require 'rspec/core/rake_task'
   RSpec::Core::RakeTask.new(:chefspec) do |task|
-    puts `pwd`
-    puts ENV['TRAVIS_BUILD_DIR']
-    puts ENV['CI_HOME']
     task.pattern = 'test/unit/**/*_spec.rb'
-    task.rspec_opts = '-r test/unit/spec_helper.rb'
+    task.rspec_opts = "-r #{Dir.pwd}/test/unit/spec_helper.rb"
   end
 rescue LoadError
   desc 'chefspec rake task not available'
