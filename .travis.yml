@@ -1,3 +1,11 @@
-language: ruby
+sudo: required
 
-bundler_args: --without plugins
+services:
+  - docker
+
+script:
+  - wget -O- http://travis.debian.net/script.sh | sh -
+
+branches:
+  except:
+    - /^debian\/\d/
