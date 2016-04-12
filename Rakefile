@@ -28,6 +28,7 @@ begin
   require 'rspec/core/rake_task'
   RSpec::Core::RakeTask.new(:chefspec) do |task|
     task.pattern = 'test/unit/**/*_spec.rb'
+    task.rspec_opts = '-r test/unit/spec_helper.rb'
   end
 rescue LoadError
   desc 'chefspec rake task not available'
