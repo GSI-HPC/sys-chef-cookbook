@@ -6,6 +6,7 @@ group :development do
   gem 'foodcritic'
   gem "berkshelf"
   gem 'chefspec'
+  gem 'test-kitchen'
   # gem 'guard-rspec', require: false
   # gem 'libnotify'
   # gem "kitchen-vagrant",

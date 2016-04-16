@@ -37,4 +37,18 @@ rescue LoadError
   end
 end
 
-task default: [:rubocop, :foodcritic, :chefspec]
+begin
+  require 'kitchen/rake_tasks'
+  Kitchen::RakeTasks.new
+
+  desc "Alias for kitchen:all"
+  task :kitchen => "kitchen:all"
+
+rescue LoadError
+  desc 'kitchen rake task not available'
+  task :kitchen do
+    abort 'kitchen rake task is not available. Be sure to install test-kitchen'
+  end
+end
+
+task default: [:rubocop, :foodcritic, :kitchen]
