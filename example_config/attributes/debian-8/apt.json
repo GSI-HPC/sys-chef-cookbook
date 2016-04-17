@@ -1,12 +1,27 @@
 {
   "sys": {
     "apt": {
-      "conf": {
+      "config": {
         "10periodic": {
           "APT::Periodic::Update-Package-Lists": 1,
           "APT::Periodic::Download-Upgradeable-Packages": 1,
-          "APT::Periodic::AutocleanInterval": 1
-        }
+	  "APT::Periodic::Unattended-Upgrade": 1,
+          "APT::Periodic::AutocleanInterval": 1,
+	  "APT::Periodic::Verbose": 1
+        },
+	"50unattended-upgrades": {
+	  "Unattended-Upgrade::Automatic-Reboot": 0,
+	  "Unattended-Upgrade::Remove-Unused-Dependencies": 1,
+	  "Unattended-Upgrade::Mail": "root@localhost",
+	  "Unattended-Upgrade::MailOnlyOnError": 1,
+	  "Unattended-Upgrade::MinimalSteps": 0,
+	  "Unattended-Upgrade::Origins-Pattern": [
+	    "o=Debian,codename=jessie",
+	    "origin=Debian,codename=jessie,label=Debian-Security",
+	    "o=Debian,codename=jessie-updates"
+	  ],
+	  "Dpkg::Options::": "--force-confold"
+	}
       },
       "multiarch": true,
       "packages": [
