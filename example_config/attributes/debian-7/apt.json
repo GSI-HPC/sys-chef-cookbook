@@ -1,12 +1,26 @@
 {
   "sys": {
     "apt": {
-      "conf": {
+      "config": {
         "10periodic": {
           "APT::Periodic::Update-Package-Lists": 1,
           "APT::Periodic::Download-Upgradeable-Packages": 1,
-          "APT::Periodic::AutocleanInterval": 1
-        }
+          "APT::Periodic::AutocleanInterval": 1,
+	  "APT::Periodic::Verbose": 1
+        },
+	"50unattended-upgrades": {
+	  "Unattended-Upgrade::Automatic-Reboot": 0,
+	  "Unattended-Upgrade::Remove-Unused-Dependencies": 1,
+	  "Unattended-Upgrade::Mail": "root@localhost",
+	  "Unattended-Upgrade::MailOnlyOnError": 1,
+	  "Unattended-Upgrade::MinimalSteps": 0,
+	  "Unattended-Upgrade::Origins-Pattern": [
+	    "o=Debian,codename=wheezy",
+	    "origin=Debian,codename=wheezy,label=Debian-Security",
+	    "o=Debian,codename=wheezy-updates",
+	  ],
+	  "Dpkg::Options::": "--force-confold"
+	}
       },
       "multiarch": true,
       "packages": [
