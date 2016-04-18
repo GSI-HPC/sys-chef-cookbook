@@ -1,3 +1,6 @@
 language: ruby
 
 bundler_args: --without plugins
+
+env:
+  - KITCHEN_LOCAL_YAML=.kitchen.docker.yml
