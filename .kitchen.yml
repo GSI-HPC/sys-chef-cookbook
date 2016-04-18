@@ -1,41 +1,9 @@
 ---
 driver:
-  name: vagrant
-  customize:
-    cpus: 1
-    memory: 1024
+  name: docker
+  privileged: true
 
-provisioner:
-  name: chef_solo
-
-platforms:
-  - name: squeeze64
-    driver:
-      box: debian-squeeze-amd64
-      box_url: http://boot.hpc.gsi.de/vagrant/squeeze64.json
-  - name: squeeze32
-    driver:
-      box: debian-squeeze-i386
-      box_url: http://boot.hpc.gsi.de/vagrant/squeeze32.json
-  - name: wheezy64
-    driver:
-      box: debian-wheezy-amd64
-      box_url: http://boot.hpc.gsi.de/vagrant/wheezy64.json
-  - name: wheezy32
-    driver:
-      box: debian-wheezy-i386
-      box_url: http://boot.hpc.gsi.de/vagrant/wheezy32.json
-  - name: jessie64
-    driver:
-      box: debian-jessie-amd64
-      box_url: http://boot.hpc.gsi.de/vagrant/jessie64.json
-  - name: jessie32
-    driver:
-      box: debian-jessie-i386
-      box_url: http://boot.hpc.gsi.de/vagrant/jessie32.json
-
-suites:
-  - name: accounts
-    run_list:
-      - recipe[sys::accounts]
-    attributes:
+# platforms:
+# - name: ubuntu-14.04
+#   run_list: recipe[apt]
+# - name: centos-6.6
