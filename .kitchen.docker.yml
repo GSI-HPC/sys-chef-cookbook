@@ -1,9 +1,0 @@
----
-driver:
-  name: docker
-  privileged: true
-
-# platforms:
-# - name: ubuntu-14.04
-#   run_list: recipe[apt]
-# - name: centos-6.6
