@@ -3,7 +3,7 @@
 # Cookbook Name:: sys
 # Recipe:: cups
 #
-# Copyright 2013 GSI Helmholtzzentrum für Schwerionenforschung GmbH <hpc@gsi.de>
+# Copyright 2013 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH <hpc@gsi.de>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
