@@ -39,11 +39,9 @@ end
 
 begin
   require 'kitchen/rake_tasks'
-  Kitchen::RakeTasks.new
-
-  desc "Alias for kitchen:all"
-  task :kitchen => "kitchen:all"
-
+  Kitchen::RakeTasks.new do
+    Kitchen.logger = Kitchen.default_logger
+  end
 rescue LoadError
   desc 'kitchen rake task not available'
   task :kitchen do
@@ -51,4 +49,4 @@ rescue LoadError
   end
 end
 
-task default: [:rubocop, :foodcritic, :kitchen]
+task default: [:rubocop, :foodcritic, 'kitchen:all']
