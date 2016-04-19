@@ -7,6 +7,7 @@ group :development do
   gem "berkshelf"
   gem 'chefspec'
   gem 'test-kitchen'
+  gem 'kitchen-docker'
   # gem 'guard-rspec', require: false
   # gem 'libnotify'
   # gem "kitchen-vagrant",
