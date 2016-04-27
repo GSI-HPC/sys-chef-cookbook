@@ -15,17 +15,16 @@ if node['sys']['ipmi']['install_packages']
 end
 
 # configure IPMI overheat protection:
+cookbook_file '/usr/local/sbin/ipmi-setup-overheat-protection' do
+  source 'scripts/ipmi-setup-overheat-protection'
+  mode '0755'
+end
 
 if node['sys']['ipmi']['overheat_protection']['enable']
 
   # this data structure will be filled by IPMI ohai plugin
   #  (files/default/ohai_plugins/ipmi.rb)
   if node['ipmi'] and node['ipmi']['pef-config']
-
-    cookbook_file '/usr/local/sbin/ipmi-setup-overheat-protection' do
-      source 'scripts/ipmi-setup-overheat-protection'
-      mode '0755'
-    end
 
     execute 'Setup IPMI Overheat Protection' do
       cmd = '/usr/local/sbin/ipmi-setup-overheat-protection'
