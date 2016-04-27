@@ -69,17 +69,19 @@ if [ "$REMOTE" ] && ! echo $REMOTE | grep -q " -p "; then
     REMOTE="$REMOTE -p $PASSWORD"
 fi
 
-if echo $REM_HOST | grep -q "[.*]" && [ -z "$SENSOR" ]; then
-    # dynamic detection does not work for HOSTRANGE operations
-    #  therefore we hardcode this default:
-    SENSOR=4_System_Temp
-else
-    # we take the first sensor that suits our naming schema:
-    SENSOR=`/usr/sbin/ipmi-sensors-config ${REMOTE} --listsections | egrep  "^[0-9]+_(Sys(tem)?|Ambient|Baseboard)_Temp\.?$" | head -1`
+if [ -z "$SENSOR" ]; then
+    if echo $REM_HOST | grep -q "[.*]"; then
+	# dynamic detection does not work for HOSTRANGE operations
+	#  therefore we hardcode this default:
+	SENSOR=4_System_Temp
+    else
+	# we take the first sensor that suits our naming schema:
+	SENSOR=`/usr/sbin/ipmi-sensors-config ${REMOTE} --listsections | egrep  "^[0-9]+_(Sys(tem)?|Ambient|Baseboard)_Temp\.?$" | head -1`
+    fi
 fi
 
 if [ -z "$SENSOR" ]; then
-   echo "No suitable sensor for overheat protection found" >&2
+   echo "No suitable sensor for overheat protection found, try specifing one with -s" >&2
    exit 1
 fi
 
