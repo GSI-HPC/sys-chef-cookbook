@@ -49,4 +49,18 @@ rescue LoadError
   end
 end
 
-task default: [:rubocop, :foodcritic, 'kitchen:all']
+begin
+  require 'yard'
+  YARD::Config.load_plugin 'chef'
+  YARD::Rake::YardocTask.new do |t|
+    t.files = ['**/*.rb']
+    t.options = ['--debug']
+  end
+rescue LoadError
+  desc 'yard rake task not available'
+  task :yard do
+    abort 'yard rake task is not available. Be sure to install yard and yard-chef'
+  end
+end
+
+task default: [:rubocop, :foodcritic, :chefspec]
