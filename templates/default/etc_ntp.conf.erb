@@ -36,6 +36,7 @@ restrict -6 default kod notrap nomodify nopeer noquery
 
 # Local users may interrogate the ntp server more closely.
 restrict 127.0.0.1
+restrict ::1
 
 # Clients from this (example!) subnet have unlimited access, but only if
 # cryptographically authenticated.
