@@ -14,6 +14,8 @@
 # limitations under the License.
 #
 
+use_inline_resources
+
 base_path = '/etc/apt/sources.list.d'
 
 action :add do
@@ -25,6 +27,7 @@ action :add do
   execute update do
     command 'apt-get -qq update'
     action :nothing
+    ignore_failure true
   end
 
   template path do
@@ -51,6 +54,7 @@ action :remove do
   execute update do
     command 'apt-get -qq update'
     action :nothing
+    ignore_failure true
   end
 
   file path do
