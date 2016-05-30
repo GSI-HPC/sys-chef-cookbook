@@ -28,5 +28,27 @@ describe 'sys::multipath' do
       expect(resource).to notify('service[multipath-tools]').to(:reload)
       expect(chef_run).to render_file('/etc/multipath.conf').with_content(/defaults {\n     user_friendly_names yes\n}\n/)
     end
+
+    it 'does not regenerate initramdisk by default' do
+      execute = chef_run.execute('regenerate-initramdisk')
+      expect(execute).to do_nothing
+      resource = chef_run.template('/etc/multipath.conf')
+      expect(resource).not_to notify('execute[regenerate-initramdisk]').to(:run)
+    end
+  end
+
+  context 'with root fs relevant config' do
+    before do
+      chef_run.node.default['sys']['multipath']['defaults']['user_friendly_names'] = 'yes'
+      chef_run.node.default['sys']['multipath']['regenerate_initramdisk'] = true
+      chef_run.converge(described_recipe)
+    end
+
+    it 'does regenerate initramdisk' do
+      execute = chef_run.execute('regenerate-initramdisk')
+      expect(execute).to do_nothing
+      resource = chef_run.template('/etc/multipath.conf')
+      expect(resource).to notify('execute[regenerate-initramdisk]').to(:run)
+    end
   end
 end
