@@ -27,6 +27,7 @@ action :add do
   execute update do
     command 'apt-get -qq update'
     action :nothing
+    ignore_failure true
   end
 
   template path do
@@ -53,6 +54,7 @@ action :remove do
   execute update do
     command 'apt-get -qq update'
     action :nothing
+    ignore_failure true
   end
 
   file path do

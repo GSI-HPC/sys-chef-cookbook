@@ -17,8 +17,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+config = node['sys']['multipath'].to_hash.tap{ |hs| hs.delete('regenerate_initramdisk') }
 
-unless node['sys']['multipath'].empty?
+unless config.empty?
   package 'multipath-tools'
 
   service 'multipath-tools' do
@@ -27,12 +28,21 @@ unless node['sys']['multipath'].empty?
     action [:enable, :start]
   end
 
+  execute 'regenerate-initramdisk' do
+    command '/etc/kernel/postinst.d/initramfs-tools `uname -r`'
+    action :nothing
+    only_if node['sys']['multipath']['regenerate-initramdisk']
+  end
+
   template '/etc/multipath.conf' do
     source 'etc_multipath.conf.erb'
     mode '0664'
     variables({
-      :config => node['sys']['multipath']
+      :config => config
     })
     notifies :reload, 'service[multipath-tools]'
+    if node['sys']['multipath']['regenerate_initramdisk']
+      notifies :run, 'execute[regenerate-initramdisk]'
+    end
   end
 end
