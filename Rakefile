@@ -63,4 +63,4 @@ rescue LoadError
   end
 end
 
-task default: [:rubocop, :foodcritic, 'kitchen:all']
+task default: [:rubocop, :foodcritic, :chefspec, 'kitchen:all']
