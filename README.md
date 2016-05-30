@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/GSI-HPC/sys-chef-cookbook.svg?branch=travis)](https://travis-ci.org/GSI-HPC/sys-chef-cookbook) [![Code Climate](https://codeclimate.com/github/GSI-HPC/sys-chef-cookbook/badges/gpa.svg)](https://codeclimate.com/github/GSI-HPC/sys-chef-cookbook)
+
 # Description
 
 The "sys" cookbook helps integrating a (Debian) node into a computing site.

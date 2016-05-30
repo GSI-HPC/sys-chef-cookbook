@@ -10,4 +10,4 @@ rvm:
 bundler_args: --without plugins
 
 env:
-  - KITCHEN_YAML=.kitchen.docker.yml
+  - KITCHEN_LOCAL_YAML=.kitchen.docker.yml
