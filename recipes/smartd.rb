@@ -13,7 +13,7 @@ if enable
   package 'smartmontools'
 
   service 'smartmontools' do
-    action :enable, :start
+    action [ :enable, :start ]
   end
 
   template '/etc/default/smartmontools' do
