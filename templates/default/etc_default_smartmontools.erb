@@ -6,7 +6,7 @@
 #enable_smart="/dev/hda /dev/hdb"
 
 # uncomment to start smartd on system startup
-#start_smartd=yes
+start_smartd=<%= @enable?'yes':'no' %>
 
 # uncomment to pass additional options to smartd on startup
 #smartd_opts="--interval=1800"
