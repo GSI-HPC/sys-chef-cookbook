@@ -26,12 +26,13 @@ if node['sys']['ipmi']['overheat_protection']['enable']
   #  (files/default/ohai_plugins/ipmi.rb)
   if node['ipmi'] and node['ipmi']['pef-config']
 
+    cmd = '/usr/local/sbin/ipmi-setup-overheat-protection'
+    cmd += " -w #{node['sys']['ipmi']['overheat_protection']['warn_threshold']}" if
+      node['sys']['ipmi']['overheat_protection']['warn_threshold']
+    cmd += " -c #{node['sys']['ipmi']['overheat_protection']['crit_threshold']}" if
+      node['sys']['ipmi']['overheat_protection']['crit_threshold']
+
     execute 'Setup IPMI Overheat Protection' do
-      cmd = '/usr/local/sbin/ipmi-setup-overheat-protection'
-      cmd += " -w #{node['sys']['ipmi']['overheat_protection']['warn_threshold']}" if
-        node['sys']['ipmi']['overheat_protection']['warn_threshold']
-      cmd += " -c #{node['sys']['ipmi']['overheat_protection']['crit_threshold']}" if
-        node['sys']['ipmi']['overheat_protection']['crit_threshold']
       command cmd
       # only run if no such filter already exists:
       only_if {
@@ -42,6 +43,8 @@ if node['sys']['ipmi']['overheat_protection']['enable']
             v['Sensor_Type'] == 'Temperature'
         }.empty?
       }
+      # don't abort, might converge only later:
+      ignore_failure true
     end
   end
 
