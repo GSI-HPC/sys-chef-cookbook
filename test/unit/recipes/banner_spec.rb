@@ -1,5 +1,5 @@
 describe 'sys::banner' do
-  let(:chef_run) { ChefSpec::SoloRunner.new.converge(described_recipe) }
+  cached(:chef_run) { ChefSpec::SoloRunner.new.converge(described_recipe) }
 
   context 'node.sys.banner.message is empty' do
     it 'does nothing' do
@@ -8,10 +8,11 @@ describe 'sys::banner' do
   end
 
   context 'with some test attributes' do
-    before do
-      chef_run.node.default['sys']['banner']['message'] = 'example banner message'
-      chef_run.node.default['sys']['banner']['info'] = true
-      chef_run.converge(described_recipe)
+    cached(:chef_run) do
+      ChefSpec::SoloRunner.new do |node|
+        node.default['sys']['banner']['message'] = 'example banner message'
+        node.default['sys']['banner']['info'] = true
+      end.converge(described_recipe)
     end
 
     it 'manages /etc/motd' do
@@ -25,11 +26,12 @@ describe 'sys::banner' do
   end
 
   context 'with Array as banner message' do
-    before do
-      message = ['line1', 'line2']
-      chef_run.node.default['sys']['banner']['message'] = message
-      chef_run.converge(described_recipe)
-      @expected_message = message.join("\n")
+    cached(:chef_run) do
+      ChefSpec::SoloRunner.new do |node|
+        message = ['line1', 'line2']
+        node.default['sys']['banner']['message'] = message
+        @expected_message = message.join("\n")
+      end.converge(described_recipe)
     end
 
     it 'prints all Strings in the Array on a seperate line' do
@@ -42,10 +44,11 @@ describe 'sys::banner' do
   end
 
   context 'with service_properties' do
-    before do
-      chef_run.node.default['sys']['banner']['message'] = 'asdf'
-      chef_run.node.default['sys']['banner']['service_properties'] = [ 'prop1', 'prop2' ]
-      chef_run.converge(described_recipe)
+    cached(:chef_run) do
+      ChefSpec::SoloRunner.new do |node|
+        node.default['sys']['banner']['message'] = 'asdf'
+        node.default['sys']['banner']['service_properties'] = [ 'prop1', 'prop2' ]
+      end.converge(described_recipe)
     end
 
     it 'renders a list of service_properties' do
