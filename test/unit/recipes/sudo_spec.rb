@@ -1,5 +1,5 @@
 describe 'sys::sudo' do
-  let(:chef_run) { ChefSpec::SoloRunner.new.converge(described_recipe) }
+  cached(:chef_run) { ChefSpec::SoloRunner.new.converge(described_recipe) }
 
   context 'node.sys.sudo is empty' do
     it 'does nothing' do
@@ -8,14 +8,15 @@ describe 'sys::sudo' do
   end
 
   context 'with some test attributes' do
-    before do
-      chef_run.node.default['sys']['sudo']['test'] = {
-        :users => {
-          'TEST' => [ 'regular', 'with-minus' ]
-        },
-        :rules => [ 'TEST ALL = ALL' ]
-      }
-      chef_run.converge(described_recipe)
+    cached(:chef_run) do
+      ChefSpec::SoloRunner.new do |node|
+        node.default['sys']['sudo']['test'] = {
+          :users => {
+            'TEST' => [ 'regular', 'with-minus' ]
+          },
+          :rules => [ 'TEST ALL = ALL' ]
+        }
+      end.converge(described_recipe)
     end
 
     it 'installs package sudo' do
