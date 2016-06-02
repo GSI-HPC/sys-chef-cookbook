@@ -6,17 +6,18 @@ group :development do
   gem 'libnotify'
   gem 'foodcritic'
   gem 'rubocop', require: false
-  gem "kitchen-vagrant", :git => "https://github.com/test-kitchen/kitchen-vagrant.git"
-  gem "serverspec"
-  gem "berkshelf"
+  gem 'kitchen-vagrant', :git => 'https://github.com/test-kitchen/kitchen-vagrant.git'
+  gem 'serverspec'
+  gem 'berkshelf'
 end
 
 group :vagrant do
-  gem "vagrant", :git => "https://github.com/mitchellh/vagrant.git", :tag => 'v1.7.4'
+  gem 'vagrant', :git => 'https://github.com/mitchellh/vagrant.git', :tag => 'v1.8.1'
+  gem 'bundler', :git => 'https://github.com/bundler/bundler', :tag => 'v1.10.6'
 end
 
 group :plugins do
-  gem "vagrant-libvirt", :git => "https://github.com/pradels/vagrant-libvirt.git"
-  gem "vagrant-berkshelf"
+  gem 'vagrant-libvirt', :git => 'https://github.com/pradels/vagrant-libvirt.git'
+  gem 'vagrant-berkshelf'
 end
 
