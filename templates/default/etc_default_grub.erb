@@ -1,0 +1,15 @@
+# /etc/default/grub
+#
+# DO NOT CHANGE THIS FILE MANUALLY!
+#
+# This file is managed by the Chef `sys::boot` cookbook.
+
+GRUB_DEFAULT="<%= @grubdefault %>"
+GRUB_TIMEOUT=5
+GRUB_DISTRIBUTOR=`lsb_release -i -s 2> /dev/null || echo Debian`
+GRUB_CMDLINE_LINUX_DEFAULT="quiet"
+GRUB_CMDLINE_LINUX="<%= @params %>"
+
+<%# This is a hook to add configurations not supported by the cookbook yet %>
+<% unless @config.empty? %><%= @config %><% end %>
+
