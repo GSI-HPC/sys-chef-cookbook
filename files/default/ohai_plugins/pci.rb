@@ -21,10 +21,13 @@ Ohai.plugin(:Pci) do
     pci2 Mash.new
     # use the more verbose lspci output:
     # devices are split by double newlines
-    `lspci -vmm`.split("\n\n").each do |d|
+    #  -vmm: output format
+    #    -k: add kernel driver
+    #   -nn: add numeric PCI ids
+    `lspci -vmm -k -nn`.split("\n\n").each do |d|
       # each device is a list of "key1:\tvalue1\nkey2:..."
       # we scan this into [ [ 'key1', 'value1' ], [ ... ] ]
-      a = d.scan(/^(.*?):\t(.*?)\n/)
+      a = d.scan(/^(.*?):\t(.*?)$/)
       # make the keys lowercase and turn result into a hash
       h = a.map { |k, v| [k.downcase, v] }.to_h
       # remove the 'slot' and use it as the key for the pci2 hash
