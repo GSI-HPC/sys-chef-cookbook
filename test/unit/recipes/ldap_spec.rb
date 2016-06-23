@@ -3,7 +3,8 @@ describe 'sys::ldap' do
     ChefSpec::SoloRunner.new.converge(described_recipe)
   end
 
-  context 'node.sys.ldap is empty' dox 'does nothing' do
+  context 'node.sys.ldap is empty' do
+    it 'does nothing' do
       expect(chef_run.run_context.resource_collection).to be_empty
     end
   end
