@@ -3,13 +3,14 @@ describe 'sys::ldap' do
     ChefSpec::SoloRunner.new.converge(described_recipe)
   end
 
-  context 'node.sys.ldap is empty' do
-    it 'does nothing' do
+  context 'node.sys.ldap is empty' dox 'does nothing' do
       expect(chef_run.run_context.resource_collection).to be_empty
     end
   end
 
   context 'with some test attributes' do
+    let(:chef_run) { ChefSpec::SoloRunner.new }
+
     before do
       stub_command("test -e /etc/init.d/nscd").and_return(true)
       ldap01 = 'ldap01.example.com'
@@ -61,8 +62,8 @@ describe 'sys::ldap' do
           :servers => chef_run.node.sys.ldap.servers,
           :searchbase => chef_run.node.sys.ldap.searchbase,
           :realm => chef_run.node.sys.ldap.realm.upcase,
-          :nss_initgroups_ignoreusers => chef_run.node.sys.ldap.nss_initgroups_ignoreusers,
-          :nslcd => nil
+          :nslcd => nil,
+          :nss_initgroups_ignoreusers => chef_run.node.sys.ldap.nss_initgroups_ignoreusers
         }
       )
       expect(chef_run).to render_file('/etc/nslcd.conf').with_content(uris)
@@ -113,6 +114,5 @@ describe 'sys::ldap' do
       expect(chef_run).to start_service('nslcd')
       expect(chef_run).to enable_service('nslcd')
     end
-
   end
 end

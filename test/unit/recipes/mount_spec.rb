@@ -11,14 +11,23 @@ describe 'sys::mount' do
     before do
       chef_run.node.default['sys']['mount']['/opt'] = {
         :device => '/dev/sdb1', :fstype => 'ext4', :action => [ :enable, :mount ]
-      } 
+      }
       chef_run.node.default['sys']['mount']['/network'] = {
-        :device => 'lxfs01.devops.test:/export', 
-        :fstype => 'nfs', 
+        :device => 'lxfs01.devops.test:/export',
+        :fstype => 'nfs',
         :options => ['ro','nosuid'],
         :action => [ :enable, :mount ]
-      } 
+      }
       chef_run.converge(described_recipe)
+    end
+
+    it 'creates mountpoints' do
+      expect(chef_run).to create_directory('/opt')
+      expect(chef_run).to create_directory('/network')
+    end
+
+    it 'install packages' do
+      expect(chef_run).to install_package('nfs-common')
     end
 
     it 'mounts /opt and enables it in /etc/fstab' do
