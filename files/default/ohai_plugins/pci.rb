@@ -4,6 +4,7 @@
 
 Ohai.plugin(:Pci) do
   provides 'pci'
+  provides 'pci2'
 
   collect_data(:default) do
     pci []
