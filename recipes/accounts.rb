@@ -120,6 +120,7 @@ require 'pp'
           shell    account['shell']
           system   account['system'] # ~FC048 No command is issued here
           supports supports_hash
+          ignore_failure true
         end
       elsif account['supports']['manage_home']
         # don't create the account but only its homedir:
