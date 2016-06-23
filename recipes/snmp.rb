@@ -23,6 +23,12 @@ if node['sys']['snmp']
 
   package 'snmpd'
 
+  template '/etc/default/snmpd' do
+    source 'etc_default_snmpd.erb'
+    mode 0644
+    notifies :restart, "service[snmpd]"
+  end
+
   template '/etc/snmp/snmpd.conf' do
     mode 0600
     source 'etc_snmp_snmpd.conf.erb'

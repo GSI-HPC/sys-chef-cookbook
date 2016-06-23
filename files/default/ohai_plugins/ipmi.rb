@@ -18,7 +18,7 @@ Ohai.plugin(:Ipmi) do
     end
 
     # No IPMI modules loaded:
-    unless kernel[:modules][:ipmi_si]
+    unless kernel[:modules][:ipmi_si] && kernel[:modules][:ipmi_devintf]
       # 1. Verify if there's IPMI HW available and we have not tried yet (stamp file)
       if ipmi_hw_avail and not File.exist?(stamp_file)
         # 2. Only if it's the case then we'll try to load IPMI modules.
@@ -71,6 +71,7 @@ Ohai.plugin(:Ipmi) do
         return File.exist?('/dev/ipmi0')
       end
     end
+    # indicate that we tried to load the modules:
     FileUtils.touch(stamp_file)
     false
   end

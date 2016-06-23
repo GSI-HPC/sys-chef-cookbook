@@ -53,7 +53,7 @@ describe 'sys::accounts' do
   end
 
   context 'node.sys.accounts is empty' do
-    let(:chef_run) { ChefSpec::SoloRunner.new.converge(described_recipe) }
+    cached(:chef_run) { ChefSpec::SoloRunner.new.converge(described_recipe) }
 
     it 'does nothing' do
       expect(chef_run.run_context.resource_collection).to be_empty
@@ -74,7 +74,7 @@ describe 'sys::accounts' do
     it 'manages users' do
       expect(chef_run).to create_user('u1')
       u1 = chef_run.find_resource(:user, 'u1')
-      expect(u1.uid).to eq @u1['uid']
+      expect(u1.uid).to @u1['uid']
       expect(u1.gid).to eq @u1['gid']
       expect(u1.home).to eq @u1['home']
       expect(u1.shell).to eq @u1['shell']

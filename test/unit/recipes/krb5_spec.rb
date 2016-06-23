@@ -2,7 +2,7 @@ require 'chefspec'
 
 describe 'sys::krb5' do
 
-  let(:chef_run) { ChefSpec::SoloRunner.new.converge(described_recipe) }
+  cached(:chef_run) { ChefSpec::SoloRunner.new.converge(described_recipe) }
 
   context 'node.sys.krb5 is empty' do
     it 'does nothing' do
@@ -11,14 +11,15 @@ describe 'sys::krb5' do
   end
 
   context 'with basic attributes' do
-
-    before do
-      chef_run.node.default['sys']['krb5']['realm'] = "example.com"
-      chef_run.node.default['sys']['krb5']['admin_server'] = "master.example.com"
-      chef_run.node.default['sys']['krb5']['master'] = "master.example.com"
-      chef_run.node.default['sys']['krb5']['slave'] = "slave.example.com"
-      chef_run.node.automatic['domain'] = 'example.com'
-      chef_run.converge(described_recipe)
+    cached(:chef_run) do
+      ChefSpec::SoloRunner.new do |node|
+        node.default.sys.krb5.realm = "example.com"
+        node.default['sys']['krb5']['admin_server'] = "master.example.com"
+        node.default['sys']['krb5']['master'] = "master.example.com"
+        node.default['sys']['krb5']['slave'] = "slave.example.com"
+        node.automatic['domain'] = 'example.com'
+        node.automatic['fqdn'] = 'node.example.com'
+      end.converge(described_recipe)
     end
 
     it 'installs packages' do
@@ -40,8 +41,8 @@ describe 'sys::krb5' do
           :servers => [ 'master.example.com', 'slave.example.com'],
           :domain => "example.com",
           :wallet_server => nil,
-          :use_pkinit => nil,
-          :libdefaults => nil
+          :libdefaults => nil,
+          :use_pkinit => nil
         }
       )
       expect(chef_run).to render_file("/etc/krb5.conf").with_content(
@@ -54,16 +55,20 @@ describe 'sys::krb5' do
   end
 
   context 'with wallet and pkinit attributes' do
+    cached(:chef_run) do
+      ChefSpec::SoloRunner.new do |node|
+        node.default.sys.krb5.realm = "example.com"
+        node.default['sys']['krb5']['admin_server'] = "master.example.com"
+        node.default['sys']['krb5']['master'] = "master.example.com"
+        node.default['sys']['krb5']['slave'] = "slave.example.com"
+        node.default['sys']['krb5']['use_pkinit'] = true
+        node.default['sys']['krb5']['wallet_server'] = "wallet.example.com"
+        node.automatic['domain'] = 'example.com'
+        node.automatic['fqdn'] = 'node.example.com'
+      end.converge(described_recipe)
+    end
 
     before do
-      chef_run.node.default.sys.krb5.realm = "example.com"
-      chef_run.node.default['sys']['krb5']['admin_server'] = "master.example.com"
-      chef_run.node.default['sys']['krb5']['master'] = "master.example.com"
-      chef_run.node.default['sys']['krb5']['slave'] = "slave.example.com"
-      chef_run.node.default['sys']['krb5']['use_pkinit'] = true
-      chef_run.node.default['sys']['krb5']['wallet_server'] = "wallet.example.com"
-      chef_run.node.automatic['domain'] = 'example.com'
-      chef_run.converge(described_recipe)
       stub_command('File.exists?("/etc/krb5.keytab"').and_return(true)
     end
 
@@ -75,26 +80,26 @@ describe 'sys::krb5' do
           :servers => [ 'master.example.com', 'slave.example.com'],
           :domain => "example.com",
           :wallet_server => "wallet.example.com",
-          :use_pkinit => true,
-          :libdefaults => nil
+          :libdefaults => nil,
+          :use_pkinit => true
         }
       )
       expect(chef_run).to render_file("/etc/krb5.conf").with_content("\tuse_pkinit = true")
       expect(chef_run).to render_file('/etc/krb5.conf').with_content("\t\twallet_server = wallet.example.com")
-
     end
   end
 
   context 'sys_wallet' do
-    let(:chef_run) { ChefSpec::SoloRunner.new(step_into: ['sys_wallet'])}
-
-    before do
-      chef_run.node.default['sys']['krb5']['dummy'] = true
-      chef_run.node.automatic['fqdn'] = 'node.example.com'
-      chef_run.converge(described_recipe)
+    cached(:chef_run) do
+      ChefSpec::SoloRunner.new do |node|
+        node.default['sys']['krb5']['realm'] = 'dummy'
+        node.automatic['fqdn'] = 'node.example.com'
+      end.converge(described_recipe)
     end
 
     it 'deploys keytab' do
+      chef_run.node.automatic['fqdn'] = 'node.example.com'
+      chef_run.converge(described_recipe)
       expect(chef_run).to deploy_sys_wallet('host/node.example.com')
     end
   end
