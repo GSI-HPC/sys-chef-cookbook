@@ -1,6 +1,12 @@
-# DO NOT CHANGE THIS FILE MANUALLY! 
-# 
+# DO NOT CHANGE THIS FILE MANUALLY!
+#
 # This file is managed by the Chef `sys` cookbook.
+#
 
 [global]
-store-plaintext-passwords = <%= @allow_plaintext_passwords?'yes':'no' %>
+store-plaintext-passwords = <%= @store_plaintext_passwords?'yes':'no' %>
+<%- unless @proxy.empty? -%>
+http-proxy-host       = <%= @proxy[:host] %>
+http-proxy-port       = <%= @proxy[:port] %>
+http-proxy-exceptions = <%= @proxy[:exceptions] %>
+<%- end -%>
