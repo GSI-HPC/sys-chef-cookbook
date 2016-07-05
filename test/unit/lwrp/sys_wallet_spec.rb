@@ -7,10 +7,12 @@ describe 'lwrp: sys_wallet' do
   end
 
   let(:runner) do
-    ChefSpec::ServerRunner.new(
+    ChefSpec::SoloRunner.new(
       :cookbook_path => cookbook_paths,
-      :step_into => ['sys_wallet']
-    )
+      :step_into => ['sys_wallet'],
+    ) do |n|
+      n.default['sys']['krb5']['realm'] = 'example.com'
+    end
   end
 
   describe 'action :deploy' do
