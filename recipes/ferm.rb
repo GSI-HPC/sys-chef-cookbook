@@ -5,7 +5,7 @@
 # Copyright 2014, HPC Team
 #
 
-class Chef::Recipe::SysFermSanityCheckError < Exception
+class Chef::Recipe::SysFermSanityCheckError < RuntimeError
 end
 
 unless node['sys']['ferm']['rules'].empty?
