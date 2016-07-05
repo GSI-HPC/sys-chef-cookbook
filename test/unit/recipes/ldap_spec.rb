@@ -11,6 +11,9 @@ describe 'sys::ldap' do
     let(:chef_run) { ChefSpec::SoloRunner.new }
 
     before do
+      # stub existance of kinit
+      allow(File).to receive(:exist?).and_call_original
+      allow(File).to receive(:exist?).with('/usr/bin/kinit').and_return(true)
       stub_command("test -e /etc/init.d/nscd").and_return(true)
       ldap01 = 'ldap01.example.com'
       ldap02 = 'ldap02.example.com'
