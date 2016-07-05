@@ -5,7 +5,7 @@
 #
 # Minimal subversion config
 #
-# Copyright 2014 GSI Helmholtzzentrum für Schwerionenforschung GmbH <hpc@gsi.de>
+# Copyright 2014-2016 GSI Helmholtzzentrum für Schwerionenforschung GmbH <hpc@gsi.de>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -22,10 +22,38 @@
 # All rights reserved - Do Not Redistribute
 #
 
-package 'subversion'
+if node['sys']['svn']
+  package 'subversion'
 
-# don't store passwords in plain text:
-#  (unless requested by setting the template var 'allow_plaintext_passwords')
-template '/etc/subversion/servers' do
-  source 'etc_subversion_servers.erb'
+  # we need this ugly attribute checking to avoid NoMethodError:
+  #  undefined method `[]' for nil:NilClass
+
+  proxy = { }
+
+  if node['sys']['svn']['proxy']
+    proxy = {
+      # use subversion specific proxy settings
+      host: node['sys']['svn']['proxy']['host'],
+      port: node['sys']['svn']['proxy']['port'],
+      # apparently incompatible with $NO_PROXY:
+      exceptions:  node['sys']['svn']['proxy']['exceptions']
+    }
+  end
+
+  if node['sys']['http_proxy']
+    # fall back to the generic http_proxy attributes
+    proxy[:host] ||= node['sys']['http_proxy']['host']
+    proxy[:port] ||= node['sys']['http_proxy']['port']
+  end
+
+  template '/etc/subversion/servers' do
+    source 'etc_subversion_servers.erb'
+    variables(
+      # don't store passwords in plain text:
+      #  (unless requested by setting 'store_plaintext_passwords')
+      store_plaintext_passwords:
+        node['sys']['svn']['store_plaintext_passwords'],
+      proxy: proxy
+    )
+  end
 end
