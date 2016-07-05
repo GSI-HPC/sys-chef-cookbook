@@ -74,7 +74,7 @@ describe 'sys::accounts' do
     it 'manages users' do
       expect(chef_run).to create_user('u1')
       u1 = chef_run.find_resource(:user, 'u1')
-      expect(u1.uid).to @u1['uid']
+      expect(u1.uid).to @u1['uid'].to_s
       expect(u1.gid).to eq @u1['gid']
       expect(u1.home).to eq @u1['home']
       expect(u1.shell).to eq @u1['shell']
