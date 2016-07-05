@@ -8,7 +8,7 @@ describe 'lwrp: sys_mail_alias' do
   end
 
   let(:runner) do
-    ChefSpec::ServerRunner.new(
+    ChefSpec::SoloRunner.new(
       :cookbook_path => cookbook_paths,
       :step_into => ['sys_mail_alias']
     )
@@ -88,6 +88,10 @@ end
 def etc_aliases_exists
   allow(::File).to receive(:exist?).and_call_original
   allow(::File).to receive(:exist?).with('/etc/aliases') { true }
+  # for travis we have to stub readlines too:
+  #  exist? is immediatly followed by readlines
+  allow(::File).to receive(:readlines).and_call_original
+  allow(::File).to receive(:readlines).with('/etc/aliases') { [] }
 end
 
 def etc_aliases_does_not_exist

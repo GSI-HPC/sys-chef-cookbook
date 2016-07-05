@@ -17,26 +17,27 @@
 # limitations under the License.
 #
 
-unless node['sys']['hosts']['file'].empty? # ~FC023 Do not break conventions in sys
+unless node['sys']['hosts']
+
   template '/etc/hosts' do
     source 'etc_hosts.erb'
-    mode '0664'
+    mode '0664' # really group-writeable?
     variables( :addresses => node['sys']['hosts']['file'] )
+    not_if { node['sys']['hosts']['file'].empty? }
   end
-end
 
-unless node['sys']['hosts']['allow'].empty? # ~FC023 Do not break conventions in sys
   template '/etc/hosts.allow' do
     source 'etc_hosts.allow.erb'
     mode '0644'
     variables( :rules => node['sys']['hosts']['allow'] )
+    not_if { node['sys']['hosts']['allow'].empty? }
   end
-end
 
-unless node['sys']['hosts']['deny'].empty? # ~FC023 Do not break conventions in sys
   template '/etc/hosts.deny' do
     source 'etc_hosts.deny.erb'
     mode '0644'
     variables( :rules => node['sys']['hosts']['deny'] )
+    not_if { node['sys']['hosts']['deny'].empty? }
   end
+
 end
