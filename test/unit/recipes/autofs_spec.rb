@@ -59,8 +59,12 @@ describe 'sys::autofs' do
       end.converge(described_recipe)
     end
 
-    it 'installs autofs and autofs-ldap' do
-      expect(chef_run).to install_package('autofs')
+    before do
+      allow(File).to receive(:exist?).and_call_original
+      allow(File).to receive(:exist?).with('/usr/bin/kinit').and_return(true)
+    end
+
+    it 'installs autofs-ldap' do
       expect(chef_run).to install_package('autofs-ldap')
     end
 

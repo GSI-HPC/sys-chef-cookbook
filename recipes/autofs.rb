@@ -49,13 +49,12 @@ if ! node['sys']['autofs']['maps'].empty? && node['sys']['autofs']['ldap'].empty
 end
 
 if ! node['sys']['autofs']['ldap'].empty? && File.exist?('/usr/bin/kinit')
-  package "autofs"
-  package "autofs-ldap"
+
+  package "autofs-ldap" # also pulls autofs
 
   sys_wallet "autofsclient/#{node['fqdn']}" do
     place "/etc/autofs.keytab"
   end
-
 
   # on Jessie the maps go to /etc/auto.master.d/
   if node['platform_version'].to_i >= 8
