@@ -1,5 +1,5 @@
 describe 'sys::banner' do
-  cached(:chef_run) { ChefSpec::SoloRunner.new.converge(described_recipe) }
+  cached(:chef_run) { ChefSpec::SoloRunner.new(log_level: :debug).converge(described_recipe) }
 
   context 'node.sys.banner.message is empty' do
     it 'does nothing' do
