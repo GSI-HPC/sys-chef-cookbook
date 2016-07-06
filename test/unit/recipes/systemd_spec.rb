@@ -58,16 +58,20 @@ describe 'sys::systemd' do
 
     it 'manages systemd units from attributes' do
       enabled = false
-      # pretend service is either disabled or enabled:
-      allow(Mixlib::ShellOut)
-        .to receive(:new).with('systemctl is-enabled test.mount') do
-        double(run_command: nil, exitstatus: enabled)
-      end
 
       # stub all systemctl invocations with success:
       allow(Mixlib::ShellOut)
-        .to receive(:new).with(/systemctl (enable|start) test.mount/)
+        .to receive(:new).with(/^systemctl/)
              .and_return(double(run_command: nil, exitstatus: 0))
+
+      # # is-enabled requires a more complicated stub
+      # systemctl = double(run_command: nil)
+      # allow(systemctl).to receive(:stdout) do
+      #   enabled ? "enabled\n" : "disabled\n"
+      # end
+      # allow(Mixlib::ShellOut)
+      #   .to receive(:new).with('systemctl is-enabled test.mount')
+      #        .and_return(systemctl)
 
       expect(chef_run).to enable_sys_systemd_unit('test')
       enabled = true
