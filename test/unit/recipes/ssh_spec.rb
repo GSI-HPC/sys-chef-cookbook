@@ -73,7 +73,11 @@ describe 'sys::ssh' do
     it 'manages ssh-user-config' do
       expect(chef_run).to create_directory("/home/jdoe/.ssh")
 
-      expect(chef_run).to create_file("/home/jdoe/.ssh/authorized_keys")
+      # chefspec checks the resource name in create_file,
+      #  not the actual file name ...
+      expect(chef_run).to create_file('Deploying SSH keys for account '\
+                                      'jdoe to /home/jdoe/.ssh/authorized_keys')
+
     end
   end
 end
