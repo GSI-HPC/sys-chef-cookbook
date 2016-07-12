@@ -6,15 +6,29 @@ describe 'sys::systemd' do
 
   before do
     allow(Mixlib::ShellOut).to receive(:new).and_call_original
-    allow(Mixlib::ShellOut).to receive(:new).with('cat /proc/1/comm').and_return(
-      double(run_command: nil, stdout: "systemd\n")
-    )
-    allow(Mixlib::ShellOut).to receive(:new).with('dpkg -s systemd-sysv').and_return(
-      double(run_command: nil, exitstatus: 0)
-    )
     allow(Mixlib::ShellOut)
-      .to receive(:new).with('systemctl enable systemd-networkd.service')
-           .and_return(double(run_command: nil, exitstatus: 0))
+      .to receive(:new).with('cat /proc/1/comm').and_return(
+            double(run_command: nil, stdout: "systemd\n")
+          )
+    allow(Mixlib::ShellOut)
+      .to receive(:new).with('dpkg -s systemd-sysv').and_return(
+            double(run_command: nil, exitstatus: 0)
+          )
+
+    # stub systemctl invocations
+    systemctl = double(run_command: nil)
+    # toggle output between 'enabled' and 'disabled'
+    #  FIXME: using instance variables in rspec test's is an anti-pattern :-(
+    allow(systemctl).to receive(:stdout) do
+      @enabled ? "enabled\n" : "disabled\n"
+    end
+    # toggle exit status for is_active check:
+    allow(systemctl).to receive(:exitstatus) do
+      @active ? 0 : 1
+    end
+    allow(Mixlib::ShellOut)
+      .to receive(:new).with(/^systemctl\s/)
+           .and_return(systemctl)
   end
 
   context 'node.sys.systemd is empty' do
@@ -69,12 +83,15 @@ describe 'sys::systemd' do
         .to receive(:new).with(/systemctl (enable|start) test.mount/)
              .and_return(double(run_command: nil, exitstatus: 0))
 
+      @enabled = false
       expect(chef_run).to enable_sys_systemd_unit('test')
-      enabled = true
-
+      @enabled = true
       expect(chef_run).to start_sys_systemd_unit('test')
       expect(chef_run).to reload_sys_systemd_unit('test')
+      @enabled = false
       expect(chef_run).to run_execute('systemctl enable test.mount')
+      @enabled = true
+      @active = false
       expect(chef_run).to run_execute('systemctl start test.mount')
     end
   end
