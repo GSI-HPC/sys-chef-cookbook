@@ -102,6 +102,10 @@ describe 'sys::pam' do
 
   context "with attributes for active pam-updates" do
     before do
+      # krb5.keytab existance check turns on Kerberos support:
+      allow(File).to receive(:exist?).and_call_original
+      allow(File).to receive(:exist?).with('/etc/krb5.keytab').and_return(true)
+
       chef_run.node.default['sys']['pamupdate'] = {
         "access" => {
           :Name => "access",

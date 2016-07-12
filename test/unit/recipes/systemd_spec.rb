@@ -12,8 +12,9 @@ describe 'sys::systemd' do
     allow(Mixlib::ShellOut).to receive(:new).with('dpkg -s systemd-sysv').and_return(
       double(run_command: nil, exitstatus: 0)
     )
+    # stub all systemctl invocations with success:
     allow(Mixlib::ShellOut)
-      .to receive(:new).with('systemctl enable systemd-networkd.service')
+      .to receive(:new).with(/^systemctl\>/)
            .and_return(double(run_command: nil, exitstatus: 0))
   end
 
@@ -58,11 +59,6 @@ describe 'sys::systemd' do
 
     it 'manages systemd units from attributes' do
       # enabled = false
-
-      # stub all systemctl invocations with success:
-      allow(Mixlib::ShellOut)
-        .to receive(:new).with(/^systemctl/)
-             .and_return(double(run_command: nil, exitstatus: 0))
 
       # # is-enabled requires a more complicated stub
       # systemctl = double(run_command: nil)
