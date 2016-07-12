@@ -14,7 +14,7 @@ describe 'sys::systemd' do
     )
     # stub all systemctl invocations with success:
     allow(Mixlib::ShellOut)
-      .to receive(:new).with(/^systemctl\>/)
+      .to receive(:new).with(/^systemctl\s/)
            .and_return(double(run_command: nil, exitstatus: 0))
   end
 
