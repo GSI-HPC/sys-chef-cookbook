@@ -68,10 +68,6 @@ describe 'sys::krb5' do
       end.converge(described_recipe)
     end
 
-    before do
-      stub_command('File.exists?("/etc/krb5.keytab"').and_return(true)
-    end
-
     it "configures pkinit and wallet" do
       expect(chef_run).to create_template('/etc/krb5.conf').with(
         :variables => {
