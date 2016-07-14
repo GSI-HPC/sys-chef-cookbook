@@ -43,6 +43,11 @@ describe 'sys::autofs' do
   end
 
   context 'with ldap attributes' do
+    before do
+      allow(File).to receive(:exist?).and_call_original
+      allow(File).to receive(:exist?).with('/usr/bin/kinit').and_return(true)
+    end
+
     cached(:chef_run) do
       ChefSpec::SoloRunner.new do |node|
         node.automatic['fqdn'] = 'node.example.com'
@@ -57,11 +62,6 @@ describe 'sys::autofs' do
         node.default['sys']['autofs']['ldap']['searchbase'] = 'dc=example,dc=com'
         node.automatic['fqdn'] = 'node.example.com'
       end.converge(described_recipe)
-    end
-
-    before do
-      allow(File).to receive(:exist?).and_call_original
-      allow(File).to receive(:exist?).with('/usr/bin/kinit').and_return(true)
     end
 
     it 'installs autofs-ldap' do

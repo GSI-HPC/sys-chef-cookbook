@@ -18,9 +18,24 @@ describe 'sys::apt' do
 
     it 'does nothing else' do
       all = chef_run.run_context.resource_collection.all_resources
-      expect(all.size).to eq(2)
-      expect(all[0].command).to eq('apt-get -qq update')
-      expect(all[1].command).to eq('dpkg --add-architecture i386')
+      expect(all.size).to eq(3)
+      expect(all[0].command).to eq('dpkg --configure -a')
+      expect(all[1].command).to eq('apt-get -qq update')
+      expect(all[2].command).to eq('dpkg --add-architecture i386')
+    end
+  end
+
+  context 'dpkg was interrupted' do
+    cached(:chef_run) do
+      # fake left-overs from an interrupted dpkg run:
+      allow(Dir).to receive(:glob).and_call_original
+      allow(Dir).to receive(:glob).with('/var/lib/dpkg/updates/*')
+                     .and_return(['/007'])
+      ChefSpec::SoloRunner.new.converge(described_recipe)
+    end
+
+    xit 'runs dpkg --configure -a' do
+      expect(chef_run).to run_execute('dpkg --configure -a')
     end
   end
 

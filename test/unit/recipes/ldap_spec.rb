@@ -118,5 +118,6 @@ describe 'sys::ldap' do
       expect(chef_run).to start_service('nslcd')
       expect(chef_run).to enable_service('nslcd')
     end
+
   end
 end
