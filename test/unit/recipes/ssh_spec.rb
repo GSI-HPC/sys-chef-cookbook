@@ -14,7 +14,12 @@ describe 'sys::ssh' do
         'variable' => "value",
         'X11Forwarding' => "overwritten" }
       chef_run.node.default['sys']['ssh']['config'] = { "ssh" => "omg" }
-      chef_run.node.default['sys']['ssh']['authorize'] = { 'jdoe' => {:keys => [ "BBB" ]} }
+      chef_run.node.default['sys']['ssh']['authorize'] = {
+        'jdoe' => {
+          keys:    [ "BBB" ],
+          managed: true
+        }
+      }
       chef_run.node.default['etc']['passwd']['jdoe']['keys'] = [ "AAA" ]
       chef_run.node.default['etc']['passwd']['jdoe']['uid'] = 1000
       chef_run.node.default['etc']['passwd']['jdoe']['gid'] = 1000
