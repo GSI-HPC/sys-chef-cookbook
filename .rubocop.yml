@@ -1,0 +1,28 @@
+AllCops:
+  DisplayCopNames: true
+  DisplayStyleGuide: true
+
+Style/AlignHash:
+  EnforcedHashRocketStyle: table
+  Enabled: false
+
+# Don't force [] instead of Array.new etc.
+Style/EmptyLiteral:
+  Enabled: false
+
+Style/ExtraSpacing:
+  ForceEqualSignAlignment: true
+  # EqualSignAlignment does not work as expected
+  Enabled: false
+
+# don't enforce {key: value, ...}
+Style/HashSyntax:
+  Enabled: false
+
+# Don't check for double quotes vs single quotes for now:
+Style/StringLiterals:
+  Enabled: false
+
+# allow lines longer than 80 characters
+Metrics/LineLength:
+  Max: 120
