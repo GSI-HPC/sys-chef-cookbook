@@ -41,8 +41,9 @@ action :add do
     notifies :run, "execute[#{update}]", :immediately
   end
 
-  new_resource.updated_by_last_action(true)
-
+  # automatically set by use_inline_resources
+  #  if changes were made
+  #new_resource.updated_by_last_action(true)
 end
 
 action :remove do
@@ -57,11 +58,12 @@ action :remove do
     ignore_failure true
   end
 
-  file path do
+  f = file path do
     action :delete
     notifies :run, "execute[#{update}]", :immediately
   end
 
-  new_resource.updated_by_last_action(true)
-
+  # automatically set by use_inline_resources
+  #  if changes were made
+  #new_resource.updated_by_last_action(true)
 end
