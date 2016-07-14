@@ -20,6 +20,28 @@
 # limitations under the License.
 #
 
+# # check if dpkg is running:
+# # FIXME: this should happen during converge?!
+# File.open('/var/lib/dpkg/lock') do |f|
+#   if f.flock(File::LOCK_EX | File::LOCK_NB) == false
+#     # locking dpkg lockfile failed: another process is holding it
+#     Chef::Log.warn('/var/lib/dpkg/lock is locked, skipping all apt tasks')
+#     return
+#   else
+#     # unlock:
+#     f.close
+#   end
+# end
+
+# check wether dpkg got stuck:
+#  FIXME: we should be checking if dpkg is still running (see above)
+execute 'dpkg --configure -a' do
+  action :run
+  # mimic logic of apt cf.
+  #  https://github.com/Debian/apt/blob/1.2.14/apt-pkg/deb/debsystem.cc#L141-L174
+  only_if { Dir['/var/lib/dpkg/updates/*'].any?{|f| f =~ /\/\d+$/} }
+end
+
 apt_update = "apt-get -qq update"
 execute apt_update do
   action :nothing
