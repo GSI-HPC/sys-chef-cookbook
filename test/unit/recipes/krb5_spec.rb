@@ -13,7 +13,7 @@ describe 'sys::krb5' do
   context 'with basic attributes' do
     cached(:chef_run) do
       ChefSpec::SoloRunner.new do |node|
-        node.default.sys.krb5.realm = "example.com"
+        node.default['sys']['krb5']['realm'] = "example.com"
         node.default['sys']['krb5']['admin_server'] = "master.example.com"
         node.default['sys']['krb5']['master'] = "master.example.com"
         node.default['sys']['krb5']['slave'] = "slave.example.com"
@@ -41,8 +41,8 @@ describe 'sys::krb5' do
           :servers => [ 'master.example.com', 'slave.example.com'],
           :domain => "example.com",
           :wallet_server => nil,
-          :libdefaults => nil,
-          :use_pkinit => nil
+          :use_pkinit => nil,
+          :libdefaults => nil
         }
       )
       expect(chef_run).to render_file("/etc/krb5.conf").with_content(
@@ -66,10 +66,6 @@ describe 'sys::krb5' do
         node.automatic['domain'] = 'example.com'
         node.automatic['fqdn'] = 'node.example.com'
       end.converge(described_recipe)
-    end
-
-    before do
-      stub_command('File.exists?("/etc/krb5.keytab"').and_return(true)
     end
 
     it "configures pkinit and wallet" do
