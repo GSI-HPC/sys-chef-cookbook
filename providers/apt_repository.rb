@@ -58,7 +58,7 @@ action :remove do
     ignore_failure true
   end
 
-  f = file path do
+  file path do
     action :delete
     notifies :run, "execute[#{update}]", :immediately
   end
