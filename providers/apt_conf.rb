@@ -40,7 +40,8 @@ action :set do
     notifies :run, "execute[#{update}]", :immediately
   end
 
-  new_resource.updated_by_last_action(true)
+  # superseded by use_inline_resources
+  #new_resource.updated_by_last_action(true)
 
 end
 
@@ -60,6 +61,7 @@ action :remove do
     notifies :run, "execute[#{update}]", :immediately
   end
 
-  new_resource.updated_by_last_action(true)
+  # superseded by use_inline_resources
+  #new_resource.updated_by_last_action(true)
 
 end
