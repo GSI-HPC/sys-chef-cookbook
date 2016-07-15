@@ -1,5 +1,12 @@
 language: ruby
 
+sudo: required
+services: docker
+
+rvm:
+  - 2.1
+#  - 2.2
+
 bundler_args: --without plugins
 
 env:
