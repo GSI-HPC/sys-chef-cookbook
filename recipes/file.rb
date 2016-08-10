@@ -25,6 +25,8 @@ unless node['sys']['file'].empty?
       config.each do |key, value|
         if (key.to_sym == :content) && value.kind_of?(Array)
           send(key, value.join("\n"))
+        elsif (key.to_sym == :notifies) && value.kind_of?(Array)
+          send(key, *value)
         else
           send(key, value)
         end
