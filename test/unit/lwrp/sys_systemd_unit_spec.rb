@@ -14,6 +14,7 @@ describe 'lwrp: sys_systemd_unit' do
     )
   end
 
+  let(:directory) { '/etc/systemd/network' }
   let(:absolute_path) { '/etc/systemd/network/test.network' }
   let(:unit) { 'test.network' }
   states = [ :enabled, :linked, :masked, :static, :disabled, :unknown ]
@@ -22,6 +23,7 @@ describe 'lwrp: sys_systemd_unit' do
     let(:chef_run) { runner.converge('fixtures::sys_systemd_unit_create') }
 
     it 'manages the unit file' do
+      expect(chef_run).to create_directory(directory)
       expect(chef_run).to create_template(absolute_path)
     end
 

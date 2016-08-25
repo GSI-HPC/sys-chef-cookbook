@@ -3,6 +3,14 @@ use_inline_resources
 action :create do
   debug_log('systemd_unit_action_create')
 
+  directory new_resource.directory do
+    mode new_resource.mode
+    owner new_resource.owner
+    group new_resource.group
+    recursive true
+    action :create
+  end
+
   t = template absolute_path do
     source 'systemd_unit_generic.erb'
     mode new_resource.mode
