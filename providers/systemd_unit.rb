@@ -4,7 +4,7 @@ action :create do
   debug_log('systemd_unit_action_create')
 
   directory new_resource.directory do
-    mode new_resource.mode
+    mode '0755'
     owner new_resource.owner
     group new_resource.group
     recursive true
