@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-unless node['sys']['hosts']
+unless node['sys']['hosts'].empty?
 
   template '/etc/hosts' do
     source 'etc_hosts.erb'
