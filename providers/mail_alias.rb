@@ -66,11 +66,12 @@ action :remove do
     ruby_block 'SysMailAlias action :remove : remove alias' do
       block do
         aliases_file = Chef::Util::FileEdit.new(new_resource.aliases_file)
-        aliases_file.search_file_delete_line(alias_regexp, new_line)
+        aliases_file.search_file_delete_line(alias_regexp)
         aliases_file.write_file
       end
     end
 
+    # FIXME: should only be triggered something was removed:
     new_resource.updated_by_last_action(true)
   end
 end
