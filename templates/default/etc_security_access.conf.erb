@@ -4,6 +4,10 @@
 #
 # This file is managed by the Chef `sys` cookbook.
 
-<% @rules.each do |rule| %>
+<%- @rules.each do |rule| %>
 <%= rule %>
-<% end %>
+<%- end %>
+<%- if @default == 'deny' %>
+# block any access not explictly allowed:
+-:ALL:ALL
+<%- end %>
