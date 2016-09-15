@@ -43,7 +43,7 @@ unless (node['sys']['accounts'].empty? and node['sys']['groups'].empty?)
       group name do
         # grp.each{|k,v| send(k,v)} is elegant
         #  but hard to handle for account attributes
-        #  that we don't want to send to the group ressource
+        #  that we don't want to send to the group resource
         gid     grp['gid']     if grp['gid']
         members grp['members'] if grp['members']
         append  grp['append']  || false
@@ -53,7 +53,7 @@ unless (node['sys']['accounts'].empty? and node['sys']['groups'].empty?)
       Chef::Log.error("Creation of group resource '#{name}' failed: #{e.message}")
     end
   end
-require 'pp'
+
   bag = data_bag('accounts') unless Chef::Config[:solo]
   node['sys']['accounts'].each do |name, caccount|
     account = caccount.merge({}) # gives us a mutable copy of the ImmutableMash
@@ -99,7 +99,7 @@ require 'pp'
           # ...or that it has been create during this Chef run
           was_just_created = (node['sys']['groups'].has_key?(account['gid']) or
             node['sys']['groups'].values.detect { |g| g['gid'] == account['gid'] })
-         
+
           # If this isn't the case something went wrong!
           unless group_exists or was_just_created
             raise "The given group '#{account['gid']}' does not exist or wasn't defined"
@@ -143,7 +143,7 @@ require 'pp'
       end
 
       if account.has_key?('remote')
-        node.default['sys']['pam']['access'].push("+:#{name}:#{account['remote']} LOCAL")
+        node.default['sys']['pam']['access'].unshift("+:#{name}:#{account['remote']} LOCAL")
       end
 
     rescue StandardError => e
