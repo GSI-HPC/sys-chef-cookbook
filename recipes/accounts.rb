@@ -142,12 +142,23 @@ unless (node['sys']['accounts'].empty? and node['sys']['groups'].empty?)
         end
       end
 
-      if account.has_key?('remote')
-        node.default['sys']['pam']['access'].unshift("+:#{name}:#{account['remote']} LOCAL")
+      if account.key?('remote')
+        if node['sys']['pam'].key?('access')
+          node.default['sys']['pam']['access'] <<
+            "+:#{name}:#{account['remote']} LOCAL"
+        else
+          node.default['sys']['pam']['access'] = [
+            "+:#{name}:#{account['remote']} LOCAL"
+          ]
+        end
+        log "Configuring remote access rules for #{name}" do
+          level :debug
+        end
       end
 
     rescue StandardError => e
-      Chef::Log.error("Creation of user resource '#{name}' failed: #{e.message}")
+      Chef::Log.error("Creation of user resource '#{name}' failed: " +
+                      e.message)
     end
   end
 end
