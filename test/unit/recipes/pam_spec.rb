@@ -3,19 +3,20 @@ describe 'sys::pam' do
 
   context 'node.sys.pam is empty' do
     it 'does nothing' do
-      expect(chef_run.run_context.resource_collection).to be_empty
+      expect(chef_run.run_context.resource_collection
+              .to_hash.keep_if { |x| x['updated'] }).to be_empty
     end
   end
 
   context 'with basic attributes' do
     before do
       fqdn = 'node.example.com'
-      chef_run.node.default['sys']['pam']['rules'] = [ 'rule_1', 'rule_2', 'rule_3' ]
-      chef_run.node.default['sys']['pam']['access'] = [ 'access_1', 'access_2', 'access_3' ]
+      chef_run.node.default['sys']['pam']['rules'] = %w(rule_1 rule_2 rule_3)
+      chef_run.node.default['sys']['pam']['access'] = %w(access_1 access_2 access_3)
       chef_run.node.default['sys']['pamd']['sshd'] = "sshd_1\nsshd_2\nsshd_3"
       chef_run.node.default['sys']['pamd']['login'] = "login_1\nlogin_2\nlogin_3"
-      chef_run.node.default['sys']['pam']['limits'] = [ "limit_1", "limit_2", "limit_3" ]
-      chef_run.node.default['sys']['pam']['group'] = [ Hash.new, Hash.new, Hash.new ]
+      chef_run.node.default['sys']['pam']['limits'] = %w(limit_1 limit_2 limit_3)
+      chef_run.node.default['sys']['pam']['group'] = [Hash.new, Hash.new, Hash.new]
       chef_run.node.default['sys']['pamd']['common-test'] = " \n module1\nmodule2"
       chef_run.node.automatic['fqdn'] = fqdn
       chef_run.node.automatic['domain'] = "example.com"
@@ -25,7 +26,8 @@ describe 'sys::pam' do
     it 'manages /etc/security/access.conf' do
       expect(chef_run).to create_template('/etc/security/access.conf').with_mode('0600').with(
         :variables => {
-          :rules => [ 'access_1', 'access_2', 'access_3' ]
+          rules: %w(access_1 access_2 access_3),
+          default: nil
         }
       )
 
@@ -45,7 +47,7 @@ describe 'sys::pam' do
     it 'manages /etc/security/limits.conf' do
       expect(chef_run).to create_template('/etc/security/limits.conf').with_mode('0644').with(
         :variables => {
-          :rules => [ "limit_1", "limit_2", "limit_3" ]
+          :rules => %w(limit_1 limit_2 limit_3)
         }
       )
 
@@ -57,7 +59,7 @@ describe 'sys::pam' do
     it 'manages /etc/security/group.conf' do
       expect(chef_run).to create_template('/etc/security/group.conf').with_mode('0644').with(
         :variables => {
-          :rules => [ {}, {}, {} ]
+          :rules => [{}, {}, {}]
         }
       )
 
@@ -149,7 +151,7 @@ describe 'sys::pam' do
           :Password => "[success=end default=ignore]	pam_krb5.so minimum_uid=1000 try_first_pass use_authtok",
           :"Password-Initial" => "[success=end default=ignore]	pam_krb5.so minimum_uid=1000",
           :"Session-Type" => "Additional",
-          :Session => "optional			pam_krb5.so minimum_uid=1000" }}
+          :Session => "optional			pam_krb5.so minimum_uid=1000" } }
       chef_run.converge(described_recipe)
     end
 
@@ -275,13 +277,14 @@ auth\t\toptional\t\t\tpam_group.so"
           :Password => "[success=end default=ignore]	pam_krb5.so minimum_uid=1000 try_first_pass use_authtok",
           :"Password-Initial" => "[success=end default=ignore]	pam_krb5.so minimum_uid=1000",
           :"Session-Type" => "Additional",
-          :Session => "optional			pam_krb5.so minimum_uid=1000" }}
+          :Session => "optional			pam_krb5.so minimum_uid=1000" } }
       chef_run.converge(described_recipe)
     end
 
     it "should do nothing" do
       expect(chef_run).to_not create_template('/etc/pam.d/common-auth')
-      expect(chef_run.run_context.resource_collection).to be_empty
+      expect(chef_run.run_context.resource_collection
+              .to_hash.keep_if { |x| x['updated'] }).to be_empty
     end
   end
 end

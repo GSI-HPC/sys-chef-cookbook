@@ -17,52 +17,71 @@
 # limitations under the License.
 #
 
-unless node['sys']['pam']['access'].empty?
-  template '/etc/security/access.conf' do
-    source 'etc_security_access.conf.erb'
-    owner 'root'
-    group 'root'
-    mode "0600"
-    variables :rules => node['sys']['pam']['access']
-  end
-
-  unless node['sys']['pamd'].has_key?('sshd')
-    cookbook_file '/etc/pam.d/sshd' do
-      source 'etc_pam.d_sshd'
-      owner 'root'
-      group 'root'
-      mode "0644"
-      only_if do ::File.exist? '/etc/ssh/sshd_config' end
-    end
-  end
-
-  cookbook_file '/etc/pam.d/login' do
-    source 'etc_pam.d_login'
-    owner 'root'
-    group 'root'
-    mode "0644"
-    not_if { node['sys']['pamd'].has_key?('login') }
+#
+# access rules
+#
+template '/etc/security/access.conf' do
+  source 'etc_security_access.conf.erb'
+  owner 'root'
+  group 'root'
+  mode "0600"
+  variables(
+    rules:   node['sys']['pam']['access'],
+    default: node['sys']['pam']['access_default']
+  )
+  only_if do
+    node['sys']['pam']['access'] ||
+      node['sys']['pam']['access_default'] == 'deny'
   end
 end
 
-unless node['sys']['pam']['limits'].empty? # ~FC023 do not break conventions in sys
-  template '/etc/security/limits.conf' do
-    source 'etc_security_limits.conf.erb'
-    owner 'root'
-    group 'root'
-    mode "0644"
-    variables :rules => node['sys']['pam']['limits']
+#
+# PAM sshd config
+#
+cookbook_file '/etc/pam.d/sshd' do
+  source 'etc_pam.d_sshd'
+  owner 'root'
+  group 'root'
+  mode "0644"
+  only_if do
+    ::File.exist?('/etc/ssh/sshd_config') &&
+      node['sys']['pamd'].key?('sshd')
   end
 end
 
-unless node['sys']['pam']['group'].empty? # ~FC023 Do not break conventions in sys
-  template '/etc/security/group.conf' do
-    source 'etc_security_group.conf.erb'
-    owner 'root'
-    group 'root'
-    mode "0644"
-    variables :rules => node['sys']['pam']['group']
-  end
+#
+# PAM login config
+#
+cookbook_file '/etc/pam.d/login' do
+  source 'etc_pam.d_login'
+  owner 'root'
+  group 'root'
+  mode "0644"
+  not_if { node['sys']['pamd'].key?('login') }
+end
+
+#
+# resource limits
+#
+template '/etc/security/limits.conf' do
+  source 'etc_security_limits.conf.erb'
+  owner 'root'
+  group 'root'
+  mode "0644"
+  variables :rules => node['sys']['pam']['limits']
+  not_if { node['sys']['pam']['limits'].empty? }
+end
+
+#
+# dynamic group membership
+#
+template '/etc/security/group.conf' do
+  source 'etc_security_group.conf.erb'
+  owner 'root'
+  group 'root'
+  mode "0644"
+  variables :rules => node['sys']['pam']['group']
+  not_if {  node['sys']['pam']['group'].empty? } # ~FC023 Do not break conventions in sys
 end
 
 unless node['sys']['pamd'].empty?
@@ -74,7 +93,7 @@ unless node['sys']['pamd'].empty?
       mode "0644"
       variables(
         # remove leading spaces, and empty lines
-        :rules => contents.gsub(/^ */,'').gsub(/^$\n/,''),
+        :rules => contents.gsub(/^ */, '').gsub(/^$\n/, ''),
         :name => name
       )
     end
@@ -91,25 +110,24 @@ unless node['sys']['pamupdate'].empty? # ~FC023 Do not break conventions in sys
 
     generator = PamUpdate::Writer.new(configs)
 
-    if ! File.exist?("/etc/krb5.keytab")
+    unless File.exist?("/etc/krb5.keytab")
       # Remove pam_krb5 from profiles
       generator.remove_profile_byname("Kerberos authentication")
       Chef::Log.warn("/etc/krb5.keytab not present. Not configuring libpam-krb5.")
     end
 
-    %w[ account auth password session session-noninteractive ].each do |type|
+    %w( account auth password session session-noninteractive ).each do |type|
       content = generator.send(type)
-      unless content.nil? # ~FC023 Do not break conventions in sys
-        template "/etc/pam.d/common-#{type}" do
-          source "etc_pam.d_generic.erb"
-          owner "root"
-          group "root"
-          mode "0644"
-          variables(
-            :rules => content,
-            :name => "common-#{type}"
-          )
-        end
+      next if content.nil? # ~FC023 Do not break conventions in sys
+      template "/etc/pam.d/common-#{type}" do
+        source "etc_pam.d_generic.erb"
+        owner "root"
+        group "root"
+        mode "0644"
+        variables(
+          :rules => content,
+          :name => "common-#{type}"
+        )
       end
     end
   rescue PamUpdateError => e

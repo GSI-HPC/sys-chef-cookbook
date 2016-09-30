@@ -14,6 +14,8 @@ if enable
 
   service 'smartmontools' do
     action [ :enable, :start ]
+    # don't crash chef-client if smartd does not start
+    ignore_failure true
   end
 
   template '/etc/default/smartmontools' do
