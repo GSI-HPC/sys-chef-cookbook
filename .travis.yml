@@ -11,3 +11,9 @@ bundler_args: --without plugins
 
 env:
   - KITCHEN_LOCAL_YAML=.kitchen.docker.yml
+
+script:
+  - bundle exec rake rubocop
+  - bundle exec rake foodcritic
+  - bundle exec rake rspec
+  - bundle exec rake kitchen
