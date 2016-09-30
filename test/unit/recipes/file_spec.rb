@@ -44,7 +44,7 @@ describe 'sys::file' do
   end
 
   context 'with notification passed as Array' do
-    let (:solo) do
+    let(:solo) do
       ChefSpec::SoloRunner.new do |node|
         node.default['sys']['file'][@file]['content'] = @content
         node.default['sys']['file'][@file]['notifies'] = @notification

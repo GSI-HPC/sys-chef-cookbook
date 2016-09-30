@@ -2,7 +2,7 @@
 # extremly basic loghost setup
 #
 
-if node['rsyslog'].has_key?('server_ip') and !node['rsyslog']['server_ip'].nil?
+if node.has_key?('rsyslog')
 
   package "rsyslog"
 
@@ -27,12 +27,13 @@ if node['rsyslog'].has_key?('server_ip') and !node['rsyslog']['server_ip'].nil?
     owner "root"
     group "root"
     mode "0600"
+    only_if { node['rsyslog'].has_key?('server_ip') }
     notifies :restart, "service[rsyslog]"
   end
 
   service "rsyslog" do
     supports :restart => true, :status => true
-    action   [:enable, :start]
+    action   :enable
   end
 
 end
