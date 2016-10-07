@@ -13,6 +13,7 @@ action :create do
 
   t = template absolute_path do
     source 'systemd_unit_generic.erb'
+    cookbook 'sys'
     mode new_resource.mode
     owner new_resource.owner
     group new_resource.group
