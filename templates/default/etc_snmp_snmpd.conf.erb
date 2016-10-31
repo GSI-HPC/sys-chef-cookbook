@@ -68,6 +68,7 @@ view   systemonly  included   .1.3.6.1.2.1.25.1
 
 #  Note that setting these values here, results in the corresponding MIB objects being 'read-only'
 #  See snmpd.conf(5) for more details
+sysName        <%= @sys_name || node['fqdn'] || '' %>
 sysLocation    <%= @sys_location || 'Sitting on the Dock of the Bay' %>
 sysContact     <%= @sys_contact %>
                                                  # Application + End-to-End layers
