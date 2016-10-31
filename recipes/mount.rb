@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # Cookbook Name:: sys
-# Recipe:: resolv
+# Recipe:: mount
 #
 # Author:: Victor Penso
 #
