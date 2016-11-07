@@ -34,6 +34,7 @@ unless node['sys']['krb5'].empty?
     mode "0644"
     variables(
       :realm => node['sys']['krb5']['realm'].upcase,
+      :realms => begin node['sys']['krb5']['realms'] || [] rescue [] end,
       :admin_server => node['sys']['krb5']['admin_server'],
       :servers => [ node['sys']['krb5']['master'], node['sys']['krb5']['slave'] ],
       :domain => node['domain'],
