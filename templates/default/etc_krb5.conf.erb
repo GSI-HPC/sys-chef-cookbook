@@ -47,6 +47,20 @@
 		<% end %>
 		admin_server = <%= @admin_server %>
 	}
+	<% @realms.each do |realm, config| %>
+	<%= realm %> = {
+	        <% config.each do |k,v| -%>
+		<% case v -%>
+		<% when String -%>
+		<%= "#{k} = #{v}" %>
+		<% when Array -%>
+		<% v.each do |elt| -%>
+		<%= "#{k} = #{elt}" %>
+		<% end %>
+		<% end %>
+		<% end %>
+	}
+	<% end %>
 [password_quality]
 	policies = builtin:minimum-length builtin:character-class
 	min_classes = 3
