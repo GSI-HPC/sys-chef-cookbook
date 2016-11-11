@@ -28,9 +28,14 @@ if ! node['sys']['nscd'].empty?
     notifies :restart, "service[nscd]", :delayed
   end
 
+  # Comments in systemctl-src say that update-rc.d does not provide
+  # information wheter a service is enabled or not and always returns
+  # false.  Work around that.
+  actions = [:start]
+  actions << :enable if Dir.glob('/etc/rc2.d/*nscd*').empty?
   service "nscd" do
     supports :restart => true
-    action [:start, :enable]
+    action actions
     only_if 'test -e /etc/init.d/nscd'
   end
 end

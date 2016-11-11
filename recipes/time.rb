@@ -51,8 +51,14 @@ unless time_servers.empty?
     notifies :restart, "service[ntp]"
   end
 
+  # Comments in systemctl-src say that update-rc.d does not provide
+  # information wheter a service is enabled or not and always returns
+  # false.  Work around that.
+  actions = [:start]
+  actions << :enable if Dir.glob('/etc/rc2.d/*ntp*').empty?
+
   service 'ntp' do
-    action [:enable, :start]
+    action actions
     supports :status => true, :restart => true
   end
 end

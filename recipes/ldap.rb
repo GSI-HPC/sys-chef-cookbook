@@ -82,8 +82,14 @@ if ! node['sys']['ldap'].empty? && File.exist?('/usr/bin/kinit')
     action :nothing
   end
 
+  # Comments in systemctl-src say that update-rc.d does not provide
+  # information wheter a service is enabled or not and always returns
+  # false.  Work around that.
+  actions = [:start]
+  actions << :enable if Dir.glob('/etc/rc2.d/*nslcd*').empty?
+
   service "nslcd" do
     supports :restart => true
-    action [:start, :enable]
+    action actions
   end
 end
