@@ -32,7 +32,7 @@ module Sys
         end
         file << "\n"
       end
-      file.strip
+      return file.chop
     end
 
     def render_harry_config(config, key, value, indent, flags)
