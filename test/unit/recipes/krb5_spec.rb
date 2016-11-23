@@ -140,7 +140,7 @@ describe 'sys::krb5' do
       config << "        wallet = {\n"
       config << "                wallet_port   = 4373\n"
       config << "                wallet_server = wallet.example.com\n"
-      config << "        }"
+      config << "        }\n"
       expect(chef_run).to create_template('/etc/krb5.conf').with_mode('0644')
       expect(chef_run).to render_file("/etc/krb5.conf").with_content(config)
     end
