@@ -23,4 +23,3 @@ All attributes in `node.sys.krb5`:
     }
 
 This cookbook does not change any files in `/etc/pam.d/`. After the client is configured to use Kerberos the corresponding PAM mechanisms needs to be enabled with the `sys::pam` recipe.
-
