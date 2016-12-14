@@ -97,10 +97,6 @@ if ! node['sys']['autofs']['ldap'].empty? && File.exist?('/usr/bin/kinit')
   template "/etc/autofs_ldap_auth.conf" do
     source "etc_autofs_ldap_auth.conf.erb"
     mode "0600"
-    variables({
-      :principal => node['fqdn'],
-      :realm => node['sys']['krb5']['realm'].upcase
-    })
     notifies :restart, 'service[autofs]', :delayed
   end
 
