@@ -12,7 +12,13 @@ end
 if enable
   package 'smartmontools'
 
-  service 'smartmontools' do
+  smartd_service_name = "smartmontools"
+
+  if node['platform_version'].to_i >= 8
+    smartd_service_name = "smartd"
+  end
+
+  service smartd_service_name do
     action [ :enable, :start ]
     # don't crash chef-client if smartd does not start
     ignore_failure true
@@ -23,7 +29,7 @@ if enable
     variables(
       enable: enable
     )
-    notifies :restart, 'service[smartmontools]'
+    notifies :restart, "service[#{smartd_service_name}]"
   end
 
   template '/etc/smartd.conf' do
@@ -31,6 +37,6 @@ if enable
     variables(
       mailto: node['sys']['smartd']['mailto']
     )
-    notifies :reload, 'service[smartmontools]'
+    notifies :reload, "service[#{smartd_service_name}]"
   end
 end
