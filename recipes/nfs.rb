@@ -36,6 +36,8 @@ unless node['sys']['nfs'].empty?
   service 'nfs-common' do
     action actions
     supports :restart => true
+    # nfs-common unit is masked on Stretch
+    not_if { node['platform_version'] == 'stretch/sid' }
   end
 
 end
