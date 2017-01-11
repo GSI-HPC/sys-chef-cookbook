@@ -127,7 +127,7 @@ end
 # add multiarch support if desired:
 #  this is statically pinned to i386 on amd64 for now
 execute 'dpkg --add-architecture i386' do
-  only_if { node['sys']['apt']['multiarch'] && node['debian']['architecture'] == 'amd64' }
-  not_if  { node['debian']['foreign_architectures'].include?('i386') }
+  only_if { node['sys']['apt']['multiarch'] && node['debian']['architecture'] == 'amd64'}
+  not_if  { node['debian'].include?('foreign_architectures') && node['debian']['foreign_architectures'].include?('i386') }
   notifies :run, "execute[#{apt_update}]", :immediately
 end
