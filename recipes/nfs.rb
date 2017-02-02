@@ -37,7 +37,7 @@ unless node['sys']['nfs'].empty?
     action actions
     supports :restart => true
     # nfs-common unit is masked on Stretch
-    not_if { node['platform_version'] == 'stretch/sid' }
+    only_if { node['platform_version'].to_i < 9}
   end
 
 end
