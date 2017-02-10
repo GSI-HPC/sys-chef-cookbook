@@ -5,9 +5,7 @@ group :development do
   gem 'rubocop'
   gem 'foodcritic'
   gem "berkshelf"
-  gem 'chef',
-      git: 'https://github.com/chuhn/chef.git',
-      branch: 'issue5089'
+  gem 'chef'
   gem 'chefspec'
   gem 'test-kitchen'
   gem 'kitchen-docker'
