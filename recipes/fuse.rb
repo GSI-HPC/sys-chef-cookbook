@@ -19,11 +19,11 @@
 
 unless node['sys']['fuse']['config'].empty?
 
+  package 'fuse'
+
   case node['platform_version']
 
   when /^7.*/
-
-    package 'fuse-utils'
 
     service 'udev' do
       supports :restart => true
@@ -40,8 +40,6 @@ unless node['sys']['fuse']['config'].empty?
 
   when /^8.*/
 
-    package 'fuse'
-
     template '/etc/fuse.conf' do
       source 'etc_fuse.conf.erb'
       mode '0640'
@@ -55,6 +53,5 @@ unless node['sys']['fuse']['config'].empty?
     Chef::Log.warn("Platform not supported!")
 
   end
-
 
 end
