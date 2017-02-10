@@ -29,13 +29,10 @@ action :deploy do
 end
 
 def check_keytab()
-  cmd = "ktutil -k #{new_resource.place} list --keys | grep -q #{new_resource.principal}"
-  exit_status = 1
-  Open3.popen3(cmd) do |_stdin, _stdout, _stderr, wait_thr|
-    exit_status = wait_thr.value
-  end
-
-  return exit_status == 0
+  check_keytab = "ktutil -k #{new_resource.place} list --keys | grep -q #{new_resource.principal}"
+  cmd = Mixlib::ShellOut.new(check_keytab)
+  cmd.run_command
+  return cmd.exitstatus == 0
 end
 
 def check_mode(stat)

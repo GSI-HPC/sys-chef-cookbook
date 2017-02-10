@@ -57,7 +57,7 @@ Ohai.plugin(:Dpkg) do
 
       # list of enabled multiarch architectures (eg. i386 on amd64):
       #  no multiarch before Wheezy
-      if platform_version.to_i > 6
+      if platform_version.to_i > 6 || platform_version =~ /\/sid$/
         debian["foreign_architectures"] = `dpkg  --print-foreign-architectures`.split("\n")
       end
 

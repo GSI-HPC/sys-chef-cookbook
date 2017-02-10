@@ -27,20 +27,30 @@ unless node['sys']['krb5'].empty?
     kstart
   ).each { |p| package p }
 
-  template "/etc/krb5.conf" do
-    source "etc_krb5.conf.erb"
-    owner "root"
-    group "root"
-    mode "0644"
-    variables(
-      :realm => node['sys']['krb5']['realm'].upcase,
-      :admin_server => node['sys']['krb5']['admin_server'],
-      :servers => [ node['sys']['krb5']['master'], node['sys']['krb5']['slave'] ],
-      :domain => node['domain'],
-      :wallet_server => begin node['sys']['krb5']['wallet_server'] rescue nil end,
-      :use_pkinit => begin node['sys']['krb5']['use_pkinit'] rescue nil end,
-      :libdefaults => begin node['sys']['krb5']['libdefaults'] rescue nil end
-    )
+  if node['sys']['krb5']['krb5.conf']
+    template "/etc/krb5.conf" do
+      helpers(Sys::Harry)
+      source "etc_krb5.conf_generic.erb"
+      mode "0644"
+      variables(:sections => node['sys']['krb5']['krb5.conf'])
+    end
+  else
+    template "/etc/krb5.conf" do
+      source "etc_krb5.conf.erb"
+      owner "root"
+      group "root"
+      mode "0644"
+      variables(
+        :realm => node['sys']['krb5']['realm'].upcase,
+        :realms => begin node['sys']['krb5']['realms'] || [] rescue [] end,
+        :admin_server => node['sys']['krb5']['admin_server'],
+        :servers => [ node['sys']['krb5']['master'], node['sys']['krb5']['slave'] ],
+        :domain => node['domain'],
+        :wallet_server => begin node['sys']['krb5']['wallet_server'] rescue nil end,
+        :use_pkinit => begin node['sys']['krb5']['use_pkinit'] rescue nil end,
+        :libdefaults => begin node['sys']['krb5']['libdefaults'] rescue nil end
+      )
+    end
   end
 
   package "wallet-client"

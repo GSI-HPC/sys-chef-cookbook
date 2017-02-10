@@ -61,6 +61,16 @@ if ! node['sys']['autofs']['ldap'].empty? && File.exist?('/usr/bin/kinit')
 
     directory '/etc/auto.master.d'
 
+    delete = Dir.glob('/etc/auto.master.d/*')
+
+    keep = node['sys']['autofs']['maps'].keys.map{|path| "/etc/auto.master.d/#{path[1..-1].gsub(/\//,'_').downcase}.autofs"}
+
+    (delete - keep).each do |f|
+      file f do
+        action :delete
+      end
+    end
+
     node['sys']['autofs']['maps'].each do |path, map|
       name = path[1..-1].gsub(/\//,'_').downcase
       template "/etc/auto.master.d/#{name}.autofs" do
@@ -87,10 +97,6 @@ if ! node['sys']['autofs']['ldap'].empty? && File.exist?('/usr/bin/kinit')
   template "/etc/autofs_ldap_auth.conf" do
     source "etc_autofs_ldap_auth.conf.erb"
     mode "0600"
-    variables({
-      :principal => node['fqdn'],
-      :realm => node['sys']['krb5']['realm'].upcase
-    })
     notifies :restart, 'service[autofs]', :delayed
   end
 
