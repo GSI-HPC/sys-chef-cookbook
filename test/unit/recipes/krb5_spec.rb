@@ -40,6 +40,7 @@ describe 'sys::krb5' do
           :admin_server => "master.example.com",
           :servers => [ 'master.example.com', 'slave.example.com'],
           :domain => "example.com",
+          :realms => [],
           :wallet_server => nil,
           :use_pkinit => nil,
           :libdefaults => nil
@@ -76,6 +77,7 @@ describe 'sys::krb5' do
           :servers => [ 'master.example.com', 'slave.example.com'],
           :domain => "example.com",
           :wallet_server => "wallet.example.com",
+          :realms => [],
           :libdefaults => nil,
           :use_pkinit => true
         }
@@ -97,6 +99,50 @@ describe 'sys::krb5' do
       chef_run.node.automatic['fqdn'] = 'node.example.com'
       chef_run.converge(described_recipe)
       expect(chef_run).to deploy_sys_wallet('host/node.example.com')
+    end
+  end
+
+  context 'sys_harry' do
+    cached(:chef_run) do
+      ChefSpec::SoloRunner.new do |node|
+        node.default['sys']['krb5']['krb5.conf'] = {
+          :realms => {
+            'EXAMPLE.COM' => {
+              'kdc' => [
+                'kdc1.example.com',
+                'kdc2.example.com'
+              ],
+              'admin_server' => 'kdc1.example.com',
+            }
+          },
+          :appdefaults => {
+            'default_realm' => 'EXAMPLE.COM',
+            'wallet' => {
+              'wallet_port' => '4373',
+              'wallet_server' => 'wallet.example.com'
+            }
+          }
+        }
+      end.converge(described_recipe)
+    end
+
+    it 'deploys krb5.conf with two sections' do
+      config = ''
+      config << "[realms]\n"
+      config << "        EXAMPLE.COM = {\n"
+      config << "                kdc          = kdc1.example.com\n"
+      config << "                kdc          = kdc2.example.com\n"
+      config << "                admin_server = kdc1.example.com\n"
+      config << "        }\n"
+      config << "\n"
+      config << "[appdefaults]\n"
+      config << "        default_realm = EXAMPLE.COM\n"
+      config << "        wallet = {\n"
+      config << "                wallet_port   = 4373\n"
+      config << "                wallet_server = wallet.example.com\n"
+      config << "        }\n"
+      expect(chef_run).to create_template('/etc/krb5.conf').with_mode('0644')
+      expect(chef_run).to render_file("/etc/krb5.conf").with_content(config)
     end
   end
 end

@@ -112,9 +112,14 @@ if node['sys']['chef']['restart_via_cron'] # ~FC023
   end
 end
 
+# Comments in systemctl-src say that update-rc.d does not provide
+# information wheter a service is enabled or not and always returns
+# false.  Work around that.
+actions = [:start]
+actions << :enable if Dir.glob('/etc/rc2.d/*chef-client*').empty?
+
 service 'chef-client' do
   supports  :restart => true, :status => true
-  action   [ :enable, :start ]
+  action actions
   ignore_failure true
 end
-

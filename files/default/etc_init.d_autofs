@@ -3,7 +3,7 @@
 
 ### BEGIN INIT INFO
 # Provides: autofs
-# Required-Start: $network $remote_fs $syslog
+# Required-Start: $network $remote_fs $syslog ntp
 # Required-Stop: $network $remote_fs $syslog
 # Should-Start: ypbind nslcd slapd
 # Should-Stop: ypbind nslcd slapd

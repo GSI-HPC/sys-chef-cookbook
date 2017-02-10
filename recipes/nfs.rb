@@ -27,9 +27,17 @@ unless node['sys']['nfs'].empty?
     notifies :restart, 'service[nfs-common]', :delayed
   end
 
+  # Comments in systemctl-src say that update-rc.d does not provide
+  # information wheter a service is enabled or not and always returns
+  # false.  Work around that.
+  actions = [:start]
+  actions << :enable if Dir.glob('/etc/rcS.d/*nfs-common*').empty?
+
   service 'nfs-common' do
-    action [ :enable, :start ]
+    action actions
     supports :restart => true
+    # nfs-common unit is masked on Stretch
+    only_if { node['platform_version'].to_i < 9}
   end
 
 end
