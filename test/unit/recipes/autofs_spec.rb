@@ -88,12 +88,8 @@ describe 'sys::autofs' do
     end
 
     it 'manages /etc/autofs_ldap_auth.conf' do
-      expect(chef_run).to create_template('/etc/autofs_ldap_auth.conf').with_mode("0600").with(
-        :variables => {
-          :principal => 'node.example.com',
-          :realm => 'EXAMPLE.COM'
-        }
-      )
+      expect(chef_run).to create_template('/etc/autofs_ldap_auth.conf')
+                           .with_mode("0600")
 
       expect(chef_run).to render_file('/etc/autofs_ldap_auth.conf').with_content(
         "clientprinc=\"autofsclient/node.example.com@EXAMPLE.COM\""
