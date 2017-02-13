@@ -7,7 +7,7 @@ describe 'sys::smartd' do
     end
   end
 
-  context 'with attributes enabled' do
+  context 'with smartd enabled' do
     let(:chef_run) { ChefSpec::SoloRunner.new }
 
     before do
@@ -19,11 +19,12 @@ describe 'sys::smartd' do
     it 'does stuff' do
       pkg_name = 'smartmontools'
       expect(chef_run).to install_package(pkg_name)
-
-      expect(chef_run).to enable_service(pkg_name)
-      expect(chef_run).to start_service(pkg_name)
-
       expect(chef_run).to create_template("/etc/default/#{pkg_name}")
+
+      # service name is smartd, differing from Debian's defaults:
+      srv_name = 'smartd'
+      expect(chef_run).to enable_service(srv_name)
+      expect(chef_run).to start_service(srv_name)
     end
 
     it 'configures mail alerts' do
