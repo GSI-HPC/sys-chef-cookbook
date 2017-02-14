@@ -88,12 +88,11 @@ describe 'sys::autofs' do
     end
 
     it 'manages /etc/autofs_ldap_auth.conf' do
+      # actually this template is rather static and should be a cookbook_file
       expect(chef_run).to create_template('/etc/autofs_ldap_auth.conf')
                            .with_mode("0600")
-
-      expect(chef_run).to render_file('/etc/autofs_ldap_auth.conf').with_content(
-        "clientprinc=\"autofsclient/node.example.com@EXAMPLE.COM\""
-      )
+      expect(chef_run).to render_file('/etc/autofs_ldap_auth.conf')
+                           .with_content('credentialcache="/tmp/krb5cc_autofs"')
     end
 
     it 'manages /etc/default/autofs' do
