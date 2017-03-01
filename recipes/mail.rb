@@ -65,14 +65,15 @@ unless relay.empty?
     source 'etc_postfix_main.cf.erb'
     mode '0644'
     variables({
-      :relay           => relay,
-      :mynetworks      => node['sys']['mail']['mynetworks'],
-      :inet_interfaces => node['sys']['mail']['inet_interfaces'],
-      :default_privs   => node['sys']['mail']['default_privs'],
-      :mydestination   => node['sys']['mail']['mydestination'],
-      :relay_domains   => node['sys']['mail']['relay_domains'],
-      :message_size_limit => node['sys']['mail']['message_size_limit'],
-      :virtual_alias_maps => "hash:#{etc_postfix_virtual}"
+      relay:              relay,
+      mynetworks:         node['sys']['mail']['mynetworks'],
+      inet_interfaces:    node['sys']['mail']['inet_interfaces'],
+      ipv4_only:          node['sys']['mail']['disable_ipv6'],
+      default_privs:      node['sys']['mail']['default_privs'],
+      mydestination:      node['sys']['mail']['mydestination'],
+      relay_domains:      node['sys']['mail']['relay_domains'],
+      message_size_limit: node['sys']['mail']['message_size_limit'],
+      virtual_alias_maps: "hash:#{etc_postfix_virtual}"
     })
     # after changes to main.cf postfix - sometimes - has to be restarted
     notifies :restart, 'service[postfix]'
