@@ -4,10 +4,18 @@ sudo: required
 services: docker
 
 rvm:
-  - 2.1
-#  - 2.2
+#  - 2.1
+  - 2.2
+  - 2.3
 
 bundler_args: --without plugins
 
 env:
   - KITCHEN_LOCAL_YAML=.kitchen.docker.yml
+
+script:
+  - bundle exec rake --tasks
+  - bundle exec rake rubocop
+  - bundle exec rake foodcritic
+  - bundle exec rake chefspec
+  - bundle exec rake kitchen:all
