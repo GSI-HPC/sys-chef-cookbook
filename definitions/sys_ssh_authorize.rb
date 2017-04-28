@@ -21,7 +21,9 @@ define :sys_ssh_authorize, :keys => Array.new, :managed => false do
     getent_passwd = shell_out("getent passwd #{params[:name]}")
 
     # Does the user exist?
-    if node['etc']['passwd'].has_key?(account) or node['sys']['accounts'].has_key?(account) or (getent_passwd.exitstatus == 0)
+    if node['etc']['passwd'].has_key?(account) ||
+       node['sys']['accounts'].has_key?(account) ||
+       (getent_passwd.exitstatus == 0)
 
       if params[:keys].empty?
         raise "key(s) missing for account [#{account}]"
@@ -30,22 +32,19 @@ define :sys_ssh_authorize, :keys => Array.new, :managed => false do
           # path to the user SSH configuration
           dot_ssh = "#{node['etc']['passwd'][account].dir}/.ssh"
           gid     = node['etc']['passwd'][account].gid
-        elsif node['sys']['accounts'].has_key?(account)
-          # FIXME: account may not have a key home and we accidentally create '/.ssh' ...
+        elsif node['sys']['accounts'].key?(account) &&
+              node['sys']['accounts'][account].key?('home')
           dot_ssh = "#{node['sys']['accounts'][account]['home']}/.ssh"
           gid     = node['sys']['accounts'][account]['gid']
         elsif getent_passwd.exitstatus == 0
           parts = getent_passwd.stdout.split(':')
           dot_ssh = "#{parts[5]}/.ssh"
-          gid = parts[3].to_i
-
-          directory parts[5] do
-            owner account
-            group gid
-            mode "0750"
-            recursive true
-          end
+          gid     = parts[3].to_i
         else
+          raise "can't determine location of ~/.ssh for #{account}"
+        end
+
+        unless File.directory?(File.dirname(dot_ssh))
           raise "#{account} has no home dir"
         end
 
