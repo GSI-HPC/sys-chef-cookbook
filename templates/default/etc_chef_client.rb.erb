@@ -4,7 +4,7 @@
 #
 # This file is managed by the Chef `sys` cookbook.
 
-node_name        '<%= node.fqdn %>'
+node_name        '<%= node['fqdn'] %>'
 
 chef_server_url  '<%= @server_url %>'
 client_key       "<%= @client_key %>"
