@@ -56,6 +56,7 @@ if node['platform_version'].to_i >= 9 && !node['sys']['networkd'].empty?
       helpers(Sys::Harry)
       mode "0644"
       variables(:sections => {'Match' => {'MACAddress' => mac}, 'Link' => {'Name' => name}})
+      notifies :reload, "service[systemd-networkd]"
     end
   end
 
@@ -69,6 +70,7 @@ if node['platform_version'].to_i >= 9 && !node['sys']['networkd'].empty?
       helpers(Sys::Harry)
       mode "0644"
       variables(:sections => config)
+      notifies :reload, "service[systemd-networkd]"
     end
   end
 
@@ -82,6 +84,12 @@ if node['platform_version'].to_i >= 9 && !node['sys']['networkd'].empty?
       helpers(Sys::Harry)
       mode "0644"
       variables(:sections => config)
+      notifies :reload, "service[systemd-networkd]"
     end
+  end
+
+  service 'systemd-networkd' do
+    supports :status => true, :restart => true, :reload => true
+    action [:enable, :start]
   end
 end
