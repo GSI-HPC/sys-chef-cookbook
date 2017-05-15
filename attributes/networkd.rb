@@ -1,1 +1,1 @@
-node['sys']['networkd'] = {}
+default_unless['sys']['networkd'] = {}
