@@ -18,6 +18,10 @@ module Sys
         flags[:spaces_around_separator] = true
       end
 
+      if flags[:alignment].nil?
+        flags[:alignment] = true
+      end
+
       if flags[:separator].length == 0
         flags[:separator] = ' '
       end
@@ -34,12 +38,14 @@ module Sys
         max_key_length = section.keys.max_by {|e| e.length}.length
         section.each do |k, v|
           flags[:align] = ''
-          (max_key_length - k.length).times { flags[:align] << ' '}
+          if flags[:alignment]
+            (max_key_length - k.length).times { flags[:align] << ' '}
+          end
           render_harry_config(file, k, v, indent, flags)
         end
         file << "\n"
       end
-      return file.chop
+      return file.strip
     end
 
     def render_harry_config(config, key, value, indent, flags)
@@ -59,7 +65,9 @@ module Sys
         config << "#{indentation}#{key}#{flags[:align]}#{flags[:separator]}{\n"
         value.each do |k, v|
           flags[:align] = ''
-          (max_key_length - k.length).times { flags[:align] << ' '}
+          if flags[:alignment]
+            (max_key_length - k.length).times { flags[:align] << ' '}
+          end
           render_harry_config(config, k, v, indent + 1, flags)
         end
         config << "#{indentation}}\n"
