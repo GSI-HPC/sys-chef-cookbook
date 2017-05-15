@@ -13,10 +13,17 @@ module Sys
 
       flags[:separator] ||= '='
       flags[:separator].strip!
-      if flags[:separator].length > 0
-        flags[:separator].prepend(' ') << ' '
-      else
+
+      if flags[:spaces_around_separator].nil?
+        flags[:spaces_around_separator] = true
+      end
+
+      if flags[:separator].length == 0
         flags[:separator] = ' '
+      end
+
+      if flags[:spaces_around_separator]
+        flags[:separator].prepend(' ') << ' '
       end
 
       # Should not be set by user
