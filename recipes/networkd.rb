@@ -56,7 +56,9 @@ if node['platform_version'].to_i >= 9 && !node['sys']['networkd'].empty?
       helpers(Sys::Harry)
       mode "0644"
       variables(:sections => {'Match' => {'MACAddress' => mac}, 'Link' => {'Name' => name}})
-      notifies :reload, "service[systemd-networkd]"
+      notifies :reload, 'service[systemd-networkd]'
+      # initramfs needs to be updated, when systemd.link-files change.
+      notifies :run, 'execute[update-initramfs]'
     end
   end
 
@@ -91,5 +93,11 @@ if node['platform_version'].to_i >= 9 && !node['sys']['networkd'].empty?
   service 'systemd-networkd' do
     supports :status => true, :restart => true, :reload => true
     action [:enable, :start]
+  end
+
+  # initramfs needs to be updated, when systemd.link-files change.
+  execute 'update-initramfs' do
+    action :nothing
+    command 'update-initramfs -u'
   end
 end
