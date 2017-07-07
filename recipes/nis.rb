@@ -48,5 +48,3 @@ unless node['sys']['nis']['servers'].empty?
   end
 
 end
-
-package 'nscd' if node['sys']['nscd']['enable']

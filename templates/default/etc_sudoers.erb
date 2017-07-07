@@ -9,7 +9,7 @@ Defaults        mail_badpass
 Defaults        secure_path="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 
 # Host alias specification
-Host_Alias  LOCAL = <%= node.fqdn %>
+Host_Alias  LOCAL = <%= node['fqdn'] %>
 
 # User alias specification
 

@@ -32,14 +32,14 @@ mem_free_perc=$(free | grep Mem | awk '{printf "%.2f%%" ,  $4/$2 * 100.0}')
 mem_free_perccc=$(free | grep "buffers/cache" | awk '{printf "%.2f%%" ,  $4/($3+$4) * 100.0}')
 
 echo "
-Node:         <%= node.fqdn %> (<%= node.ipaddress %>)
-Platform:     <%= node.lsb.description if node.lsb.has_key? 'description' %>
+Node:         <%= node['fqdn'] %> (<%= node['ipaddress'] %>)
+Platform:     <%= node['lsb']['description'] if node['lsb'].has_key? 'description' %>
 <% unless Chef::Config[:solo] %>
 Chef-Server:  <%= Chef::Config.chef_server_url %>
 <% else %>
 Chef-Solo:    <%= Time.now %>
 <% end %>
-Run-list:     <%= node.run_list %>
+Run-list:     <%= node['run_list'] %>
 Tasks:        $procs
 Load:         $(cat /proc/loadavg | cut -d' ' -f1-3)
 CPU(s)%:      $cpus
