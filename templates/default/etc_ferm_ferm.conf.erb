@@ -3,7 +3,7 @@
 #  Configuration file for ferm(1), created by Chef cookbook sys::ferm
 #
 
-<% node.sys.ferm.rules.each do |domain, tables| -%>
+<% node['sys']['ferm']['rules'].each do |domain, tables| -%>
 domain <%= domain %> {
     <% tables.each do |table, chains| -%>
     table <%= table %> {
@@ -18,4 +18,3 @@ domain <%= domain %> {
     <% end -%>
 }
 <% end -%>
-

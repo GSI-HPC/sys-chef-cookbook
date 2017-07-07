@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # configure IPMI overheat protection on all IPMI nodes
 #
@@ -56,62 +56,72 @@ while getopts "c:e:h:u:p:s:w:" OPTION; do
     esac
 done
 
-shift $(($OPTIND - 1))
+shift $((OPTIND - 1))
 
-if [ "$REMOTE" ] && ! echo $REMOTE | grep -q " -p "; then
+if [ "$REMOTE" ] && ! echo "$REMOTE" | grep -q " -p "; then
     # fetch the user's password for all following upload operations - not very
     # secure - but better than typing ten times the password!
     echo -n "Enter IPMI password for user $USERNAME: "
     stty -echo
-    read PASSWORD
+    read -r PASSWORD
     stty echo
     echo
     REMOTE="$REMOTE -p $PASSWORD"
 fi
 
 if [ -z "$SENSOR" ]; then
-    if echo $REM_HOST | grep -q "[.*]"; then
-	# dynamic detection does not work for HOSTRANGE operations
-	#  therefore we hardcode this default:
-	SENSOR=4_System_Temp
+    if echo "$REM_HOST" | grep -q "[.*]"; then
+        # dynamic detection does not work for HOSTRANGE operations
+        #  therefore we hardcode this default:
+        SENSOR=4_System_Temp
     else
-	# we take the first sensor that suits our naming schema:
-	SENSOR=`/usr/sbin/ipmi-sensors-config ${REMOTE} --listsections | egrep  "^[0-9]+_(Sys(tem)?|Ambient|Baseboard)_Temp\.?$" | head -1`
+        # we take the first sensor that suits our naming schema:
+        SENSOR=$(/usr/sbin/ipmi-sensors-config "$REMOTE" --listsections |
+                        egrep "^[0-9]+_(Sys(tem)?|Ambient|Baseboard)_Temp\.?$" |
+                        head -1)
     fi
 fi
 
 if [ -z "$SENSOR" ]; then
-   echo "No suitable sensor for overheat protection found, try specifing one with -s" >&2
-   exit 1
+    echo "No suitable sensor for overheat protection found, "\
+         "try specifing one with -s" >&2
+    exit 1
 fi
 
 # The number contained in ipmi-sensors-config's output is the "Sensor Record ID"
 #  this is not neccessarily the sensor number required for pef-config
 #  therefore we have to obtain the right number:
-SENSOR_NUM=`/usr/sbin/ipmi-sensors -vs ${SENSOR%%_*} | sed -ne "s/^Sensor Number: \([0-9]\+\)/\1/p"`
+SENSOR_NUM=$(/usr/sbin/ipmi-sensors -vs "${SENSOR%%_*}" |
+                    sed -ne "s/^Sensor Number: \([0-9]\+\)/\1/p")
 
 # setup sane temperature thresholds
 #  somtimes these thresholds are volatile and have to be reset after power loss/reset of the BMC
-/usr/sbin/ipmi-sensors-config ${REMOTE} --commit -e ${SENSOR}:Upper_Non_Critical_Threshold=${THRESH_WARN}
-/usr/sbin/ipmi-sensors-config ${REMOTE} --commit -e ${SENSOR}:Upper_Critical_Threshold=${THRESH_CRIT}
+/usr/sbin/ipmi-sensors-config "$REMOTE" --commit -e "${SENSOR}:Upper_Non_Critical_Threshold=${THRESH_WARN}"
+/usr/sbin/ipmi-sensors-config "$REMOTE" --commit -e "${SENSOR}:Upper_Critical_Threshold=${THRESH_CRIT}"
+
+PEF_CONFIG="/usr/sbin/pef-config $REMOTE"
+
+# Turn on PEF and power down action globally, no shutdown will happen otherwise
+${PEF_CONFIG} --commit -e PEF_Conf:Enable_PEF=Yes
+${PEF_CONFIG} --commit -e PEF_Conf:Enable_Power_Down_Action=Yes
 
 # we use rule #16 as the default , because event filters  #1 - #15 are
 #  "Manufacturer_Pre_Configured" on some BMCs and therefore read-only
 EVENT_FILTER="Event_Filter_${FILTER_NUM}"
 
-/usr/sbin/pef-config ${REMOTE} --commit -e ${EVENT_FILTER}:Sensor_Type=Temperature
-/usr/sbin/pef-config ${REMOTE} --commit -e ${EVENT_FILTER}:Event_Severity=Critical
-/usr/sbin/pef-config ${REMOTE} --commit -e ${EVENT_FILTER}:Event_Filter_Action_Power_Off=yes
-/usr/sbin/pef-config ${REMOTE} --commit -e ${EVENT_FILTER}:Enable_Filter=yes
+${PEF_CONFIG} --commit -e ${EVENT_FILTER}:Sensor_Type=Temperature
+${PEF_CONFIG} --commit -e ${EVENT_FILTER}:Event_Severity=Critical
+${PEF_CONFIG} --commit -e ${EVENT_FILTER}:Event_Filter_Action_Power_Off=yes
+${PEF_CONFIG} --commit -e ${EVENT_FILTER}:Enable_Filter=yes
 
-/usr/sbin/pef-config ${REMOTE} --commit -e ${EVENT_FILTER}:Generator_Id_Byte_1=0xFF
-/usr/sbin/pef-config ${REMOTE} --commit -e ${EVENT_FILTER}:Generator_Id_Byte_2=0xFF
-/usr/sbin/pef-config ${REMOTE} --commit -e ${EVENT_FILTER}:Sensor_Number=${SENSOR_NUM}
-/usr/sbin/pef-config ${REMOTE} --commit -e ${EVENT_FILTER}:Event_Trigger=0xFF
-/usr/sbin/pef-config ${REMOTE} --commit -e ${EVENT_FILTER}:Event_Data1_Offset_Mask=0xFFFF
-/usr/sbin/pef-config ${REMOTE} --commit -e ${EVENT_FILTER}:Event_Data1_Compare1=0xFF
-/usr/sbin/pef-config ${REMOTE} --commit -e ${EVENT_FILTER}:Event_Data2_Compare1=0xFF
-/usr/sbin/pef-config ${REMOTE} --commit -e ${EVENT_FILTER}:Event_Data3_Compare1=0xFF
+${PEF_CONFIG} --commit -e ${EVENT_FILTER}:Generator_Id_Byte_1=0xFF
+${PEF_CONFIG} --commit -e ${EVENT_FILTER}:Generator_Id_Byte_2=0xFF
+${PEF_CONFIG} --commit -e "${EVENT_FILTER}:Sensor_Number=${SENSOR_NUM}"
+${PEF_CONFIG} --commit -e ${EVENT_FILTER}:Event_Trigger=0xFF
+${PEF_CONFIG} --commit -e ${EVENT_FILTER}:Event_Data1_Offset_Mask=0xFFFF
+${PEF_CONFIG} --commit -e ${EVENT_FILTER}:Event_Data1_Compare1=0xFF
+${PEF_CONFIG} --commit -e ${EVENT_FILTER}:Event_Data2_Compare1=0xFF
+${PEF_CONFIG} --commit -e ${EVENT_FILTER}:Event_Data3_Compare1=0xFF
 
 # clean up
 PASSWORD="_____oh_____yes_____this_____once_____was_____a_____password_____"
