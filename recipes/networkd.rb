@@ -22,8 +22,12 @@ if node['platform_version'].to_i >= 9 && !node['sys']['networkd'].empty?
   delete = Dir.glob('/etc/systemd/network/*')
   keep = []
 
-  node['sys']['networkd']['rename'].each do |_, name|
-    keep << "00-#{name}.link"
+  node['sys']['networkd']['link'].each do |name, config|
+    number_prefix = ''
+    unless name.match(/^[0-9]{2}-/)
+      number_prefix = '00-'
+    end
+    keep << "#{number_prefix}#{name}.link"
   end
 
   node['sys']['networkd']['netdev'].each do |name, config|
@@ -50,12 +54,17 @@ if node['platform_version'].to_i >= 9 && !node['sys']['networkd'].empty?
     end
   end
 
-  node['sys']['networkd']['rename'].each do |mac, name|
-    template "/etc/systemd/network/00-#{name}.link" do
+  node['sys']['networkd']['link'].each do |name, config|
+    number_prefix = ''
+    unless name.match(/^[0-9]{2}-/)
+      number_prefix = '00-'
+    end
+
+    template "/etc/systemd/network/#{number_prefix}#{name}.link" do
       source "systemd_networkd_generic.erb"
       helpers(Sys::Harry)
       mode "0644"
-      variables(:sections => {'Match' => {'MACAddress' => mac}, 'Link' => {'Name' => name}})
+      variables(:sections => config)
       notifies :reload, 'service[systemd-networkd]'
       # initramfs needs to be updated, when systemd.link-files change.
       notifies :run, 'execute[update-initramfs]'
