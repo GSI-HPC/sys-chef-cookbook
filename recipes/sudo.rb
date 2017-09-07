@@ -56,7 +56,7 @@ elsif ! node['sys']['sudo_ldap'].empty?
   end
 
   template '/etc/sudoers' do
-    source 'etc/sudoers_ldap.erb'
+    source 'etc_sudoers_ldap.erb'
     owner 'root'
     group 'root'
     mode '0400'
