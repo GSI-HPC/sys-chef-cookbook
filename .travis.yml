@@ -4,14 +4,17 @@ sudo: required
 services: docker
 
 rvm:
-#  - 2.1
-  - 2.2
+  - 1.9
+  - 2.1
   - 2.3
 
 bundler_args: --without plugins
 
 env:
   - KITCHEN_LOCAL_YAML=.kitchen.docker.yml
+  - CHEF_VERSION=12.0.3
+  - CHEF_VERSION=12.3.0
+  - CHEF_VERSION=12.14.60
 
 script:
   - bundle exec rake --tasks
