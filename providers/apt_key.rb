@@ -49,7 +49,7 @@ action :add do
     deploy_flag = false if fingerprints.include? fingerprint
   end
 
-  ruby_block "Add APT key with fingerpint #{fingerprint}" do
+  ruby_block "Add APT key with fingerprint #{fingerprint}" do
     block do
       cmd = Mixlib::ShellOut.new("echo '#{newkey}' | apt-key add - >/dev/null")
       cmd.run_command

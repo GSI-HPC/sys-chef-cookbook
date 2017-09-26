@@ -10,5 +10,5 @@ K5START_START="yes"
 # Options for k5start.
 K5START_KEYTAB=/etc/nslcd.keytab
 K5START_CCREFRESH=60
-K5START_PRINCIPAL='nslcd/<%= node.fqdn %>'
+K5START_PRINCIPAL='nslcd/<%= node['fqdn'] %>'
 K5START_CCFILE='/tmp/krb5cc_nslcd'
