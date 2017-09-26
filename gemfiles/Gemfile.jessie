@@ -1,10 +1,12 @@
 source 'http://rubygems.org'
 
+ruby "2.1.5"
+
 group :development do
   gem 'rake'
   gem 'rubocop'
   gem 'foodcritic'
-  gem 'berkshelf'
+  gem 'berkshelf', '< 6'
   gem 'chef'
   gem 'chefspec'
   gem 'test-kitchen'

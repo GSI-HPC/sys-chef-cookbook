@@ -5,22 +5,15 @@ dist: trusty
 
 services: docker
 
-rvm:
-  #- 1.9.3
-  - 2.1.5
-  - 2.3.3
-  - 2.4
-
 bundler_args: --without plugins
+
+gemfile:
+  - gemfiles/Gemfile.jessie
+  - Gemfile
 
 env:
   global:
     - KITCHEN_LOCAL_YAML=.kitchen.docker.yml
-  matrix:
-    - CHEF_VERSION=12.0.3
-    - CHEF_VERSION=12.3.0
-    - CHEF_VERSION=12.14.60
-    - CHEF_VERSION=
 
 script:
   - bundle exec rake --tasks
