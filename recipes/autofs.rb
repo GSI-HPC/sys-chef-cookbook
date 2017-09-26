@@ -109,7 +109,7 @@ if ! node['sys']['autofs']['ldap'].empty? && File.exist?('/usr/bin/kinit')
       else
         browsemode = "no"
       end
-    rescue
+    rescue NoMethodError
       browsemode = "no"
     end
 

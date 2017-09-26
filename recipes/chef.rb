@@ -50,9 +50,9 @@ begin
     # fallback for figuring out the chef server url following the "old" conventions
     #  introduced by the chef cookbook
     if node['chef']['server']['ssl']
-      server_url = 'https://#{server}:443'
+      server_url = "https://#{server}:443"
     else
-      server_url = 'http://#{server}:4000'
+      server_url = "http://#{server}:4000"
     end
   end
 rescue ArgumentError => e
