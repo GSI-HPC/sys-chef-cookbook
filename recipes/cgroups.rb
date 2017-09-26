@@ -32,7 +32,7 @@ unless node['sys']['cgroups']['path'].empty?
     path = "#{node['sys']['cgroups']['path']}/#{subsys}"
     subsystems << "#{subsys} = #{path}"
     # check if the mount is present already
-    cmd = Mixlib::ShellOut('grep " #{path} " /proc/mounts 1>-')
+    cmd = Mixlib::ShellOut("grep ' #{path} ' /proc/mounts 1>-")
     cmd.run_command
     # if not trigger configuration
     run_config_cgroups = true if cmd.status != 0
