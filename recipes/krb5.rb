@@ -41,13 +41,13 @@ unless node['sys']['krb5'].empty?
       mode "0644"
       variables(
         :realm => node['sys']['krb5']['realm'].upcase,
-        :realms => begin node['sys']['krb5']['realms'] || [] rescue [] end,
+        :realms => begin node['sys']['krb5']['realms'] || [] rescue NoMethodError [] end,
         :admin_server => node['sys']['krb5']['admin_server'],
         :servers => [ node['sys']['krb5']['master'], node['sys']['krb5']['slave'] ],
         :domain => node['domain'],
-        :wallet_server => begin node['sys']['krb5']['wallet_server'] rescue nil end,
-        :use_pkinit => begin node['sys']['krb5']['use_pkinit'] rescue nil end,
-        :libdefaults => begin node['sys']['krb5']['libdefaults'] rescue nil end
+        :wallet_server => begin node['sys']['krb5']['wallet_server'] rescue NoMethodError nil end,
+        :use_pkinit => begin node['sys']['krb5']['use_pkinit'] rescue NoMethodError nil end,
+        :libdefaults => begin node['sys']['krb5']['libdefaults'] rescue NoMethodError nil end
       )
     end
   end
