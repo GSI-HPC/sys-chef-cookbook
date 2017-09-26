@@ -22,7 +22,7 @@ if node['platform_version'].to_i >= 9 && !node['sys']['networkd'].empty?
   delete = Dir.glob('/etc/systemd/network/*')
   keep = []
 
-  node['sys']['networkd']['link'].each do |name, config|
+  node['sys']['networkd']['link'].keys do |name|
     number_prefix = ''
     unless name.match(/^[0-9]{2}-/)
       number_prefix = '00-'
@@ -30,7 +30,7 @@ if node['platform_version'].to_i >= 9 && !node['sys']['networkd'].empty?
     keep << "#{number_prefix}#{name}.link"
   end
 
-  node['sys']['networkd']['netdev'].each do |name, config|
+  node['sys']['networkd']['netdev'].keys do |name|
     number_prefix = ''
     unless name.match(/^[0-9]{2}-/)
       number_prefix = '10-'
@@ -38,7 +38,7 @@ if node['platform_version'].to_i >= 9 && !node['sys']['networkd'].empty?
     keep << "#{number_prefix}#{name}.netdev"
   end
 
-  node['sys']['networkd']['network'].each do |name, config|
+  node['sys']['networkd']['network'].keys do |name|
     number_prefix = ''
     unless name.match(/^[0-9]{2}-/)
       number_prefix = '20-'

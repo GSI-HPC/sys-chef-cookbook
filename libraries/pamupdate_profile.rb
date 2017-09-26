@@ -16,7 +16,7 @@ class PamUpdate
     end
 
     private
-    attr_reader :filename, :content
+    attr_reader :content
     attr_accessor :filename
     attr_writer :fields
 
