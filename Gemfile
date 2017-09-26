@@ -1,18 +1,17 @@
 source 'http://rubygems.org'
 
-platform :ruby_19 do
+platforms :ruby_19, :ruby_21 do
   gem 'berkshelf', '< 6.0'
 end
 
-platform :ruby_21 do
-  gem 'berkshelf', '< 6.0'
+platforms :ruby_23, :ruby_24 do
+  gem 'berkshelf'
 end
 
 group :development do
   gem 'rake'
   gem 'rubocop'
   gem 'foodcritic'
-  gem "berkshelf"
   gem 'chef'
   gem 'chefspec'
   gem 'test-kitchen'
