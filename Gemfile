@@ -1,5 +1,13 @@
 source 'http://rubygems.org'
 
+platform :ruby_19 do
+  gem 'berkshelf', '< 6.0'
+end
+
+platform :ruby_21 do
+  gem 'berkshelf', '< 6.0'
+end
+
 group :development do
   gem 'rake'
   gem 'rubocop'
