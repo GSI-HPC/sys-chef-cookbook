@@ -11,12 +11,16 @@ rvm:
   - 2.3
 
 gemfile:
-  - gemfiles/Gemfile.jessie
+  # - gemfiles/Gemfile.jessie
   - Gemfile
 
 env:
   global:
     - KITCHEN_LOCAL_YAML=.kitchen.docker.yml
+  matrix:
+    - CHEF_VERSION=12.0.3
+    - CHEF_VERSION=12.14.60
+    - CHEF_VERSION=
 
 script:
   - bundle exec rake --tasks
