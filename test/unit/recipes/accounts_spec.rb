@@ -95,7 +95,7 @@ describe 'sys::accounts' do
       expect(u5.manage_home).to be
       expect(chef_run).to create_user('u2')
       u2 = chef_run.find_resource(:user, 'u2')
-      expect(u2.manage_home]).to be
+      expect(u2.manage_home).to be
     end
 
     it 'merges attributes with data bag item' do
