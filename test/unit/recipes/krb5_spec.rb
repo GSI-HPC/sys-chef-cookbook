@@ -25,7 +25,6 @@ describe 'sys::krb5' do
     it 'installs packages' do
       expect(chef_run).to install_package('heimdal-clients')
       expect(chef_run).to install_package('libpam-heimdal')
-      expect(chef_run).to install_package('heimdal-kcm')
       expect(chef_run).to install_package('heimdal-docs')
       expect(chef_run).to install_package('libsasl2-modules-gssapi-heimdal')
       expect(chef_run).to install_package('kstart')
@@ -58,7 +57,7 @@ describe 'sys::krb5' do
   context 'with wallet and pkinit attributes' do
     cached(:chef_run) do
       ChefSpec::SoloRunner.new do |node|
-        node.default.sys.krb5.realm = "example.com"
+        node.default['sys']['krb5']['realm'] = "example.com"
         node.default['sys']['krb5']['admin_server'] = "master.example.com"
         node.default['sys']['krb5']['master'] = "master.example.com"
         node.default['sys']['krb5']['slave'] = "slave.example.com"
