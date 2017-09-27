@@ -92,10 +92,10 @@ describe 'sys::accounts' do
     it 'adds and honors :manage_home flag' do
       expect(chef_run).to create_user('u5')
       u5 = chef_run.find_resource(:user, 'u5')
-      expect(u5.supports[:manage_home]).to be
+      expect(u5.manage_home).to be
       expect(chef_run).to create_user('u2')
       u2 = chef_run.find_resource(:user, 'u2')
-      expect(u2.supports[:manage_home]).to be
+      expect(u2.manage_home]).to be
     end
 
     it 'merges attributes with data bag item' do
