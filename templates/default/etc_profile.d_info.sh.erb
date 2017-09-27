@@ -39,7 +39,7 @@ Chef-Server:  <%= Chef::Config.chef_server_url %>
 <% else %>
 Chef-Solo:    <%= Time.now %>
 <% end %>
-Run-list:     <%= node['run_list'] %>
+Run-list:     <%= node.run_list %>
 Tasks:        $procs
 Load:         $(cat /proc/loadavg | cut -d' ' -f1-3)
 CPU(s)%:      $cpus
