@@ -7,6 +7,9 @@ services: docker
 
 bundler_args: --without plugins
 
+rvm:
+  - 2.1
+
 gemfile:
   - gemfiles/Gemfile.jessie
   - Gemfile
