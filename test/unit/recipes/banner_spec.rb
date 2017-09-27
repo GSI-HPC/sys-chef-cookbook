@@ -1,7 +1,7 @@
 describe 'sys::banner' do
   cached(:chef_run) { ChefSpec::SoloRunner.new.converge(described_recipe) }
 
-  context 'node.sys.banner.message is empty' do
+  context "node['sys']['banner']['message'] is empty" do
     it 'does nothing' do
       expect(chef_run.run_context.resource_collection).to be_empty
     end
@@ -36,10 +36,10 @@ describe 'sys::banner' do
 
     it 'prints all Strings in the Array on a seperate line' do
       expect(chef_run).to create_template('/etc/motd').with_variables(
-        :header => chef_run.node.sys.banner.header,
+        :header => chef_run.node['sys']['banner']['header'],
         :message => @expected_message,
-        :service_properties => chef_run.node.sys.banner.service_properties,
-        :footer => chef_run.node.sys.banner.footer)
+        :service_properties => chef_run.node['sys']['banner']['service_properties'],
+        :footer => chef_run.node['sys']['banner']['footer'])
     end
   end
 
