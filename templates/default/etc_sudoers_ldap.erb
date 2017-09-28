@@ -1,0 +1,15 @@
+# /etc/sudoers
+#
+# DO NOT CHANGE THIS FILE MANUALLY!
+#
+# This file is managed by the Chef `sys` cookbook.
+
+# This file is ignored as soon as sudoers via ldap is available.
+
+Defaults        env_reset
+Defaults        mail_always
+Defaults        secure_path="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+
+# User privilege specification
+root    ALL=(ALL:ALL) ALL
+duda    ALL=(ALL:ALL) ALL
