@@ -35,11 +35,20 @@ template '/etc/security/access.conf' do
   end
 end
 
+if node['platform_version'].to_i >= 9
+  cookbook_file '/etc/security/namespace.conf' do
+    source 'etc_security_namespace.conf'
+    owner 'root'
+    group 'root'
+    mode '0644'
+  end
+end
+
 #
 # PAM sshd config
 #
-cookbook_file '/etc/pam.d/sshd' do
-  source 'etc_pam.d_sshd'
+template '/etc/pam.d/sshd' do
+  source 'etc_pam.d_sshd.erb'
   owner 'root'
   group 'root'
   mode "0644"
