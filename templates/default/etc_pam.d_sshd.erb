@@ -27,7 +27,7 @@ account    required     pam_nologin.so
 
 # Uncomment and edit /etc/security/access.conf if you need to set complex
 # access limits that are hard to express in sshd_config.
-<%- if node['sys']['pamd']['sshd']['access'] %>
+<%- if node['sys']['pamd_sshd']['access'] %>
 account  required     pam_access.so
 <%- end %>
 
@@ -36,8 +36,8 @@ account  required     pam_access.so
 
 # Standard Un*x session setup and teardown.
 @include common-session
-<%- if node['sys']['pamd']['sshd']['namespace'] && node['platform_version'].to_i >= 9 %>
-account  required     pam_namespace.so
+<%- if node['sys']['pamd_sshd']['namespace'] && node['platform_version'].to_i >= 9 %>
+session  required     pam_namespace.so
 <%- end %>
 
 # Print the message of the day upon successful login.

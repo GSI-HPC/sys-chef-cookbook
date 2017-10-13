@@ -54,7 +54,7 @@ template '/etc/pam.d/sshd' do
   mode "0644"
   only_if do
     ::File.exist?('/etc/ssh/sshd_config') &&
-      node['sys']['pamd'].key?('sshd')
+      node['sys']['pamd_sshd']
   end
 end
 
