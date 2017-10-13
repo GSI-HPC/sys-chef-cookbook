@@ -1,0 +1,18 @@
+[Unit]
+Description=Automounts filesystems on demand
+After=network.target ypbind.service sssd.service network-online.target remote-fs.target
+After=k5start-autofs.service
+BindsTo=k5start-autofs.service
+Requires=network-online.target
+Before=xdm.service
+
+[Service]
+Type=forking
+PIDFile=/var/run/autofs.pid
+EnvironmentFile=-/etc/default/autofs
+ExecStart=/usr/sbin/automount $OPTIONS --pid-file /var/run/autofs.pid
+ExecReload=/bin/kill -HUP $MAINPID
+TimeoutSec=180
+
+[Install]
+WantedBy=gsi-remote.target

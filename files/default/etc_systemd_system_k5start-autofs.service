@@ -1,0 +1,16 @@
+[Unit]
+Description=Maintain Ticket-Cache for autofs
+Documentation=man:k5start(1)
+Documentation=man:autofs(8)
+After=network-online.target
+Requires=network-online.target
+Before=autofs.service
+
+[Service]
+Type=forking
+ExecStart=/usr/bin/k5start -b -L -F -f /etc/autofs.keytab -K 60 -k /tmp/krb5cc_autofs -U -x
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=gsi-remote.target

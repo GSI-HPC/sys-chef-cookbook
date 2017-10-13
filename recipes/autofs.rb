@@ -122,13 +122,40 @@ if ! node['sys']['autofs']['ldap'].empty? && File.exist?('/usr/bin/kinit')
     notifies :restart, 'service[autofs]', :delayed
   end
 
-  cookbook_file "/etc/init.d/autofs" do
-    source "etc_init.d_autofs"
-    mode "0755"
-    notifies :restart, 'service[autofs]', :delayed
+  if node['platform_version'].to_i >= 9
+    cookbook_file '/etc/systemd/system/autofs.service' do
+      source 'etc_systemd_system_autofs.service'
+      mode '0644'
+      notifies :run, 'execute[systemctl daemon-reload]'
+      notifies :restart, 'service[autofs]'
+    end
+
+    cookbook_file '/etc/systemd/system/k5start-autofs.service' do
+      source 'etc_systemd_system_k5start-autofs.service'
+      mode '0644'
+      notifies :run, 'execute[systemctl daemon-reload]'
+      notifies :restart, 'service[k5start-autofs]'
+    end
+
+    service 'k5start-autofs' do
+      supports :restart => true, :reload => true
+      action [:enable, :start]
+    end
+
+    execute 'systemctl daemon-reload' do
+      action :nothing
+      command '/bin/systemctl daemon-reload'
+    end
+  else
+    cookbook_file "/etc/init.d/autofs" do
+      source "etc_init.d_autofs"
+      mode "0755"
+      notifies :restart, 'service[autofs]', :delayed
+    end
   end
 
   service 'autofs' do
     supports :restart => true, :reload => true
+    action [:enable, :start]
   end
 end
