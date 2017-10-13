@@ -112,6 +112,7 @@ if ! node['sys']['ldap'].empty? && File.exist?('/usr/bin/kinit')
   # false.  Work around that.
   actions = [:start]
   actions << :enable if Dir.glob('/etc/rc2.d/*nslcd*').empty?
+  actions << :enable if node['platform_version'].to_i >= 9
 
   service "nslcd" do
     supports :restart => true
