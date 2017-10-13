@@ -1,0 +1,17 @@
+[Unit]
+Description=Maintain Ticket-Cache for nslcd
+Documentation=man:k5start(1)
+Documentation=man:nslcd(8)
+After=network-online.target
+Requires=network-online.target
+Before=nslcd.service
+
+[Service]
+Type=forking
+ExecStart=/usr/bin/k5start -b -L -F -o nslcd -g nslcd -f /etc/nslcd.keytab -K 60 -k /tmp/krb5cc_nslcd -U -x
+Restart=always
+RestartSec=5
+PrivateTmp=yes
+
+[Install]
+WantedBy=gsi-remote.target
