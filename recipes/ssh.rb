@@ -28,7 +28,7 @@ sshd_config['Subsystem'] = 'sftp /usr/lib/openssh/sftp-server'
 sshd_config['HostKey'] = ['/etc/ssh/ssh_host_rsa_key', '/etc/ssh/ssh_host_ecdsa_key']
 sshd_config['UseDNS'] = 'yes'                             if node['platform_version'].to_i >= 9
 sshd_config['HostKey'] << '/etc/ssh/ssh_host_ed25519_key' if node['platform_version'].to_i >= 8
-sshd_config['PermitRootLogin'] = 'prohibit-password'      if node['platform_version'].to_i < 9
+sshd_config['PermitRootLogin'] = 'without-password'      if node['platform_version'].to_i < 9
 
 # only if SSH daemon configuration is defined
 unless node['sys']['sshd']['config'].empty?
@@ -42,7 +42,7 @@ unless node['sys']['sshd']['config'].empty?
     source 'etc_ssh_sshd_config.erb'
     mode '0644'
     variables :config => sshd_config
-    notifies :reload, 'service[ssh]'
+    notifies :restart, 'service[ssh]'
   end
 end
 
