@@ -29,6 +29,7 @@ sshd_config['HostKey'] = ['/etc/ssh/ssh_host_rsa_key', '/etc/ssh/ssh_host_ecdsa_
 sshd_config['UseDNS'] = 'yes'                             if node['platform_version'].to_i >= 9
 sshd_config['HostKey'] << '/etc/ssh/ssh_host_ed25519_key' if node['platform_version'].to_i >= 8
 sshd_config['PermitRootLogin'] = 'without-password'      if node['platform_version'].to_i < 9
+sshd_config['AddressFamily'] = 'inet'
 
 # only if SSH daemon configuration is defined
 unless node['sys']['sshd']['config'].empty?
