@@ -20,7 +20,7 @@
 #
 # access rules
 #
-if node['sys']['pam']['access']
+if node['sys']['pam']['access'] # ~FC023 Do not break conventions in sys
   template '/etc/security/access.conf' do
     source 'etc_security_access.conf.erb'
     owner 'root'
@@ -33,7 +33,7 @@ if node['sys']['pam']['access']
   end
 end
 
-if node['platform_version'].to_i >= 9
+if node['platform_version'].to_i >= 9 # ~FC023 Do not break conventions in sys
   cookbook_file '/etc/security/namespace.conf' do
     source 'etc_security_namespace.conf'
     owner 'root'
@@ -45,7 +45,7 @@ end
 #
 # PAM sshd config
 #
-if node['sys']['pamd']['sshd']
+if node['sys']['pamd']['sshd'] # ~FC023 Do not break conventions in sys
   template '/etc/pam.d/sshd' do
     source 'etc_pam.d_sshd.erb'
     owner 'root'
@@ -60,7 +60,7 @@ end
 #
 # PAM login config
 #
-if node['sys']['pamd']['login']
+if node['sys']['pamd']['login'] # ~FC023 Do not break conventions in sys
   template '/etc/pam.d/login' do
     source 'etc_pam.d_login.erb'
     owner 'root'
@@ -72,7 +72,7 @@ end
 #
 # resource limits
 #
-unless node['sys']['pam']['limits'].empty?
+unless node['sys']['pam']['limits'].empty? # ~FC023 Do not break conventions in sys
   template '/etc/security/limits.conf' do
     source 'etc_security_limits.conf.erb'
     owner 'root'
@@ -85,7 +85,7 @@ end
 #
 # dynamic group membership
 #
-unless node['sys']['pam']['group'].empty?
+unless node['sys']['pam']['group'].empty? # ~FC023 Do not break conventions in sys
   template '/etc/security/group.conf' do
     source 'etc_security_group.conf.erb'
     owner 'root'
