@@ -64,8 +64,8 @@ end
 # PAM login config
 #
 if node['sys']['pamd']['login']
-  cookbook_file '/etc/pam.d/login' do
-    source 'etc_pam.d_login'
+  template '/etc/pam.d/login' do
+    source 'etc_pam.d_login.erb'
     owner 'root'
     group 'root'
     mode "0644"
