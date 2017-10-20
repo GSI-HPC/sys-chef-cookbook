@@ -20,18 +20,19 @@
 #
 # access rules
 #
-template '/etc/security/access.conf' do
-  source 'etc_security_access.conf.erb'
-  owner 'root'
-  group 'root'
-  mode "0600"
-  variables(
-    rules:   node['sys']['pam']['access'],
-    default: node['sys']['pam']['access_default']
-  )
-  only_if do
-    node['sys']['pam']['access'] ||
+if node['sys']['pam']['access']
+  template '/etc/security/access.conf' do
+    source 'etc_security_access.conf.erb'
+    owner 'root'
+    group 'root'
+    mode "0600"
+    variables(
+      rules:   node['sys']['pam']['access'],
+      default: node['sys']['pam']['access_default']
+    )
+    only_if do
       node['sys']['pam']['access_default'] == 'deny'
+    end
   end
 end
 
@@ -47,65 +48,53 @@ end
 #
 # PAM sshd config
 #
-template '/etc/pam.d/sshd' do
-  source 'etc_pam.d_sshd.erb'
-  owner 'root'
-  group 'root'
-  mode "0644"
-  only_if do
-    ::File.exist?('/etc/ssh/sshd_config') &&
-      node['sys']['pamd_sshd']
+if node['sys']['pamd']['sshd']
+  template '/etc/pam.d/sshd' do
+    source 'etc_pam.d_sshd.erb'
+    owner 'root'
+    group 'root'
+    mode "0644"
+    only_if do
+      ::File.exist?('/etc/ssh/sshd_config')
+    end
   end
 end
 
 #
 # PAM login config
 #
-cookbook_file '/etc/pam.d/login' do
-  source 'etc_pam.d_login'
-  owner 'root'
-  group 'root'
-  mode "0644"
-  not_if { node['sys']['pamd'].key?('login') }
+if node['sys']['pamd']['login']
+  cookbook_file '/etc/pam.d/login' do
+    source 'etc_pam.d_login'
+    owner 'root'
+    group 'root'
+    mode "0644"
+  end
 end
 
 #
 # resource limits
 #
-template '/etc/security/limits.conf' do
-  source 'etc_security_limits.conf.erb'
-  owner 'root'
-  group 'root'
-  mode "0644"
-  variables :rules => node['sys']['pam']['limits']
-  not_if { node['sys']['pam']['limits'].empty? }
+unless node['sys']['pam']['limits'].empty?
+  template '/etc/security/limits.conf' do
+    source 'etc_security_limits.conf.erb'
+    owner 'root'
+    group 'root'
+    mode "0644"
+    variables :rules => node['sys']['pam']['limits']
+  end
 end
 
 #
 # dynamic group membership
 #
-template '/etc/security/group.conf' do
-  source 'etc_security_group.conf.erb'
-  owner 'root'
-  group 'root'
-  mode "0644"
-  variables :rules => node['sys']['pam']['group']
-  not_if {  node['sys']['pam']['group'].empty? } # ~FC023 Do not break conventions in sys
-end
-
-unless node['sys']['pamd'].empty?
-  node['sys']['pamd'].each do |name, contents|
-    template "/etc/pam.d/#{name}" do
-      source 'etc_pam.d_generic.erb'
-      owner 'root'
-      group 'root'
-      mode "0644"
-      variables(
-        # remove leading spaces, and empty lines
-        :rules => contents.gsub(/^ */, '').gsub(/^$\n/, ''),
-        :name => name
-      )
-    end
+unless node['sys']['pam']['group'].empty?
+  template '/etc/security/group.conf' do
+    source 'etc_security_group.conf.erb'
+    owner 'root'
+    group 'root'
+    mode "0644"
+    variables :rules => node['sys']['pam']['group']
   end
 end
 
