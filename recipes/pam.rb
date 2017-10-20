@@ -30,9 +30,6 @@ if node['sys']['pam']['access']
       rules:   node['sys']['pam']['access'],
       default: node['sys']['pam']['access_default']
     )
-    only_if do
-      node['sys']['pam']['access_default'] == 'deny'
-    end
   end
 end
 
