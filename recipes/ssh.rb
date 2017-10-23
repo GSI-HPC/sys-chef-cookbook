@@ -17,53 +17,33 @@
 # limitations under the License.
 #
 
-# default SSH daemon configuration copied from the original file
-sshd_config = {
-  "Port" => "22",
-  "Protocol" => "2",
-  "HostKey" => [
-    "/etc/ssh/ssh_host_rsa_key",
-    "/etc/ssh/ssh_host_dsa_key",
-    "/etc/ssh/ssh_host_ecdsa_key"
-  ],
-  "UsePrivilegeSeparation" => "yes",
-  "KeyRegenerationInterval" => "3600",
-  "ServerKeyBits" => "768",
-  "SyslogFacility" => "AUTH",
-  "LogLevel" => "INFO",
-  "LoginGraceTime" => "120",
-  "PermitRootLogin" => "yes",
-  "StrictModes" => "yes",
-  "RSAAuthentication" => "yes",
-  "PubkeyAuthentication" => "yes",
-  "IgnoreRhosts" => "yes",
-  "RhostsRSAAuthentication" => "no",
-  "HostbasedAuthentication" => "no",
-  "PermitEmptyPasswords" => "no",
-  "ChallengeResponseAuthentication" => "no",
-  "X11Forwarding" => "yes",
-  "X11DisplayOffset" => "10",
-  "PrintMotd" => "no",
-  "PrintLastLog" => "yes",
-  "TCPKeepAlive" => "yes",
-  "AcceptEnv" => "LANG LC_*",
-  "Subsystem" => "sftp /usr/lib/openssh/sftp-server",
-  "UsePAM" => "yes"
-}
+# default SSH
+sshd_config = {}
+sshd_config['UsePAM'] = 'yes'
+sshd_config['ChallengeResponseAuthentication'] = 'no'
+sshd_config['X11Forwarding'] = 'yes'
+sshd_config['PrintMotd'] = 'no'
+sshd_config['AcceptEnv'] = 'LANG LC_*'
+sshd_config['Subsystem'] = 'sftp /usr/lib/openssh/sftp-server'
+sshd_config['HostKey'] = ['/etc/ssh/ssh_host_rsa_key', '/etc/ssh/ssh_host_ecdsa_key']
+sshd_config['UseDNS'] = 'yes'                             if node['platform_version'].to_i >= 9
+sshd_config['HostKey'] << '/etc/ssh/ssh_host_ed25519_key' if node['platform_version'].to_i >= 8
+sshd_config['PermitRootLogin'] = 'without-password'      if node['platform_version'].to_i < 9
+sshd_config['AddressFamily'] = 'inet'
 
 # only if SSH daemon configuration is defined
 unless node['sys']['sshd']['config'].empty?
-  package "openssh-server"
-  service "ssh" do
+  package 'openssh-server'
+  service 'ssh' do
     supports :reload => true
   end
   # overwrite the default configuration
   sshd_config.merge! node['sys']['sshd']['config']
   template '/etc/ssh/sshd_config' do
     source 'etc_ssh_sshd_config.erb'
-    mode "0644"
+    mode '0644'
     variables :config => sshd_config
-    notifies :reload, "service[ssh]"
+    notifies :restart, 'service[ssh]'
   end
 end
 
