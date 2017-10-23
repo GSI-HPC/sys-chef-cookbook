@@ -52,3 +52,6 @@ inet_interfaces = <%= @inet_interfaces || @mynetworks?'all':'loopback-only' %>
 <% if @ipv4_only -%>
 inet_protocols = ipv4
 <%- end %>
+
+# Seems to be missing since the start of time but is crucial to make e.g. "date | mail -s blabla7 troth" work
+recipient_canonical_maps = hash:/etc/postfix/canonical

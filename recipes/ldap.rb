@@ -55,7 +55,7 @@ if ! node['sys']['ldap'].empty? && File.exist?('/usr/bin/kinit')
                                      rescue NoMethodError
                                        nil
                                      end,
-      :nslcd => node['sys']['ldap']['nslcd'] rescue nil
+      :nslcd => begin node['sys']['ldap']['nslcd'] rescue NoMethodError nil end
     )
   end
 
@@ -73,24 +73,50 @@ if ! node['sys']['ldap'].empty? && File.exist?('/usr/bin/kinit')
     )
   end
 
-  cookbook_file "/etc/init.d/nslcd" do
-    source "etc_init.d_nslcd"
-    owner "root"
-    group "root"
-    mode "0755"
-    notifies :run, "execute[update-run-levels]", :immediately
-  end
+  if node['platform_version'].to_i >= 9
+    cookbook_file '/etc/systemd/system/nslcd.service' do
+      source 'etc_systemd_system_nslcd.service'
+      mode '0644'
+      notifies :run, 'execute[systemctl daemon-reload]'
+      notifies :restart, 'service[nslcd]'
+    end
 
-  execute "update-run-levels" do
-    command "insserv /etc/init.d/nslcd"
-    action :nothing
-  end
+    cookbook_file '/etc/systemd/system/k5start-nslcd.service' do
+      source 'etc_systemd_system_k5start-nslcd.service'
+      mode '0644'
+      notifies :run, 'execute[systemctl daemon-reload]'
+      notifies :restart, 'service[k5start-nslcd]'
+    end
 
+    service 'k5start-nslcd' do
+      supports :restart => true, :reload => true
+      action [:enable, :start]
+    end
+
+    execute 'systemctl daemon-reload' do
+      action :nothing
+      command '/bin/systemctl daemon-reload'
+    end
+  else
+    cookbook_file "/etc/init.d/nslcd" do
+      source "etc_init.d_nslcd"
+      owner "root"
+      group "root"
+      mode "0755"
+      notifies :run, "execute[update-run-levels]", :immediately
+    end
+
+    execute "update-run-levels" do
+      command "insserv /etc/init.d/nslcd"
+      action :nothing
+    end
+  end
   # Comments in systemctl-src say that update-rc.d does not provide
   # information wheter a service is enabled or not and always returns
   # false.  Work around that.
   actions = [:start]
   actions << :enable if Dir.glob('/etc/rc2.d/*nslcd*').empty?
+  actions << :enable if node['platform_version'].to_i >= 9
 
   service "nslcd" do
     supports :restart => true
