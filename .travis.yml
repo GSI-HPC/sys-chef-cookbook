@@ -13,7 +13,8 @@ env:
 
 matrix:
   include:
-    - env: CHEF_VERSION=master
+    # sys LWRPs for now not compatible with Chef 13
+    - env: CHEF_VERSION=13
       rvm: ruby-head
     - env: CHEF_VERSION=12.14.60
       rvm: 2.3.1

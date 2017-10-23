@@ -5,7 +5,7 @@ group :development do
   gem 'rubocop'
   gem 'foodcritic'
   gem 'berkshelf'
-  gem 'chef', '~> 12' # sys LWRPs for now not compatible with Chef 13
+  gem 'chef', "~> #{ENV['CHEF_VERSION']}"
   gem 'chefspec'
   gem 'test-kitchen'
   gem 'kitchen-docker'
