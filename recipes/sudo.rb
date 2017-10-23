@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-unless node['sys']['sudo'].empty?
+if ! node['sys']['sudo'].empty? && node['sys']['sudo_ldap'].empty?
 
     package 'sudo'
 
@@ -45,5 +45,30 @@ unless node['sys']['sudo'].empty?
         rules config[:rules]
       end
     end
+elsif ! node['sys']['sudo_ldap'].empty?
+  package 'sudo-ldap'
 
+  sys_wallet "sudoers/#{node['fqdn']}" do
+    place "/etc/sudoers.keytab"
+    owner "root"
+    group "root"
+    mode "0600"
+  end
+
+  template '/etc/sudoers' do
+    source 'etc_sudoers_ldap.erb'
+    owner 'root'
+    group 'root'
+    mode '0400'
+  end
+
+  template "/etc/sudo-ldap.conf" do
+    source 'etc_sudo-ldap.conf.erb'
+    owner 'root'
+    group 'root'
+    mode  '0400'
+    variables ({
+      :servers => node['sys']['sudo_ldap']['servers']
+    })
+  end
 end
