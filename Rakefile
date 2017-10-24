@@ -1,7 +1,7 @@
 begin
   require 'rubocop/rake_task'
   RuboCop::RakeTask.new do |task|
-    task.options = ['--lint']
+    task.options = %w[--lint --display-style-guide]
   end
 rescue LoadError
   desc 'rubocop rake task not available'
