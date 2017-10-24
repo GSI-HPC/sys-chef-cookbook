@@ -39,6 +39,8 @@ account  required     pam_access.so
 # polyinstantiated directories.
 <%- if node['sys']['pam']['namespace'] && node['platform_version'].to_i >= 9 %>
 session  required     pam_namespace.so
+<%- else %>
+# session  required     pam_namespace.so
 <%- end %>
 
 # Print the message of the day upon successful login.
