@@ -5,6 +5,8 @@ group :development do
   gem 'rubocop'
   gem 'foodcritic'
   gem 'berkshelf'
+  gem 'ffi-yail', platforms: %W[ruby_22 ruby_23 ruby_24 ruby_25]
+  gem 'ffi-yail', '~> 2.2', platforms: %W[ruby_21]
   gem 'chef', "~> #{ENV['CHEF_VERSION']}"
   gem 'chefspec'
   gem 'test-kitchen'
