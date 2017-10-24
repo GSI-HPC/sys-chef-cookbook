@@ -6,10 +6,6 @@ group :development do
   gem 'foodcritic'
   gem 'berkshelf'
 
-  platforms :ruby_21 do
-    gem 'ffi-yajl', '~> 2.2'
-  end
-  gem 'chef', "~> #{ENV['CHEF_VERSION']}"
   gem 'chefspec'
   gem 'test-kitchen'
   gem 'kitchen-docker'
@@ -18,6 +14,15 @@ group :development do
   # gem "kitchen-vagrant",
   #    :git => "https://github.com/test-kitchen/kitchen-vagrant.git"
   # gem "serverspec"
+end
+
+platforms :ruby_21 do
+  gem 'ffi-yajl', '< 2.3'
+  gem 'chef', "~> #{ENV['CHEF_VERSION']}"
+end
+
+platforms :ruby_22, :ruby_23, :ruby_24, :ruby_25 do
+  gem 'chef', "~> #{ENV['CHEF_VERSION']}"
 end
 
 # group :vagrant do
