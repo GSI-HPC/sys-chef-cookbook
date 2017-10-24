@@ -76,9 +76,7 @@ auth       optional   pam_group.so
 # Uncomment and edit /etc/security/access.conf if you need to
 # set access limits.
 # (Replaces /etc/login.access file)
-<%- if node['sys']['pam']['access'] %>
 account  required       pam_access.so
-<%- end %>
 
 # Sets up user limits according to /etc/security/limits.conf
 # (Replaces the use of /etc/limits in old login)

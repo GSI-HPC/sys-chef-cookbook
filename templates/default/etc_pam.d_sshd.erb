@@ -27,9 +27,7 @@ account    required     pam_nologin.so
 
 # Uncomment and edit /etc/security/access.conf if you need to set complex
 # access limits that are hard to express in sshd_config.
-<%- if node['sys']['pam']['access'] %>
 account  required     pam_access.so
-<%- end %>
 
 # Standard Un*x authorization.
 @include common-account
