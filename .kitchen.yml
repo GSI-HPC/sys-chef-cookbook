@@ -5,6 +5,11 @@ driver:
 
 platforms:
  - name: debian-unstable
+ - name: debian-stretch
+ - name: debian-jessie
+ - name: debian-wheezy
+ - name: ubuntu-16.04
+ - name: centos-7
 
 suites:
   - name: accounts
