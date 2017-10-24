@@ -1,9 +1,14 @@
 language: ruby
+cache: bundler
 
 sudo: required
 dist: trusty
 
 services: docker
+
+# bundler in the travis image is too old:
+before_install:
+    - gem install bundler
 
 bundler_args: --without plugins
 
