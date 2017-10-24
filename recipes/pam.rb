@@ -17,10 +17,11 @@
 # limitations under the License.
 #
 
-#
-# access rules
-#
 if node['sys']['pam']['access'] # ~FC023 Do not break conventions in sys
+
+  #
+  # access rules
+  #
   template '/etc/security/access.conf' do
     source 'etc_security_access.conf.erb'
     owner 'root'
@@ -31,21 +32,10 @@ if node['sys']['pam']['access'] # ~FC023 Do not break conventions in sys
       default: node['sys']['pam']['access_default']
     )
   end
-end
 
-if node['platform_version'].to_i >= 9 # ~FC023 Do not break conventions in sys
-  cookbook_file '/etc/security/namespace.conf' do
-    source 'etc_security_namespace.conf'
-    owner 'root'
-    group 'root'
-    mode '0644'
-  end
-end
-
-#
-# PAM sshd config
-#
-if node['sys']['pamd']['sshd'] # ~FC023 Do not break conventions in sys
+  #
+  # PAM sshd config
+  #
   template '/etc/pam.d/sshd' do
     source 'etc_pam.d_sshd.erb'
     owner 'root'
@@ -55,17 +45,27 @@ if node['sys']['pamd']['sshd'] # ~FC023 Do not break conventions in sys
       ::File.exist?('/etc/ssh/sshd_config')
     end
   end
+
+  #
+  # PAM login config
+  #
+  if node['sys']['pamd']['login'] # ~FC023 Do not break conventions in sys
+    template '/etc/pam.d/login' do
+      source 'etc_pam.d_login.erb'
+      owner 'root'
+      group 'root'
+      mode "0644"
+    end
+  end
+
 end
 
-#
-# PAM login config
-#
-if node['sys']['pamd']['login'] # ~FC023 Do not break conventions in sys
-  template '/etc/pam.d/login' do
-    source 'etc_pam.d_login.erb'
+if node['platform_version'].to_i >= 9 # ~FC023 Do not break conventions in sys
+  cookbook_file '/etc/security/namespace.conf' do
+    source 'etc_security_namespace.conf'
     owner 'root'
     group 'root'
-    mode "0644"
+    mode '0644'
   end
 end
 
