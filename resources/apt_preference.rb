@@ -19,4 +19,4 @@ default_action :set
 attribute :name, :kind_of => String , :name_attribute => true
 attribute :package, :kind_of => String, :default => "*"
 attribute :pin, :kind_of => String, :required => true
-attribute :priority, :kind_of => Fixnum, :required => true
+attribute :priority, :kind_of => Integer, :required => true
