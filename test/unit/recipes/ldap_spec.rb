@@ -63,11 +63,11 @@ describe 'sys::ldap' do
       nss_ignore = "nss_initgroups_ignoreusers user1, user2"
       expect(chef_run).to create_template('/etc/nslcd.conf').with(
         :variables => {
-          :servers => chef_run.node.sys.ldap.servers,
-          :searchbase => chef_run.node.sys.ldap.searchbase,
-          :realm => chef_run.node.sys.ldap.realm.upcase,
+          :servers => chef_run.node['sys']['ldap']['servers'],
+          :searchbase => chef_run.node['sys']['ldap']['searchbase'],
+          :realm => chef_run.node['sys']['ldap']['realm'].upcase,
           :nslcd => nil,
-          :nss_initgroups_ignoreusers => chef_run.node.sys.ldap.nss_initgroups_ignoreusers
+          :nss_initgroups_ignoreusers => chef_run.node['sys']['ldap']['nss_initgroups_ignoreusers']
         }
       )
       expect(chef_run).to render_file('/etc/nslcd.conf').with_content(uris)
@@ -81,9 +81,9 @@ describe 'sys::ldap' do
       cacert = "/etc/ssl/ca.cert"
       expect(chef_run).to create_template('/etc/ldap/ldap.conf').with(
         :variables => {
-          :servers => chef_run.node.sys.ldap.servers,
-          :searchbase => chef_run.node.sys.ldap.searchbase,
-          :realm => chef_run.node.sys.ldap.realm.upcase,
+          :servers => chef_run.node['sys']['ldap']['servers'],
+          :searchbase => chef_run.node['sys']['ldap']['searchbase'],
+          :realm => chef_run.node['sys']['ldap']['realm'].upcase,
           :cacert => cacert
         }
       )
