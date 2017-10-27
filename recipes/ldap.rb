@@ -74,17 +74,51 @@ if ! node['sys']['ldap'].empty? && File.exist?('/usr/bin/kinit')
   end
 
   if node['platform_version'].to_i >= 9
-    cookbook_file '/etc/systemd/system/nslcd.service' do
-      source 'etc_systemd_system_nslcd.service'
-      mode '0644'
-      notifies :run, 'execute[systemctl daemon-reload]'
+
+    sys_systemd_unit 'nslcd.service' do
+      config({
+        'Unit' => {
+          'Documentation' => 'man:nslcd',
+          'Description' => 'Name service lookup daemon',
+          'Before' => ['graphical.target', 'xdm.service', 'nscd.service'],
+          'After' => 'k5start-nslcd.service',
+          'BindsTo' => 'k5start-nslcd.service',
+          'JoinsNamespaceOf' => 'k5start-nslcd.service',
+        },
+        'Service' => {
+          'Type' => 'forking',
+          'ExecStart' => '/usr/sbin/nslcd',
+          'Restart' => 'on-failure',
+          'TimeoutSec' => '5min',
+          'PrivateTmp' => 'yes',
+        },
+        'Install' => {
+          'WantedBy' => 'gsi-remote.target',
+        }
+      })
       notifies :restart, 'service[nslcd]'
     end
 
-    cookbook_file '/etc/systemd/system/k5start-nslcd.service' do
-      source 'etc_systemd_system_k5start-nslcd.service'
-      mode '0644'
-      notifies :run, 'execute[systemctl daemon-reload]'
+    sys_systemd_unit 'k5start-nslcd.service' do
+      config({
+        'Unit' => {
+          'Description' => 'Maintain Ticket-Cache for nslcd',
+          'Documentation' => ['man:k5start(1)', 'man:nslcd(8)'],
+          'After' => 'network-online.target',
+          'Requires' => 'network-online.target',
+          'Before' => 'nslcd.service',
+        },
+        'Service' => {
+          'Type' => 'forking',
+          'ExecStart' => '/usr/bin/k5start -b -L -F -o nslcd -g nslcd -f /etc/nslcd.keytab -K 60 -k /tmp/krb5cc_nslcd -U -x',
+          'Restart' => 'always',
+          'RestartSec' => '5',
+          'PrivateTmp' => 'yes',
+        },
+        'Install' => {
+          'WantedBy' => 'gsi-remote.target',
+        }
+      })
       notifies :restart, 'service[k5start-nslcd]'
     end
 
@@ -93,10 +127,6 @@ if ! node['sys']['ldap'].empty? && File.exist?('/usr/bin/kinit')
       action [:enable, :start]
     end
 
-    execute 'systemctl daemon-reload' do
-      action :nothing
-      command '/bin/systemctl daemon-reload'
-    end
   else
     cookbook_file "/etc/init.d/nslcd" do
       source "etc_init.d_nslcd"
