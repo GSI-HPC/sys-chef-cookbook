@@ -7,11 +7,22 @@ action :deploy do
   if ! ::File.exist?(new_resource.place) || ! check_keytab()
     bash "deploy #{new_resource.principal}" do
       cwd "/"
+      ignore_failure new_resource.ignore_failure
       code <<-EOH
-        rm -f #{new_resource.place}.tmp
+        if [ -e #{new_resource.place}.tmp ]; then
+            rm -f #{new_resource.place}.tmp
+        fi
         kinit -t /etc/krb5.keytab host/#{node['fqdn']}
         wallet get keytab #{new_resource.principal}@#{node['sys']['krb5']['realm'].upcase} -f #{new_resource.place}.tmp
-        mv #{new_resource.place}.tmp #{new_resource.place}
+        ret=$?
+        if [ $ret = 0 ]; then
+            mv #{new_resource.place}.tmp #{new_resource.place}
+        else
+            if [ -e #{new_resource.place}.tmp ]; then
+                rm -f #{new_resource.place}.tmp
+            fi
+            exit $ret
+        fi
         kdestroy
       EOH
     end
