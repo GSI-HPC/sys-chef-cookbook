@@ -22,7 +22,7 @@ if node['platform_version'].to_i >= 9 && !node['sys']['networkd'].empty?
   delete = Dir.glob('/etc/systemd/network/*')
   keep = []
 
-  node['sys']['networkd']['link'].keys do |name|
+  node['sys']['networkd']['link'].keys.each do |name|
     number_prefix = ''
     unless name.match(/^[0-9]{2}-/)
       number_prefix = '00-'
@@ -30,7 +30,7 @@ if node['platform_version'].to_i >= 9 && !node['sys']['networkd'].empty?
     keep << "#{number_prefix}#{name}.link"
   end
 
-  node['sys']['networkd']['netdev'].keys do |name|
+  node['sys']['networkd']['netdev'].keys.each do |name|
     number_prefix = ''
     unless name.match(/^[0-9]{2}-/)
       number_prefix = '10-'
@@ -38,7 +38,7 @@ if node['platform_version'].to_i >= 9 && !node['sys']['networkd'].empty?
     keep << "#{number_prefix}#{name}.netdev"
   end
 
-  node['sys']['networkd']['network'].keys do |name|
+  node['sys']['networkd']['network'].keys.each do |name|
     number_prefix = ''
     unless name.match(/^[0-9]{2}-/)
       number_prefix = '20-'
@@ -65,7 +65,7 @@ if node['platform_version'].to_i >= 9 && !node['sys']['networkd'].empty?
       helpers(Sys::Harry)
       mode "0644"
       variables(:sections => config)
-      notifies :reload, 'service[systemd-networkd]'
+      notifies :restart, 'service[systemd-networkd]'
       # initramfs needs to be updated, when systemd.link-files change.
       notifies :run, 'execute[update-initramfs]'
     end
@@ -81,7 +81,7 @@ if node['platform_version'].to_i >= 9 && !node['sys']['networkd'].empty?
       helpers(Sys::Harry)
       mode "0644"
       variables(:sections => config)
-      notifies :reload, "service[systemd-networkd]"
+      notifies :restart, "service[systemd-networkd]"
     end
   end
 
@@ -95,12 +95,12 @@ if node['platform_version'].to_i >= 9 && !node['sys']['networkd'].empty?
       helpers(Sys::Harry)
       mode "0644"
       variables(:sections => config)
-      notifies :reload, "service[systemd-networkd]"
+      notifies :restart, "service[systemd-networkd]"
     end
   end
 
   service 'systemd-networkd' do
-    supports :status => true, :restart => true, :reload => true
+    supports :status => true, :restart => true
     action [:enable, :start]
   end
 
