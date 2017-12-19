@@ -34,9 +34,17 @@ sshd_config['AddressFamily'] = 'inet'
 # only if SSH daemon configuration is defined
 unless node['sys']['sshd']['config'].empty?
   package 'openssh-server'
-  service 'ssh' do
+
+  sshd_service = case node['platform_version']
+                 when 'rhel'
+                   'sshd'
+                 else # when 'debian'
+                   'ssh'
+                 end
+  service sshd_service do
     supports :reload => true
   end
+
   # overwrite the default configuration
   sshd_config.merge! node['sys']['sshd']['config']
   template '/etc/ssh/sshd_config' do
