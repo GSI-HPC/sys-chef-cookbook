@@ -21,6 +21,8 @@
 
 unless (node['sys']['accounts'].empty? and node['sys']['groups'].empty?)
 
+  # required to handle passwords with the 'user' resource
+  #  cf. https://docs.chef.io/resource_user.html
   package 'ruby-shadow'
 
   # TODO: we might want to create groups only implictly defined
