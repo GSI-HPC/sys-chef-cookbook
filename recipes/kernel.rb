@@ -22,17 +22,18 @@
 # - runtime parameters set via sysctl are managed bay the 'control' recipe
 # - GRUB related tasks are handled by the 'boot' recipe
 
-if node['sys']['kernel']
+if node['sys']['kernel'] # don't break conventions in sys
 
   # Detect the CPU vendor
-  cpu_vendor = if node['cpu'][0]['vendor_id'] == 'GenuineIntel'
+  cpu_vendor = case node['cpu'][0]['vendor_id']
+               when 'GenuineIntel'
                  'intel'
-               elsif false
-                 # TODO: detect AMD
+               when 'AuthenticAMD'
                  'amd64'
                end
 
   # install the CPU microcode updates cf. https://wiki.debian.org/Microcode
+  #  when node['sys']['kernel']['install_microcode'] is set
   package "#{cpu_vendor}-microcode" do
     only_if { cpu_vendor && node['sys']['kernel']['install_microcode'] }
   end
