@@ -17,25 +17,50 @@
 # limitations under the License.
 #
 
-#
-# access rules
-#
-template '/etc/security/access.conf' do
-  source 'etc_security_access.conf.erb'
-  owner 'root'
-  group 'root'
-  mode "0600"
-  variables(
-    rules:   node['sys']['pam']['access'],
-    default: node['sys']['pam']['access_default']
-  )
-  only_if do
-    node['sys']['pam']['access'] ||
-      node['sys']['pam']['access_default'] == 'deny'
+if node['sys']['pam']['access'] # ~FC023 Do not break conventions in sys
+
+  #
+  # access rules
+  #
+  template '/etc/security/access.conf' do
+    source 'etc_security_access.conf.erb'
+    owner 'root'
+    group 'root'
+    mode "0600"
+    variables(
+      rules:   node['sys']['pam']['access'],
+      default: node['sys']['pam']['access_default']
+    )
   end
+
+  #
+  # PAM sshd config
+  #
+  template '/etc/pam.d/sshd' do
+    source 'etc_pam.d_sshd.erb'
+    owner 'root'
+    group 'root'
+    mode "0644"
+    only_if do
+      ::File.exist?('/etc/ssh/sshd_config')
+    end
+  end
+
+  #
+  # PAM login config
+  #
+  if node['sys']['pamd']['login'] # ~FC023 Do not break conventions in sys
+    template '/etc/pam.d/login' do
+      source 'etc_pam.d_login.erb'
+      owner 'root'
+      group 'root'
+      mode "0644"
+    end
+  end
+
 end
 
-if node['platform_version'].to_i >= 9
+if node['platform_version'].to_i >= 9 # ~FC023 Do not break conventions in sys
   cookbook_file '/etc/security/namespace.conf' do
     source 'etc_security_namespace.conf'
     owner 'root'
@@ -45,67 +70,28 @@ if node['platform_version'].to_i >= 9
 end
 
 #
-# PAM sshd config
-#
-template '/etc/pam.d/sshd' do
-  source 'etc_pam.d_sshd.erb'
-  owner 'root'
-  group 'root'
-  mode "0644"
-  only_if do
-    ::File.exist?('/etc/ssh/sshd_config') &&
-      node['sys']['pamd_sshd']
-  end
-end
-
-#
-# PAM login config
-#
-cookbook_file '/etc/pam.d/login' do
-  source 'etc_pam.d_login'
-  owner 'root'
-  group 'root'
-  mode "0644"
-  not_if { node['sys']['pamd'].key?('login') }
-end
-
-#
 # resource limits
 #
-template '/etc/security/limits.conf' do
-  source 'etc_security_limits.conf.erb'
-  owner 'root'
-  group 'root'
-  mode "0644"
-  variables :rules => node['sys']['pam']['limits']
-  not_if { node['sys']['pam']['limits'].empty? }
+unless node['sys']['pam']['limits'].empty? # ~FC023 Do not break conventions in sys
+  template '/etc/security/limits.conf' do
+    source 'etc_security_limits.conf.erb'
+    owner 'root'
+    group 'root'
+    mode "0644"
+    variables :rules => node['sys']['pam']['limits']
+  end
 end
 
 #
 # dynamic group membership
 #
-template '/etc/security/group.conf' do
-  source 'etc_security_group.conf.erb'
-  owner 'root'
-  group 'root'
-  mode "0644"
-  variables :rules => node['sys']['pam']['group']
-  not_if {  node['sys']['pam']['group'].empty? } # ~FC023 Do not break conventions in sys
-end
-
-unless node['sys']['pamd'].empty?
-  node['sys']['pamd'].each do |name, contents|
-    template "/etc/pam.d/#{name}" do
-      source 'etc_pam.d_generic.erb'
-      owner 'root'
-      group 'root'
-      mode "0644"
-      variables(
-        # remove leading spaces, and empty lines
-        :rules => contents.gsub(/^ */, '').gsub(/^$\n/, ''),
-        :name => name
-      )
-    end
+unless node['sys']['pam']['group'].empty? # ~FC023 Do not break conventions in sys
+  template '/etc/security/group.conf' do
+    source 'etc_security_group.conf.erb'
+    owner 'root'
+    group 'root'
+    mode "0644"
+    variables :rules => node['sys']['pam']['group']
   end
 end
 
