@@ -26,46 +26,11 @@ unless node['sys']['krb5'].empty?
     kstart
   ].each { |p| package p }
 
-  if node['sys']['krb5']['krb5.conf']
-    template "/etc/krb5.conf" do
-      helpers(Sys::Harry)
-      source "etc_krb5.conf_generic.erb"
-      mode "0644"
-      variables(:sections => node['sys']['krb5']['krb5.conf'])
-    end
-  else
-    template "/etc/krb5.conf" do
-      source "etc_krb5.conf.erb"
-      owner "root"
-      group "root"
-      mode "0644"
-      variables(
-        :realm => node['sys']['krb5']['realm'].upcase,
-        :realms => begin begin
-                           node['sys']['krb5']['realms'] || []
-                         rescue
-                           NoMethodError []
-                         end end,
-        :admin_server => node['sys']['krb5']['admin_server'],
-        :servers => [node['sys']['krb5']['master'], node['sys']['krb5']['slave']],
-        :domain => node['domain'],
-        :wallet_server => begin begin
-                                  node['sys']['krb5']['wallet_server']
-                                rescue
-                                  NoMethodError nil
-                                end end,
-        :use_pkinit => begin begin
-                               node['sys']['krb5']['use_pkinit']
-                             rescue
-                               NoMethodError nil
-                             end end,
-        :libdefaults => begin begin
-                                node['sys']['krb5']['libdefaults']
-                              rescue
-                                NoMethodError nil
-                              end end
-      )
-    end
+  template "/etc/krb5.conf" do
+    helpers(Sys::Harry)
+    source "etc_krb5.conf_generic.erb"
+    mode "0644"
+    variables(:sections => node['sys']['krb5']['krb5.conf'])
   end
 
   package "wallet-client"

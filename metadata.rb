@@ -8,4 +8,4 @@ source_url       'https://github.com/GSI-HPC/sys-chef-cookbook'
 issues_url       'https://github.com/GSI-HPC/sys-chef-cookbook/issues'
 chef_version     '>= 12.0' if respond_to?(:chef_version)
 supports         'debian'
-version          '1.33.1'
+version          '1.39.1'

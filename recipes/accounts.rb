@@ -21,6 +21,8 @@
 
 unless (node['sys']['accounts'].empty? and node['sys']['groups'].empty?)
 
+  # required to handle passwords with the 'user' resource
+  #  cf. https://docs.chef.io/resource_user.html
   package 'ruby-shadow'
 
   # TODO: we might want to create groups only implictly defined
@@ -87,6 +89,7 @@ unless (node['sys']['accounts'].empty? and node['sys']['groups'].empty?)
 
       # If attribute local exists and is set to false,
       #  we skip the creation of the account itself
+      # FIXME: use pam_mkhomedir instead
       if account['local'] != false # nil ~= true
 
         # In case a group ID is specified

@@ -1,0 +1,208 @@
+grammar Detail
+  rule root
+    space adapter+ exit_code
+  end
+
+  rule adapter
+    adapter_h
+    version
+    mfg_data
+    image_versions
+    pending_images
+    pci_info
+    hw_configuration
+    settings
+    capabilities
+    status
+    limitations
+    device_present
+    adapter_operations
+    vd_operations
+    pd_operations
+    error_counters
+    cluster_information
+    default_settings
+  end
+
+  rule adapter_h
+    'Adapter #' [0-9]+ nl nl ul
+  end
+
+  rule exit_code
+    nl* 'Exit Code: 0x' [0-9] 2..2 nl
+  end
+
+  rule version
+    version_h kv* nl
+  end
+
+  rule version_h
+    space 'Versions' nl ul
+  end
+
+  rule mfg_data
+    mfg_data_h kv* nl
+  end
+
+  rule mfg_data_h
+    space 'Mfg. Data' nl ul
+  end
+
+  rule image_versions
+    image_versions_h kv* nl
+  end
+
+  rule image_versions_h
+    space 'Image Versions in Flash:' nl ul
+  end
+
+  rule pending_images
+    pending_images_h 'None' nl nl
+  end
+
+  rule pending_images_h
+    space 'Pending Images in Flash' nl ul
+  end
+
+  rule pci_info
+    pci_info_h
+    (kv / nl)*
+    pci_info_address*
+  end
+
+  rule pci_info_h
+    space 'PCI Info' nl ul
+  end
+
+  rule pci_info_address
+    [0-9a-f]+ space [0-9a-f]+ space
+  end
+
+  rule hw_configuration
+    hw_configuration_h (kv / nl)*
+  end
+
+  rule hw_configuration_h
+    space 'HW Configuration' nl ul
+  end
+
+  rule settings
+    settings_h kv*
+  end
+
+  rule settings_h
+    space 'Settings' nl ul
+  end
+
+  rule capabilities
+    capabilities_h
+    kv*
+    nl
+    allowed_mixing
+    nl
+  end
+
+  rule allowed_mixing
+    'Allowed Mixing:' nl nl
+    ('Mix ' [a-zA-Z /]+ nl)*
+  end
+
+  rule capabilities_h
+    space 'Capabilities' nl ul
+  end
+
+  rule status
+    status_h kv*
+  end
+
+  rule status_h
+    space 'Status' nl ul
+  end
+
+  rule limitations
+    limitations_h kv*
+  end
+
+  rule limitations_h
+    space 'Limitations' nl ul
+  end
+
+  rule device_present
+    device_present_h kv*
+  end
+
+  rule device_present_h
+    space 'Device Present' nl ul
+  end
+
+  rule adapter_operations
+    adapter_operations_h kv*
+  end
+
+  rule adapter_operations_h
+    space 'Supported Adapter Operations' nl ul
+  end
+
+  rule vd_operations
+    vd_operations_h kv*
+  end
+
+  rule vd_operations_h
+    space 'Supported VD Operations' nl ul
+  end
+
+  rule pd_operations
+    pd_operations_h kv*
+  end
+
+  rule pd_operations_h
+    space 'Supported PD Operations' nl ul
+  end
+
+  rule error_counters
+    error_counters_h kv*
+  end
+
+  rule error_counters_h
+    space 'Error Counters' nl ul
+  end
+
+  rule cluster_information
+    cluster_information_h kv*
+  end
+
+  rule cluster_information_h
+    space 'Cluster Information' nl ul
+  end
+
+  rule default_settings
+    default_settings_h
+    kv*
+    'Max power savings option is  not allowed for LDs. Only T10 power conditions are to be used.' nl
+    kv*
+  end
+
+  rule default_settings_h
+    space 'Default Settings' nl ul
+  end
+
+  rule nl
+    "\n"
+  end
+
+  rule space
+    [\s]*
+  end
+
+  rule ul
+    space [=]+ nl
+  end
+
+  rule kv
+    [a-zA-Z0-9/ .,_#\%\t'-]* ':' [a-zA-Z0-9/ :.,_#\%\t'-]* nl
+  end
+
+  rule stuff
+    .*
+  end
+end

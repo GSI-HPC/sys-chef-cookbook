@@ -123,17 +123,50 @@ if ! node['sys']['autofs']['ldap'].empty? && File.exist?('/usr/bin/kinit')
   end
 
   if node['platform_version'].to_i >= 9
-    cookbook_file '/etc/systemd/system/autofs.service' do
-      source 'etc_systemd_system_autofs.service'
-      mode '0644'
-      notifies :run, 'execute[systemctl daemon-reload]'
+
+    sys_systemd_unit 'autofs.service' do
+      config({
+        'Unit' => {
+          'Description' => 'Automounts filesystems on demand',
+          'After' => 'network.target ypbind.service sssd.service network-online.target remote-fs.target k5start-autofs.service',
+          'BindsTo' => 'k5start-autofs.service',
+          'Requires' => 'network-online.target',
+          'Before' => 'xdm.service',
+        },
+        'Service' => {
+          'Type' => 'forking',
+          'PIDFile' => '/var/run/autofs.pid',
+          'EnvironmentFile' => '-/etc/default/autofs',
+          'ExecStart' => '/usr/sbin/automount $OPTIONS --pid-file /var/run/autofs.pid',
+          'ExecReload' => '/bin/kill -HUP $MAINPID',
+          'TimeoutSec' => '180',
+        },
+        'Install' => {
+          'WantedBy' => 'gsi-remote.target',
+        }
+      })
       notifies :restart, 'service[autofs]'
     end
 
-    cookbook_file '/etc/systemd/system/k5start-autofs.service' do
-      source 'etc_systemd_system_k5start-autofs.service'
-      mode '0644'
-      notifies :run, 'execute[systemctl daemon-reload]'
+    sys_systemd_unit 'k5start-autofs.service' do
+      config({
+        'Unit' => {
+          'Description' => 'Maintain Ticket-Cache for autofs',
+          'Documentation' => 'man:k5start(1) man:autofs(8)',
+          'After' => 'network-online.target',
+          'Requires' => 'network-online.target',
+          'Before' => 'autofs.service',
+        },
+        'Service' => {
+          'Type' => 'forking',
+          'ExecStart' => '/usr/bin/k5start -b -L -F -f /etc/autofs.keytab -K 60 -k /tmp/krb5cc_autofs -U -x',
+          'Restart' => 'always',
+          'RestartSec' => '5',
+        },
+        'Install' => {
+          'WantedBy' => 'gsi-remote.target',
+        }
+      })
       notifies :restart, 'service[k5start-autofs]'
     end
 
@@ -142,10 +175,6 @@ if ! node['sys']['autofs']['ldap'].empty? && File.exist?('/usr/bin/kinit')
       action [:enable, :start]
     end
 
-    execute 'systemctl daemon-reload' do
-      action :nothing
-      command '/bin/systemctl daemon-reload'
-    end
   else
     cookbook_file "/etc/init.d/autofs" do
       source "etc_init.d_autofs"

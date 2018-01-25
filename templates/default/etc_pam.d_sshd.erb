@@ -27,17 +27,20 @@ account    required     pam_nologin.so
 
 # Uncomment and edit /etc/security/access.conf if you need to set complex
 # access limits that are hard to express in sshd_config.
-<%- if node['sys']['pamd_sshd']['access'] %>
 account  required     pam_access.so
-<%- end %>
 
 # Standard Un*x authorization.
 @include common-account
 
 # Standard Un*x session setup and teardown.
 @include common-session
-<%- if node['sys']['pamd_sshd']['namespace'] && node['platform_version'].to_i >= 9 %>
+
+# Uncomment and edit /etc/security/namespace.conf if you want
+# polyinstantiated directories.
+<%- if node['sys']['pam']['namespace'] && node['platform_version'].to_i >= 9 %>
 session  required     pam_namespace.so
+<%- else %>
+# session  required     pam_namespace.so
 <%- end %>
 
 # Print the message of the day upon successful login.

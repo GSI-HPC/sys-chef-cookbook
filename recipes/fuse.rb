@@ -21,37 +21,16 @@ unless node['sys']['fuse']['config'].empty?
 
   package 'fuse'
 
-  case node['platform_version']
+  template '/etc/fuse.conf' do
+    source 'etc_fuse.conf.erb'
+    # 0644 root:root perfectly fine for this file
+    variables :config => node['sys']['fuse']['config']
+  end
 
-  when /^7.*/
-
-    service 'udev' do
-      supports :restart => true
-    end
-
-    template '/etc/fuse.conf' do
-      source 'etc_fuse.conf.erb'
-      mode '0640'
-      owner 'root'
-      group 'fuse'
-      variables :config => node['sys']['fuse']['config']
-      notifies :restart, 'service[udev]'
-    end
-
-  when /^8.*/
-
-    template '/etc/fuse.conf' do
-      source 'etc_fuse.conf.erb'
-      mode '0640'
-      owner 'root'
-      group 'root'
-      variables :config => node['sys']['fuse']['config']
-    end
-
-  else
-
-    Chef::Log.warn("Platform not supported!")
-
+  service 'udev' do
+    supports :restart => true
+    only_if { node['platform_version'].to_i == 7 }
+    subscribes :reload, 'template[/etc/fuse.conf]'
   end
 
 end
