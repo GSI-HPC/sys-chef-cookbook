@@ -25,7 +25,7 @@
 if node['sys']['kernel'] # don't break conventions in sys
 
   # Detect the CPU vendor
-  cpu_vendor = case node['cpu'][0]['vendor_id']
+  cpu_vendor = case node['cpu']['0']['vendor_id']
                when 'GenuineIntel'
                  'intel'
                when 'AuthenticAMD'

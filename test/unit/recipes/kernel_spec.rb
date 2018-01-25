@@ -11,7 +11,7 @@ describe 'sys::kernel' do
     cached(:chef_run) do
       ChefSpec::SoloRunner.new do |node|
         node.default['sys']['kernel']['install_microcode'] = true
-        node.automatic['cpu'][0]['vendor_id'] = 'GenuineIntel'
+        node.automatic['cpu']['0']['vendor_id'] = 'GenuineIntel'
       end.converge(described_recipe)
     end
 
@@ -24,7 +24,7 @@ describe 'sys::kernel' do
     cached(:chef_run) do
       ChefSpec::SoloRunner.new do |node|
         node.default['sys']['kernel']['install_microcode'] = true
-        node.automatic['cpu'][0]['vendor_id'] = 'AuthenticAMD'
+        node.automatic['cpu']['0']['vendor_id'] = 'AuthenticAMD'
       end.converge(described_recipe)
     end
 
