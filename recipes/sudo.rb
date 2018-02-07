@@ -67,8 +67,8 @@ elsif ! node['sys']['sudo_ldap'].empty?
     owner 'root'
     group 'root'
     mode  '0400'
-    variables ({
-      :servers => node['sys']['sudo_ldap']['servers']
-    })
+    variables(
+      servers: node['sys']['sudo_ldap']['servers']
+    )
   end
 end
