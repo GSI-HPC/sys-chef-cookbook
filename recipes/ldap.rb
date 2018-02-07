@@ -69,7 +69,7 @@ if ! node['sys']['ldap'].empty? && File.exist?('/usr/bin/kinit')
       :servers => node['sys']['ldap']['servers'],
       :searchbase => node['sys']['ldap']['searchbase'],
       :realm => node['sys']['ldap']['realm'].upcase,
-      :cacert => node['sys']['ldap']['cacert'] rescue nil
+      :cacert => begin node['sys']['ldap']['cacert'] rescue nil end
     )
   end
 
