@@ -21,6 +21,11 @@ if ! node['sys']['sudo'].empty? && node['sys']['sudo_ldap'].empty?
 
     package 'sudo'
 
+    # Prevent "undefined method `[]' for nil:NilClass":
+    if node['sys']['sudo']['config']
+      mailto = node['sys']['sudo']['config']['mailto']
+    end
+
     # make sure to keep the right permissions and ownership
     # on this file.
     template '/etc/sudoers' do
@@ -28,7 +33,11 @@ if ! node['sys']['sudo'].empty? && node['sys']['sudo_ldap'].empty?
       owner 'root'
       group 'root'
       mode "0440"
+      variables(
+        mailto: mailto
+      )
     end
+
     # system specific configurations should be applied by
     # individual files in this directory
     directory '/etc/sudoers.d' do
@@ -37,7 +46,10 @@ if ! node['sys']['sudo'].empty? && node['sys']['sudo_ldap'].empty?
       mode "0755"
     end
 
-    node['sys']['sudo'].each_pair do |name,config|
+    # filter out config branch from attribute tree:
+    node['sys']['sudo'].reject do |key|
+      key.to_s == 'config'
+    end.each_pair do |name,config|
       sys_sudo name do
         users config[:users] if config.has_key? 'users'
         hosts config[:hosts] if config.has_key? 'hosts'
