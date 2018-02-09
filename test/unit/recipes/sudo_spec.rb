@@ -41,11 +41,13 @@ describe 'sys::sudo' do
     end
 
     it 'manages directory /etc/sudoers.d' do
-      expect(chef_run).to create_directory('/etc/sudoers.d').with(:mode => '0755')
+      expect(chef_run).to create_directory('/etc/sudoers.d')
+                           .with(:mode => '0755')
     end
 
     it 'manages file /etc/sudoers.d/test' do
-      expect(chef_run).to create_template('/etc/sudoers.d/test').with(:mode => '0440')
+      expect(chef_run).to create_template('/etc/sudoers.d/test')
+                           .with(:mode => '0440')
     end
 
     it 'surrounds some users with double quotes' do
@@ -56,8 +58,27 @@ describe 'sys::sudo' do
                         :commands => {},
                         :rules => [ 'TEST ALL = ALL' ] }
       )
-      expect(chef_run).to render_file('/etc/sudoers.d/test').with_content('"with-minus"')
-      expect(chef_run).to render_file('/etc/sudoers.d/test').with_content(' regular,')
+      expect(chef_run).to render_file('/etc/sudoers.d/test')
+                           .with_content('"with-minus"')
+      expect(chef_run).to render_file('/etc/sudoers.d/test')
+                           .with_content(' regular,')
+    end
+  end
+
+  context 'with custom mail recipient' do
+    cached(:chef_run) do
+      ChefSpec::SoloRunner.new do |node|
+        node.default['sys']['sudo'] = {
+          config: {
+            mailto: 'itsec@example.com'
+          }
+        }
+      end.converge(described_recipe)
+    end
+
+    it 'sets mailto in /etc/sudoers' do
+      expect(chef_run).to render_file('/etc/sudoers')
+                           .with_content(/mailto="itsec@example.com"/)
     end
   end
 end
