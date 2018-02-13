@@ -24,6 +24,7 @@ end
 
 platforms :ruby_22, :ruby_23, :ruby_24, :ruby_25 do
   gem 'chef', "~> #{ENV['CHEF_VERSION']}"
+  gem 'chef-config', "~> #{ENV['CHEF_VERSION']}"
 end
 
 # group :vagrant do
