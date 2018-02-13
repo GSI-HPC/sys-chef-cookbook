@@ -7,6 +7,7 @@ group :development do
   gem 'berkshelf'
 
   gem 'chefspec'
+  gem 'chefspec-ohai'
   gem 'test-kitchen'
   gem 'kitchen-docker'
   # gem 'guard-rspec', require: false
