@@ -11,7 +11,7 @@ describe 'sys::accounts' do
         'shell' => '/bin/zsh',
         'home' => '/home/u1',
         'password' => '$asdf',
-        'supports' => { :manage_home => true },
+        'manage_home' => true,
         'system' => true
       }
       @u2 = { 'password' => 'asdf' }
@@ -81,7 +81,7 @@ describe 'sys::accounts' do
       expect(u1.password).to eq @u1['password']
       expect(u1.comment).to eq 'managed by Chef via sys_accounts recipe'
       expect(u1.system).to eq @u1['system']
-      expect(u1.supports[:manage_home]).to be
+      expect(u1.manage_home).to be
       expect(chef_run).to create_user('u2')
       expect(chef_run).to create_user('u3')
       expect(chef_run).to create_user('u4')
@@ -90,12 +90,15 @@ describe 'sys::accounts' do
     end
 
     it 'adds and honors :manage_home flag' do
-      expect(chef_run).to create_user('u5')
-      u5 = chef_run.find_resource(:user, 'u5')
-      expect(u5.manage_home).to be
+      # has home attribute set in data bag
       expect(chef_run).to create_user('u2')
       u2 = chef_run.find_resource(:user, 'u2')
       expect(u2.manage_home).to be
+
+      # has supports hash with manage_home (deprecated)
+      expect(chef_run).to create_user('u5')
+      u5 = chef_run.find_resource(:user, 'u5')
+      expect(u5.manage_home).to be
     end
 
     it 'merges attributes with data bag item' do
