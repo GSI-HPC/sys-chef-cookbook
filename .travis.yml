@@ -12,9 +12,9 @@ before_install:
 
 bundler_args: --without plugins
 
-env:
-  global:
-    - KITCHEN_LOCAL_YAML=.kitchen.docker.yml
+#env:
+#  global:
+#    - KITCHEN_LOCAL_YAML=.kitchen.docker.yml
 
 matrix:
   include:
