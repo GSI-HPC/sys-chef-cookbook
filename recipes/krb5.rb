@@ -33,8 +33,10 @@ unless node['sys']['krb5'].empty?
     variables(:sections => node['sys']['krb5']['krb5.conf'])
   end
 
+# unless node['debian']['codename'].eql?('stretch') 
   package "wallet-client"
-
+# end
+  
   sys_wallet "host/#{node['fqdn']}" do
     place "/etc/krb5.keytab"
   end
