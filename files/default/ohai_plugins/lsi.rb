@@ -1,3 +1,5 @@
+require Mixin::ShellOut
+
 Ohai.plugin(:LsiController) do
 
   provides 'lsi'
@@ -32,9 +34,7 @@ Ohai.plugin(:LsiController) do
   end
 
   def pending_images_in_flash_to_hash(section)
-    ret = ''
-    ret = section.elements[1].text_value
-    return ret
+    section.elements[1].text_value
   end
 
   def default_settings_to_hash(section)
@@ -55,10 +55,7 @@ Ohai.plugin(:LsiController) do
 
     cmd = '/usr/sbin/MegaCli64 -AdpAllInfo -aALL'
 
-    status = ''
-    Open3.popen3(cmd) do |stdin, stdout, stderr, wait_thr|
-      status = stdout.read
-    end
+    status = shell_out(cmd).stdout
 
     Treetop.load("#{File.dirname(__FILE__)}/lsi.treetop")
     parser = DetailParser.new
