@@ -89,8 +89,11 @@ end
 def etc_aliases_exists
   allow(::File).to receive(:exist?).and_call_original
   allow(::File).to receive(:exist?).with('/etc/aliases') { true }
-  # for travis we have to stub readlines too:
-  #  exist? is immediatly followed by readlines
+
+  # for travis we have to stub open and readlines too:
+  let(fake_alias) double('fake alias')
+  allow(::File).to receive(:open).and_call_original
+  allow(::File).to receive(:open).with('/etc/aliases').and_yield(fake_alias)
   allow(::File).to receive(:readlines).and_call_original
   allow(::File).to receive(:readlines).with('/etc/aliases') { [] }
 end
