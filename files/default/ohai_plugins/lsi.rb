@@ -1,4 +1,4 @@
-require Mixin::ShellOut
+require Mixlib::ShellOut
 
 Ohai.plugin(:LsiController) do
 
