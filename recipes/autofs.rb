@@ -1,8 +1,15 @@
+# coding: utf-8
 #
 # Cookbook Name:: sys
 # Recipe:: autofs
 #
-# Copyright 2013, Victor Penso
+# Copyright 2013 -2018 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+# Authors:
+#  Victor Penso      2013 - 2015
+#  Christopher Huhn  2013 - 2018
+#  Matthias Pausch   2013 - 2017
+#  Bastian Neuburger 2015
+#  Dennis Klein      2015
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,34 +24,53 @@
 # limitations under the License.
 #
 
-if ! node['sys']['autofs']['maps'].empty? && node['sys']['autofs']['ldap'].empty?
+return if node['sys']['autofs']['maps'].empty? &&
+          node['sys']['autofs']['ldap'].empty?
 
-  package 'autofs'
+package 'autofs'
 
-  node['sys']['autofs']['maps'].each_key do |mountpoint|
-    directory mountpoint do
-      recursive true
-      not_if { File.exist?(mountpoint) }
+node['sys']['autofs']['maps'].each_key do |mountpoint|
+  directory mountpoint do
+    recursive true
+    not_if { File.exist?(mountpoint) }
+  end
+end
+
+template '/etc/auto.master' do
+  source 'etc_auto.master.erb'
+  mode "0644"
+  variables(
+    :maps => node['sys']['autofs']['maps']
+  )
+  notifies :reload, 'service[autofs]'
+end
+
+# on Jessie the maps go to /etc/auto.master.d/
+if node['platform_version'].to_i >= 8
+
+  directory '/etc/auto.master.d'
+
+  delete = Dir.glob('/etc/auto.master.d/*')
+
+  keep = node['sys']['autofs']['maps'].keys.map{|path| "/etc/auto.master.d/#{path[1..-1].gsub(/\//,'_').downcase}.autofs"}
+
+  (delete - keep).each do |f|
+    file f do
+      action :delete
     end
   end
 
-  template '/etc/auto.master' do
-    source 'etc_auto.master.erb'
-    mode "0644"
-    variables(
-      :maps => node['sys']['autofs']['maps']
-    )
-    notifies :reload, 'service[autofs]'
-  end
-
-  #  node['sys']['autofs']['maps'].each_key do |path|
-  #    directory path do
-  #      recursive true
-  #    end
-  #  end
-
-  service 'autofs' do
-    supports :restart => true, :reload => true
+  node['sys']['autofs']['maps'].each do |path, map|
+    name = path[1..-1].gsub(/\//,'_').downcase
+    template "/etc/auto.master.d/#{name}.autofs" do
+      source 'etc_auto.master.d.erb'
+      mode "0644"
+      variables(
+        :map => map,
+        :path => path
+      )
+        notifies :reload, 'service[autofs]', :delayed
+    end
   end
 end
 
@@ -54,44 +80,6 @@ if ! node['sys']['autofs']['ldap'].empty? && File.exist?('/usr/bin/kinit')
 
   sys_wallet "autofsclient/#{node['fqdn']}" do
     place "/etc/autofs.keytab"
-  end
-
-  # on Jessie the maps go to /etc/auto.master.d/
-  if node['platform_version'].to_i >= 8
-
-    directory '/etc/auto.master.d'
-
-    delete = Dir.glob('/etc/auto.master.d/*')
-
-    keep = node['sys']['autofs']['maps'].keys.map{|path| "/etc/auto.master.d/#{path[1..-1].gsub(/\//,'_').downcase}.autofs"}
-
-    (delete - keep).each do |f|
-      file f do
-        action :delete
-      end
-    end
-
-    node['sys']['autofs']['maps'].each do |path, map|
-      name = path[1..-1].gsub(/\//,'_').downcase
-      template "/etc/auto.master.d/#{name}.autofs" do
-        source 'etc_auto.master.d.erb'
-        mode "0644"
-        variables(
-          :map => map,
-          :path => path
-        )
-        notifies :reload, 'service[autofs]', :delayed
-      end
-    end
-  end
-
-  template "/etc/auto.master" do
-    source 'etc_auto.master.erb'
-    mode "0644"
-    variables(
-      :maps => (node['platform_version'].to_i < 8)?node['sys']['autofs']['maps']:{}
-    )
-    notifies :reload, 'service[autofs]'
   end
 
   template "/etc/autofs_ldap_auth.conf" do
@@ -128,7 +116,9 @@ if ! node['sys']['autofs']['ldap'].empty? && File.exist?('/usr/bin/kinit')
       config({
         'Unit' => {
           'Description' => 'Automounts filesystems on demand',
-          'After' => 'network.target ypbind.service sssd.service network-online.target remote-fs.target k5start-autofs.service',
+          'After' => 'network.target ypbind.service sssd.service'\
+                     ' network-online.target remote-fs.target'\
+                     'k5start-autofs.service',
           'BindsTo' => 'k5start-autofs.service',
           'Requires' => 'network-online.target',
           'Before' => 'xdm.service',
@@ -137,7 +127,8 @@ if ! node['sys']['autofs']['ldap'].empty? && File.exist?('/usr/bin/kinit')
           'Type' => 'forking',
           'PIDFile' => '/var/run/autofs.pid',
           'EnvironmentFile' => '-/etc/default/autofs',
-          'ExecStart' => '/usr/sbin/automount $OPTIONS --pid-file /var/run/autofs.pid',
+          'ExecStart' => '/usr/sbin/automount $OPTIONS'\
+                         ' --pid-file /var/run/autofs.pid',
           'ExecReload' => '/bin/kill -HUP $MAINPID',
           'TimeoutSec' => '180',
         },
@@ -159,7 +150,8 @@ if ! node['sys']['autofs']['ldap'].empty? && File.exist?('/usr/bin/kinit')
         },
         'Service' => {
           'Type' => 'forking',
-          'ExecStart' => '/usr/bin/k5start -b -L -F -f /etc/autofs.keytab -K 60 -k /tmp/krb5cc_autofs -U -x',
+          'ExecStart' => '/usr/bin/k5start -b -L -F -f /etc/autofs.keytab'\
+                         ' -K 60 -k /tmp/krb5cc_autofs -U -x',
           'Restart' => 'always',
           'RestartSec' => '5',
         },
@@ -182,9 +174,9 @@ if ! node['sys']['autofs']['ldap'].empty? && File.exist?('/usr/bin/kinit')
       notifies :restart, 'service[autofs]', :delayed
     end
   end
+end
 
-  service 'autofs' do
-    supports :restart => true, :reload => true
-    action [:enable, :start]
-  end
+service 'autofs' do
+  supports :restart => true, :reload => true
+  action [:enable, :start]
 end

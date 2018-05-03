@@ -1,3 +1,5 @@
+require Mixin::ShellOut
+
 Ohai.plugin(:LsiController) do
 
   provides 'lsi'

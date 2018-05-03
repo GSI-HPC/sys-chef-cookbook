@@ -81,6 +81,8 @@ if systemd_installed? # We do not install systemd for now, just detect if it is 
           },
           'Network' => {
             'Address' => "#{ipaddress}/#{cidr}",
+          },
+          'Route' => {
             'Gateway' => gateway
           }
         })

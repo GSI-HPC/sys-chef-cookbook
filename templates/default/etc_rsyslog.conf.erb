@@ -69,13 +69,16 @@ $IncludeConfig /etc/rsyslog.d/*.conf
 # First some standard log files.  Log by facility.
 #
 auth,authpriv.*			/var/log/auth.log
-*.*;auth,authpriv.none;mail.none		-/var/log/syslog
+*.*;auth,authpriv.none;mail.none;local0.none;local1.none;local7.none		-/var/log/syslog
 #cron.*				/var/log/cron.log
 daemon.*			-/var/log/daemon.log
 kern.*				-/var/log/kern.log
 lpr.*				-/var/log/lpr.log
 mail.*				-/var/log/mail.log
 user.*				-/var/log/user.log
+local0.*			-/var/log/local0.log
+local1.*			-/var/log/local1.log
+local7.*			-/var/log/dhcpd.log
 
 #
 # Logging for the mail system.  Split it up so that

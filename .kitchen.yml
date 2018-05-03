@@ -1,20 +1,61 @@
 ---
 driver:
-  name: docker
-  privileged: true
-  # https://github.com/test-kitchen/kitchen-docker/issues/285:
-  provision_command: mkdir -p /run/sshd
+  name: vagrant
+  box_check_update: true
+
+provisioner:
+  require_chef_omnibus: false
+  install_strategy: skip
+  log_level: info
+  #name: chef-solo
+  #chef_solo_path: /usr/bin/chef-solo
+  name: chef_zero
+  chef_client_path: /usr/bin/chef-client
+  data_bags_path: test/integration/data_bags
+
+verifier:
+  name: busser
+  ruby_bindir: /usr/bin
 
 platforms:
- - name: debian-unstable
- - name: debian-stretch
- - name: debian-jessie
- - name: debian-wheezy
- - name: ubuntu-16.04
- - name: centos-7
+  - name: stretch64
+    driver:
+      box: debian/stretch64
+      provider: libvirt
+      provision: true
+      vagrantfiles:
+      - vagrant.rb
+  - name: jessie64
+    driver:
+      box: debian/jessie64
+      provider: libvirt
+      provision: true
+      vagrantfiles:
+      - vagrant.rb
 
 suites:
-  - name: accounts
+  - name: sys_accounts
     run_list:
       - recipe[sys::accounts]
     attributes:
+      sys:
+        accounts:
+          homer: #empty
+          bart:  # databag
+          lisa:
+            home: /home/lisa
+            group: simpsons
+          root:
+            # existing account, password should be changed, otherwise left untouched
+            password: "$6$aycaramba$ql7zzi/ASEyEA.MsG5/7I6njGIfXoOn.JJjbToCLfadhYa9axBSJ.bWJiALYy3vA1FnzPx.ycq0uCXqOFrgW6/"
+        groups:
+          simpsons:
+  - name: sys_autofs
+    run_list:
+      - recipe[sys::autofs]
+    attributes:
+      sys:
+        autofs:
+          maps:
+            /test:
+              map: /etc/autofs/test
