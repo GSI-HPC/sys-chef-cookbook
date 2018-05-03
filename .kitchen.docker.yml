@@ -2,8 +2,11 @@
 driver:
   name: docker
   privileged: true
-  # https://github.com/test-kitchen/kitchen-docker/issues/285:
-  provision_command: mkdir -p /run/sshd
+  provision_command:
+    # https://github.com/test-kitchen/kitchen-docker/issues/285:
+    - mkdir -p /run/sshd
+    - apt-get install chef
+  require_chef_omnibus: false
 
 platforms:
   - name: debian-buster
@@ -12,3 +15,5 @@ platforms:
   - name: debian-wheezy
   - name: ubuntu-16.04
   - name: centos-7
+    driver:
+      require_chef_omnibus: true
