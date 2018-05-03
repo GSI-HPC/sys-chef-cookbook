@@ -37,8 +37,8 @@ describe 'sys::autofs' do
       expect(chef_run).to create_directory('/mount/point')
     end
 
-    it 'does not start the autofs-service' do
-      expect(chef_run).to_not start_service('autofs')
+    it 'starts the autofs service' do
+      expect(chef_run).to start_service('autofs')
     end
   end
 
@@ -69,13 +69,13 @@ describe 'sys::autofs' do
     end
 
     it 'manages /etc/auto.master' do
-      expect(chef_run).to create_template('/etc/auto.master').with_mode("0644").with(
-        :variables => {
-          :maps => {}
-        })
+      expect(chef_run).to create_template('/etc/auto.master').with_mode("0644")
+      expect(chef_run).to render_file('/etc/auto.master')
+                           .with_content('')
     end
 
     it 'manages /etc/auto.master.d' do
+      expect(chef_run).to create_directory('/etc/auto.master.d')
       expect(chef_run).to create_template('/etc/auto.master.d/mount_point.autofs').with_mode("0644").with(
         :variables => {
           :path => "/mount/point",
@@ -118,8 +118,8 @@ describe 'sys::autofs' do
       expect(chef_run).to create_cookbook_file('/etc/init.d/autofs').with_mode("0755")
     end
 
-    it 'not start the autofs-service' do
-      expect(chef_run).to_not start_service('autofs')
+    it 'starts the autofs-service' do
+      expect(chef_run).to start_service('autofs')
     end
 
     it 'does reload autofs-service on config-change' do

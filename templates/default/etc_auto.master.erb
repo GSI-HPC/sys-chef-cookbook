@@ -4,10 +4,7 @@
 #
 # This file is managed by the Chef `sys::autofs` cookbook.
 
-<% if @maps.empty? -%>
+# include sniplets from /etc/auto.master.d
 +dir:/etc/auto.master.d
-<% else -%>
-<% @maps.each_pair do |path, conf| -%>
-<%= path %> <%= conf[:map] %> <%= conf[:options] %>
-<% end -%>
-<% end -%>
+
+# intentionally left empty
