@@ -10,6 +10,9 @@ driver:
 
 platforms:
   - name: debian-buster
+    # chef package removed from testing as of 2018-04-21
+    driver:
+      require_chef_omnibus: true
   - name: debian-stretch
   - name: debian-jessie
   - name: debian-wheezy
