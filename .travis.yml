@@ -12,6 +12,14 @@ before_install:
 
 bundler_args: --without plugins
 
+install:
+  # chefspec requires that the repo is checked out to a dir
+  #  named like the cookbook name, therefore we check it out again
+  #  cf. https://stackoverflow.com/questions/32580821/
+  - git clone https://github.com/$TRAVIS_REPO_SLUG.git sys
+  - cd sys
+  - git checkout -qf $TRAVIS_COMMIT
+
 env:
   global:
     - KITCHEN_LOCAL_YAML=.kitchen.docker.yml
