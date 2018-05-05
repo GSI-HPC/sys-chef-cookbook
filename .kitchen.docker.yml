@@ -5,7 +5,7 @@ driver:
   provision_command:
     # https://github.com/test-kitchen/kitchen-docker/issues/285:
     - mkdir -p /run/sshd
-    - apt-get install chef || true
+    - apt-get -y install chef || true
   require_chef_omnibus: false
 
 platforms:
