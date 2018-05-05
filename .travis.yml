@@ -1,3 +1,4 @@
+---
 language: ruby
 cache: bundler
 
@@ -29,11 +30,12 @@ rvm:
 env:
   global:
     - KITCHEN_LOCAL_YAML=.kitchen.docker.yml
-  - CHEF_VERSION=14
-  - CHEF_VERSION=13
-  - CHEF_VERSION=12.14.60
-  - CHEF_VERSION=12.3.0
-  - CHEF_VERSION=12.0.3
+  matrix:
+    - CHEF_VERSION=14
+    - CHEF_VERSION=13
+    - CHEF_VERSION=12.14.60
+    - CHEF_VERSION=12.3.0
+    - CHEF_VERSION=12.0.3
 
 jobs:
   include:
