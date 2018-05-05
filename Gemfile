@@ -3,7 +3,8 @@ source 'http://rubygems.org'
 group :development do
   gem 'rake'
   gem 'rubocop'
-  gem 'foodcritic'
+  # Foodcritic 13 drops Chef 12 compatibility:
+  gem 'foodcritic', '~> 12'
   gem 'berkshelf'
 
   gem 'chefspec'
