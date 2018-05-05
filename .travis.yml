@@ -37,9 +37,13 @@ matrix:
     - env: CHEF_VERSION=12.0.3
       rvm: 2.1.5
 
-script:
-  - bundle exec rake --tasks
-  - bundle exec rake rubocop
-  - bundle exec rake foodcritic
-  - bundle exec rake chefspec
-  - bundle exec rake kitchen:all
+jobs:
+  include:
+    - stage: rubocop
+      script: bundle exec rake rubocop
+    - stage: foodcritic
+      script: bundle exec rake foodcritic
+    - stage: chefspec
+      script: bundle exec rake chefspec
+    - stage: kitchen
+      script: bundle exec rake kitchen:all
