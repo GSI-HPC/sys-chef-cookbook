@@ -19,6 +19,7 @@ install:
   - git clone https://github.com/$TRAVIS_REPO_SLUG.git sys
   - cd sys
   - git checkout -qf $TRAVIS_COMMIT
+  - bundle install --without plugins
 
 env:
   global:
