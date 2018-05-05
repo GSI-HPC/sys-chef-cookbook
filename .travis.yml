@@ -9,7 +9,7 @@ services: docker
 
 # bundler in the travis image is too old:
 before_install:
-    - gem install bundler
+  - gem install bundler
 
 bundler_args: --without plugins
 
@@ -40,7 +40,7 @@ env:
 matrix:
   exclude:
     - rvm: 2.3.3
-      CHEF_VERSION=14
+      env: CHEF_VERSION=14
 
 jobs:
   include:
