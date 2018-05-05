@@ -23,8 +23,8 @@ install:
   - bundle install --without plugins
 
 rvm:
-  - 2.1.5
-  - 2.3.1
+  - 2.3.3
+  - 2.5
   - ruby-head
 
 env:
@@ -37,13 +37,17 @@ env:
     - CHEF_VERSION=12.3.0
     - CHEF_VERSION=12.0.3
 
+matrix:
+  exclude:
+    - rvm: 2.3.3
+      CHEF_VERSION=14
+
 jobs:
   include:
     - stage: rubocop
       script: bundle exec rake rubocop
     - stage: foodcritic
       script: bundle exec rake foodcritic
-    - stage: chefspec
-      script: bundle exec rake chefspec
+    - script: bundle exec rake chefspec
     - stage: kitchen
       script: bundle exec rake kitchen:all
