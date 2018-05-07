@@ -4,7 +4,7 @@ group :development do
   gem 'rake'
   gem 'rubocop'
   # Foodcritic 13 drops Chef 12 compatibility:
-  gem 'foodcritic', '~> 12'
+  gem 'foodcritic', '< 13'
   gem 'berkshelf'
 
   gem 'chefspec'
