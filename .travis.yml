@@ -61,6 +61,7 @@ jobs:
       script: bundle exec rake rubocop
     - stage: foodcritic
       script: bundle exec rake foodcritic
-    - script: bundle exec rake chefspec
+    - stage: test
+      script: bundle exec rake chefspec
     - stage: kitchen
       script: bundle exec rake kitchen:all
