@@ -23,7 +23,9 @@ install:
   - bundle install --without plugins
 
 rvm:
+  - 2.2
   - 2.3.3
+  - 2.4
   - 2.5
   - ruby-head
 
@@ -31,19 +33,26 @@ env:
   global:
     - KITCHEN_LOCAL_YAML=.kitchen.docker.yml
   matrix:
-    - CHEF_VERSION=14
+    - CHEF_VERSION=14.1
     - CHEF_VERSION=13
     - CHEF_VERSION=12.14.60
     - CHEF_VERSION=12.3.0
     - CHEF_VERSION=12.0.3
 
-script:
-  - bundle exec rake rubocop
-  - bundle exec rake foodcritic
-  - bundle exec rake chefspec
-  - bundle exec rake kitchen:all
-
 matrix:
   exclude:
     - rvm: 2.3.3
-      env: CHEF_VERSION=14
+      env: CHEF_VERSION=14.1
+
+stages:
+  - rubocop
+  - foodcritic
+  - test
+  - kitchen
+
+jobs:
+  include:
+    - script: bundle exec rake rubocop
+    - script: bundle exec rake foodcritic
+    - script: bundle exec rake chefspec
+    - script: bundle exec rake kitchen:all
