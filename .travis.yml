@@ -33,8 +33,9 @@ env:
   global:
     - KITCHEN_LOCAL_YAML=.kitchen.docker.yml
   matrix:
-    - CHEF_VERSION=14.1
+    - CHEF_VERSION=14
     - CHEF_VERSION=13
+    - CHEF_VERSION=12
     - CHEF_VERSION=12.14.60
     - CHEF_VERSION=12.3.0
     - CHEF_VERSION=12.0.3
@@ -42,7 +43,7 @@ env:
 matrix:
   exclude:
     - rvm: 2.3.3
-      env: CHEF_VERSION=14.1
+      env: CHEF_VERSION=14
 
 stages:
   - rubocop
@@ -53,6 +54,9 @@ stages:
 jobs:
   include:
     - script: bundle exec rake rubocop
+      rvm: ruby-head
     - script: bundle exec rake foodcritic
+      rvm: ruby-head
     - script: bundle exec rake chefspec
     - script: bundle exec rake kitchen:all
+      rvm: ruby-head
