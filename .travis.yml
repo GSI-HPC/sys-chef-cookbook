@@ -44,6 +44,10 @@ matrix:
   exclude:
     - rvm: 2.3.3
       env: CHEF_VERSION=14
+    - rvm: 2.2
+      env: CHEF_VERSION=14
+    - rvm: 2.2
+      env: CHEF_VERSION=13
 
 stages:
   - rubocop
@@ -53,10 +57,13 @@ stages:
 
 jobs:
   include:
-    - script: bundle exec rake rubocop
+    - stage: rubocop
+      script: bundle exec rake rubocop
       rvm: ruby-head
-    - script: bundle exec rake foodcritic
+    - stage: foodcritic
+      script: bundle exec rake foodcritic
       rvm: ruby-head
     - script: bundle exec rake chefspec
-    - script: bundle exec rake kitchen:all
+    - stage: kitchen
+      script: bundle exec rake kitchen:all
       rvm: ruby-head
