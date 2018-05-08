@@ -22,32 +22,27 @@ install:
   - git checkout -qf $TRAVIS_COMMIT
   - bundle install --without plugins
 
-rvm:
-  - 2.3.3
-  - 2.2
-  - 2.4
-  - 2.5
-  - ruby-head
-
 env:
   global:
     - KITCHEN_LOCAL_YAML=.kitchen.docker.yml
-  matrix:
-    - CHEF_VERSION=12
-    - CHEF_VERSION=12.14.60
-    - CHEF_VERSION=12.3.0
-    - CHEF_VERSION=12.0.3
-    - CHEF_VERSION=14
-    - CHEF_VERSION=13
 
+# cf. https://travis-ci.com/chuhn/chef-install-test/
 matrix:
-  exclude:
-    - rvm: 2.3.3
-      env: CHEF_VERSION=14
-    - rvm: 2.2
-      env: CHEF_VERSION=14
-    - rvm: 2.2
+  include:
+    - rvm: 1.9
+      env: CHEF_VERSION=11
+    - rvm: 2.1
+      env: CHEF_VERSION=12
+    - rvm: 2.3
+      env: CHEF_VERSION=12
+    - rvm: 2.3
       env: CHEF_VERSION=13
+    - rvm: 2.4
+      env: CHEF_VERSION=12
+    - rvm: 2.4
+      env: CHEF_VERSION=13
+    - rvm: 2.4
+      env: CHEF_VERSION=14
 
 stages:
   - rubocop
