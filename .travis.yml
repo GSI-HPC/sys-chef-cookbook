@@ -39,21 +39,13 @@ rvm:
 
 # cf. https://travis-ci.com/chuhn/chef-install-test/
 matrix:
-  include:
+  exclude:
     - rvm: 1.9
-      env: CHEF_VERSION=11
-    - rvm: 2.1
       env: CHEF_VERSION=12
-    - rvm: 2.3
-      env: CHEF_VERSION=12
-    - rvm: 2.3
-      env: CHEF_VERSION=13
+  allow_failures:
     - rvm: 2.4
-      env: CHEF_VERSION=12
-    - rvm: 2.4
-      env: CHEF_VERSION=13
-    - rvm: 2.4
-      env: CHEF_VERSION=14
+    - rvm: 1.9
+    - env: CHEF_VERSION=14
 
 stages:
   - rubocop
@@ -61,13 +53,14 @@ stages:
   - test
   - kitchen
 
+# this is the script for the test stage, where the matrix is expanded
+script: bundle exec rake chefspec
+
 jobs:
   include:
     - stage: rubocop
       script: bundle exec rake rubocop
     - stage: foodcritic
       script: bundle exec rake foodcritic
-    - stage: test
-      script: bundle exec rake chefspec
     - stage: kitchen
       script: bundle exec rake kitchen:all
