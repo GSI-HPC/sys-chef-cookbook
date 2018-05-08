@@ -25,6 +25,8 @@ install:
 env:
   global:
     - KITCHEN_LOCAL_YAML=.kitchen.docker.yml
+  matrix:
+    - CHEF_VERSION=12
 
 # cf. https://travis-ci.com/chuhn/chef-install-test/
 matrix:
