@@ -17,7 +17,6 @@ describe 'sys::pam' do
       chef_run.node.default['sys']['pamd']['login'] = "login_1\nlogin_2\nlogin_3"
       chef_run.node.default['sys']['pam']['limits'] = %w(limit_1 limit_2 limit_3)
       chef_run.node.default['sys']['pam']['group'] = [Hash.new, Hash.new, Hash.new]
-      chef_run.node.default['sys']['pamd']['common-test'] = " \n module1\nmodule2"
       chef_run.node.automatic['fqdn'] = fqdn
       chef_run.node.automatic['domain'] = "example.com"
       chef_run.converge(described_recipe)
@@ -65,19 +64,6 @@ describe 'sys::pam' do
 
       expect(chef_run).to render_file('/etc/security/group.conf').with_content(
         "*;*;*;Al0000-2400;"
-      )
-    end
-
-    it 'manages /etc/pam.d/common-test' do
-      expect(chef_run).to create_template('/etc/pam.d/common-test').with_mode('0644').with(
-        :variables => {
-          :rules => "module1\nmodule2",
-          :name => "common-test"
-        }
-      )
-
-      expect(chef_run).to render_file('/etc/pam.d/common-test').with_content(
-        "module1"
       )
     end
   end
