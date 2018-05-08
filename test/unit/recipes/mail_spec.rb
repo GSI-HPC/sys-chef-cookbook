@@ -70,7 +70,7 @@ describe 'sys::mail' do
 
     etc_aliases = '/etc/aliases'
     update_aliases = 'Update Postfix aliases'
-    action_add = 'SysMailAlias action :add : insert alias'
+
     it "manages #{etc_aliases}" do
       expect(chef_run).to add_sys_mail_alias(@example_alias_name).with_to(@expected_alias_value).with_aliases_file(etc_aliases)
       expect(chef_run.find_resource(:sys_mail_alias, @example_alias_name)).to notify("execute[#{update_aliases}]").to(:run).delayed
@@ -79,7 +79,7 @@ describe 'sys::mail' do
       expect(chef_run).to create_file(etc_aliases)
       # we completly mocked away Chef::Util::FileEdit for now,
       #  therefore this will fail:
-      #expect(chef_run).to run_ruby_block(action_add)
+      #expect(chef_run).to run_ruby_block('SysMailAlias action :add : insert alias')
     end
   end
 end
