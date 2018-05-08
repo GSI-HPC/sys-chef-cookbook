@@ -21,6 +21,10 @@
 # limitations under the License.
 #
 
+# attributes/apt.rb defines many empty attributes beneath node['sys']['apt']
+#  therefore this does not work:
+# return if node['sys']['apt'].empty?
+
 # # check if dpkg is running:
 # # FIXME: this should happen during converge?!
 # File.open('/var/lib/dpkg/lock') do |f|
@@ -48,6 +52,14 @@ execute apt_update do
   action :nothing
   # 100 means something went wrong: we don't want chef to fail completely in that case ...
   returns [0, 100]
+end
+
+# add multiarch support if desired:
+#  this is statically pinned to i386 on amd64 for now
+execute 'dpkg --add-architecture i386' do
+  only_if { node['sys']['apt']['multiarch'] && node['debian']['architecture'] == 'amd64'}
+  not_if  { node['debian'].include?('foreign_architectures') && node['debian']['foreign_architectures'].include?('i386') }
+  notifies :run, "execute[#{apt_update}]", :immediately
 end
 
 # Default APT source file
@@ -122,12 +134,4 @@ unless node['sys']['apt']['packages'].empty?
   node['sys']['apt']['packages'].each do |pkg|
     package pkg
   end
-end
-
-# add multiarch support if desired:
-#  this is statically pinned to i386 on amd64 for now
-execute 'dpkg --add-architecture i386' do
-  only_if { node['sys']['apt']['multiarch'] && node['debian']['architecture'] == 'amd64'}
-  not_if  { node['debian'].include?('foreign_architectures') && node['debian']['foreign_architectures'].include?('i386') }
-  notifies :run, "execute[#{apt_update}]", :immediately
 end
