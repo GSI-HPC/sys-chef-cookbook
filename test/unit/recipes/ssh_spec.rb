@@ -9,7 +9,11 @@ describe 'sys::ssh' do
 
   context 'with basic attributes' do
     before do
-      stub_command("grep -q -F \"BBB\" /home/jdoe/.ssh/authorized_keys").and_return(0)
+      stub_command("grep -q -F \"BBB\" /home/jdoe/.ssh/authorized_keys")
+        .and_return(0)
+      allow(File).to receive(:directory?).and_call_original
+      allow(File).to receive(:directory?).with('/home/jdoe').and_return(true)
+
       chef_run.node.default['sys']['sshd']['config'] = {
         'variable' => "value",
         'X11Forwarding' => "overwritten" }
@@ -33,43 +37,25 @@ describe 'sys::ssh' do
 
     it 'manages /etc/ssh/sshd_config' do
       sshd_config = {
-        "Port" => "22",
-        "Protocol" => "2",
-        "HostKey" => [
-          "/etc/ssh/ssh_host_rsa_key",
-          "/etc/ssh/ssh_host_dsa_key",
-          "/etc/ssh/ssh_host_ecdsa_key"
-        ],
-        "UsePrivilegeSeparation" => "yes",
-        "KeyRegenerationInterval" => "3600",
-        "ServerKeyBits" => "768",
-        "SyslogFacility" => "AUTH",
-        "LogLevel" => "INFO",
-        "LoginGraceTime" => "120",
-        "PermitRootLogin" => "yes",
-        "StrictModes" => "yes",
-        "RSAAuthentication" => "yes",
-        "PubkeyAuthentication" => "yes",
-        "IgnoreRhosts" => "yes",
-        "RhostsRSAAuthentication" => "no",
-        "HostbasedAuthentication" => "no",
-        "PermitEmptyPasswords" => "no",
-        "ChallengeResponseAuthentication" => "no",
-        "X11Forwarding" => "overwritten",
-        "X11DisplayOffset" => "10",
-        "PrintMotd" => "no",
-        "PrintLastLog" => "yes",
-        "TCPKeepAlive" => "yes",
-        "AcceptEnv" => "LANG LC_*",
-        "Subsystem" => "sftp /usr/lib/openssh/sftp-server",
-        "UsePAM" => "yes",
-        "variable" => "value"
+        'UsePAM'        =>'yes',
+        'ChallengeResponseAuthentication' => 'no',
+        'PrintMotd'     => 'no',
+        'AcceptEnv'     => 'LANG LC_*',
+        'Subsystem'     => 'sftp /usr/lib/openssh/sftp-server',
+        'HostKey' => %w[ /etc/ssh/ssh_host_rsa_key
+                         /etc/ssh/ssh_host_ecdsa_key
+                          /etc/ssh/ssh_host_ed25519_key],
+        'PermitRootLogin'  => 'without-password',
+        'AddressFamily' => 'inet',
+        'variable'      => "value",
+        'X11Forwarding' => "overwritten"
       }
-      expect(chef_run).to create_template('/etc/ssh/sshd_config').with_mode('0644').with(
-        :variables => {
-          :config => sshd_config
-        }
-      )
+      expect(chef_run).to create_template('/etc/ssh/sshd_config')
+                           .with_mode('0644').with(
+                             :variables => {
+                               :config => sshd_config
+                             }
+                           )
       expect(chef_run).to render_file('/etc/ssh/sshd_config').with_content(
         "ChallengeResponseAuthentication no\nX11Forwarding overwritten"
       )
@@ -82,7 +68,7 @@ describe 'sys::ssh' do
       #  not the actual file name ...
       expect(chef_run).to create_file('Deploying SSH keys for account '\
                                       'jdoe to /home/jdoe/.ssh/authorized_keys')
-
     end
+
   end
 end
