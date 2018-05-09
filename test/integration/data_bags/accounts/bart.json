@@ -1,0 +1,10 @@
+{
+    "id": "bart",
+    "commment": "I didn't do it",
+    "account": {
+        "shell": "/bin/mksh",
+        "home": "/home/bart",
+        "uid": 16302,
+        "gid": "simpsons"
+    }
+}
