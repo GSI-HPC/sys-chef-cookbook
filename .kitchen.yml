@@ -6,7 +6,7 @@ driver:
 provisioner:
   require_chef_omnibus: false
   install_strategy: skip
-  log_level: info
+  log_level: warn
   #name: chef-solo
   #chef_solo_path: /usr/bin/chef-solo
   name: chef_zero
@@ -44,7 +44,7 @@ suites:
           bart:  # databag
           lisa:
             home: /home/lisa
-            group: simpsons
+            gid: simpsons
           root:
             # existing account, password should be changed, otherwise left untouched
             password: "$6$aycaramba$ql7zzi/ASEyEA.MsG5/7I6njGIfXoOn.JJjbToCLfadhYa9axBSJ.bWJiALYy3vA1FnzPx.ycq0uCXqOFrgW6/"
