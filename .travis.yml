@@ -22,6 +22,12 @@ install:
   - git checkout -qf $TRAVIS_COMMIT
   - bundle install --without plugins
 
+before_script:
+  # integration test for sys::autofs will start automounter
+  #  this will fail inside docker container because autofs4 cannot be loaded
+  #  pre-loading autofs4 may fix this issue, let's try
+  - sudo modprobe autofs4
+
 env:
   global:
     - KITCHEN_LOCAL_YAML=.kitchen.docker.yml
@@ -42,6 +48,13 @@ matrix:
   exclude:
     - rvm: 1.9
       env: CHEF_VERSION=12
+    - rvm: 2.1
+      env: CHEF_VERSION=13
+    - rvm: 2.1
+      env: CHEF_VERSION=14
+    - rvm: 2.3
+      env: CHEF_VERSION=14
+
   allow_failures:
     - rvm: 2.4
     - rvm: 1.9
