@@ -63,19 +63,16 @@ unless (node['sys']['accounts'].empty? and node['sys']['groups'].empty?)
     # gives us a mutable copy of the ImmutableMash:
     account = (caccount) ? caccount.merge({}) : {}
     unless Chef::Config[:solo]
-      begin
-        raise "No data bag item for account '#{name}'" unless bag.include?(name)
-
+      if bag.include?(name)
         item = data_bag_item('accounts', name)
         account['comment'] ||= item['comment']
         item['account'].each do |key, value|
-          account[key] = value unless account.has_key?(key)
-          if key == 'home'
-            account['manage_home'] = true
-          end
+          account[key.to_s] = value unless account.key?(key.to_s)
         end
-      rescue StandardError => e
-        Chef::Log.debug("Attribute merge with data bag 'accounts/#{name}' failed: #{e.message}")
+      else
+        log "No data bag item for account '#{name}'" do
+          level :warn
+        end
       end
     end
 
@@ -83,8 +80,8 @@ unless (node['sys']['accounts'].empty? and node['sys']['groups'].empty?)
 
       comment = account['comment'] || 'managed by Chef via sys::accounts recipe'
 
-      # supports has been deprecated and nowadays normal attributes of the user resource
-      if account.has_key? 'supports'
+      # 'supports(manage_home: ... )' has become 'manage_home ...'
+      if account.key?('supports')
         account['supports'].each do |key, value|
           account[key.to_s] = value
         end
@@ -96,22 +93,32 @@ unless (node['sys']['accounts'].empty? and node['sys']['groups'].empty?)
       if account['local'] != false # nil ~= true
 
         # In case a group ID is specified
-        if account.has_key?('gid')
+        if account.key?('gid')
 
           # Make sure that it exists already...
           group_exists = (node['etc']['group'].has_key?(account['gid']) or
-            node['etc']['group'].values.detect { |g| g['gid'] == account['gid'] })
+                          node['etc']['group'].values.detect do |g|
+                            g['gid'] == account['gid']
+                          end)
           # ...or that it has been create during this Chef run
           was_just_created = (node['sys']['groups'].has_key?(account['gid']) or
-            node['sys']['groups'].values.detect { |g| g['gid'] == account['gid'] })
+                              node['sys']['groups'].values.detect do |g|
+                                g['gid'] == account['gid']
+                              end)
 
           # If this isn't the case something went wrong!
           unless group_exists or was_just_created
-            raise "The given group '#{account['gid']}' does not exist or wasn't defined"
+            raise "The given group '#{account['gid']}' "\
+                  "does not exist or wasn't defined"
           end
 
         end
 
+        # if a home directory is explicitly specified and
+        #  it does not exist, we default to 'manage_home true'
+        if account['manage_home'] =! false && account.key?('home')
+          File.exist?(account['home']) || account['manage_home'] = true
+        end
 
         user name do
           # account.each{|k,v| send(k,v)} is elegant

@@ -17,7 +17,8 @@ describe 'sys::accounts' do
       @u2 = { 'password' => 'asdf' }
       @u3 = { 'gid' => 0 } # the fauxhai group has gid 0
       @u4 = { 'gid' => 1337 }
-      @u5 = { 'supports' => { :manage_home => true } }
+      @u5 = { 'home' => '/somewhere/overthere',
+              'supports' => { manage_home: true } }
       @u6 = { 'gid' => 'doesnotexist' }
       node.default['sys']['accounts']['u1'] = @u1
       node.default['sys']['accounts']['u2'] = @u2
