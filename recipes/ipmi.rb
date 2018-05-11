@@ -3,7 +3,9 @@
 #
 
 
-if node['sys']['ipmi']
+unless node['sys']['ipmi']['install_packages'].empty? &&
+       node['sys']['ipmi']['overheat_protection'].empty?
+
   # Install the packages needed to configure/grab data from the IPMI cards.
 
   # Install the command line tool to access BMC data:
@@ -15,7 +17,7 @@ if node['sys']['ipmi']
   # configure IPMI overheat protection:
   cookbook_file '/usr/local/sbin/ipmi-setup-overheat-protection' do
     source 'scripts/ipmi-setup-overheat-protection'
-    mode '0755'
+    mode 0o0755
   end
 
   if node['sys']['ipmi']['overheat_protection']['enable']
