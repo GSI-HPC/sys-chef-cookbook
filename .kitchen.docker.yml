@@ -8,6 +8,9 @@ driver:
     - apt-get -y install chef || true
   require_chef_omnibus: false
 
+provisioner:
+  log_level: warn
+
 platforms:
   - name: debian-stretch
   - name: debian-jessie
