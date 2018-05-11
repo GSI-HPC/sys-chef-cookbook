@@ -65,6 +65,7 @@ stages:
 script: bundle exec rake chefspec
 
 jobs:
+  fast_finish: true
   include:
     - stage: rubocop
       script: bundle exec rake rubocop
