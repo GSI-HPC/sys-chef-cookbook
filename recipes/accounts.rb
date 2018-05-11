@@ -116,7 +116,7 @@ unless (node['sys']['accounts'].empty? and node['sys']['groups'].empty?)
 
         # if a home directory is explicitly specified and
         #  it does not exist, we default to 'manage_home true'
-        if account['manage_home'] =! false && account.key?('home')
+        if account['manage_home'] != false && account.key?('home')
           File.exist?(account['home']) || account['manage_home'] = true
         end
 
