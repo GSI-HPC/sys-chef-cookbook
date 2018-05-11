@@ -30,18 +30,19 @@ unless (node['sys']['accounts'].empty? and node['sys']['groups'].empty?)
   bag = data_bag('localgroups') unless Chef::Config[:solo]
   node['sys']['groups'].each do |name, grp|
     unless Chef::Config[:solo]
-      begin
-        raise "No data bag item for group '#{name}'" unless bag.include?(name)
 
+      if bag.include?(name)
         item = data_bag_item('localgroups', name)
-        grp = grp.to_hash
+        grp = grp.to_h
         grp['gid']     ||= item['gid']
-      rescue StandardError => e
-        Chef::Log.debug("Attribute merge with data bag 'localgroups/#{name}' failed: #{e.message}")
+      else
+        log "No data bag item for group '#{name}'" do
+          level :debug
+        end
       end
     end
 
-    begin
+    #begin
       group name do
         # grp.each{|k,v| send(k,v)} is elegant
         #  but hard to handle for account attributes
@@ -51,14 +52,16 @@ unless (node['sys']['accounts'].empty? and node['sys']['groups'].empty?)
         append  grp['append']  || false
         system  grp['system']  || false
       end
-    rescue StandardError => e
-      Chef::Log.error("Creation of group resource '#{name}' failed: #{e.message}")
-    end
+    #rescue StandardError => e
+    #  Chef::Log.error("Creation of group resource '#{name}' failed: " +
+    #                  e.message)
+    #end
   end
 
   bag = data_bag('accounts') unless Chef::Config[:solo]
   node['sys']['accounts'].each do |name, caccount|
-    account = caccount.merge({}) # gives us a mutable copy of the ImmutableMash
+    # gives us a mutable copy of the ImmutableMash:
+    account = (caccount) ? caccount.merge({}) : {}
     unless Chef::Config[:solo]
       begin
         raise "No data bag item for account '#{name}'" unless bag.include?(name)
