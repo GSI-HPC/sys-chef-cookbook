@@ -7,25 +7,27 @@ group :development do
   gem 'foodcritic', '< 13'
   gem 'berkshelf'
 
-  gem 'chef', "~> #{ENV['CHEF_VERSION']}"
+  # take Chef version from environment, fall back to newest version:
+  gem 'chef', (ENV['CHEF_VERSION']) ? "~> #{ENV['CHEF_VERSION']}" : ""
 
   gem 'chefspec'
   gem 'chefspec-ohai'
   gem 'test-kitchen'
-  gem 'kitchen-docker'
+
   # gem 'guard-rspec', require: false
   # gem 'libnotify'
-  # gem "kitchen-vagrant",
-  #    :git => "https://github.com/test-kitchen/kitchen-vagrant.git"
   # gem "serverspec"
+end
+
+group :travis do
+  gem 'kitchen-docker'
 end
 
 # group :vagrant do
 #   gem "vagrant", :git => "https://github.com/mitchellh/vagrant.git",
 #       :tag => 'v1.7.4'
-# end
-
-# group :plugins do
+#   gem "kitchen-vagrant",
+#       :git => "https://github.com/test-kitchen/kitchen-vagrant.git"
 #   gem "vagrant-libvirt",
 #       :git => "https://github.com/pradels/vagrant-libvirt.git"
 #   gem "vagrant-berkshelf"
