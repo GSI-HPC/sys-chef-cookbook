@@ -28,15 +28,14 @@ env:
   matrix:
     - CHEF_VERSION=12
     - CHEF_VERSION=12.3
-#    - CHEF_VERSION=13
-#    - CHEF_VERSION=14
-#    - CHEF_VERSION=11
+    - CHEF_VERSION=13
+    - CHEF_VERSION=14
 
 rvm:
   - 2.3
   - 2.4
   - 2.1
-#  - 1.9
+
 
 # cf. https://travis-ci.com/chuhn/chef-install-test/
 matrix:
@@ -48,7 +47,6 @@ matrix:
     - rvm: 1.9
     - env: CHEF_VERSION=14
     - env: CHEF_VERSION=13
-      env: CHEF_VERSION=11
 
 stages:
   - rubocop
@@ -66,4 +64,10 @@ jobs:
     - stage: foodcritic
       script: bundle exec rake foodcritic
     - stage: kitchen
-      script: bundle exec rake kitchen:all
+      script: bundle exec kitchen list
+    - script: bundle exec kitchen test debian-stretch
+    - script: bundle exec kitchen test debian-jessie
+    - script: bundle exec kitchen test debian-buster
+    - script: bundle exec kitchen test debian-wheezy
+    - script: bundle exec kitchen test ubuntu-16.04
+    - script: bundle exec kitchen test centos-7
