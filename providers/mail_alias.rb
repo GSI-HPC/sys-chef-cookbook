@@ -25,7 +25,7 @@ action :add do
       # Mail alias exists, but points to wrong value:
       #  * change alias value
 
-      converge_by 'SysMailAlias action :add : change alias value' do
+      ruby_block 'SysMailAlias action :add : change alias value' do
         block do
           aliases_file = Chef::Util::FileEdit.new(new_resource.aliases_file)
           aliases_file.search_file_replace_line(alias_regexp, new_line)
@@ -33,6 +33,7 @@ action :add do
         end
       end
 
+      new_resource.updated_by_last_action(true)
     end
   else
     # Mail alias does not exist:
@@ -45,7 +46,7 @@ action :add do
       not_if { ::File.exist?(new_resource.aliases_file) }
     end
 
-    converge_by 'SysMailAlias action :add : insert alias' do
+    ruby_block 'SysMailAlias action :add : insert alias' do
       block do
         aliases_file = Chef::Util::FileEdit.new(new_resource.aliases_file)
         aliases_file.insert_line_if_no_match(alias_regexp, new_line)
@@ -53,6 +54,7 @@ action :add do
       end
     end
 
+    new_resource.updated_by_last_action(true)
   end
 end
 
@@ -61,8 +63,7 @@ action :remove do
     # Mail alias exists:
     #  * delete the alias from aliases file
 
-    converge_by 'SysMailAlias action :remove : remove alias' do
-      # FIXME: update should only be triggered something was removed:
+    ruby_block 'SysMailAlias action :remove : remove alias' do
       block do
         aliases_file = Chef::Util::FileEdit.new(new_resource.aliases_file)
         aliases_file.search_file_delete_line(alias_regexp)
@@ -70,6 +71,8 @@ action :remove do
       end
     end
 
+    # FIXME: should only be triggered something was removed:
+    new_resource.updated_by_last_action(true)
   end
 end
 
