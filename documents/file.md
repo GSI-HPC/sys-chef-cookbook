@@ -14,8 +14,7 @@ Use attributes in `node.sys.file`, e.g.:
         '/tmp/test_file' => {
           :content => 'This is some plain text content',
           :mode => '0644'
+          :notifies => [:restart, 'service[my_service]', :immediately]
         }
       }
     }
-
-
