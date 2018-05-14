@@ -68,8 +68,7 @@ unless (node['sys']['accounts'].empty? and node['sys']['groups'].empty?)
         item['account'].each do |key, value|
           account[key] = value unless account.has_key?(key)
           if key == 'home'
-            # deprecated as of Chef 12.14:
-            account['supports'] = { :manage_home => true }
+            account['manage_home'] = true
           end
         end
       rescue StandardError => e
@@ -81,11 +80,10 @@ unless (node['sys']['accounts'].empty? and node['sys']['groups'].empty?)
 
       comment = account['comment'] || 'managed by Chef via sys::accounts recipe'
 
-      supports_hash = Hash.new
+      # supports has been deprecated and nowadays normal attributes of the user resource
       if account.has_key? 'supports'
         account['supports'].each do |key, value|
-          supports_hash[key.to_s] = value
-          supports_hash[key.to_sym] = value
+          account[key.to_s] = value
         end
       end
 
@@ -123,10 +121,10 @@ unless (node['sys']['accounts'].empty? and node['sys']['groups'].empty?)
           home     account['home']
           shell    account['shell']
           system   account['system'] # ~FC048 No command is issued here
-          supports supports_hash
+          manage_home account['manage_home']
           ignore_failure true
         end
-      elsif account['supports']['manage_home']
+      elsif account['manage_home']
         # don't create the account but only its homedir:
         directory account['home'] do
           owner account['uid']
