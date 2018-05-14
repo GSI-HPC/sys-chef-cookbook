@@ -7,8 +7,8 @@ provisioner:
   require_chef_omnibus: false
   install_strategy: skip
   log_level: warn
-  #name: chef-solo
-  #chef_solo_path: /usr/bin/chef-solo
+  # name: chef-solo
+  # chef_solo_path: /usr/bin/chef-solo
   name: chef_zero
   chef_client_path: /usr/bin/chef-client
   data_bags_path: test/integration/data_bags
@@ -24,38 +24,14 @@ platforms:
       provider: libvirt
       provision: true
       vagrantfiles:
-      - vagrant.rb
+        - vagrant.rb
   - name: jessie64
     driver:
       box: debian/jessie64
       provider: libvirt
       provision: true
       vagrantfiles:
-      - vagrant.rb
-  # - name: squeeze64
-  #   driver:
-  #     box: debian-squeeze-amd64
-  #     box_url: http://boot.hpc.gsi.de/vagrant/squeeze64.json
-  # - name: squeeze32
-  #   driver:
-  #     box: debian-squeeze-i386
-  #     box_url: http://boot.hpc.gsi.de/vagrant/squeeze32.json
-  # - name: wheezy64
-  #   driver:
-  #     box: debian-wheezy-amd64
-  #     box_url: http://boot.hpc.gsi.de/vagrant/wheezy64.json
-  # - name: wheezy32
-  #   driver:
-  #     box: debian-wheezy-i386
-  #     box_url: http://boot.hpc.gsi.de/vagrant/wheezy32.json
-  # - name: jessie64
-  #   driver:
-  #     box: debian-jessie-amd64
-  #     box_url: http://boot.hpc.gsi.de/vagrant/jessie64.json
-  # - name: jessie32
-  #   driver:
-  #     box: debian-jessie-i386
-  #     box_url: http://boot.hpc.gsi.de/vagrant/jessie32.json
+        - vagrant.rb
 
 suites:
   - name: sys_accounts
@@ -64,22 +40,31 @@ suites:
     attributes:
       sys:
         accounts:
-          homer: #empty
-          bart:  # databag
+          homer:  # empty
+          bart:   # databag
           lisa:
             home: /home/lisa
             gid: simpsons
           root:
-            # existing account, password should be changed, otherwise left untouched
+            # existing account, password should be changed,
+            #  otherwise left untouched
             password: "$6$aycaramba$ql7zzi/ASEyEA.MsG5/7I6njGIfXoOn.JJjbToCLfadhYa9axBSJ.bWJiALYy3vA1FnzPx.ycq0uCXqOFrgW6/"
         groups:
           simpsons:
   - name: sys_autofs
     run_list:
       - recipe[sys::autofs]
+      - recipe[sys::file]
     attributes:
       sys:
         autofs:
           maps:
             /test:
-              map: /etc/autofs/test
+              map: /etc/autofs.test
+        file:
+          # create a bind mount autofs map for testing
+          /etc/autofs.test:
+            content: tempo -fstype=bind :/tmp
+            notifies:
+              - reload
+              - service[autofs]
