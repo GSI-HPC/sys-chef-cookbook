@@ -3,7 +3,7 @@
 #
 
 
-unless node['sys']['ipmi']['install_packages'].empty? &&
+unless node['sys']['ipmi']['install_packages'] &&
        node['sys']['ipmi']['overheat_protection'].empty?
 
   # Install the packages needed to configure/grab data from the IPMI cards.
