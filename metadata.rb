@@ -10,4 +10,4 @@ end
 if respond_to?(:issues_url)
   issues_url       'https://github.com/GSI-HPC/sys-chef-cookbook/issues'
 end
-version          '1.40.6'
+version          '1.41.0'
