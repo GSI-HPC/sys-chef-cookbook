@@ -6,3 +6,10 @@ group :jessie do
     gem 'net-ssh', '< 5'
   end
 end
+
+group :wheezy do
+  # net-ssh >= 5 requires ruby 2.2
+  if Gem::Version.new(RUBY_VERSION.dup) < Gem::Version.new('2.0.0')
+    gem 'rake', '< 12.3'
+  end
+end
