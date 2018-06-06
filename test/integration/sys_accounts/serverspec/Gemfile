@@ -1,0 +1,8 @@
+source 'http://rubygems.org'
+
+group :jessie do
+  # net-ssh >= 5 requires ruby 2.2
+  if Gem::Version.new(RUBY_VERSION.dup) < Gem::Version.new('2.2.0')
+    gem 'net-ssh', '< 5'
+  end
+end
