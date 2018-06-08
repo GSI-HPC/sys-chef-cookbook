@@ -9,7 +9,7 @@ It configures various services in a single cookbook eg. apt repositories, automo
 
 **Requirements**
 
-* Chef version >= 10.12
+* Chef version >= 12
 * No dependencies to other cookbooks.
 
 **Platforms**
@@ -17,7 +17,10 @@ It configures various services in a single cookbook eg. apt repositories, automo
 The "sys" cookbook development is focussed on Debian GNU/Linux.
 Debian derivatives as Ubuntu probably work with minor tweaks but are untested.
 
-* Supported flavors: Debian _Wheezy_ and _Jessie_ and partially _Squeeze_
+* Supported flavors:
+  - Debian _Wheezy_,
+  - _Jessie_ and
+  - _Stretch_.
 
 # Motivation
 
