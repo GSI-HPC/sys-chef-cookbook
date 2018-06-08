@@ -1,6 +1,9 @@
-$ActionQueueType LinkedList # use asynchronous processing
-$ActionQueueFileName srvrfwd # set file name, also enables disk mode
-$ActionResumeRetryCount -1 # infinite retries on insert failure
-$ActionQueueSaveOnShutdown on # save in-memory data if rsyslog shuts down
-$ActionQueueMaxDiskSpace 1G # Don't use more than this much space for the queue
-*.*	@@<%= node['rsyslog']['server_ip'] %><%= ":#{node['rsyslog']['port']}" if node['rsyslog']['port'] && node['rsyslog']['port'] != 514 %>
+$ActionQueueType           LinkedList # use asynchronous processing
+$ActionQueueFileName       srvrfwd    # set file name, also enables disk mode
+$ActionResumeRetryCount    -1         # infinite retries on insert failure
+# save in-memory data if rsyslog shuts down:
+$ActionQueueSaveOnShutdown on
+# Don't use more than this much space for the queue:
+$ActionQueueMaxDiskSpace   1G
+
+<%= @filter || '*.*' %> @<%= '@' if @tcp %><%= node['rsyslog']['server_ip'] %><%= ":#{node['rsyslog']['port']}" if node['rsyslog']['port'] && node['rsyslog']['port'] != 514 %>

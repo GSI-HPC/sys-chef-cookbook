@@ -11,6 +11,7 @@ describe 'sys::rsyslog' do
     cached(:chef_run) do
       ChefSpec::SoloRunner.new do |node|
         node.default['rsyslog'] = {
+          filter:    '*.*,schnubbel.!=dibu',
           server_ip: '1.2.3.4',
           protocol:  'udp',
           port:      56789
@@ -30,7 +31,7 @@ describe 'sys::rsyslog' do
 
     it 'defines loghost forward' do
       expect(chef_run).to render_file('/etc/rsyslog.d/loghost.conf')
-                           .with_content('@1.2.3.4:56789')
+                           .with_content('*.*,schnubbel.!=dibu @1.2.3.4:56789')
       expect(chef_run.template('/etc/rsyslog.d/loghost.conf'))
         .to notify('service[rsyslog]').to(:restart)
 
