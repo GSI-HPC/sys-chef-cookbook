@@ -27,6 +27,10 @@ if node.has_key?('rsyslog')
     owner "root"
     group "root"
     mode "0600"
+    variables(
+      filter: node['rsyslog']['filter'],
+      tcp: node['rsyslog']['protocol'] == 'tcp'
+    )
     only_if { node['rsyslog'].has_key?('server_ip') }
     notifies :restart, "service[rsyslog]"
   end
