@@ -83,14 +83,14 @@ if ! node['sys']['ldap'].empty? && File.exist?('/usr/bin/kinit')
           'Before' => ['graphical.target', 'xdm.service', 'nscd.service'],
           'After' => 'k5start-nslcd.service',
           'BindsTo' => 'k5start-nslcd.service',
-          'JoinsNamespaceOf' => 'k5start-nslcd.service',
+          #'JoinsNamespaceOf' => 'k5start-nslcd.service',
         },
         'Service' => {
           'Type' => 'forking',
           'ExecStart' => '/usr/sbin/nslcd',
           'Restart' => 'on-failure',
           'TimeoutSec' => '5min',
-          'PrivateTmp' => 'yes',
+          #'PrivateTmp' => 'yes',
         },
         'Install' => {
           'WantedBy' => 'gsi-remote.target',
@@ -113,7 +113,7 @@ if ! node['sys']['ldap'].empty? && File.exist?('/usr/bin/kinit')
           'ExecStart' => '/usr/bin/k5start -b -L -F -o nslcd -g nslcd -f /etc/nslcd.keytab -K 60 -k /tmp/krb5cc_nslcd -U -x',
           'Restart' => 'always',
           'RestartSec' => '5',
-          'PrivateTmp' => 'yes',
+          #'PrivateTmp' => 'yes',
         },
         'Install' => {
           'WantedBy' => 'gsi-remote.target',
