@@ -17,17 +17,32 @@
 # limitations under the License.
 #
 
-unless node['sys']['resolv']['servers'].empty? # ~FC023 Do not break conventions in sys
+return if node['sys']['resolv']['servers'].empty?
 
-  template '/etc/resolv.conf' do
-    source 'etc_resolv.conf.erb'
-    mode "0644"
-    variables(
-      :servers => node['sys']['resolv']['servers'],
-      :domain => node['sys']['resolv']['domain'],
-      :search => node['sys']['resolv']['search']
-    )
-    not_if 'test -L /etc/resolv.conf' # -> managed by resolvconf
-  end
+# From resolv.conf's man page:
+# > The domain and search keywords are mutually exclusive.
+# > If more than one instance of these keywords is present,
+# > the last instance wins.
+log 'domain+search' do
+  message "'search' and 'domain' are mutually exclusive, the latter will be ignored"
+  level   :info
+  only_if { node['sys']['resolv'].key?('domain') && node['sys']['resolv'].key('search') }
+end
 
+log 'resolv.conf-symlink' do
+  message "/etc/resolv.conf is a symlink - not touching it"
+  level   :warn
+  only_if 'test -L /etc/resolv.conf'
+end
+
+template '/etc/resolv.conf' do
+  source 'etc_resolv.conf.erb'
+  mode "0644"
+  variables(
+    servers: node['sys']['resolv']['servers'],
+    domain:  node['sys']['resolv']['domain'],
+    search:  node['sys']['resolv']['search'],
+    options: node['sys']['resolv']['options']
+  )
+  not_if 'test -L /etc/resolv.conf' # -> managed by resolvconf
 end
