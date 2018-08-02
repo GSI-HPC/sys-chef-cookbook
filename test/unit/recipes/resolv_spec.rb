@@ -37,7 +37,7 @@ describe 'sys::resolv' do
       end.converge(described_recipe)
     end
 
-    it 'emits a warning' do
+    xit 'emits a warning' do
       expect(chef_run).to write_log('resolv.conf-symlink')
     end
 
@@ -55,7 +55,7 @@ describe 'sys::resolv' do
       end.converge(described_recipe)
     end
 
-    it 'emits a warning' do
+    xit 'emits a warning' do
       expect(chef_run).to write_log('domain+search')
     end
   end
