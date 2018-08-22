@@ -5,9 +5,7 @@
 #
 # set's up the chef-client
 #
-# $Id$
-#
-# Copyright 2011-2013 GSI Helmholtzzentrum für Schwerionenforschung GmbH <hpc@gsi.de>
+# Copyright 2011-2018 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH <hpc@gsi.de>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -24,6 +22,31 @@
 # All rights reserved - Do Not Redistribute
 #
 
+server_url = node['sys']['chef']['server_url']
+
+# fallback for figuring out the chef server url following the "old" conventions
+#  introduced by the chef cookbook
+begin
+  if !server_url && node['chef']['server']['fqdn']
+    server_url = if node['chef']['server']['ssl']
+                   "https://#{node['chef']['server']['fqdn']}:443"
+                 else
+                   "http://#{node['chef']['server']['fqdn']}:4000"
+                 end
+  end
+rescue ArgumentError => e
+  Chef::Log.debug e
+end
+
+# configuring the chef client only makes sense if the server is defined:
+unless server_url
+  log 'no_chef_server' do
+    message "No chef server defined. Please set node['sys']['chef']['server_url'] to point to your chef server"
+    level :warn
+  end
+  return
+end
+
 # actually we don't neccessarily need the Ohai recipe
 include_recipe 'sys::ohai'
 
@@ -39,50 +62,28 @@ template '/etc/default/chef-client' do
   notifies :restart, "service[chef-client]"
 end
 
-if node['sys']['chef']['use_syslog']
-  package 'ruby-sysloglogger'
+package 'ruby-sysloglogger' if node['sys']['chef']['use_syslog']
+
+# compile attributes for the client.rb template:
+v              = node['sys']['chef'].to_hash
+v[:server_url] = server_url
+v[:opath]      = node['ohai']['plugin_path']
+v[:odisable]   = node['ohai']['disabled_plugins']
+
+template '/etc/chef/client.rb' do
+  source 'etc_chef_client.rb.erb'
+  owner 'root'
+  group node['sys']['chef']['group']
+  mode "0644"
+  variables v
+
+  notifies :restart, "service[chef-client]"
+  ignore_failure true
 end
 
-server_url = node['sys']['chef']['server_url']
-
-begin
-  unless server_url or not node['chef']['server']['fqdn']
-    # fallback for figuring out the chef server url following the "old" conventions
-    #  introduced by the chef cookbook
-    if node['chef']['server']['ssl']
-      server_url = "https://#{server}:443"
-    else
-      server_url = "http://#{server}:4000"
-    end
-  end
-rescue ArgumentError => e
-  Chef::Log.debug e
-end
-
-# configuring the chef client only makes sense if the server is defined:
-if server_url
-
-  # compile attributes for the client.rb template:
-  v              = node['sys']['chef'].to_hash
-  v[:server_url] = server_url
-  v[:opath]      = node['ohai']['plugin_path']
-  v[:odisable]   = node['ohai']['disabled_plugins']
-
-  template '/etc/chef/client.rb' do
-    source 'etc_chef_client.rb.erb'
-    owner 'root'
-    group node['sys']['chef']['group']
-    mode "0644"
-    variables v
-
-    notifies :restart, "service[chef-client]"
-    ignore_failure true
-  end
-else
-  log 'no_chef_server' do
-    message "No chef server defined. Please set node['sys']['chef']['server_url'] to point to your chef server"
-    level :warn
-  end
+# add log rotaion for chef client log:
+template '/etc/logrotate.d/chef' do
+  source 'etc_logrotate.d_chef.erb'
 end
 
 # Delete the validation credential if the machines
@@ -91,26 +92,24 @@ end
 # case, the validation key would be regenerated on
 # each chef-server restart.
 # For now we assume that the chef server does not run sys::chef
-#unless node['chef']['is_server']
 file node['sys']['chef']['validation_key'] do
   action :delete
   backup false
-  only_if do ::File.exist? node['sys']['chef']['client_key'] end
+  only_if { ::File.exist? node['sys']['chef']['client_key'] }
 end
-#end
 
 # make the client key group-readable
 #  (so its members can use 'knife .. -c /etc/chef/client.pem')
 file node['sys']['chef']['client_key'] do
   group node['sys']['chef']['group']
-  mode "0640"
+  mode  '0640'
 end
 
 # Create a script in cron.hourly to make sure chef-client keeps running
 if node['sys']['chef']['restart_via_cron'] # ~FC023
   template '/etc/cron.hourly/chef-client' do
     source 'etc_cron.hourly_chef-client.erb'
-    mode '0755'
+    mode   '0755'
     helpers(Sys::Helper)
   end
 end
@@ -122,7 +121,7 @@ actions = [:start]
 actions << :enable if Dir.glob('/etc/rc2.d/*chef-client*').empty?
 
 service 'chef-client' do
-  supports  :restart => true, :status => true
+  supports :restart => true, :status => true
   action actions
   ignore_failure true
 end
