@@ -34,7 +34,7 @@ describe 'sys::chef' do
       expect(chef_run).to create_template('/etc/chef/client.rb')
     end
 
-    xit 'writes logrotate config' do
+    it 'writes logrotate config' do
       expect(chef_run).to create_template('/etc/logrotate.d/chef')
     end
 
