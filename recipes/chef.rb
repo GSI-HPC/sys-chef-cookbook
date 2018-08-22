@@ -79,7 +79,10 @@ if server_url
     ignore_failure true
   end
 else
-  log("No chef server defined. Please set node['sys']['chef']['server_url'] to point to your chef server") { level :warn }
+  log 'no_chef_server' do
+    message "No chef server defined. Please set node['sys']['chef']['server_url'] to point to your chef server"
+    level :warn
+  end
 end
 
 # Delete the validation credential if the machines

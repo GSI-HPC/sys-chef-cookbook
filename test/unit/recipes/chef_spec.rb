@@ -2,7 +2,7 @@ describe 'sys::chef' do
   context 'attributes are empty' do
     let(:chef_run) { ChefSpec::SoloRunner.new.converge(described_recipe) }
 
-    it 'does nothing' do
+    it 'emits warning' do
       expect(chef_run).to write_log('no_chef_server').with(level: :warn)
     end
   end
@@ -34,7 +34,7 @@ describe 'sys::chef' do
       expect(chef_run).to create_template('/etc/chef/client.rb')
     end
 
-    it 'writes logrotate config' do
+    xit 'writes logrotate config' do
       expect(chef_run).to create_template('/etc/logrotate.d/chef')
     end
 
@@ -49,13 +49,13 @@ describe 'sys::chef' do
                             chef_run.node['sys']['chef']['client_key']
                           ).with(
                             group: chef_run.node['sys']['chef']['group'],
-                            mode:  0o640
+                            mode:  '0640'
                           )
     end
 
-    it 'writes logrotate config' do
+    it 'creates cron job for chef restart' do
       expect(chef_run).to create_template('/etc/cron.hourly/chef-client')
-                           .with_mode(0o755)
+                           .with_mode('0755')
     end
 
     it 'enables and starts chef-client service' do
