@@ -6,7 +6,7 @@
 
 # Make sure the chef-client service keeps running
 <% if systemd_active? %>
-systemctl show --property=SubState chef-client | grep running >$- || systemctl restart chef-client
+systemctl show --property=SubState chef-client | grep -q running || systemctl restart chef-client
 <% else %>
 invoke-rc.d chef-client status &> /dev/null || invoke-rc.d chef-client restart 1> /dev/null
 <% end %>
