@@ -16,7 +16,7 @@
 #
 
 # Test for an interactive shell
-if [ $- != *i* ]
+if [ -z "$PS1" ]
 then
   return
 fi
