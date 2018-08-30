@@ -12,4 +12,4 @@ if respond_to?(:issues_url)
 end
 chef_version     '>= 12.0' if respond_to?(:chef_version)
 supports         'debian'
-version          '1.43.0'
+version          '1.43.1'
