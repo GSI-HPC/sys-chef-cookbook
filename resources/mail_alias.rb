@@ -1,5 +1,8 @@
 #
-# Copyright 2014, Dennis Klein
+# Copyright 2014 - 2018, GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+# Authors:
+#   Dennis Klein
+#   Christopher Huhn
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -19,7 +22,7 @@ actions :add, :remove
 default_action :add
 
 attribute :name, :kind_of => String, :name_attribute => true, :required => true
-attribute :to, :kind_of => String, :default => nil
-attribute :aliases_file, :kind_of => String, :default => '/etc/aliases'
+attribute :to,   :kind_of => [Array, String], :default => nil
+attribute :aliases_file, :kind_of => String,  :default => '/etc/aliases'
 
 attr_accessor :exists
