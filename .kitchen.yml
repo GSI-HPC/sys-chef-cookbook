@@ -69,3 +69,15 @@ suites:
             notifies:
               - reload
               - service[autofs]
+  - name: sys_mail
+    run_list:
+      - recipe[sys::mail]
+    attributes:
+      sys:
+        mail:
+          relay:
+            smtp.example.com
+          aliases:
+            array:
+              - '| /bin/true'
+              - /tmp/mail.test
