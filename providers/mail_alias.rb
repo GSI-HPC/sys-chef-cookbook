@@ -1,6 +1,9 @@
 #
-# Copyright 2014, Dennis Klein
-#
+# Copyright 2014 - 2018, GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+# Authors:
+#   Dennis Klein
+#   Christopher Huhn
+##
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -17,7 +20,14 @@
 use_inline_resources
 
 action :add do
-  new_resource.to(escape_value(new_resource.to))
+  if new_resource.to.is_a?(String)
+    # single recipient
+    new_resource.to(escape_value(new_resource.to))
+  elsif new_resource.to.is_a?(Array)
+    # multiple recipients have been passed as an array:
+    new_resource.to(new_resource.to.map{|e| escape_value(e)}.join(', '))
+  end
+
   new_line = "#{new_resource.name}: #{new_resource.to}"
 
   if @current_resource.exists

@@ -10,8 +10,13 @@ describe 'sys::mail' do
   context 'with some test attributes' do
     let(:chef_run) { ChefSpec::SoloRunner.new(step_into: ['sys_mail_alias']) }
     let(:file_edit_dummy) { double('file edit dummy') }
+    let(:canonical_update_test) do
+      'test /etc/postfix/canonical.db -nt /etc/postfix/canonical'
+    end
 
     before do
+      stub_command(canonical_update_test).and_return(true)
+
       # mock Chef::Util::FileEdit - what a mess
       allow(Chef::Util::FileEdit).to receive(:new).and_call_original
       allow(Chef::Util::FileEdit).to receive(:new).with('/etc/aliases')
@@ -23,7 +28,8 @@ describe 'sys::mail' do
       @example_alias_name = 'foo'
       @example_alias_value = 'foo@bar.mail'
       @expected_alias_value = '"foo@bar.mail"'
-      chef_run.node.default[:sys][:mail][:aliases][@example_alias_name.to_sym] = @example_alias_value
+      chef_run.node.default[:sys][:mail][:aliases][@example_alias_name.to_sym] =
+        @example_alias_value
       allow(::File).to receive(:exist?).and_call_original
       allow(::File).to receive(:exist?).with('/etc/aliases').and_return(false)
       chef_run.converge(described_recipe)
@@ -45,12 +51,24 @@ describe 'sys::mail' do
     end
 
     etc_postfix_canonical = '/etc/postfix/canonical'
-    update_canonical = 'Update Postfix canonicals'
     it "manages #{etc_postfix_canonical}" do
-      expect(chef_run).to create_template(etc_postfix_canonical).with_mode('0600')
-      expect(chef_run.template(etc_postfix_canonical)).to notify("execute[#{update_canonical}]").to(:run).immediately
-      expect(chef_run.execute(update_canonical)).to do_nothing
-      expect(chef_run.execute(update_canonical)).to notify("service[#{postfix}]").to(:reload).delayed
+      expect(chef_run).to create_template(etc_postfix_canonical)
+                           .with_mode('0600')
+      expect(chef_run.template(etc_postfix_canonical))
+        .to notify("execute[update-canonical]") .to(:run).immediately
+    end
+
+    it "updates #{etc_postfix_canonical}.db when needed" do
+      stub_command(canonical_update_test).and_return(false)
+      chef_run.converge(described_recipe)
+      expect(chef_run).to run_execute('update-canonical')
+      expect(chef_run.execute('update-canonical'))
+        .to notify("service[#{postfix}]").to(:reload).delayed
+    end
+
+    it "does nothing when #{etc_postfix_canonical}.db is up to date" do
+      #stub_command(canonical_update_test).and_return(true)
+      expect(chef_run).to_not run_execute('update-canonical')
     end
 
     etc_postfix_virtual = '/etc/postfix/virtual'
