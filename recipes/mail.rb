@@ -2,8 +2,11 @@
 # Cookbook Name:: sys
 # Recipe:: mail
 #
-# Copyright 2012, Victor Penso
-# Copyright 2014-16, Dennis Klein
+# Copyright 2012 - 2018, GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+# Authors:
+#   Victor Penso
+#   Dennis Klein
+#   Christopher Huhn
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -31,17 +34,19 @@ unless relay.empty?
     content "#{node['fqdn']}\n"
   end
 
-  update_canonical = 'Update Postfix canonicals'
-  execute update_canonical do
-    action :nothing
-    command 'postmap /etc/postfix/canonical'
-    notifies :reload, 'service[postfix]'
-  end
-
   template '/etc/postfix/canonical' do
     source 'etc_postfix_canonical.erb'
     mode '0600'
-    notifies :run, "execute[#{update_canonical}]", :immediately
+    notifies :run, 'execute[update-canonical]', :immediately
+  end
+
+  execute 'update-canonical' do
+    action :run
+    command 'postmap /etc/postfix/canonical'
+    # check if /etc/postfix/canonical.db exists and
+    #  run if it doesn't or is outdated:
+    not_if 'test /etc/postfix/canonical.db -nt /etc/postfix/canonical'
+    notifies :reload, 'service[postfix]'
   end
 
   update_virtual = 'Update Postfix virtual aliases'
