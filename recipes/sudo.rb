@@ -37,7 +37,7 @@ if ! node['sys']['sudo'].empty? && node['sys']['sudo_ldap'].empty?
       mode "0755"
     end
 
-    delete = Dir.glob('/etc/sudoers.d/*')
+    delete = Dir.glob('/etc/sudoers.d/*').map {|path| File.basename(path)}.delete('README')
 
     keep = node['sys']['sudo'].keys
 
