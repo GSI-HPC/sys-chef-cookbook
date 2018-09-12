@@ -37,6 +37,16 @@ if ! node['sys']['sudo'].empty? && node['sys']['sudo_ldap'].empty?
       mode "0755"
     end
 
+    delete = Dir.glob('/etc/sudoers.d/*')
+
+    keep = node['sys']['sudo'].keys
+
+    (delete - keep).each do |f|
+      file f do
+        action :delete
+      end
+    end
+
     node['sys']['sudo'].each_pair do |name,config|
       sys_sudo name do
         users config[:users] if config.has_key? 'users'
