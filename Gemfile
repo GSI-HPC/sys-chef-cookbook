@@ -10,7 +10,7 @@ group :development do
   # take Chef version from environment, fall back to newest version:
   gem 'chef', (ENV['CHEF_VERSION']) ? "~> #{ENV['CHEF_VERSION']}" : "> 1"
 
-  gem 'chefspec'
+  gem 'chefspec', '< 7.3'
   gem 'chefspec-ohai'
   gem 'test-kitchen'
 
