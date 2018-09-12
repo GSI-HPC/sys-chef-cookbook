@@ -37,15 +37,12 @@ if ! node['sys']['sudo'].empty? && node['sys']['sudo_ldap'].empty?
       mode "0755"
     end
 
-    delete = Dir.glob('/etc/sudoers.d/*').delete('/etc/sudoers.d/README')
-
-    keep = node['sys']['sudo'].keys.map {|key| "/etc/sudoers.d/#{key}"}
-
-    cleanup_action = node['sys']['sudo']['cleanup'] ? :delete : :nothing
-
-    (delete - keep).each do |f|
+    Dir.glob('/etc/sudoers.d/*').each do |f|
       file f do
-        action cleanup_action
+        action :delete
+        only_if { node['sys']['sudo']['cleanup'] }
+        not_if { f == '/etc/sudoers.d/README' }
+        not_if { node['sys']['sudo'].key?(File.basename(f)) }
       end
     end
 
