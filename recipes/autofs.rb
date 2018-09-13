@@ -46,7 +46,7 @@ template '/etc/auto.master' do
 end
 
 # on Jessie the maps go to /etc/auto.master.d/
-if node['platform_version'].to_i >= 8
+if node['platform_version'].to_i >= 8 || node['platform_version'] =~ /\/sid$/
 
   directory '/etc/auto.master.d'
 
@@ -110,7 +110,7 @@ if ! node['sys']['autofs']['ldap'].empty? && File.exist?('/usr/bin/kinit')
     notifies :restart, 'service[autofs]', :delayed
   end
 
-  if node['platform_version'].to_i >= 9
+  if node['platform_version'].to_i >= 9 || node['platform_version'] =~ /\/sid$/
 
     sys_systemd_unit 'autofs.service' do
       config({
