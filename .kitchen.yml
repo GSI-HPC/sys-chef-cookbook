@@ -33,6 +33,13 @@ platforms:
       provision: true
       vagrantfiles:
         - vagrant.rb
+  - name: buster64
+    driver:
+      box: gsi/buster64
+      provider: libvirt
+      provision: true
+      vagrantfiles:
+        - vagrant.rb
 
 suites:
   - name: sys_accounts
