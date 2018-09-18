@@ -18,14 +18,14 @@ verifier:
   ruby_bindir: /usr/bin
 
 platforms:
-  - name: stretch64
+  - name: stretch
     driver:
       box: debian/stretch64
       provider: libvirt
       provision: true
       vagrantfiles:
         - vagrant.rb
-  - name: jessie64
+  - name: jessie
     driver:
       box: debian/jessie64
       require_chef_omnibus: 12.0.3
@@ -33,9 +33,16 @@ platforms:
       provision: true
       vagrantfiles:
         - vagrant.rb
-  - name: buster64
+  - name: buster
     driver:
       box: gsi/buster64
+      provider: libvirt
+      provision: true
+      vagrantfiles:
+        - vagrant.rb
+  - name: xenial
+    driver:
+      box: generic/ubuntu1604
       provider: libvirt
       provision: true
       vagrantfiles:
