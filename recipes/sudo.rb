@@ -37,6 +37,15 @@ if ! node['sys']['sudo'].empty? && node['sys']['sudo_ldap'].empty?
       mode "0755"
     end
 
+    Dir.glob('/etc/sudoers.d/*').each do |f|
+      file f do
+        action :delete
+        only_if { node['sys']['sudo']['cleanup'] }
+        not_if { f == '/etc/sudoers.d/README' }
+        not_if { node['sys']['sudo'].key?(File.basename(f)) }
+      end
+    end
+
     node['sys']['sudo'].each_pair do |name,config|
       sys_sudo name do
         users config[:users] if config.has_key? 'users'
