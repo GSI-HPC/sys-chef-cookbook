@@ -47,10 +47,19 @@ platforms:
       provision: true
       vagrantfiles:
         - vagrant.rb
+  - name: centos7
+    driver:
+      box: centos/7
+      provider: libvirt
+      provision: true
+      require_chef_omnibus: 12
+      vagrantfiles:
+        - vagrant_centos.rb
 
 suites:
   - name: sys_accounts
     run_list:
+      - recipe[yum-epel]
       - recipe[sys::accounts]
     attributes:
       sys:
