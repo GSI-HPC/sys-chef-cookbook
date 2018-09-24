@@ -25,7 +25,10 @@ describe 'sys::sudo' do
             },
             rules: [ 'TEST ALL = ALL' ]
           },
-          cleanup: true
+          config: {
+            cleanup: true,
+            mailto: 'staatsanwaltschaft@example.com'
+          }
         }
       end.converge(described_recipe)
     end
@@ -63,22 +66,12 @@ describe 'sys::sudo' do
       expect(chef_run).to render_file('/etc/sudoers.d/test')
                            .with_content(' regular,')
     end
-  end
-
-  context 'with custom mail recipient' do
-    cached(:chef_run) do
-      ChefSpec::SoloRunner.new do |node|
-        node.default['sys']['sudo'] = {
-          config: {
-            mailto: 'itsec@example.com'
-          }
-        }
-      end.converge(described_recipe)
-    end
 
     it 'sets mailto in /etc/sudoers' do
       expect(chef_run).to render_file('/etc/sudoers')
-                           .with_content(/mailto="itsec@example.com"/)
+                           .with_content(
+                             /mailto="staatsanwaltschaft@example.com"/
+                           )
     end
   end
 end
