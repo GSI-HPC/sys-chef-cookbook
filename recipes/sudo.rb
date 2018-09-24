@@ -2,7 +2,11 @@
 # Cookbook Name:: sys
 # Recipe:: sudo
 #
-# Copyright 2012, Victor Penso
+# Copyright 2012-2018, GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+# Authors:
+#  Victor Penso
+#  Matthias Pausch
+#  Christopher Huhn
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,9 +21,19 @@
 # limitations under the License.
 #
 
-if ! node['sys']['sudo'].empty? && node['sys']['sudo_ldap'].empty?
+if node['sys']['sudo_ldap'].empty? &&
+   # check wether node['sys']['sudo'] contains anything but 'config':
+   !node['sys']['sudo'].reject do |key|
+     key.to_s == 'config'
+   end.empty?
 
     package 'sudo'
+
+    # Prevent "undefined method `[]' for nil:NilClass":
+    if node['sys']['sudo']['config']
+      mailto  = node['sys']['sudo']['config']['mailto']
+      cleanup = node['sys']['sudo']['config']['cleanup']
+    end
 
     # make sure to keep the right permissions and ownership
     # on this file.
@@ -28,7 +42,11 @@ if ! node['sys']['sudo'].empty? && node['sys']['sudo_ldap'].empty?
       owner 'root'
       group 'root'
       mode "0440"
+      variables(
+        mailto: mailto
+      )
     end
+
     # system specific configurations should be applied by
     # individual files in this directory
     directory '/etc/sudoers.d' do
@@ -42,7 +60,7 @@ if ! node['sys']['sudo'].empty? && node['sys']['sudo_ldap'].empty?
     Dir.glob('/etc/sudoers.d/*').each do |f|
       file f do
         action :delete
-        only_if { node['sys']['sudo']['cleanup'] }
+        only_if { cleanup }
         # keep the README:
         not_if { f == '/etc/sudoers.d/README' }
         # keep files with a correspoming attribute:
@@ -50,10 +68,10 @@ if ! node['sys']['sudo'].empty? && node['sys']['sudo_ldap'].empty?
       end
     end
 
-    node['sys']['sudo'].each_pair do |name,config|
-      # filter out the cleanup flag:
-      next if name.to_sym == :cleanup
-
+    # filter out config branch from attribute tree:
+    node['sys']['sudo'].reject do |key|
+      key.to_s == 'config'
+    end.each_pair do |name,config|
       sys_sudo name do
         users config[:users] if config.has_key? 'users'
         hosts config[:hosts] if config.has_key? 'hosts'

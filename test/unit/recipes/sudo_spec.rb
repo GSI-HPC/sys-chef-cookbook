@@ -25,7 +25,10 @@ describe 'sys::sudo' do
             },
             rules: [ 'TEST ALL = ALL' ]
           },
-          cleanup: true
+          config: {
+            cleanup: true,
+            mailto: 'staatsanwaltschaft@example.com'
+          }
         }
       end.converge(described_recipe)
     end
@@ -41,11 +44,13 @@ describe 'sys::sudo' do
     end
 
     it 'manages directory /etc/sudoers.d' do
-      expect(chef_run).to create_directory('/etc/sudoers.d').with(:mode => '0755')
+      expect(chef_run).to create_directory('/etc/sudoers.d')
+                           .with(:mode => '0755')
     end
 
     it 'manages file /etc/sudoers.d/test' do
-      expect(chef_run).to create_template('/etc/sudoers.d/test').with(:mode => '0440')
+      expect(chef_run).to create_template('/etc/sudoers.d/test')
+                           .with(:mode => '0440')
     end
 
     it 'surrounds some users with double quotes' do
@@ -56,8 +61,17 @@ describe 'sys::sudo' do
                         :commands => {},
                         :rules => [ 'TEST ALL = ALL' ] }
       )
-      expect(chef_run).to render_file('/etc/sudoers.d/test').with_content('"with-minus"')
-      expect(chef_run).to render_file('/etc/sudoers.d/test').with_content(' regular,')
+      expect(chef_run).to render_file('/etc/sudoers.d/test')
+                           .with_content('"with-minus"')
+      expect(chef_run).to render_file('/etc/sudoers.d/test')
+                           .with_content(' regular,')
+    end
+
+    it 'sets mailto in /etc/sudoers' do
+      expect(chef_run).to render_file('/etc/sudoers')
+                           .with_content(
+                             /mailto="staatsanwaltschaft@example.com"/
+                           )
     end
   end
 end
