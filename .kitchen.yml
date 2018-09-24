@@ -40,9 +40,9 @@ platforms:
       provision: true
       vagrantfiles:
         - vagrant.rb
-  - name: xenial
+  - name: bionic
     driver:
-      box: generic/ubuntu1604
+      box: generic/ubuntu1804
       provider: libvirt
       provision: true
       vagrantfiles:
