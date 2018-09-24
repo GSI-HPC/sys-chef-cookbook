@@ -8,14 +8,26 @@ describe 'sys::sudo' do
   end
 
   context 'with some test attributes' do
+    before do
+      allow(::Dir).to receive(:glob).and_call_original
+      allow(::Dir).to receive(:glob).with('/etc/sudoers.d/*')
+                       .and_return(
+                         %w[/etc/sudoers.d/delete_me /etc/sudoers.d/README]
+                       )
+    end
+
     cached(:chef_run) do
       ChefSpec::SoloRunner.new do |node|
         node.default['sys']['sudo'] = {
           test: {
             users: {
-              'TEST' => %w[regular with-minus]
+              'TEST' => [ 'regular', 'with-minus' ]
             },
             rules: [ 'TEST ALL = ALL' ]
+          },
+          config: {
+            cleanup: true,
+            mailto: 'staatsanwaltschaft@example.com'
           }
         }
       end.converge(described_recipe)
@@ -27,6 +39,8 @@ describe 'sys::sudo' do
 
     it 'manages file /etc/sudoers' do
       expect(chef_run).to create_template('/etc/sudoers').with(:mode => '0440')
+      expect(chef_run).to delete_file('/etc/sudoers.d/delete_me')
+      expect(chef_run).to_not delete_file('/etc/sudoers.d/README')
     end
 
     it 'manages directory /etc/sudoers.d' do
@@ -52,22 +66,12 @@ describe 'sys::sudo' do
       expect(chef_run).to render_file('/etc/sudoers.d/test')
                            .with_content(' regular,')
     end
-  end
-
-  context 'with custom mail recipient' do
-    cached(:chef_run) do
-      ChefSpec::SoloRunner.new do |node|
-        node.default['sys']['sudo'] = {
-          config: {
-            mailto: 'itsec@example.com'
-          }
-        }
-      end.converge(described_recipe)
-    end
 
     it 'sets mailto in /etc/sudoers' do
       expect(chef_run).to render_file('/etc/sudoers')
-                           .with_content(/mailto="itsec@example.com"/)
+                           .with_content(
+                             /mailto="staatsanwaltschaft@example.com"/
+                           )
     end
   end
 end

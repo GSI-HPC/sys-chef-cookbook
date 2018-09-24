@@ -2,7 +2,11 @@
 # Cookbook Name:: sys
 # Recipe:: sudo
 #
-# Copyright 2012, Victor Penso
+# Copyright 2012-2018, GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+# Authors:
+#  Victor Penso
+#  Matthias Pausch
+#  Christopher Huhn
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,13 +21,18 @@
 # limitations under the License.
 #
 
-if ! node['sys']['sudo'].empty? && node['sys']['sudo_ldap'].empty?
+if node['sys']['sudo_ldap'].empty? &&
+   # check wether node['sys']['sudo'] contains anything but 'config':
+   !node['sys']['sudo'].reject do |key|
+     key.to_s == 'config'
+   end.empty?
 
     package 'sudo'
 
     # Prevent "undefined method `[]' for nil:NilClass":
     if node['sys']['sudo']['config']
-      mailto = node['sys']['sudo']['config']['mailto']
+      mailto  = node['sys']['sudo']['config']['mailto']
+      cleanup = node['sys']['sudo']['config']['cleanup']
     end
 
     # make sure to keep the right permissions and ownership
@@ -44,6 +53,19 @@ if ! node['sys']['sudo'].empty? && node['sys']['sudo_ldap'].empty?
       owner 'root'
       group 'root'
       mode "0755"
+    end
+
+    # delete sudo rules not managed by sys
+    #  if node['sys']['sudo']['cleanup'] == true
+    Dir.glob('/etc/sudoers.d/*').each do |f|
+      file f do
+        action :delete
+        only_if { cleanup }
+        # keep the README:
+        not_if { f == '/etc/sudoers.d/README' }
+        # keep files with a correspoming attribute:
+        not_if { node['sys']['sudo'].key?(File.basename(f)) }
+      end
     end
 
     # filter out config branch from attribute tree:
