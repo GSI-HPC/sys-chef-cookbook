@@ -21,7 +21,13 @@
 
 if node['sys']['snmp']
 
-  package 'snmpd'
+  snmpd_pkg = case node['platform_version']
+              when 'rhel'
+                'net-snmp'
+              else # when 'debian'
+                'snmpd'
+              end
+  package snmpd_pkg
 
   template '/etc/default/snmpd' do
     source 'etc_default_snmpd.erb'
