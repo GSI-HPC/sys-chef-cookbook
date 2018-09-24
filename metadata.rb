@@ -13,3 +13,5 @@ end
 chef_version     '>= 12.0' if respond_to?(:chef_version)
 supports         'debian'
 version          '1.45.0'
+
+depends          'yum-epel'
