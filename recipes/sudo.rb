@@ -37,16 +37,23 @@ if ! node['sys']['sudo'].empty? && node['sys']['sudo_ldap'].empty?
       mode "0755"
     end
 
+    # delete sudo rules not managed by sys
+    #  if node['sys']['sudo']['cleanup'] == true
     Dir.glob('/etc/sudoers.d/*').each do |f|
       file f do
         action :delete
         only_if { node['sys']['sudo']['cleanup'] }
+        # keep the README:
         not_if { f == '/etc/sudoers.d/README' }
+        # keep files with a correspoming attribute:
         not_if { node['sys']['sudo'].key?(File.basename(f)) }
       end
     end
 
     node['sys']['sudo'].each_pair do |name,config|
+      # filter out the cleanup flag:
+      next if name.to_sym == :cleanup
+
       sys_sudo name do
         users config[:users] if config.has_key? 'users'
         hosts config[:hosts] if config.has_key? 'hosts'

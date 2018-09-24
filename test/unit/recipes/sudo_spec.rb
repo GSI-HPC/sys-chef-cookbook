@@ -8,13 +8,24 @@ describe 'sys::sudo' do
   end
 
   context 'with some test attributes' do
+    before do
+      allow(::Dir).to receive(:glob).and_call_original
+      allow(::Dir).to receive(:glob).with('/etc/sudoers.d/*')
+                       .and_return(
+                         %w[/etc/sudoers.d/delete_me /etc/sudoers.d/README]
+                       )
+    end
+
     cached(:chef_run) do
       ChefSpec::SoloRunner.new do |node|
-        node.default['sys']['sudo']['test'] = {
-          :users => {
-            'TEST' => [ 'regular', 'with-minus' ]
+        node.default['sys']['sudo'] = {
+          test: {
+            users: {
+              'TEST' => [ 'regular', 'with-minus' ]
+            },
+            rules: [ 'TEST ALL = ALL' ]
           },
-          :rules => [ 'TEST ALL = ALL' ]
+          cleanup: true
         }
       end.converge(described_recipe)
     end
@@ -25,6 +36,8 @@ describe 'sys::sudo' do
 
     it 'manages file /etc/sudoers' do
       expect(chef_run).to create_template('/etc/sudoers').with(:mode => '0440')
+      expect(chef_run).to delete_file('/etc/sudoers.d/delete_me')
+      expect(chef_run).to_not delete_file('/etc/sudoers.d/README')
     end
 
     it 'manages directory /etc/sudoers.d' do
