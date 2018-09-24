@@ -17,8 +17,10 @@
 # limitations under the License.
 #
 
-Ohai::Config[:plugin_path] << node['ohai']['plugin_path']
-Chef::Log.info("ohai plugins will be at: #{node['ohai']['plugin_path']}")
+ohai.plugin_path << node['ohai']['plugin_path']
+log "ohai plugins will be at: #{node['ohai']['plugin_path']}" do
+  level :info
+end
 
 ohai "reload" do
   action :nothing
