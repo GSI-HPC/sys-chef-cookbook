@@ -13,6 +13,15 @@ package 'ipmitool'
 # Tools used by the supplied IPMI Ohai plugin (bmc-config):
 package 'freeipmi-tools'
 
+# Tools used by the supplied IPMI Ohai plugin (bmc-config):
+freeipmi_pkg = case node['platform_family']
+	           when 'rhel'
+                 'freeipmi'
+               else # when 'debian'
+                 'freeipmi-tools'
+               end
+package freeipmi_pkg
+
 # configure IPMI overheat protection:
 cookbook_file '/usr/local/sbin/ipmi-setup-overheat-protection' do
   source 'scripts/ipmi-setup-overheat-protection'

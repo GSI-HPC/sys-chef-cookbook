@@ -45,15 +45,20 @@ template '/etc/auto.master' do
   notifies :reload, 'service[autofs]'
 end
 
-# on Jessie the maps go to /etc/auto.master.d/
-if node['platform_version'].to_i >= 8
+# support for /etc/auto.master.d/ was added in Jessie
+unless node['platform'] == 'debian' &&
+       (node['platform_version'].to_i < 8 &&
+        node['platform_version'] !~ /\/sid$/)
 
   directory '/etc/auto.master.d'
 
   delete = Dir.glob('/etc/auto.master.d/*')
 
-  keep = node['sys']['autofs']['maps'].keys.map{|path| "/etc/auto.master.d/#{path[1..-1].gsub(/\//,'_').downcase}.autofs"}
+  keep = node['sys']['autofs']['maps'].keys.map do |path|
+    "/etc/auto.master.d/#{path[1..-1].gsub(/\//,'_').downcase}.autofs"
+  end
 
+  # delete map entries not managed by us:
   (delete - keep).each do |f|
     file f do
       action :delete
@@ -110,7 +115,7 @@ if ! node['sys']['autofs']['ldap'].empty? && File.exist?('/usr/bin/kinit')
     notifies :restart, 'service[autofs]', :delayed
   end
 
-  if node['platform_version'].to_i >= 9
+  if node['platform_version'].to_i >= 9 || node['platform_version'] =~ /\/sid$/
 
     sys_systemd_unit 'autofs.service' do
       config({
