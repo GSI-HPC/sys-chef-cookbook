@@ -51,6 +51,9 @@ if ! node['sys']['sudo'].empty? && node['sys']['sudo_ldap'].empty?
     end
 
     node['sys']['sudo'].each_pair do |name,config|
+      # filter out the cleanup flag:
+      next if name.to_sym == :cleanup
+
       sys_sudo name do
         users config[:users] if config.has_key? 'users'
         hosts config[:hosts] if config.has_key? 'hosts'
