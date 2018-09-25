@@ -17,7 +17,15 @@
 # limitations under the License.
 #
 
-ohai.plugin_path << node['ohai']['plugin_path']
+# TODO: use ohai_plugin provider from ohai cookbook?
+# return unless node['ohai']['install_plugins']
+
+# node['ohai']['install_plugins'].each do plugin
+#   ohai_plugin plugin do
+#     path node['ohai']['plugin_path']
+#   end
+# end
+
 log "ohai plugins will be at: #{node['ohai']['plugin_path']}" do
   level :info
 end
