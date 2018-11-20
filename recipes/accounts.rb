@@ -143,6 +143,7 @@ unless (node['sys']['accounts'].empty? and node['sys']['groups'].empty?)
         end
       end
 
+      # add sudo rules from the sudo attribute:
       if account.has_key?('sudo')
         rule = "#{name} #{node['fqdn']} = #{account['sudo']}"
         if node['sys']['sudo'].has_key?('localadmin')
@@ -154,13 +155,14 @@ unless (node['sys']['accounts'].empty? and node['sys']['groups'].empty?)
         end
       end
 
+      # add pam_access rules from the remote attribute:
       if account.key?('remote')
         if node['sys']['pam'].key?('access')
           node.default['sys']['pam']['access'] <<
-            "+:#{name}:#{account['remote']} LOCAL"
+            "+ : #{name} : #{account['remote']} LOCAL"
         else
           node.default['sys']['pam']['access'] = [
-            "+:#{name}:#{account['remote']} LOCAL"
+            "+ : #{name} : #{account['remote']} LOCAL"
           ]
         end
         log "Configuring remote access rules for #{name}" do
