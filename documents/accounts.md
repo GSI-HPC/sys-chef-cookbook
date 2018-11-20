@@ -1,16 +1,17 @@
+# `sys::accounts`
+
 Create user accounts.
 
 ↪ `attributes/accounts.rb`  
 ↪ `recipes/accounts.rb`  
 ↪ `tests/roles/sys_accounts_test.rb`  
 
-**Attributes**
+## Standard user ressource attributes
 
-All attributes in `node.sys.accounts`, where each key is a user 
-name with a configuration value. It wraps the `user` resources,
-thus supports all of its options.
+Attributes are set beneath `node['sys']['accounts'][_username_]`.
+It wraps the `user` resources, thus supports all of its options.
 
-**Example**
+### Example
 
     :sys => {
       :accounts => {
@@ -27,10 +28,44 @@ thus supports all of its options.
         :uhura => {
           :home => '/home/uhura',
           :password => '$6$M4oxTop4k/2kd1nmrsiZdFfzKr1Q/',
-          :supports => {
-            :manage_home => true
-          }
+          :manage_home => true
         }
       }
     }
 
+
+## Non-standard attributes
+
+`sys::accounts` supports additional attributes:
+
+### Remote access
+
+`node['sys'}['accounts'][_username_]['remote']` will add a rule
+to `/etc/security/access.conf` cf. `recipes/pam.rb`, eg:
+
+    sys: {
+      accounts: {
+        picard: {
+          remote: 'ALL'
+        }
+        riker: {
+          remote: 'ncc.1701.de'
+        }
+      }
+    }
+
+### sudo permissions
+
+`node['sys'}['accounts'][_username_]['sudo']` will add a rule
+to `/etc/sudoers.d/localadmin` cf. `recipes/sudo.rb`, eg:
+
+    sys: {
+      accounts: {
+        q: {
+          sudo: 'NOPASSWD: ALL'
+        }
+        picard: {
+          sudo: '/sbin/shutdown'
+        }
+      }
+    }
