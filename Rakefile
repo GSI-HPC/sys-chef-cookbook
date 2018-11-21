@@ -17,10 +17,10 @@ begin
       :exclude_paths => ['example_config/**/*']
     }
   end
-rescue LoadError
+rescue LoadError => e
   desc 'foodcritic rake task not available'
   task :foodcritic do
-    abort 'Foodcritic rake task is not available. Be sure to install foodcritic'
+    abort "Foodcritic rake task is not available: #{e}\nHave you installed foodcritic?"
   end
 end
 
