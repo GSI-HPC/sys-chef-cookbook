@@ -9,7 +9,7 @@ describe 'lwrp: sys_sdparm' do
 
   let(:runner) do
     ChefSpec::SoloRunner.new(
-      :cookbook_path => cookbook_paths,
+      # :cookbook_path => cookbook_paths,
       :step_into => ['sys_sdparm']
     )
   end
