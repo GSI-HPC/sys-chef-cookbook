@@ -90,3 +90,4 @@ jobs:
     - env: CHEF_VERSION=14
     - env: CHEF_VERSION=13
     - env: KITCHEN_PLATFORM=centos-7
+    - stage: test
