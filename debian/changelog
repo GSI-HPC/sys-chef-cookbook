@@ -1,12 +1,8 @@
-chef-cookbook-sys (1.36.1-1) UNRELEASED; urgency=medium
+chef-cookbook-sys (1.45.0-1) unstable; urgency=medium
 
-  [ Christopher Huhn, GSI ]
   * Upgrade to newest version
 
-  [ Christopher Huhn ]
-  * Package 1.36.1
-
- -- Christopher Huhn <christo@arthur.knollhuhn.de>  Sun, 29 Oct 2017 12:28:48 +0100
+ -- Christopher Huhn <C.Huhn@gsi.de>  Fri, 30 Nov 2018 16:57:59 +0100
 
 chef-cookbook-sys (1.7.3-1) unstable; urgency=low
 
