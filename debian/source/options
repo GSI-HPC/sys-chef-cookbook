@@ -1,1 +1,1 @@
-extend-diff-ignore = "^\.((vagrant|kitchen)/|travis\.yml$)"
+extend-diff-ignore = "^(\.(vagrant|kitchen)/|(\.travis\.yml|Berksfile.lock)$)"
