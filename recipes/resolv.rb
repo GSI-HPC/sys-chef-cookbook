@@ -2,7 +2,12 @@
 # Cookbook Name:: sys
 # Recipe:: resolv
 #
-# Copyright 2012, Victor Penso
+# Copyright 2012 - 2018 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+#
+# Authors:
+#  Victor Penso
+#  Matthias Pausch
+#  Christopher Huhn
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -26,23 +31,32 @@ return if node['sys']['resolv']['servers'].empty?
 log 'domain+search' do
   message "'search' and 'domain' are mutually exclusive, the latter will be ignored"
   level   :info
-  only_if { node['sys']['resolv'].key?('domain') && node['sys']['resolv'].key('search') }
+  only_if { node['sys']['resolv'].key?('domain') &&
+            node['sys']['resolv'].key?('search') }
 end
 
 log 'resolv.conf-symlink' do
-  message "/etc/resolv.conf is a symlink - not touching it"
+  message "/etc/resolv.conf is a symlink - " +
+          (node['sys']['resolv']['force'] ?
+             'overwrite forced' : 'not touching it')
   level   :warn
-  only_if 'test -L /etc/resolv.conf'
+  only_if { File.symlink?('/etc/resolv.conf') }
 end
 
 template '/etc/resolv.conf' do
   source 'etc_resolv.conf.erb'
   mode "0644"
+  # don't edit the file /etc/resolv.conf might point to but the file itself
+  manage_symlink_source false
   variables(
     servers: node['sys']['resolv']['servers'],
     domain:  node['sys']['resolv']['domain'],
     search:  node['sys']['resolv']['search'],
     options: node['sys']['resolv']['options'] || []
   )
-  not_if 'test -L /etc/resolv.conf' # -> managed by resolvconf
+  not_if do
+    # -> managed by resolvconf/systemd-resolved:
+    File.symlink?('/etc/resolv.conf') &&
+      !node['sys']['resolv']['force']
+  end
 end
