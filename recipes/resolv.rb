@@ -42,7 +42,7 @@ template '/etc/resolv.conf' do
     servers: node['sys']['resolv']['servers'],
     domain:  node['sys']['resolv']['domain'],
     search:  node['sys']['resolv']['search'],
-    options: node['sys']['resolv']['options']
+    options: node['sys']['resolv']['options'] || []
   )
   not_if 'test -L /etc/resolv.conf' # -> managed by resolvconf
 end
