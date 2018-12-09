@@ -181,6 +181,24 @@ suites:
             array:
               - '| /bin/true'
               - /tmp/mail.test
+  - name: sys_resolv
+    run_list:
+      - recipe[sys::resolv]
+    attributes:
+      sys:
+        resolv:
+          servers:
+            - 1.1.1.1
+            - 8.8.8.8
+          search:
+            gsi.de fair-center.eu
+          domain:
+            example.com
+          options:
+            - debug
+            - rotate
+            - timeout:3
+          force: true
   - name: sys_ssh
     run_list:
       - recipe[sys::ssh]
