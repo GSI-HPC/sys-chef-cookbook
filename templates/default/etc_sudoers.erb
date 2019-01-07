@@ -4,6 +4,10 @@ Defaults        env_reset
 Defaults        mail_badpass
 Defaults        secure_path="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 Defaults        mailto="<%= @mailto || 'root' %>"
+<%- if @mailfrom -%>
+Defaults        mailfrom="<%= @mailfrom %>"
+<%- end -%>
+Defaults        mailsub="<%= @mailsub || '*** SECURITY information for %h ***' %>"
 
 # Host alias specification
 Host_Alias  LOCAL = <%= node['fqdn'] %>
