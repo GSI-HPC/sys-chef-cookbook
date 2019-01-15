@@ -11,7 +11,7 @@ RSpec.configure do |config|
   #config.role_path = '/var/roles'
 
   # Specify the Chef log_level (default: :warn)
-  config.log_level = :info
+  config.log_level = :warn
 
   # Specify the path to a local JSON file with Ohai data (default: nil)
   #config.path = 'ohai.json'
@@ -23,4 +23,4 @@ RSpec.configure do |config|
   config.version = '8.9'
 end
 
-require 'chefspec/berkshelf'
+# require 'chefspec/berkshelf'
