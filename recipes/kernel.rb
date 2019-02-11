@@ -32,9 +32,16 @@ if node['sys']['kernel'] # don't break conventions in sys
                  'amd64'
                end
 
+  mircocode_package = case node['platform_family']
+                      when 'debian'
+                        "#{cpu_vendor}-microcode"
+                      when 'redhat'
+                        'microcode_ctl'
+                      end
+
   # install the CPU microcode updates cf. https://wiki.debian.org/Microcode
   #  when node['sys']['kernel']['install_microcode'] is set
-  package "#{cpu_vendor}-microcode" do
-    only_if { cpu_vendor && node['sys']['kernel']['install_microcode'] }
+  package mircocode_package do
+    only_if { node['sys']['kernel']['install_microcode'] }
   end
 end
