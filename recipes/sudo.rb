@@ -72,6 +72,9 @@ if node['sys']['sudo_ldap'].empty? &&
     node['sys']['sudo'].reject do |key|
       key.to_s == 'config'
     end.each_pair do |name,config|
+      # skip empty configs:
+      next unless config
+
       sys_sudo name do
         users config[:users] if config.has_key? 'users'
         hosts config[:hosts] if config.has_key? 'hosts'
