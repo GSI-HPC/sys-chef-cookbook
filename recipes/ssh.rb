@@ -34,9 +34,19 @@ sshd_config['AddressFamily'] = 'inet'
 # only if SSH daemon configuration is defined
 unless node['sys']['sshd']['config'].empty?
   package 'openssh-server'
-  service 'ssh' do
+
+  #  different name for init file/systemd unit on centos:
+  ssh_service = case node['platform_family']
+                when 'rhel'
+                  'sshd'
+                else
+                  'ssh'
+                end
+
+  service ssh_service do
     supports :reload => true
   end
+
   # overwrite the default configuration
   sshd_config.merge! node['sys']['sshd']['config']
   template '/etc/ssh/sshd_config' do
