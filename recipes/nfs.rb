@@ -19,11 +19,14 @@
 
 unless node['sys']['nfs'].empty?
 
-  template '/etc/default/nfs-common' do
-    source 'etc_default_nfs-common.erb'
-    user 'root'
-    owner 'root'
-    mode '0644'
+  # this ressource has a different name to allow
+  #   co-existance with the nfs cookbook
+  template '[sys] /etc/default/nfs-common' do
+    path     '/etc/default/nfs-common'
+    source   'etc_default_nfs-common.erb'
+    user     'root'
+    owner    'root'
+    mode     '0644'
     notifies :restart, 'service[nfs-common]', :delayed
   end
 
