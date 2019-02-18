@@ -16,6 +16,11 @@ describe 'sys::ldap' do
       # stub existance of kinit
       allow(File).to receive(:exist?).and_call_original
       allow(File).to receive(:exist?).with('/usr/bin/kinit').and_return(true)
+
+      # stub non-existance of '/etc/rc2.d/*nslcd*':
+      allow(Dir).to receive(:glob).and_call_original
+      allow(Dir).to receive(:glob).with('/etc/rc2.d/*nslcd*').and_return([])
+
       stub_command("test -e /etc/init.d/nscd").and_return(true)
       ldap01 = 'ldap01.example.com'
       ldap02 = 'ldap02.example.com'
