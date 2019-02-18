@@ -1,4 +1,5 @@
 require 'chefspec'
+require 'chefspec/berkshelf'
 
 ChefSpec::Coverage.start!
 
@@ -22,5 +23,3 @@ RSpec.configure do |config|
   # Specify the operating version to mock Ohai data from (default: nil)
   config.version = '8.9'
 end
-
-# require 'chefspec/berkshelf'
