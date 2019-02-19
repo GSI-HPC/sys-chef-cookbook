@@ -3,7 +3,7 @@ language: ruby
 cache: bundler
 
 sudo: required
-dist: trusty
+dist: xenial
 
 services: docker
 
@@ -38,6 +38,7 @@ env:
     - CHEF_VERSION=14
 
 rvm:
+  - system
   - 2.3
   - 2.4
 # - 2.1
