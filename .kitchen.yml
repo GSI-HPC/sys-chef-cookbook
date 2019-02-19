@@ -59,7 +59,6 @@ platforms:
 suites:
   - name: sys_accounts
     run_list:
-      - recipe[yum-epel]
       - recipe[sys::accounts]
     attributes:
       sys:
