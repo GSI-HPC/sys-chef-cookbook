@@ -2,7 +2,7 @@
 # Cookbook Name:: snmp
 # Recipe:: default
 #
-# Copyright 2011, GSI Darmstadt
+# Copyright 2011 - 2019, GSI Darmstadt
 #
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,18 +21,41 @@
 
 if node['sys']['snmp']
 
-  snmpd_package = case node['platform_family']
-                  when 'rhel'
-                    'net-snmp'
-                  else
-                    'snmpd'
-                  end
+  case node['platform_family']
+  when 'rhel'
+    snmpd_package = 'net-snmp'
+    snmpd_defaults = '/etc/sysconfig/snmpd'
+  else
+    snmpd_package = 'snmpd'
+    snmpd_defaults = '/etc/dfefault/snmpd'
+  end
+
   package snmpd_package
 
-  template '/etc/default/snmpd' do
+  user 'snmp' do
+    system true
+    home '/var/lib/snmp'
+    shell '/usr/sbin/nologin'
+    gid 'snmp'
+
+    only_if do
+      # Debian Stretch has 'Debian-snmp' user hard-coded in systemd unit
+      (node['platform'] == 'debian' && node['platform_version'] < 9) ||
+        node['platform_family'] == 'rhel'
+    end
+  end
+
+  template snmpd_defaults do
     source 'etc_default_snmpd.erb'
     mode 0644
+    variables(
+      user:  'snmp',
+      group: 'snmp'
+    )
     notifies :restart, "service[snmpd]"
+
+    # ignored by systemd unit on Stretch:
+    not_if { node['lsb']['codenane'] == 'stretch' }
   end
 
   template '/etc/snmp/snmpd.conf' do
