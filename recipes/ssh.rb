@@ -53,7 +53,7 @@ unless node['sys']['sshd']['config'].empty?
     source 'etc_ssh_sshd_config.erb'
     mode '0644'
     variables :config => sshd_config
-    notifies :restart, 'service[ssh]'
+    notifies :restart, "service[#{ssh_service}]"
   end
 end
 
