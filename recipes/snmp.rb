@@ -27,7 +27,7 @@ if node['sys']['snmp']
     snmpd_defaults = '/etc/sysconfig/snmpd'
   else
     snmpd_package = 'snmpd'
-    snmpd_defaults = '/etc/dfefault/snmpd'
+    snmpd_defaults = '/etc/default/snmpd'
   end
 
   package snmpd_package
