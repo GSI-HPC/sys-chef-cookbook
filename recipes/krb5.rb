@@ -31,6 +31,7 @@ unless node['sys']['krb5'].empty?
     source "etc_krb5.conf_generic.erb"
     mode "0644"
     variables(:sections => node['sys']['krb5']['krb5.conf'])
+    only_if { node['sys']['krb5']['krb5.conf'] }
   end
 
 # unless node['debian']['codename'].eql?('stretch') 
