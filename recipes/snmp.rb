@@ -21,7 +21,13 @@
 
 if node['sys']['snmp']
 
-  package 'snmpd'
+  snmpd_package = case node['platform_family']
+                  when 'rhel'
+                    'net-snmp'
+                  else
+                    'snmpd'
+                  end
+  package snmpd_package
 
   template '/etc/default/snmpd' do
     source 'etc_default_snmpd.erb'
