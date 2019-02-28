@@ -1,0 +1,8 @@
+#
+# This file is managed by Chef. Don't edit. All changes will be overwritten!
+#
+# This file controls the activity of snmpd
+
+# snmpd options (use syslog, close stdin/out/err)
+#  drop privileges, skip some modules
+OPTIONS='-LS0-6d -Lf /dev/null -u <%= @user %> -g <%= @group %> -I -smux,mteTrigger,mteTriggerConf'
