@@ -32,16 +32,18 @@ if node['sys']['snmp']
 
   package snmpd_package
 
-  user 'snmp' do
-    system true
-    home '/var/lib/snmp'
-    shell '/usr/sbin/nologin'
-    gid 'snmp'
+  # Redhat runs snmpd as root by default
+  #  let's create a snmp user and group instead
+  if node['platform_family'] == 'rhel'
+    group 'snmp' do
+      system true
+    end
 
-    only_if do
-      # Debian Stretch has 'Debian-snmp' user hard-coded in systemd unit
-      (node['platform'] == 'debian' && node['platform_version'] < 9) ||
-        node['platform_family'] == 'rhel'
+    user 'snmp' do
+      system true
+      home '/var/lib/snmp'
+      shell '/usr/sbin/nologin'
+      gid 'snmp'
     end
   end
 
