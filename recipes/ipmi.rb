@@ -2,11 +2,10 @@
 # IPMI related stuff
 #
 
+if node['sys']['ipmi']['install_packages'] ||
+   ! node['sys']['ipmi']['overheat_protection'].empty?
 
-unless node['sys']['ipmi']['install_packages'] &&
-       node['sys']['ipmi']['overheat_protection'].empty?
-
-  # Install the packages needed to configure/grab data from the IPMI cards.
+  # Install the packages needed to configure/grab data from the IPMI cards:
 
   # Install the command line tool to access BMC data:
   package 'ipmitool'
