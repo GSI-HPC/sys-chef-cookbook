@@ -38,7 +38,7 @@ env:
     - CHEF_VERSION=14
 
 rvm:
-  - system
+# - system # does not work with `gem install bundler`
   - 2.3
   - 2.4
 # - 2.1
