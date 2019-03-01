@@ -14,6 +14,8 @@
 # limitations under the License.
 #
 
+use_inline_resources
+
 base_path = '/etc/apt/preferences.d'
 
 action :set do
