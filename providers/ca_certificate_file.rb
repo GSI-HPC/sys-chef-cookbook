@@ -14,6 +14,8 @@
 # limitations under the License.
 #
 
+use_inline_resources
+
 base_path = '/usr/local/share/ca-certificates'
 crt_pkg = 'ca-certificates'
 
