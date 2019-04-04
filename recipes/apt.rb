@@ -113,12 +113,15 @@ end
 # ------
 # Then add new keys from attributes
 unless node['sys']['apt']['keys']['add'].empty?
+  package 'gnupg' # gpg required for sys_apt_key
+
   node['sys']['apt']['keys']['add'].each_index do |i|
     sys_apt_key "#{i}: Deploy APT package signing key" do
       key node['sys']['apt']['keys']['add'][i]
     end
   end
 end
+
 # Remove keys specified via attributes first
 unless node['sys']['apt']['keys']['remove'].empty?
   node['sys']['apt']['keys']['remove'].each_index do |i|
