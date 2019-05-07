@@ -127,7 +127,7 @@ node['sys']['accounts'].each do |name, caccount|
             # gid may be the group name (string):
             account['gid'].class == String && Etc.getgrnam(account['gid']) ||
               # or the numeric gid (integer):
-              account['gid'].class == Fixnum && Etc.getgrgid(account['gid'])
+              account['gid'].class == Integer && Etc.getgrgid(account['gid'])
           rescue ArgumentError
             Chef::Log.warn("Group #{account['gid']} for account #{name} does not exist")
             false # abort
