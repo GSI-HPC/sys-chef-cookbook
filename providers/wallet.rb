@@ -7,7 +7,7 @@ action :deploy do
   if ! ::File.exist?(new_resource.place) || ! check_keytab()
     bash "deploy #{new_resource.principal}" do
       cwd "/"
-      ignore_failure new_resource.ignore_failure
+
       code <<-EOH
         if [ -e #{new_resource.place}.tmp ]; then
             rm -f #{new_resource.place}.tmp
