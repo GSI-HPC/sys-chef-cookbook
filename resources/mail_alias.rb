@@ -17,7 +17,6 @@
 # limitations under the License.
 #
 
-property :name, String, name_property: true
 property :to, [Array, String],
          # turn Strings into Arrays for simplicity:
          coerce: proc { |t| t.is_a?(String) ? [t] : t }
