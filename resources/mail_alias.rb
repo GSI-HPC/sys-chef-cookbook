@@ -30,9 +30,9 @@ action :add do
     e =~ /[:@#|]/ ? "\"#{e}\"" : e
   end.join(', ')
 
-  replace_or_add "alias for #{new_resource.to}" do
+  replace_or_add "alias for #{new_resource.name}" do
     path    new_resource.aliases_file
-    pattern "^#{new_resource.to}:.*"
+    pattern "^#{new_resource.name}:.*"
     line    new_line
     backup  true
     ignore_missing true
@@ -40,8 +40,8 @@ action :add do
 end
 
 action :remove do
-  delete_lines "alias for #{new_resource.to}" do
+  delete_lines "alias for #{new_resource.name}" do
     path    new_resource.aliases_file
-    pattern "^#{new_resource.to}:.*"
+    pattern "^#{new_resource.name}:.*"
   end
 end
