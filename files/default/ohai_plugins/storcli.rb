@@ -36,6 +36,9 @@ Ohai.plugin(:Storcli) do
 
     info = JSON.parse(so.stdout)
 
+    return if info['Controllers'].first['Command Status']['Description'] ==
+              'No Controller found'
+
     storcli Mash.new
     info['Controllers'].each do |c_info|
       next unless c_info['Command Status']['Status'] == 'Success'

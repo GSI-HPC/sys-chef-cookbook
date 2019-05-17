@@ -2,7 +2,9 @@
 # Cookbook Name:: sys
 # Recipe:: java
 #
-# Copyright 2015 - 2018, Christopher Huhn
+# Copyright 2015 - 2019 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+#
+# Author: Christopher Huhn
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -41,10 +43,13 @@ arch = node['debian']['architecture'] ||
          'amd64'
        end
 
-default_version = node['sys']['java']['default_version']
+default_version = node['sys']['java']['default_version'] ||
+                  node['sys']['java']['versions'].first
 
 execute 'update-java-alternatives' do
   command "update-java-alternatives --set "\
           "java-1.#{default_version}.0-openjdk-#{arch}"
-  not_if { arch.nil? }
+  # cf. http://bugs.debian.org/929105
+  returns [0, 2]
+  not_if { arch.nil? || default_version.nil? }
 end
