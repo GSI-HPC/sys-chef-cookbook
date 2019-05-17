@@ -49,7 +49,7 @@ default_version = node['sys']['java']['default_version'] ||
 execute 'update-java-alternatives' do
   command "update-java-alternatives --set "\
           "java-1.#{default_version}.0-openjdk-#{arch}"
-  # cf. http://bugs.debian.org/...
+  # cf. http://bugs.debian.org/929105
   returns [0, 2]
   not_if { arch.nil? || default_version.nil? }
 end
