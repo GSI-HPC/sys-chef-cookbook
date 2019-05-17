@@ -15,3 +15,5 @@ supports         'debian'
 version          '1.46.0'
 
 # depends          'yum-epel'
+depends          'compat_resource'
+depends          'line'
