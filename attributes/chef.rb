@@ -10,7 +10,6 @@ default_unless['chef']['server']                = {}
 
 default_unless['sys']['chef']['use_syslog']     = false
 default_unless['sys']['chef']['log_level']      = ':info'
-default_unless['sys']['chef']['overwrite_warning'] = "DO NOT CHANGE MANUALLY! This file is managed by the Chef `sys` cookbook."
 default_unless['sys']['chef']['group']          = 'adm'
 default_unless['sys']['chef']['verify_ssl']     = 'all'
 default_unless['sys']['chef']['trusted_certs_dir'] = '/etc/ssl/certs'
