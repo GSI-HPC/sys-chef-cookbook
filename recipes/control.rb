@@ -50,7 +50,7 @@ unless node['sys']['control'].empty?
 
     execute sysctl do
       action :nothing
-      command %Q[sysctl --load #{filename} 1>-]
+      command %Q[sysctl --load #{filename} 1>/dev/null]
     end
 
   end
