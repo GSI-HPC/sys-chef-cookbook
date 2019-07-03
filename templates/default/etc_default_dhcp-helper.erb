@@ -1,8 +1,5 @@
-# Option flags used to start dhcp-helper.
-#
-# This file is managed by Chef
-#  Don't edit - all changes will be overwritten
-#
+<%= template_header %>
+
 <%- cmdline = @interfaces.map{|x| '-i '+x }.join(' ') -%>
 <%- cmdline += ' ' + @servers.map{|x| '-s '+x }.join(' ') -%>
 
