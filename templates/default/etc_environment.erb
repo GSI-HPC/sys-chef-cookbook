@@ -1,5 +1,3 @@
-# /etc/environment
-
 <%= template_header %>
 
 <% node['sys']['env'].keys.sort_by!(&:downcase).each do |key| %>
