@@ -1,3 +1,5 @@
+<%= template_header %>
+
 <% node['sys']['nscd'].each do |map, config| -%>
 <% max = config.keys.max { |a, b| a.length <=> b.length }.length %>
 <% config.each do |k,v| -%>
