@@ -24,13 +24,13 @@
 # limitations under the License.
 #
 
-return if node['sys']['autofs']['maps'].empty? &&
-          node['sys']['autofs']['ldap'].empty?
+return if node['sys']['autofs']['maps'].empty?
 
 package 'autofs'
+package 'autofs-ldap'
 
 node['sys']['autofs']['maps'].each_key do |mountpoint|
-  directory mountpoint do
+  directory "/#{mountpoint}" do
     recursive true
     not_if { File.exist?(mountpoint) }
   end
@@ -38,147 +38,103 @@ end
 
 template '/etc/auto.master' do
   source 'etc_auto.master.erb'
-  mode "0644"
+  mode '0644'
   variables(
     :maps => node['sys']['autofs']['maps']
   )
   notifies :reload, 'service[autofs]'
 end
 
-# support for /etc/auto.master.d/ was added in Jessie
-unless node['platform'] == 'debian' &&
-       (node['platform_version'].to_i < 8 &&
-        node['platform_version'] !~ /\/sid$/)
+sys_wallet "autofsclient/#{node['fqdn']}" do
+  place '/etc/autofs.keytab'
+end
 
-  directory '/etc/auto.master.d'
+template '/etc/autofs_ldap_auth.conf' do
+  source 'etc_autofs_ldap_auth.conf.erb'
+  mode '0600'
+  variables({
+    :tls  => node['sys']['autofs']['ldap']['tls'],
+    :auth => node['sys']['autofs']['ldap']['auth']
+  })
+  notifies :restart, 'service[autofs]'
+end
 
-  delete = Dir.glob('/etc/auto.master.d/*')
+config = {
+  :uris       => node['sys']['autofs']['ldap']['servers'],
+  :searchbase => node['sys']['autofs']['ldap']['searchbase'],
+  :schema     => node['sys']['autofs']['ldap']['schema'],
+  :browsemode => node['sys']['autofs']['browsemode'],
+  :logging    => node['sys']['autofs']['logging']
+}
 
-  keep = node['sys']['autofs']['maps'].keys.map do |path|
-    "/etc/auto.master.d/#{path[1..-1].gsub(/\//,'_').downcase}.autofs"
+if node['platform_version'].to_i >= 9
+  template '/etc/autofs.conf' do
+    source 'etc_autofs.conf'
+    mode '0644'
+    variables(config)
+    notifies :restart, 'service[autofs]'
   end
-
-  # delete map entries not managed by us:
-  (delete - keep).each do |f|
-    file f do
-      action :delete
-    end
-  end
-
-  node['sys']['autofs']['maps'].each do |path, map|
-    name = path[1..-1].gsub(/\//,'_').downcase
-    template "/etc/auto.master.d/#{name}.autofs" do
-      source 'etc_auto.master.d.erb'
-      mode "0644"
-      variables(
-        :map => map,
-        :path => path
-      )
-        notifies :reload, 'service[autofs]', :delayed
-    end
+else
+  template '/etc/default/autofs' do
+    source 'etc_default_autofs.erb'
+    mode '0644'
+    variables(config)
+    notifies :restart, 'service[autofs]'
   end
 end
 
-if ! node['sys']['autofs']['ldap'].empty? && File.exist?('/usr/bin/kinit')
+sys_systemd_unit 'autofs.service' do
+  config({
+    'Unit' => {
+      'Description' => 'Automounts filesystems on demand',
+      'After' => 'sssd.service network-online.target remote-fs.target'\
+        'k5start-autofs.service',
+      'BindsTo' => 'k5start-autofs.service',
+      'Requires' => 'network-online.target',
+      'Before' => 'graphical.target',
+    },
+    'Service' => {
+      'Type' => 'forking',
+      'PIDFile' => '/var/run/autofs.pid',
+      'EnvironmentFile' => '-/etc/default/autofs',
+      'ExecStart' => '/usr/sbin/automount $OPTIONS'\
+        ' --pid-file /run/autofs.pid',
+      'ExecReload' => '/bin/kill -HUP $MAINPID',
+      'TimeoutSec' => '180',
+    },
+    'Install' => {
+      'WantedBy' => 'gsi-remote.target',
+    }
+  })
+  notifies :restart, 'service[autofs]'
+end
 
-  package "autofs-ldap" # also pulls autofs
+sys_systemd_unit 'k5start-autofs.service' do
+  config({
+    'Unit' => {
+      'Description' => 'Maintain Ticket-Cache for autofs',
+      'Documentation' => 'man:k5start(1) man:autofs(8)',
+      'After' => 'network-online.target',
+      'Requires' => 'network-online.target',
+      'Before' => 'autofs.service',
+    },
+    'Service' => {
+      'Type' => 'forking',
+      'ExecStart' => '/usr/bin/k5start -b -L -F -f /etc/autofs.keytab'\
+        ' -K 60 -k /tmp/krb5cc_autofs -U -x',
+      'Restart' => 'always',
+      'RestartSec' => '5',
+    },
+    'Install' => {
+      'WantedBy' => 'gsi-remote.target',
+    }
+  })
+  notifies :restart, 'service[k5start-autofs]'
+end
 
-  sys_wallet "autofsclient/#{node['fqdn']}" do
-    place "/etc/autofs.keytab"
-  end
-
-  template "/etc/autofs_ldap_auth.conf" do
-    source "etc_autofs_ldap_auth.conf.erb"
-    mode "0600"
-    notifies :restart, 'service[autofs]', :delayed
-  end
-
-  template "/etc/default/autofs" do
-    source "etc_default_autofs.erb"
-    mode "0644"
-    begin
-      if node['sys']['autofs']['ldap']['browsemode']
-        browsemode = "yes"
-      else
-        browsemode = "no"
-      end
-    rescue NoMethodError
-      browsemode = "no"
-    end
-
-    variables({
-      :uris => node['sys']['autofs']['ldap']['servers'],
-      :searchbase => node['sys']['autofs']['ldap']['searchbase'],
-      :browsemode => browsemode,
-      :logging    => node['sys']['autofs']['logging']
-    })
-    notifies :restart, 'service[autofs]', :delayed
-  end
-
-  if node['platform_version'].to_i >= 9 || node['platform_version'] =~ /\/sid$/
-
-    sys_systemd_unit 'autofs.service' do
-      config({
-        'Unit' => {
-          'Description' => 'Automounts filesystems on demand',
-          'After' => 'network.target ypbind.service sssd.service'\
-                     ' network-online.target remote-fs.target'\
-                     'k5start-autofs.service',
-          'BindsTo' => 'k5start-autofs.service',
-          'Requires' => 'network-online.target',
-          'Before' => 'xdm.service',
-        },
-        'Service' => {
-          'Type' => 'forking',
-          'PIDFile' => '/var/run/autofs.pid',
-          'EnvironmentFile' => '-/etc/default/autofs',
-          'ExecStart' => '/usr/sbin/automount $OPTIONS'\
-                         ' --pid-file /var/run/autofs.pid',
-          'ExecReload' => '/bin/kill -HUP $MAINPID',
-          'TimeoutSec' => '180',
-        },
-        'Install' => {
-          'WantedBy' => 'gsi-remote.target',
-        }
-      })
-      notifies :restart, 'service[autofs]'
-    end
-
-    sys_systemd_unit 'k5start-autofs.service' do
-      config({
-        'Unit' => {
-          'Description' => 'Maintain Ticket-Cache for autofs',
-          'Documentation' => 'man:k5start(1) man:autofs(8)',
-          'After' => 'network-online.target',
-          'Requires' => 'network-online.target',
-          'Before' => 'autofs.service',
-        },
-        'Service' => {
-          'Type' => 'forking',
-          'ExecStart' => '/usr/bin/k5start -b -L -F -f /etc/autofs.keytab'\
-                         ' -K 60 -k /tmp/krb5cc_autofs -U -x',
-          'Restart' => 'always',
-          'RestartSec' => '5',
-        },
-        'Install' => {
-          'WantedBy' => 'gsi-remote.target',
-        }
-      })
-      notifies :restart, 'service[k5start-autofs]'
-    end
-
-    service 'k5start-autofs' do
-      supports :restart => true, :reload => true
-      action [:enable, :start]
-    end
-
-  else
-    cookbook_file "/etc/init.d/autofs" do
-      source "etc_init.d_autofs"
-      mode "0755"
-      notifies :restart, 'service[autofs]', :delayed
-    end
-  end
+service 'k5start-autofs' do
+  supports :restart => true, :reload => true
+  action [:enable, :start]
 end
 
 service 'autofs' do
