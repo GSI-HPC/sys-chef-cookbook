@@ -6,9 +6,13 @@ See autofs_ldap_auth.conf(5) for more information.
 -->
 
 <autofs_ldap_sasl_conf
-        usetls="no"
-        tlsrequired="no"
-        authrequired="yes"
-        authtype="GSSAPI"
-        credentialcache="/tmp/krb5cc_autofs"
+    <% if @tls -%>
+    usetls="yes"
+    tlsrequired="yes"
+    <% end -%>
+    <% if @auth -%>
+    authrequired="yes"
+    authtype="GSSAPI"
+    credentialcache="/tmp/krb5cc_autofs"
+    <% end -%>
 />
