@@ -1,6 +1,5 @@
 <%= template_header %>
 
-# include sniplets from /etc/auto.master.d
-+dir:/etc/auto.master.d
-
-# intentionally left empty
+<% @maps.each do |map| -%>
+<%= "/#{map}" %><%= " #{map[:options]}" if map[:options] %>
+<% end -%>
