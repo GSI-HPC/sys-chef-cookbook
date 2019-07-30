@@ -7,7 +7,7 @@ browse_mode = no
 # none, verbose, or debug
 logging = <%= @logging %>
 <% @uris.each do |uri| -%>
-ldap_uri = <%= uri %>
+ldap_uri = <%= "ldap://#{uri}" %>
 <% end -%>
 search_base = <%= @searchbase %>
 auth_conf_file = /etc/autofs_ldap_auth.conf

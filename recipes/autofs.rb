@@ -69,7 +69,7 @@ config = {
 
 if node['platform_version'].to_i >= 9
   template '/etc/autofs.conf' do
-    source 'etc_autofs.conf'
+    source 'etc_autofs.conf.erb'
     mode '0644'
     variables(config)
     notifies :restart, 'service[autofs]'
