@@ -11,7 +11,7 @@ describe 'sys::autofs' do
     cached(:chef_run) do
       ChefSpec::SoloRunner.new do |node|
         node.default['sys']['autofs']['maps'] = {
-          "mountpoint" => { }
+          'mountpoint' => { }
         }
       end.converge(described_recipe)
     end
@@ -66,7 +66,7 @@ describe 'sys::autofs' do
           'ldap01.example.com', 'ldap02.example.com'
         ]
         node.default['sys']['autofs']['maps'] = {
-          "mountpoint" => { }
+          'mountpoint' => { }
         }
         node.default['sys']['autofs']['ldap']['searchbase'] = 'dc=example,dc=com'
       end.converge(described_recipe)
@@ -97,7 +97,7 @@ describe 'sys::autofs' do
           'ldap01.example.com', 'ldap02.example.com'
         ]
         node.default['sys']['autofs']['maps'] = {
-          "mountpoint" => { }
+          'mountpoint' => { }
         }
         node.default['sys']['autofs']['ldap']['schema'] = 'rfc2307'
         node.default['sys']['autofs']['ldap']['searchbase'] = 'dc=example,dc=com'
@@ -133,7 +133,7 @@ describe 'sys::autofs' do
     cached(:chef_run) do
       ChefSpec::SoloRunner.new do |node|
         node.default['sys']['autofs']['maps'] = {
-          "mountpoint" => { }
+          'mountpoint' => { }
         }
         node.default['sys']['autofs']['ldap']['auth'] = false
       end.converge(described_recipe)
@@ -141,7 +141,7 @@ describe 'sys::autofs' do
 
     it 'manages /etc/autofs_ldap_auth.conf' do
       expect(chef_run).to create_template('/etc/autofs_ldap_auth.conf')
-      .with_mode("0600")
+      .with_mode('0600')
       expect(chef_run).to render_file('/etc/autofs_ldap_auth.conf')
       .with_content { |content|
         expect(content).not_to match(/\s+authrequired="yes"/)
@@ -154,7 +154,7 @@ describe 'sys::autofs' do
     cached(:chef_run) do
       ChefSpec::SoloRunner.new do |node|
         node.default['sys']['autofs']['maps'] = {
-          "mountpoint" => { }
+          'mountpoint' => { }
         }
         node.default['sys']['autofs']['ldap']['tls'] = false
       end.converge(described_recipe)
