@@ -1,5 +1,5 @@
 <%= template_header %>
 
-<% @maps.each do |map| -%>
-<%= "/#{map}" %><%= " #{map[:options]}" if map[:options] %>
+<% @maps.each do |map, values| -%>
+<%= "/#{map}" %><%= " autofs.#{map}" %><%= " #{values[:options]}" if values[:options] %>
 <% end -%>
