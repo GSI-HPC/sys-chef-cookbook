@@ -1,8 +1,4 @@
-# /etc/default/grub
-#
-# DO NOT CHANGE THIS FILE MANUALLY!
-#
-# This file is managed by the Chef `sys::boot` cookbook.
+<%= template_header %>
 
 GRUB_DEFAULT="<%= @grubdefault %>"
 GRUB_TIMEOUT=5
@@ -12,4 +8,3 @@ GRUB_CMDLINE_LINUX="<%= @params %>"
 
 <%# This is a hook to add configurations not supported by the cookbook yet %>
 <% unless @config.empty? %><%= @config %><% end %>
-

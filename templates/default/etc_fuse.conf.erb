@@ -1,8 +1,4 @@
-# /etc/fuse.conf
-#
-# DO NOT CHANGE THIS FILE MANUALLY!
-#
-# This file is managed by the Chef `sys::fuse` cookbook.
+<%= template_header %>
 
 <% @config.each do |key,value| %>
 <%= key %><%= " = #{value}" unless value.to_s.empty? %>
