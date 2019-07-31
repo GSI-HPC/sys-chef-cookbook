@@ -159,7 +159,6 @@ describe 'sys::ldap' do
 
     it 'defines ldap-servers in /etc/ldap/ldap.conf' do
       ldapservers = "URI ldap://ldap01.example.com ldap://ldap02.example.com"
-      cacert = "/etc/ssl/ca.cert"
       expect(chef_run).to create_template('/etc/ldap/ldap.conf').with(
         :variables => {
           :servers => chef_run.node['sys']['ldap']['servers'],
