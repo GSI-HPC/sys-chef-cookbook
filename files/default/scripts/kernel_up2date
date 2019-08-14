@@ -1,0 +1,77 @@
+#!/usr/bin/ruby
+# -*- coding: utf-8 -*-
+#
+# checks if the running kernel matches the newest version installed
+#
+# Works on Debian Wheezy and newer
+#
+
+require 'fileutils'
+
+# extract info from kernel package name
+def kpkg_info(kpkg)
+  info = /linux-image-((\d+\.\d+\.\d+)-(\d+)-(.*))/.match(kpkg)
+
+  unless info
+    raise "#{kpkg} does not follow Debian kernel package naming conventions"
+  end
+
+  # turn the matched info into a hash and return it
+  %i[uname_r kernel_version abi_version flavor].zip(info.captures).to_h
+end
+
+# gather info about the running kernel
+uname_r = `uname -r`.chomp
+
+current_kpkg = "linux-image-#{uname_r}"
+
+# determine the kernel meta package name
+#  ie. linux-image-amd64, linux-image-686-pae etc.
+meta_kpkg = "linux-image-#{kpkg_info(current_kpkg)[:flavor]}"
+
+# meta package depends on the newest real kernel
+#  ie. linux-image-1.2.3-4-#{meta_kpkg}
+newest_kpkg = `grep-status -n -s Depends -P #{meta_kpkg}`.chomp
+
+## gather info about installed kernel packages
+info = {}
+
+dctrl_output = `grep-status -s Package,Status,Version -P 'linux-image'`.chomp
+
+# parse output of grep-status into an array
+dctrl_output.split("\n\n").map do |e|
+  h = e.scan(/(.*):\s*(.*)/).to_h
+
+  if h['Status'] == 'install ok installed'
+    info[h['Package']] = h['Version']
+  end
+end
+
+if uname_r != kpkg_info(newest_kpkg)[:uname_r]
+  STDERR.puts "Not running the newest kernel revision (#{newest_kpkg})"
+  exit 2
+end
+
+uname_v = `uname -v`.chomp
+
+if uname_v =~ /^#1 SMP Debian /
+  # `uname -v` contains the package version
+  #  (supplemented by a date suffix on Jessie and above
+  # test if installed version == running version:
+  newest_kversion = info[current_kpkg]
+
+  if uname_v =~ / #{Regexp.escape(newest_kversion)}( \([0-9-]+\))?$/
+    exit 0
+  end
+else
+  STDERR.puts "No information about this kernel: " +
+              "#{uname_r} #{kernel_version}"
+  exit 3
+end
+
+if File.writeable?('/var/run/reboot-required')
+  FileUtils.touch('/var/run/reboot-required')
+end
+
+STDERR.puts "This computer has to be rebooted"
+exit 1
