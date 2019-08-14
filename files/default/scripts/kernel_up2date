@@ -1,6 +1,23 @@
 #!/usr/bin/ruby
 # -*- coding: utf-8 -*-
 #
+# Copyright 2014-2019 GSI Helmhotzzentrum fuer Schwerionenforschung GmbH
+#
+# Author: Christopher Huhn <C.Huhn@gsi.de>
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+#
 # checks if the running kernel matches the newest version installed
 #
 # Works on Debian Wheezy and newer
@@ -42,9 +59,9 @@ dctrl_output = `grep-status -s Package,Status,Version -P 'linux-image'`.chomp
 dctrl_output.split("\n\n").map do |e|
   h = e.scan(/(.*):\s*(.*)/).to_h
 
-  if h['Status'] == 'install ok installed'
-    info[h['Package']] = h['Version']
-  end
+  next unless h['Status'] == 'install ok installed'
+
+  info[h['Package']] = h['Version']
 end
 
 if uname_r != kpkg_info(newest_kpkg)[:uname_r]
@@ -60,12 +77,9 @@ if uname_v =~ /^#1 SMP Debian /
   # test if installed version == running version:
   newest_kversion = info[current_kpkg]
 
-  if uname_v =~ / #{Regexp.escape(newest_kversion)}( \([0-9-]+\))?$/
-    exit 0
-  end
+  exit 0 if uname_v =~ / #{Regexp.escape(newest_kversion)}( \([0-9-]+\))?$/
 else
-  STDERR.puts "No information about this kernel: " +
-              "#{uname_r} #{kernel_version}"
+  STDERR.puts "No information about this kernel: #{uname_r} #{kernel_version}"
   exit 3
 end
 
