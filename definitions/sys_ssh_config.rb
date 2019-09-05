@@ -37,7 +37,6 @@ define :sys_ssh_config, :config => Hash.new do
         cookbook 'sys'
         mode "0600"
         variables( 
-          :path => node['etc']['passwd'][account].dir,
           :config => params[:config] 
         )
       end

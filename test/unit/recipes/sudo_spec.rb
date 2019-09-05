@@ -55,12 +55,15 @@ describe 'sys::sudo' do
 
     it 'surrounds some users with double quotes' do
       expect(chef_run).to create_template('/etc/sudoers.d/test').with(
-        :variables => { :name => 'test',
-                        :users => { 'TEST' => [ 'regular', '"with-minus"' ] },
-                        :hosts => {},
-                        :commands => {},
-                        :rules => [ 'TEST ALL = ALL' ] }
-      )
+                            variables: {
+                              users: {
+                                'TEST' => [ 'regular', '"with-minus"' ]
+                              },
+                              hosts: {},
+                              commands: {},
+                              rules: [ 'TEST ALL = ALL' ]
+                            }
+                          )
       expect(chef_run).to render_file('/etc/sudoers.d/test')
                            .with_content('"with-minus"')
       expect(chef_run).to render_file('/etc/sudoers.d/test')

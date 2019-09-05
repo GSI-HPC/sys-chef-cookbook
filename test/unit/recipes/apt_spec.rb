@@ -144,12 +144,11 @@ describe 'sys::apt' do
       file = '/etc/apt/preferences.d/foopref'
       res = chef_run.find_resource(:template, file)
       expect(res).to notify("execute[#{@apt_update}]").to(:run).immediately
-      expect(chef_run).to create_template(file).with_mode('0644').with_variables({
-        :name => 'foopref',
-        :package => 'foobar',
-        :pin => 'version 666',
-        :priority => 1001
-      })
+      expect(chef_run).to create_template(file).with_mode('0644').with_variables(
+                            package:  'foobar',
+                            pin:      'version 666',
+                            priority: 1001
+                          )
       expect(chef_run).to render_file(file).with_content('Package: foobar')
     end
   end
