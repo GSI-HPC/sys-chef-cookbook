@@ -34,7 +34,6 @@ action :add do
     source 'etc_apt_sources.list.d_generic.erb'
     mode "0644"
     variables(
-      :name => name,
       :config => new_resource.config.gsub(/^ */,'')
     )
     cookbook "sys"

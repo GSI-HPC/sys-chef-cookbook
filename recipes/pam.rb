@@ -120,8 +120,7 @@ unless node['sys']['pamupdate'].empty? # ~FC023 Do not break conventions in sys
         group "root"
         mode "0644"
         variables(
-          :rules => content,
-          :name => "common-#{type}"
+          rules: content
         )
       end
     end
