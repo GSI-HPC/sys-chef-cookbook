@@ -45,10 +45,10 @@ describe 'sys::ssh' do
         'HostKey' => %w[ /etc/ssh/ssh_host_rsa_key
                          /etc/ssh/ssh_host_ecdsa_key
                           /etc/ssh/ssh_host_ed25519_key],
-        'PermitRootLogin'  => 'without-password',
         'AddressFamily' => 'inet',
         'variable'      => "value",
-        'X11Forwarding' => "overwritten"
+        'X11Forwarding' => "overwritten",
+        'UseDNS'        => 'yes'
       }
       expect(chef_run).to create_template('/etc/ssh/sshd_config')
                            .with_mode('0644').with(
