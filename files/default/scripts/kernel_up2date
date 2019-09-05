@@ -34,7 +34,7 @@ def kpkg_info(kpkg)
   end
 
   # turn the matched info into a hash and return it
-  %i[uname_r kernel_version abi_version flavor].zip(info.captures).to_h
+  Hash[[:uname_r, :kernel_version, :abi_version, :flavor].zip(info.captures)]
 end
 
 # gather info about the running kernel
@@ -57,7 +57,7 @@ dctrl_output = `grep-status -s Package,Status,Version -P 'linux-image'`.chomp
 
 # parse output of grep-status into an array
 dctrl_output.split("\n\n").map do |e|
-  h = e.scan(/(.*):\s*(.*)/).to_h
+  h = Hash[e.scan(/(.*):\s*(.*)/)]
 
   next unless h['Status'] == 'install ok installed'
 
@@ -83,7 +83,7 @@ else
   exit 3
 end
 
-if File.writeable?('/var/run/reboot-required')
+if File.writable?('/var/run/reboot-required')
   FileUtils.touch('/var/run/reboot-required')
 end
 
