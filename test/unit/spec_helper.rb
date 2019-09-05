@@ -1,10 +1,12 @@
 require 'chefspec'
+require 'chefspec/berkshelf'
+
+ChefSpec::Coverage.start!
 
 RSpec.configure do |config|
   # Specify the path for Chef Solo to find cookbooks (default: [inferred from
   # the location of the calling spec file])
-  config.cookbook_path = "#{__dir__}/../../.."
-  config.cookbook_root = "#{__dir__}/../.."
+  #config.cookbook_path = "#{__dir__}/../../.."
 
   # Specify the path for Chef Solo to find roles (default: [ascending search])
   #config.role_path = '/var/roles'
@@ -19,5 +21,5 @@ RSpec.configure do |config|
   config.platform = 'debian'
 
   # Specify the operating version to mock Ohai data from (default: nil)
-  config.version = '9.8'
+  config.version = '8.9'
 end
