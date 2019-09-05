@@ -9,29 +9,102 @@ describe 'sys::ldap' do
     end
   end
 
-  context 'with some test attributes' do
-    let(:chef_run) { ChefSpec::SoloRunner.new }
+  context 'on jessie with nslcd disabled' do
+    cached(:chef_run) do
+      ChefSpec::SoloRunner.new(platform: 'debian', version: '8.9') do |node|
+        node.automatic['fqdn'] = 'node.example.com'
+        node.default['sys']['ldap']['servers'] = ['ldap01.gsi.de']
+        node.default['sys']['ldap']['realm'] = 'EXAMPLE.COM'
+      end.converge(described_recipe)
+    end
 
     before do
-      # stub existance of kinit
-      allow(File).to receive(:exist?).and_call_original
-      allow(File).to receive(:exist?).with('/usr/bin/kinit').and_return(true)
-
       # stub non-existance of '/etc/rc2.d/*nslcd*':
       allow(Dir).to receive(:glob).and_call_original
       allow(Dir).to receive(:glob).with('/etc/rc2.d/*nslcd*').and_return([])
-
       stub_command("test -e /etc/init.d/nscd").and_return(true)
-      ldap01 = 'ldap01.example.com'
-      ldap02 = 'ldap02.example.com'
-      fqdn = 'node.example.com'
-      chef_run.node.default['sys']['ldap']['servers'] = [ ldap01, ldap02 ]
-      chef_run.node.default['sys']['ldap']['searchbase'] = 'dc=example,dc=com'
-      chef_run.node.default['sys']['ldap']['realm'] = 'EXAMPLE.COM'
-      chef_run.node.default['sys']['ldap']['cacert'] = "/etc/ssl/ca.cert"
-      chef_run.node.default['sys']['ldap']['nss_initgroups_ignoreusers'] = ['user1', 'user2']
-      chef_run.node.automatic['fqdn'] = fqdn
-      chef_run.converge(described_recipe)
+    end
+
+    it 'manages /etc/init.d/nslcd' do
+      expect(chef_run).to render_file('/etc/init.d/nslcd')
+    end
+
+    it 'updates run-levels' do
+      etc_init_d_nslcd = chef_run.cookbook_file('/etc/init.d/nslcd')
+      expect(etc_init_d_nslcd).to notify('execute[update-run-levels]').to(:run).immediately
+    end
+
+    it 'does not manage nslcd.service' do
+      expect(chef_run).not_to create_sys_systemd_unit('nslcd.service')
+    end
+
+    it 'starts and enables nslcd' do
+      expect(chef_run).to start_service('nslcd')
+      expect(chef_run).to enable_service('nslcd')
+    end
+  end
+
+  context 'on jessie with nslcd enabled' do
+    cached(:chef_run) do
+      ChefSpec::SoloRunner.new(platform: 'debian', version: '8.9') do |node|
+        node.automatic['fqdn'] = 'node.example.com'
+        node.default['sys']['ldap']['servers'] = ['ldap01.gsi.de']
+        node.default['sys']['ldap']['realm'] = 'EXAMPLE.COM'
+      end.converge(described_recipe)
+    end
+
+    before do
+      # stub non-existance of '/etc/rc2.d/*nslcd*':
+      allow(Dir).to receive(:glob).and_call_original
+      allow(Dir).to receive(:glob).with('/etc/rc2.d/*nslcd*').and_return(['S20nslcd'])
+      stub_command("test -e /etc/init.d/nscd").and_return(true)
+    end
+
+    it 'starts and enables nslcd' do
+      expect(chef_run).to start_service('nslcd')
+      expect(chef_run).not_to enable_service('nslcd')
+    end
+  end
+
+  context 'on stretch and later' do
+    let(:chef_run) do
+      ChefSpec::SoloRunner.new(platform: 'debian', version: '9.0') do |node|
+        node.automatic['fqdn'] = 'node.example.com'
+        node.default['sys']['ldap']['servers'] = ['ldap01.gsi.de']
+        node.default['sys']['ldap']['realm'] = 'EXAMPLE.COM'
+      end.converge(described_recipe)
+    end
+
+    it 'manages nslcd.service' do
+      expect(chef_run).to create_sys_systemd_unit('nslcd.service')
+    end
+
+    it 'manages k5start-nslcd.service' do
+      expect(chef_run).to create_sys_systemd_unit('k5start-nslcd.service')
+    end
+
+    it 'does not manage /etc/init.d/nslcd' do
+      expect(chef_run).not_to render_file('/etc/init.d/nslcd')
+    end
+
+    it 'starts and enables nslcd' do
+      expect(chef_run).to start_service('nslcd')
+      expect(chef_run).to enable_service('nslcd')
+    end
+  end
+
+  context 'with some test attributes' do
+    let(:chef_run) do
+      ChefSpec::SoloRunner.new do |node|
+        ldap01 = 'ldap01.example.com'
+        ldap02 = 'ldap02.example.com'
+        node.automatic['fqdn'] = 'node.example.com'
+        node.default['sys']['ldap']['servers'] = [ ldap01, ldap02 ]
+        node.default['sys']['ldap']['searchbase'] = 'dc=example,dc=com'
+        node.default['sys']['ldap']['realm'] = 'EXAMPLE.COM'
+        node.default['sys']['ldap']['nss_initgroups_ignoreusers'] = ['user1', 'user2']
+        node.default['sys']['ldap']['nslcd']['reconnect_invalidate'] = 'passwd'
+      end.converge(described_recipe)
     end
 
     it 'manages /etc/default/nslcd' do
@@ -66,42 +139,36 @@ describe 'sys::ldap' do
       authc = "sasl_authcid nslcd/node.example.com@EXAMPLE.COM"
       authz = "sasl_authzid u:nslcd/node.example.com"
       nss_ignore = "nss_initgroups_ignoreusers user1, user2"
+
       expect(chef_run).to create_template('/etc/nslcd.conf').with(
-        :variables => {
-          :servers => chef_run.node['sys']['ldap']['servers'],
-          :searchbase => chef_run.node['sys']['ldap']['searchbase'],
-          :realm => chef_run.node['sys']['ldap']['realm'].upcase,
-          :nslcd => nil,
-          :nss_initgroups_ignoreusers => chef_run.node['sys']['ldap']['nss_initgroups_ignoreusers']
-        }
-      )
-      expect(chef_run).to render_file('/etc/nslcd.conf').with_content(uris)
-      expect(chef_run).to render_file('/etc/nslcd.conf').with_content(authc)
-      expect(chef_run).to render_file('/etc/nslcd.conf').with_content(authz)
-      expect(chef_run).to render_file('/etc/nslcd.conf').with_content(nss_ignore)
+                            :variables => {
+                              :servers => chef_run.node['sys']['ldap']['servers'],
+                              :searchbase => chef_run.node['sys']['ldap']['searchbase'],
+                              :realm => chef_run.node['sys']['ldap']['realm'].upcase,
+                              :nslcd => {"reconnect_invalidate"=>"passwd"},
+                              :nss_initgroups_ignoreusers => chef_run.node['sys']['ldap']['nss_initgroups_ignoreusers']
+                            }
+                          )
+
+      expect(chef_run).to render_file('/etc/nslcd.conf')
+                            .with_content(authc)
+                            .with_content(authz)
+                            .with_content(nss_ignore)
+                            .with_content(uris)
+                            .with_content('reconnect_invalidate passwd')
     end
 
     it 'defines ldap-servers in /etc/ldap/ldap.conf' do
       ldapservers = "URI ldap://ldap01.example.com ldap://ldap02.example.com"
-      cacert = "/etc/ssl/ca.cert"
       expect(chef_run).to create_template('/etc/ldap/ldap.conf').with(
         :variables => {
           :servers => chef_run.node['sys']['ldap']['servers'],
           :searchbase => chef_run.node['sys']['ldap']['searchbase'],
           :realm => chef_run.node['sys']['ldap']['realm'].upcase,
-          :cacert => cacert
+          :cacert => nil
         }
       )
       expect(chef_run).to render_file('/etc/ldap/ldap.conf').with_content(ldapservers)
-      expect(chef_run).to render_file('/etc/ldap/ldap.conf').with_content("TLS_CACERT " + cacert)
-    end
-
-    it 'updates the init-file of nslcd' do
-      expect(chef_run).to render_file('/etc/init.d/nslcd')
-    end
-
-    it 'updates the starting point of nslcd' do
-      expect(chef_run).to_not run_execute('insserv /etc/init.d/nslcd')
     end
 
     it 'deploys a keytab for nslcd' do
@@ -115,14 +182,6 @@ describe 'sys::ldap' do
       etc_nslcd_conf = chef_run.template('/etc/nslcd.conf')
       expect(etc_nslcd_conf).to notify('service[nslcd]').to(:restart).delayed
 
-      etc_init_d_nslcd = chef_run.cookbook_file('/etc/init.d/nslcd')
-      expect(etc_init_d_nslcd).to notify('execute[update-run-levels]').to(:run).immediately
     end
-
-    it 'starts and enables nslcd' do
-      expect(chef_run).to start_service('nslcd')
-      expect(chef_run).to enable_service('nslcd')
-    end
-
   end
 end

@@ -34,7 +34,6 @@ action :set do
     mode "0644"
     cookbook "sys"
     variables(
-      :name => name,
       :config => new_resource.config
     )
     notifies :run, "execute[#{update}]", :immediately

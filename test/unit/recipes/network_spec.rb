@@ -1,5 +1,8 @@
 describe 'sys::network' do
-  let(:chef_run) { ChefSpec::SoloRunner.new.converge(described_recipe) }
+  let(:chef_run) do
+    ChefSpec::SoloRunner.new(platform: 'debian', version: '8.9')
+      .converge(described_recipe)
+  end
 
   context 'node.sys.network.interfaces is empty' do
     it 'does nothing' do
@@ -10,7 +13,9 @@ describe 'sys::network' do
   context 'keeps interfaces' do
     let(:shellout) { double('shellout')}
     before do
-      chef_run.node.default['sys']['network']['interfaces'] = {"eth0" => { "inet" => "dhcp" }}
+      chef_run.node.default['sys']['network']['interfaces'] = {
+        "eth0" => { "inet" => "dhcp" }
+      }
       chef_run.converge(described_recipe)
     end
 

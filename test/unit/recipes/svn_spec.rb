@@ -43,8 +43,8 @@ describe 'sys::svn' do
 
     it "creates /etc/subversion/servers" do
       expect(chef_run).to render_file('/etc/subversion/servers')
-                           .with_content(/^http-proxy-host = proxy\.example\.com$/)
-                           .with_content(/^http-proxy-exceptions = \*\.localdomain$/)
+                           .with_content(/^http-proxy-host\s+=\s+proxy\.example\.com$/)
+                           .with_content(/^http-proxy-exceptions\s+=\s+\*\.localdomain$/)
     end
 
   end

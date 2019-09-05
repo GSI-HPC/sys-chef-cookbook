@@ -1,6 +1,5 @@
 #!/usr/sbin/nft -f
-#
-#  Configuration file for nftables(8), created by Chef cookbook sys::nftables
-#
+
+<%= template_header %>
 
 <%= node['sys']['nftables']['ruleset'] %>
