@@ -11,7 +11,7 @@ describe 'sys::ldap' do
 
   context 'on jessie with nslcd disabled' do
     cached(:chef_run) do
-      ChefSpec::SoloRunner.new(platform: 'debian', version: '8') do |node|
+      ChefSpec::SoloRunner.new(platform: 'debian', version: '8.9') do |node|
         node.automatic['fqdn'] = 'node.example.com'
         node.default['sys']['ldap']['servers'] = ['ldap01.gsi.de']
         node.default['sys']['ldap']['realm'] = 'EXAMPLE.COM'
@@ -46,7 +46,7 @@ describe 'sys::ldap' do
 
   context 'on jessie with nslcd enabled' do
     cached(:chef_run) do
-      ChefSpec::SoloRunner.new(platform: 'debian', version: '8') do |node|
+      ChefSpec::SoloRunner.new(platform: 'debian', version: '8.9') do |node|
         node.automatic['fqdn'] = 'node.example.com'
         node.default['sys']['ldap']['servers'] = ['ldap01.gsi.de']
         node.default['sys']['ldap']['realm'] = 'EXAMPLE.COM'
@@ -68,7 +68,7 @@ describe 'sys::ldap' do
 
   context 'on stretch and later' do
     let(:chef_run) do
-      ChefSpec::SoloRunner.new(platform: 'debian', version: '9') do |node|
+      ChefSpec::SoloRunner.new(platform: 'debian', version: '9.0') do |node|
         node.automatic['fqdn'] = 'node.example.com'
         node.default['sys']['ldap']['servers'] = ['ldap01.gsi.de']
         node.default['sys']['ldap']['realm'] = 'EXAMPLE.COM'
@@ -139,22 +139,23 @@ describe 'sys::ldap' do
       authc = "sasl_authcid nslcd/node.example.com@EXAMPLE.COM"
       authz = "sasl_authzid u:nslcd/node.example.com"
       nss_ignore = "nss_initgroups_ignoreusers user1, user2"
+
       expect(chef_run).to create_template('/etc/nslcd.conf').with(
-        :variables => {
-          :servers => chef_run.node['sys']['ldap']['servers'],
-          :searchbase => chef_run.node['sys']['ldap']['searchbase'],
-          :realm => chef_run.node['sys']['ldap']['realm'].upcase,
-          :nslcd => {"reconnect_invalidate"=>"passwd"},
-          :nss_initgroups_ignoreusers => chef_run.node['sys']['ldap']['nss_initgroups_ignoreusers']
-        }
-      )
-      expect(chef_run).to render_file('/etc/nslcd.conf').with_content { |content|
-        expect(content).to match(authc)
-        expect(content).to match(authz)
-        expect(content).to match(nss_ignore)
-        expect(content).to match(uris)
-        expect(content).to match('reconnect_invalidate passwd')
-      }
+                            :variables => {
+                              :servers => chef_run.node['sys']['ldap']['servers'],
+                              :searchbase => chef_run.node['sys']['ldap']['searchbase'],
+                              :realm => chef_run.node['sys']['ldap']['realm'].upcase,
+                              :nslcd => {"reconnect_invalidate"=>"passwd"},
+                              :nss_initgroups_ignoreusers => chef_run.node['sys']['ldap']['nss_initgroups_ignoreusers']
+                            }
+                          )
+
+      expect(chef_run).to render_file('/etc/nslcd.conf')
+                            .with_content(authc)
+                            .with_content(authz)
+                            .with_content(nss_ignore)
+                            .with_content(uris)
+                            .with_content('reconnect_invalidate passwd')
     end
 
     it 'defines ldap-servers in /etc/ldap/ldap.conf' do
