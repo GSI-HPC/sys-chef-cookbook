@@ -60,9 +60,9 @@ if node['sys']['pam']['access'] # ~FC023 Do not break conventions in sys
 
 end
 
-if node['platform_version'].to_i >= 9 # ~FC023 Do not break conventions in sys
-  cookbook_file '/etc/security/namespace.conf' do
-    source 'etc_security_namespace.conf'
+if node['sys']['pam']['namespace'] && node['platform_version'].to_i >= 9 # ~FC023 Do not break conventions in sys
+  template '/etc/security/namespace.conf' do
+    source 'etc_security_namespace.conf.erb'
     owner 'root'
     group 'root'
     mode '0644'
@@ -120,8 +120,7 @@ unless node['sys']['pamupdate'].empty? # ~FC023 Do not break conventions in sys
         group "root"
         mode "0644"
         variables(
-          :rules => content,
-          :name => "common-#{type}"
+          rules: content
         )
       end
     end

@@ -1,12 +1,14 @@
+<%= template_header %>
+
 MASTER_MAP_NAME=/etc/auto.master
 TIMEOUT=300
 BROWSE_MODE="<%= @browsemode %>"
 LOGGING="<%= @logging || 'none' %>"
 LDAP_URI="<%= @uris.map{|uri| "ldap://#{uri}/"}.join(' ')%>"
 SEARCH_BASE="<%= @searchbase %>"
-MAP_OBJECT_CLASS="*"
-ENTRY_OBJECT_CLASS="automount"
+MAP_OBJECT_CLASS="automountMap"
 MAP_ATTRIBUTE="ou"
+ENTRY_OBJECT_CLASS="automount"
 ENTRY_ATTRIBUTE="cn"
 VALUE_ATTRIBUTE="automountInformation"
 AUTH_CONF_FILE="/etc/autofs_ldap_auth.conf"

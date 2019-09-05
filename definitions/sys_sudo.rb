@@ -27,7 +27,6 @@ define :sys_sudo, :users => Hash.new, :hosts => Hash.new, :commands => Hash.new,
     mode "0440"
     cookbook "sys"
     variables(
-      :name => name,
       :users => users,
       :hosts => params[:hosts],
       :commands => params[:commands],

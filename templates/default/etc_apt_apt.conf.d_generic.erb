@@ -1,12 +1,8 @@
-# /etc/apt/apt.conf.d/<%= @name %>
-#
-# DO NOT CHANGE THIS FILE MANUALLY!
-#
-# This file is managed by the Chef `sys::apt` cookbook.
+<%= template_header %>
 
 <% @config.each do |key,values| %>
 <% if values.kind_of? Array %>
-<%= key %> { 
+<%= key %> {
  <% values.each do |value| %>
  "<%= value %>";
  <% end %>

@@ -114,10 +114,6 @@ describe 'sys::autofs' do
       )
     end
 
-    it 'manages /etc/init.d/autofs' do
-      expect(chef_run).to create_cookbook_file('/etc/init.d/autofs').with_mode("0755")
-    end
-
     it 'starts the autofs-service' do
       expect(chef_run).to start_service('autofs')
     end
@@ -132,8 +128,21 @@ describe 'sys::autofs' do
       expect(a).to notify('service[autofs]').to(:restart).delayed
       b = chef_run.template('/etc/default/autofs')
       expect(b).to notify('service[autofs]').to(:restart).delayed
-      c = chef_run.cookbook_file('/etc/init.d/autofs')
-      expect(c).to notify('service[autofs]').to(:restart).delayed
+    end
+
+    # Work in progress
+    context "on Jessie" do
+      xit 'manages /etc/init.d/autofs' do
+        # only valid for Jessie, systemd utilized on Stretch and beyond
+        expect(chef_run).to create_cookbook_file('/etc/init.d/autofs')
+                              .with_mode("0755")
+      end
+
+      xit 'does restart autofs-service on config-change' do
+        c = chef_run.cookbook_file('/etc/init.d/autofs')
+        expect(c).to notify('service[autofs]').to(:restart).delayed
+      end
+
     end
   end
 end
