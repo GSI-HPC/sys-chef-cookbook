@@ -103,7 +103,9 @@ suites:
         sudo:
           config:
             cleanup: true
-            mailto: prosecutor@example.com
+            mailfrom: prosecutor@example.com
+            mailto: vagrant
+            mailsub: "[SUDO] RED ALERT!"
           kitchen:
             users:
               SMUTJE:
