@@ -12,8 +12,9 @@ if respond_to?(:issues_url)
 end
 chef_version     '>= 12.0' if respond_to?(:chef_version)
 supports         'debian'
-version          '1.47.3'
 
 # depends          'yum-epel'
 depends          'compat_resource'
 depends          'line'
+
+version          '1.48.0'
