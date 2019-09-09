@@ -1,15 +1,8 @@
+require 'spec_helper'
+
 describe 'lwrp: sys_systemd_unit' do
-
-  let(:cookbook_paths) do
-    [
-      File.expand_path("#{File.dirname(__FILE__)}/../../../../"),
-      File.expand_path("#{File.dirname(__FILE__)}/../")
-    ]
-  end
-
   let(:runner) do
     ChefSpec::ServerRunner.new(
-      :cookbook_path => cookbook_paths,
       :step_into => ['sys_systemd_unit']
     )
   end
