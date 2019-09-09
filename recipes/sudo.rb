@@ -2,7 +2,7 @@
 # Cookbook Name:: sys
 # Recipe:: sudo
 #
-# Copyright 2012-2018, GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+# Copyright 2012-2019, GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
 # Authors:
 #  Victor Penso
 #  Matthias Pausch
@@ -22,17 +22,17 @@
 #
 
 if node['sys']['sudo_ldap'].empty? &&
-   # check wether node['sys']['sudo'] contains anything but 'config':
-   !node['sys']['sudo'].reject do |key|
-     key.to_s == 'config'
-   end.empty?
+   # check wether node['sys']['sudo'] contains anything:
+   !node['sys']['sudo'].empty?
 
     package 'sudo'
 
     # Prevent "undefined method `[]' for nil:NilClass":
     if node['sys']['sudo']['config']
-      mailto  = node['sys']['sudo']['config']['mailto']
-      cleanup = node['sys']['sudo']['config']['cleanup']
+      mailto   = node['sys']['sudo']['config']['mailto']
+      mailfrom = node['sys']['sudo']['config']['mailfrom']
+      mailsub  = node['sys']['sudo']['config']['mailsub']
+      cleanup  = node['sys']['sudo']['config']['cleanup']
     end
 
     # make sure to keep the right permissions and ownership
@@ -43,7 +43,9 @@ if node['sys']['sudo_ldap'].empty? &&
       group 'root'
       mode "0440"
       variables(
-        mailto: mailto
+        mailto:   mailto,
+        mailfrom: mailfrom,
+        mailsub:  mailsub
       )
     end
 
