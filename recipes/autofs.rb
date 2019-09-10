@@ -24,7 +24,7 @@
 # limitations under the License.
 #
 
-return if node['sys']['autofs']['maps'].empty?
+return if node['sys']['autofs'].empty?
 
 package 'autofs'
 package 'autofs-ldap'
