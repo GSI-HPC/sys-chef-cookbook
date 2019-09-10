@@ -29,22 +29,6 @@ return if node['sys']['autofs']['maps'].empty?
 package 'autofs'
 package 'autofs-ldap'
 
-node['sys']['autofs']['maps'].each_key do |mountpoint|
-  directory "/#{mountpoint}" do
-    recursive true
-    not_if { File.exist?(mountpoint) }
-  end
-end
-
-template '/etc/auto.master' do
-  source 'etc_auto.master.erb'
-  mode '0644'
-  variables(
-    :maps => node['sys']['autofs']['maps']
-  )
-  notifies :reload, 'service[autofs]'
-end
-
 sys_wallet "autofsclient/#{node['fqdn']}" do
   place '/etc/autofs.keytab'
 end
