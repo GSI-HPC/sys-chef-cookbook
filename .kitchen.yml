@@ -95,3 +95,20 @@ suites:
             array:
               - '| /bin/true'
               - /tmp/mail.test
+  - name: sys_sudo
+    run_list:
+      - recipe[sys::sudo]
+    attributes:
+      sys:
+        sudo:
+          config:
+            cleanup: true
+            mailfrom: prosecutor@example.com
+            mailto: vagrant
+            mailsub: "[SUDO] RED ALERT!"
+          kitchen:
+            users:
+              SMUTJE:
+                - vagrant
+            rules:
+              - "SMUTJE ALL=(ALL) NOPASSWD: ALL"

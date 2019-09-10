@@ -1,3 +1,5 @@
+require 'spec_helper'
+
 describe 'sys::sudo' do
   cached(:chef_run) { ChefSpec::SoloRunner.new.converge(described_recipe) }
 
@@ -27,7 +29,9 @@ describe 'sys::sudo' do
           },
           config: {
             cleanup: true,
-            mailto: 'staatsanwaltschaft@example.com'
+            mailto:   'prosecutor@example.com',
+            mailfrom: 'John Doe',
+            mailsub:  '[sudo] make me a sandwich'
           }
         }
       end.converge(described_recipe)
@@ -70,11 +74,15 @@ describe 'sys::sudo' do
                            .with_content(' regular,')
     end
 
-    it 'sets mailto in /etc/sudoers' do
+    it 'sets mail* in /etc/sudoers' do
       expect(chef_run).to render_file('/etc/sudoers')
-                           .with_content(
-                             /mailto="staatsanwaltschaft@example.com"/
-                           )
+                            .with_content(
+                              /Defaults\s+mailto="prosecutor@example.com"/
+                            ).with_content(
+                              /Defaults\s+mailfrom="John Doe"/
+                            ).with_content(
+                              /Defaults\s+mailsub="\[sudo\] make me a sandwich"/
+                            )
     end
   end
 end
