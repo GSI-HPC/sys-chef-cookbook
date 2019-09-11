@@ -2,10 +2,11 @@
 <% if node['platform_version'].to_i >= 9 -%>
 # This file has been deprecated in favor of /etc/autofs.conf
 <% else -%>
-MASTER_MAP_NAME=/etc/auto.master
+MASTER_MAP_NAME=auto.master
 TIMEOUT=300
-BROWSE_MODE="<%= @browsemode || 'no' %>"
-LOGGING="<%= @logging || 'none' %>"
+BROWSE_MODE="<%= @browsemode %>"
+LOGGING="<%= @logging %>"
+<% if node['sys']['autofs']['ldap'] -%>
 LDAP_URI="<%= @uris.map{|uri| "ldap://#{uri}/"}.join(' ')%>"
 SEARCH_BASE="<%= @searchbase %>"
 AUTH_CONF_FILE="/etc/autofs_ldap_auth.conf"
@@ -21,5 +22,6 @@ ENTRY_OBJECT_CLASS="automount"
 MAP_ATTRIBUTE="automountMapName"
 ENTRY_ATTRIBUTE="automountKey"
 VALUE_ATTRIBUTE="automountInformation"
+<% end -%>
 <% end -%>
 <% end -%>

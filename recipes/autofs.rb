@@ -7,7 +7,7 @@
 # Authors:
 #  Victor Penso      2013 - 2015
 #  Christopher Huhn  2013 - 2018
-#  Matthias Pausch   2013 - 2017
+#  Matthias Pausch   2013 - 2019
 #  Bastian Neuburger 2015
 #  Dennis Klein      2015
 #
@@ -26,30 +26,71 @@
 
 return if node['sys']['autofs'].empty?
 
-package 'autofs'
-package 'autofs-ldap'
-
-sys_wallet "autofsclient/#{node['fqdn']}" do
-  place '/etc/autofs.keytab'
-end
-
-template '/etc/autofs_ldap_auth.conf' do
-  source 'etc_autofs_ldap_auth.conf.erb'
-  mode '0600'
-  variables({
-    :tls  => node['sys']['autofs']['ldap']['tls'],
-    :auth => node['sys']['autofs']['ldap']['auth']
-  })
-  notifies :restart, 'service[autofs]'
-end
-
 config = {
-  :uris       => node['sys']['autofs']['ldap']['servers'],
-  :searchbase => node['sys']['autofs']['ldap']['searchbase'],
-  :schema     => node['sys']['autofs']['ldap']['schema'] || 'rfc2307bis',
   :browsemode => node['sys']['autofs']['browsemode'] || 'no',
   :logging    => node['sys']['autofs']['logging'] || 'none'
 }
+
+package 'autofs'
+
+# auto.master is available via ldap.  However, there is no convenient
+# possibility to filter mountpoints.  That may result in many unwanted
+# or unused mountpoints configured for the system.  Since nsswitch is
+# configured to first query files, then ldap, it is possible to
+# provide a local auto.master with fewer entries.  A local auto.master
+# may list autofs-maps in other files, or in ldap.
+# Example:
+# ldap contains maps for /a, /b and /c, but only /b and /c are wanted
+# on a system, where /c should not be read from ldap, but from a local
+# file.
+# The following steps achieve this configuration.
+# Set 'automount: files ldap' in /etc/nsswitch.conf.
+# Configure ldap, and create /etc/auto.master containing:
+# /b autofs.b
+# /c autofs.c
+# Also create /etc/autofs.c on the system.
+# On autofs-lookup, auto.master from ldap is not considered, because
+# /etc/auto.master is found first.  /etc/autofs.b does not exist, but
+# it is found in ldap, so it is taken from ldap.  /c is found in
+# /etc/autfs.c, so ldap will not be used to lookup /c.
+
+if node['sys']['autofs']['ldap']
+  package 'autofs-ldap'
+
+  config = {
+    :uris       => node['sys']['autofs']['ldap']['servers'],
+    :searchbase => node['sys']['autofs']['ldap']['searchbase'],
+    :schema     => node['sys']['autofs']['ldap']['schema'] || 'rfc2307bis',
+  }
+
+  sys_wallet "autofsclient/#{node['fqdn']}" do
+    place '/etc/autofs.keytab'
+  end
+
+  template '/etc/autofs_ldap_auth.conf' do
+    source 'etc_autofs_ldap_auth.conf.erb'
+    mode '0600'
+    variables({
+      :tls  => node['sys']['autofs']['ldap']['tls'],
+      :auth => node['sys']['autofs']['ldap']['auth']
+    })
+    notifies :restart, 'service[autofs]'
+  end
+
+  # 'autmount: files' is assumed, if no entry is present in /etc/nsswitch.conf
+  node['sys']['nsswitch'] << "automount: files ldap\n"
+end
+
+if node['sys']['autofs']['maps']
+  template '/etc/auto.master' do
+    source 'etc_auto.master.erb'
+    mode '0644'
+    variables(
+      :maps => node['sys']['autofs']['maps']
+    )
+    notifies :reload, 'service[autofs]'
+  end
+end
 
 if node['platform_version'].to_i >= 9
   template '/etc/autofs.conf' do
