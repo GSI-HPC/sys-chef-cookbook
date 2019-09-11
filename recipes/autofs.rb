@@ -77,6 +77,34 @@ if node['sys']['autofs']['ldap']
     notifies :restart, 'service[autofs]'
   end
 
+  sys_systemd_unit 'k5start-autofs.service' do
+    config({
+      'Unit' => {
+        'Description' => 'Maintain Ticket-Cache for autofs',
+        'Documentation' => 'man:k5start(1) man:autofs(8)',
+        'After' => 'network-online.target',
+        'Requires' => 'network-online.target',
+        'Before' => 'autofs.service',
+      },
+      'Service' => {
+        'Type' => 'forking',
+        'ExecStart' => '/usr/bin/k5start -b -L -F -f /etc/autofs.keytab'\
+          ' -K 60 -k /tmp/krb5cc_autofs -U -x',
+        'Restart' => 'always',
+        'RestartSec' => '5',
+      },
+      'Install' => {
+        'WantedBy' => 'default.target',
+      }
+    })
+    notifies :restart, 'service[k5start-autofs]'
+  end
+
+  service 'k5start-autofs' do
+    supports :restart => true, :reload => true
+    action [:enable, :start]
+  end
+
   # 'autmount: files' is assumed, if no entry is present in /etc/nsswitch.conf
   node['sys']['nsswitch'] << "automount: files ldap\n"
 end
@@ -132,34 +160,6 @@ sys_systemd_unit 'autofs.service' do
     }
   })
   notifies :restart, 'service[autofs]'
-end
-
-sys_systemd_unit 'k5start-autofs.service' do
-  config({
-    'Unit' => {
-      'Description' => 'Maintain Ticket-Cache for autofs',
-      'Documentation' => 'man:k5start(1) man:autofs(8)',
-      'After' => 'network-online.target',
-      'Requires' => 'network-online.target',
-      'Before' => 'autofs.service',
-    },
-    'Service' => {
-      'Type' => 'forking',
-      'ExecStart' => '/usr/bin/k5start -b -L -F -f /etc/autofs.keytab'\
-        ' -K 60 -k /tmp/krb5cc_autofs -U -x',
-      'Restart' => 'always',
-      'RestartSec' => '5',
-    },
-    'Install' => {
-      'WantedBy' => 'default.target',
-    }
-  })
-  notifies :restart, 'service[k5start-autofs]'
-end
-
-service 'k5start-autofs' do
-  supports :restart => true, :reload => true
-  action [:enable, :start]
 end
 
 service 'autofs' do
