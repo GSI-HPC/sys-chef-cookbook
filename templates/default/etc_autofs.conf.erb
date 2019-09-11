@@ -3,9 +3,10 @@
 [ autofs ]
 master_map_name = auto.master
 timeout = 300
-browse_mode = no
+browse_mode = <%= @browsemode %>
 # none, verbose, or debug
 logging = <%= @logging %>
+<% if node['sys']['autofs']['ldap'] -%>
 <% @uris.each do |uri| -%>
 ldap_uri = <%= "ldap://#{uri}" %>
 <% end -%>
@@ -24,4 +25,5 @@ entry_object_class = automount
 map_attribute = automountMapName
 entry_attribute = automountKey
 value_attribute= automountInformation
+<% end -%>
 <% end -%>
