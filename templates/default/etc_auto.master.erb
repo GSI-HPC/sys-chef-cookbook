@@ -1,0 +1,5 @@
+<%= template_header %>
+
+<% @maps.each do |map, options| -%>
+<%= "/#{map}" %><%= " autofs.#{map}" %><%= " #{String(options)}" unless String(options).empty? %>
+<% end -%>
