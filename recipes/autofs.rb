@@ -46,9 +46,9 @@ end
 config = {
   :uris       => node['sys']['autofs']['ldap']['servers'],
   :searchbase => node['sys']['autofs']['ldap']['searchbase'],
-  :schema     => node['sys']['autofs']['ldap']['schema'],
-  :browsemode => node['sys']['autofs']['browsemode'],
-  :logging    => node['sys']['autofs']['logging']
+  :schema     => node['sys']['autofs']['ldap']['schema'] || 'rfc2307bis',
+  :browsemode => node['sys']['autofs']['browsemode'] || 'no',
+  :logging    => node['sys']['autofs']['logging'] || 'none'
 }
 
 if node['platform_version'].to_i >= 9
@@ -87,7 +87,7 @@ sys_systemd_unit 'autofs.service' do
       'TimeoutSec' => '180',
     },
     'Install' => {
-      'WantedBy' => 'gsi-remote.target',
+      'WantedBy' => 'default.target',
     }
   })
   notifies :restart, 'service[autofs]'
@@ -110,7 +110,7 @@ sys_systemd_unit 'k5start-autofs.service' do
       'RestartSec' => '5',
     },
     'Install' => {
-      'WantedBy' => 'gsi-remote.target',
+      'WantedBy' => 'default.target',
     }
   })
   notifies :restart, 'service[k5start-autofs]'
