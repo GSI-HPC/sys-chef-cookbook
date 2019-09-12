@@ -29,7 +29,7 @@ describe 'sys::autofs' do
     end
 
     it 'deletes /etc/auto.master' do
-      expect(chef_run).to delete_file('/etc/auto.master')
+      expect(chef_run).to delete_template('/etc/auto.master')
     end
 
     it 'manages systemd files' do
@@ -74,6 +74,7 @@ describe 'sys::autofs' do
         node.default['sys']['autofs']['maps'] = {
           'map' => { 'options' => '-browse'}
         }
+        node.default['sys']['autofs']['create_mountpoints'] = ['/test']
       end.converge(described_recipe)
     end
 
@@ -95,8 +96,8 @@ describe 'sys::autofs' do
       expect(chef_run).to render_file('/etc/auto.master').with_content('/map autofs.map -browse')
     end
 
-    it 'does not create /map' do
-      expect(chef_run).not_to create_directory('/map')
+    it 'creates /test' do
+      expect(chef_run).to create_directory('/test')
     end
 
     it 'manages systemd files' do

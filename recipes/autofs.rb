@@ -65,11 +65,6 @@ if node['sys']['autofs']['ldap']
     place '/etc/autofs.keytab'
   end
 
-  file '/etc/auto.master' do
-    action :delete
-    not_if { node['sys']['autofs']['maps'] }
-  end
-
   template '/etc/autofs_ldap_auth.conf' do
     source 'etc_autofs_ldap_auth.conf.erb'
     mode '0600'
@@ -121,8 +116,8 @@ if node['sys']['autofs']['ldap']
   node.default['sys']['nsswitch'] << "\nautomount: files ldap\n"
 end
 
+maps = []
 if node['sys']['autofs']['maps']
-  maps = []
   node['sys']['autofs']['maps'].each do |map, values|
     maps << {
       mountpoint: values['mountpoint'] || "/#{map}",
@@ -130,23 +125,26 @@ if node['sys']['autofs']['maps']
       options: values['options'] ? " #{values['options']}" : ''
     }
   end
-  template '/etc/auto.master' do
-    source 'etc_auto.master.erb'
-    mode '0644'
-    variables(
-      :maps => maps
-    )
-    notifies :reload, 'service[autofs]'
-  end
+end
 
-  mountpoints = node['sys']['autofs']['create_mountpoints'] || []
-  mountpoints.each do |mp|
-    directory mp do
-      recursive true
-      mode '0755'
-      owner 'root'
-      group 'root'
-    end
+template '/etc/auto.master' do
+  act = maps.empty? ? :delete : :create
+  source 'etc_auto.master.erb'
+  mode '0644'
+  variables(
+    :maps => maps
+  )
+  action act
+  notifies :reload, 'service[autofs]'
+end
+
+mountpoints = Array(node['sys']['autofs']['create_mountpoints']) || []
+mountpoints.each do |mp|
+  directory mp do
+    recursive true
+    mode '0755'
+    owner 'root'
+    group 'root'
   end
 end
 
