@@ -7,7 +7,7 @@ browse_mode = <%= @browsemode %>
 # none, verbose, or debug
 logging = <%= @logging %>
 <% if node['sys']['autofs']['ldap'] -%>
-<% @uris.each do |uri| -%>
+<% Array(@uris).each do |uri| -%>
 ldap_uri = <%= "ldap://#{uri}" %>
 <% end -%>
 search_base = <%= @searchbase %>
