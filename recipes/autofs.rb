@@ -57,11 +57,9 @@ package 'autofs'
 if node['sys']['autofs']['ldap']
   package 'autofs-ldap'
 
-  config = {
-    :uris       => node['sys']['autofs']['ldap']['servers'],
-    :searchbase => node['sys']['autofs']['ldap']['searchbase'],
-    :schema     => node['sys']['autofs']['ldap']['schema'] || 'rfc2307bis',
-  }
+  config[:uris]       = node['sys']['autofs']['ldap']['servers']
+  config[:searchbase] = node['sys']['autofs']['ldap']['searchbase']
+  config[:schema]     = node['sys']['autofs']['ldap']['schema'] || 'rfc2307bis'
 
   sys_wallet "autofsclient/#{node['fqdn']}" do
     place '/etc/autofs.keytab'
@@ -107,21 +105,22 @@ if node['sys']['autofs']['ldap']
     only_if { node['platform_version'].to_i >= 9 }
   end
 
-  cookbook_file "/etc/init.d/autofs" do
-    source "etc_init.d_autofs"
-    mode "0755"
+  cookbook_file '/etc/init.d/autofs' do
+    source 'etc_init.d_autofs'
+    mode '0755'
     notifies :restart, 'service[autofs]'
+    only_if { node['platform_version'].to_i < 9 }
   end
 
   # 'autmount: files' is assumed, if no entry is present in /etc/nsswitch.conf
-  node['sys']['nsswitch'] << "\nautomount: files ldap\n"
+  node.default['sys']['nsswitch'] << "\nautomount: files ldap\n"
 end
 
 if node['sys']['autofs']['maps']
   maps = []
   node['sys']['autofs']['maps'].each do |map, values|
     maps << {
-      mointpoint: values['mountpoint'] || "/#{map}",
+      mountpoint: values['mountpoint'] || "/#{map}",
       mapname: values['mapname'] || "autofs.#{map}",
       options: values['options'] ? " #{values['options']}" : ''
     }
