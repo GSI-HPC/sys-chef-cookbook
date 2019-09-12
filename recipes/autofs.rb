@@ -98,11 +98,19 @@ if node['sys']['autofs']['ldap']
       }
     })
     notifies :restart, 'service[k5start-autofs]'
+    only_if { node['platform_version'].to_i >= 9 }
   end
 
   service 'k5start-autofs' do
     supports :restart => true, :reload => true
     action [:enable, :start]
+    only_if { node['platform_version'].to_i >= 9 }
+  end
+
+  cookbook_file "/etc/init.d/autofs" do
+    source "etc_init.d_autofs"
+    mode "0755"
+    notifies :restart, 'service[autofs]'
   end
 
   # 'autmount: files' is assumed, if no entry is present in /etc/nsswitch.conf
