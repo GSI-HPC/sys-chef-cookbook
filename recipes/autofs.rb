@@ -135,20 +135,31 @@ if node['sys']['autofs']['maps']
     notifies :reload, 'service[autofs]'
   end
 
-if node['platform_version'].to_i >= 9
-  template '/etc/autofs.conf' do
-    source 'etc_autofs.conf.erb'
-    mode '0644'
-    variables(config)
-    notifies :restart, 'service[autofs]'
+  mountpoints = node['sys']['autofs']['create_mountpoints'] || []
+  node['sys']['autofs']['create_mountpoints'].each do |mp|
+    directory mp do
+      recursive true
+      mode '0755'
+      owner 'root'
+      group 'root'
+    end
   end
-else
-  template '/etc/default/autofs' do
-    source 'etc_default_autofs.erb'
-    mode '0644'
-    variables(config)
-    notifies :restart, 'service[autofs]'
-  end
+end
+
+template '/etc/autofs.conf' do
+  source 'etc_autofs.conf.erb'
+  mode '0644'
+  variables(config)
+  notifies :restart, 'service[autofs]'
+  only_if { node['platform_version'].to_i >= 9 }
+end
+
+template '/etc/default/autofs' do
+  source 'etc_default_autofs.erb'
+  mode '0644'
+  variables(config)
+  notifies :restart, 'service[autofs]'
+  only_if { node['platform_version'].to_i < 9 }
 end
 
 sys_systemd_unit 'autofs.service' do
