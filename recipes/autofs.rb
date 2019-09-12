@@ -65,6 +65,11 @@ if node['sys']['autofs']['ldap']
     place '/etc/autofs.keytab'
   end
 
+  file '/etc/auto.master' do
+    action :delete
+    not_if { node['sys']['autofs']['maps'] }
+  end
+
   template '/etc/autofs_ldap_auth.conf' do
     source 'etc_autofs_ldap_auth.conf.erb'
     mode '0600'
