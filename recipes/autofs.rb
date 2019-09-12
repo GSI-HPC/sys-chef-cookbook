@@ -163,12 +163,11 @@ template '/etc/default/autofs' do
 end
 
 sys_systemd_unit 'autofs.service' do
-  config({
+  cfg = {
     'Unit' => {
       'Description' => 'Automounts filesystems on demand',
       'After' => 'sssd.service network-online.target remote-fs.target'\
         'k5start-autofs.service',
-      'BindsTo' => 'k5start-autofs.service',
       'Requires' => 'network-online.target',
       'Before' => 'graphical.target',
     },
@@ -184,8 +183,11 @@ sys_systemd_unit 'autofs.service' do
     'Install' => {
       'WantedBy' => 'default.target',
     }
-  })
+  }
+  cfg['BindsTo'] = 'k5start-autofs.service' if node['sys']['autofs']['ldap']
+  config(cfg)
   notifies :restart, 'service[autofs]'
+  only_if { node['platform_version'].to_i >= 9 }
 end
 
 service 'autofs' do
