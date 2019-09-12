@@ -7,7 +7,7 @@ TIMEOUT=300
 BROWSE_MODE="<%= @browsemode %>"
 LOGGING="<%= @logging %>"
 <% if node['sys']['autofs']['ldap'] -%>
-LDAP_URI="<%= @uris.map{|uri| "ldap://#{uri}/"}.join(' ')%>"
+LDAP_URI="<%= Array(@uris).map{|uri| "ldap://#{uri}/"}.join(' ')%>"
 SEARCH_BASE="<%= @searchbase %>"
 AUTH_CONF_FILE="/etc/autofs_ldap_auth.conf"
 <% if @schema == 'rfc2307' -%>
