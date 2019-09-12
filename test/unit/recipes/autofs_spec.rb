@@ -24,8 +24,12 @@ describe 'sys::autofs' do
       expect(chef_run).to install_package('autofs-ldap')
     end
 
-    it 'does not manage /etc/auto.master' do
+    it 'does not render /etc/auto.master' do
       expect(chef_run).not_to render_file('/etc/auto.master')
+    end
+
+    it 'deletes /etc/auto.master' do
+      expect(chef_run).to delete_file('/etc/auto.master')
     end
 
     it 'manages systemd files' do
@@ -83,7 +87,11 @@ describe 'sys::autofs' do
       expect(chef_run).not_to install_package('ldap-autofs')
     end
 
-    it 'manages /etc/auto.master' do
+    it 'does not delete /etc/auto.master' do
+      expect(chef_run).not_to delete_file('/etc/auto.master')
+    end
+
+    it 'renders /etc/auto.master' do
       expect(chef_run).to render_file('/etc/auto.master').with_content('/map autofs.map -browse')
     end
 
@@ -125,7 +133,7 @@ describe 'sys::autofs' do
 
     it 'manages /etc/auto.master' do
       expect(chef_run).to create_template('/etc/auto.master').with_mode('0644')
-      expect(chef_run).to render_file('/etc/auto.master').with_content('')
+      expect(chef_run).to render_file('/etc/auto.master').with_content('/map autofs.map')
     end
 
     it 'manages /etc/init.d/autofs' do
