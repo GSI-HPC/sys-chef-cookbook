@@ -136,7 +136,7 @@ if node['sys']['autofs']['maps']
   end
 
   mountpoints = node['sys']['autofs']['create_mountpoints'] || []
-  node['sys']['autofs']['create_mountpoints'].each do |mp|
+  mountpoints.each do |mp|
     directory mp do
       recursive true
       mode '0755'
