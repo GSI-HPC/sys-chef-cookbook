@@ -1,5 +1,5 @@
 <%= template_header %>
 
-<% @maps.each do |map, options| -%>
-<%= "/#{map}" %><%= " autofs.#{map}" %><%= " #{String(options)}" unless String(options).empty? %>
+<% @maps.each do |config| -%>
+<%= config[:mountpoint] %> <%= config[:mapname] %><%= config[:options] %>
 <% end -%>

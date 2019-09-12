@@ -114,19 +114,26 @@ if node['sys']['autofs']['ldap']
   end
 
   # 'autmount: files' is assumed, if no entry is present in /etc/nsswitch.conf
-  node['sys']['nsswitch'] << "automount: files ldap\n"
+  node['sys']['nsswitch'] << "\nautomount: files ldap\n"
 end
 
 if node['sys']['autofs']['maps']
+  maps = []
+  node['sys']['autofs']['maps'].each do |map, values|
+    maps << {
+      mointpoint: values['mountpoint'] || "/#{map}",
+      mapname: values['mapname'] || "autofs.#{map}",
+      options: values['options'] ? " #{values['options']}" : ''
+    }
+  end
   template '/etc/auto.master' do
     source 'etc_auto.master.erb'
     mode '0644'
     variables(
-      :maps => node['sys']['autofs']['maps']
+      :maps => maps
     )
     notifies :reload, 'service[autofs]'
   end
-end
 
 if node['platform_version'].to_i >= 9
   template '/etc/autofs.conf' do
