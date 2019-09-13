@@ -137,6 +137,7 @@ describe 'sys::autofs' do
     it 'manages /etc/auto.master' do
       expect(chef_run).to create_template('/etc/auto.master').with_mode('0644')
       expect(chef_run).to render_file('/etc/auto.master').with_content('/map autofs.map')
+      expect(chef_run).to render_file('/etc/auto.master').with_content('+dir:/etc/auto.master.d')
     end
 
     it 'manages /etc/init.d/autofs' do
