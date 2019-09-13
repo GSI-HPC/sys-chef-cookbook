@@ -138,6 +138,20 @@ template '/etc/auto.master' do
   notifies :reload, 'service[autofs]'
 end
 
+directory '/etc/auto.master.d' do
+  mode '0755'
+  owner 'root'
+  group 'root'
+  only_if { node['platform_version'].to_i > 7 }
+end
+
+template '/etc/auto.master.d/README' do
+  source 'etc_auto.master.d_README.erb'
+  owner 'root'
+  group 'root'
+  mode '0644'
+end
+
 mountpoints = Array(node['sys']['autofs']['create_mountpoints']) || []
 mountpoints.each do |mp|
   directory mp do
