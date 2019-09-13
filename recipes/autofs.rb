@@ -121,7 +121,7 @@ if node['sys']['autofs']['maps']
   node['sys']['autofs']['maps'].each do |map, values|
     maps << {
       mountpoint: values['mountpoint'] || "/#{map}",
-      mapname: values['mapname'] || "autofs.#{map}",
+      mapname: values['mapname'] || "autofs.#{map.sub(%r{^/+},'').gsub('/','_')}",
       options: values['options'] ? " #{values['options']}" : ''
     }
   end

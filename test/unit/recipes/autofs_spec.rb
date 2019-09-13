@@ -72,7 +72,8 @@ describe 'sys::autofs' do
     cached(:chef_run) do
       ChefSpec::SoloRunner.new do |node|
         node.default['sys']['autofs']['maps'] = {
-          'map' => { 'options' => '-browse'}
+          'map' => { 'options' => '-browse'},
+          '/oldmap' => { 'map' => '/some/path/filename' }
         }
         node.default['sys']['autofs']['create_mountpoints'] = ['/test']
       end.converge(described_recipe)
@@ -94,6 +95,7 @@ describe 'sys::autofs' do
 
     it 'renders /etc/auto.master' do
       expect(chef_run).to render_file('/etc/auto.master').with_content('/map autofs.map -browse')
+      expect(chef_run).to render_file('/etc/auto.master').with_content('/oldmap autofs.oldmap')
     end
 
     it 'creates /test' do
