@@ -202,4 +202,20 @@ describe 'sys::autofs' do
       }
     end
   end
+
+  context 'on wheezy' do
+    cached(:chef_run) do
+      ChefSpec::SoloRunner.new(platform: 'debian', version: '7.11') do |node|
+        node.default['sys']['autofs']['maps'] = {
+          'map' => { }
+        }
+      end.converge(described_recipe)
+    end
+
+    it 'manages /etc/auto.master' do
+      expect(chef_run).to create_template('/etc/auto.master').with_mode('0644')
+      expect(chef_run).to render_file('/etc/auto.master').with_content('/map autofs.map')
+      expect(chef_run).not_to render_file('/etc/auto.master').with_content('+dir:/etc/auto.master.d')
+    end
+  end
 end

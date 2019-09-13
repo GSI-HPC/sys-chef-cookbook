@@ -3,3 +3,5 @@
 <% @maps.each do |config| -%>
 <%= config[:mountpoint] %> <%= config[:mapname] %><%= config[:options] %>
 <% end -%>
+
+<%= '+dir:/etc/auto.master.d' if node['platform_version'].to_i > 7 %>
