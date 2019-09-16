@@ -128,13 +128,11 @@ if node['sys']['autofs']['maps']
 end
 
 template '/etc/auto.master' do
-  act = maps.empty? ? :delete : :create
   source 'etc_auto.master.erb'
   mode '0644'
   variables(
     :maps => maps
   )
-  action act
   notifies :reload, 'service[autofs]'
 end
 
