@@ -112,8 +112,10 @@ if node['sys']['autofs']['ldap']
     only_if { node['platform_version'].to_i < 9 }
   end
 
-  # 'autmount: files' is assumed, if no entry is present in /etc/nsswitch.conf
-  node.default['sys']['nsswitch'] << "\nautomount: files ldap\n"
+  if node['sys']['autofs']['ldap']['auto.master_from_ldap']
+    # 'automount: files' is assumed, if no entry is present in /etc/nsswitch.conf
+    node.default['sys']['nsswitch'] << "\nautomount: files ldap\n"
+  end
 end
 
 maps = []
