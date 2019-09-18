@@ -14,10 +14,9 @@ end
 group :vagrant do
   gem 'vagrant', :git => 'https://github.com/mitchellh/vagrant.git', :tag => 'v1.8.1'
   gem 'bundler', :git => 'https://github.com/bundler/bundler', :tag => 'v1.10.6'
-end
-
-group :plugins do
-  gem 'vagrant-libvirt', :git => 'https://github.com/pradels/vagrant-libvirt.git'
   gem 'vagrant-berkshelf'
 end
 
+group :libvirt do
+  gem 'vagrant-libvirt', :git => 'https://github.com/pradels/vagrant-libvirt.git'
+end
