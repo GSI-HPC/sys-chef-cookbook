@@ -1,0 +1,27 @@
+---
+driver:
+  name: docker
+  privileged: true
+  provision_command:
+    # https://github.com/test-kitchen/kitchen-docker/issues/285:
+    - mkdir -p /run/sshd
+    - apt-get -y install chef || true
+  require_chef_omnibus: false
+
+provisioner:
+  log_level: warn
+
+platforms:
+  - name: debian-stretch
+  - name: debian-jessie
+  - name: debian-buster
+  - name: debian-wheezy
+    # wheezy chef package is 10.12
+    driver:
+      require_chef_omnibus: 12.0.3
+  - name: ubuntu-18.04
+  - name: centos-7
+    driver:
+      require_chef_omnibus: 12
+      provision_command:
+        - yum install -y rubygems
