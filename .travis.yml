@@ -11,7 +11,7 @@ services: docker
 before_install:
   - gem install bundler
 
-bundler_args: --without libvirt
+bundler_args: --without vagrant
 
 install:
   # chefspec requires that the repo is checked out to a dir
