@@ -17,4 +17,4 @@ supports         'debian'
 depends          'compat_resource'
 depends          'line'
 
-version          '1.48.0'
+version          '1.49.0'
