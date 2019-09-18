@@ -17,6 +17,6 @@ group :vagrant do
   gem 'vagrant-berkshelf'
 end
 
-group :libvirt do
-  gem 'vagrant-libvirt', :git => 'https://github.com/pradels/vagrant-libvirt.git'
-end
+#group :libvirt do
+#  gem 'vagrant-libvirt', :git => 'https://github.com/pradels/vagrant-libvirt.git'
+#end
