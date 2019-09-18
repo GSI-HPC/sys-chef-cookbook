@@ -2,7 +2,7 @@ source 'http://rubygems.org'
 
 group :development do
   gem 'rake'
-  gem 'rubocop'
+  gem 'rubocop' #, '~> 0.49'
   # Foodcritic 13 drops Chef 12 compatibility:
   gem 'foodcritic', '< 13'
   # Newer versions break foodcritic:
@@ -13,7 +13,7 @@ group :development do
   # take Chef version from environment, fall back to newest version:
   gem 'chef', (ENV['CHEF_VERSION']) ? "~> #{ENV['CHEF_VERSION']}" : "> 1"
 
-  gem 'chefspec', '< 7.3'
+  gem 'chefspec', '< 7.2'
   gem 'chefspec-ohai'
   gem 'test-kitchen'
 
