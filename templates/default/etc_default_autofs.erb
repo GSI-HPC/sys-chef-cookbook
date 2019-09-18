@@ -1,14 +1,27 @@
 <%= template_header %>
-
-MASTER_MAP_NAME=/etc/auto.master
+<% if node['platform_version'].to_i >= 9 -%>
+# This file has been deprecated in favor of /etc/autofs.conf
+<% else -%>
+MASTER_MAP_NAME=auto.master
 TIMEOUT=300
 BROWSE_MODE="<%= @browsemode %>"
-LOGGING="<%= @logging || 'none' %>"
-LDAP_URI="<%= @uris.map{|uri| "ldap://#{uri}/"}.join(' ')%>"
+LOGGING="<%= @logging %>"
+<% if node['sys']['autofs']['ldap'] -%>
+LDAP_URI="<%= Array(@uris).map{|uri| "ldap://#{uri}/"}.join(' ')%>"
 SEARCH_BASE="<%= @searchbase %>"
+AUTH_CONF_FILE="/etc/autofs_ldap_auth.conf"
+<% if @schema == 'rfc2307' -%>
 MAP_OBJECT_CLASS="automountMap"
 MAP_ATTRIBUTE="ou"
 ENTRY_OBJECT_CLASS="automount"
 ENTRY_ATTRIBUTE="cn"
 VALUE_ATTRIBUTE="automountInformation"
-AUTH_CONF_FILE="/etc/autofs_ldap_auth.conf"
+<% elsif @schema == 'rfc2307bis' -%>
+MAP_OBJECT_CLASS="automountMap"
+ENTRY_OBJECT_CLASS="automount"
+MAP_ATTRIBUTE="automountMapName"
+ENTRY_ATTRIBUTE="automountKey"
+VALUE_ATTRIBUTE="automountInformation"
+<% end -%>
+<% end -%>
+<% end -%>
