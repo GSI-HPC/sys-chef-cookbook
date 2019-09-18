@@ -1,6 +1,9 @@
 <%= template_header %>
 
-# include sniplets from /etc/auto.master.d
-+dir:/etc/auto.master.d
+<%= '+auto.master' if @maps.empty? %>
 
-# intentionally left empty
+<% @maps.each do |config| -%>
+<%= config[:mountpoint] %> <%= config[:mapname] %><%= config[:options] %>
+<% end -%>
+
+<%= '+dir:/etc/auto.master.d' if node['platform_version'].to_i > 7 %>
