@@ -1,3 +1,5 @@
+require 'spec_helper'
+
 describe 'sys::autofs' do
   let(:chef_run) do
     ChefSpec::SoloRunner.new.converge(described_recipe)
@@ -45,13 +47,13 @@ describe 'sys::autofs' do
     end
 
     it 'manages /etc/autofs.conf' do
-      expect(chef_run).to render_file('/etc/autofs.conf').with_content { |content|
-        expect(content).to match(/browse_mode = no/)
-        expect(content).to match(/search_base = dc=example,dc=com/)
-        expect(content).to match(/ldap_uri = ldap:\/\/ldap.example.com/)
-        expect(content).to match(/entry_attribute = automountKey/)
-        expect(content).not_to match(/entry_attribute = cn/)
-      }
+      expect(chef_run).to render_file('/etc/autofs.conf')
+                            .with_content(/browse_mode = no/)
+                            .with_content(/search_base = dc=example,dc=com/)
+                            .with_content(/ldap_uri = ldap:\/\/ldap.example.com/)
+                            .with_content(/entry_attribute = automountKey/)
+      expect(chef_run).to_not render_file('/etc/autofs.conf')
+                            .with_content(/entry_attribute = cn/)
     end
 
     it 'does not manage /etc/default/autofs' do
@@ -114,7 +116,7 @@ describe 'sys::autofs' do
 
   context 'with jessie' do
     cached(:chef_run) do
-      ChefSpec::SoloRunner.new(platform: 'debian', version: '8.11') do |node|
+      ChefSpec::SoloRunner.new(platform: 'debian', version: '8.9') do |node|
         node.automatic['fqdn'] = 'node.example.com'
         node.default['sys']['autofs']['ldap']['servers'] = [
           'ldap01.example.com', 'ldap02.example.com'
@@ -146,12 +148,12 @@ describe 'sys::autofs' do
     it 'manages /etc/default/autofs' do
       expect(chef_run).to create_template('/etc/default/autofs').with_mode('0644')
 
-      expect(chef_run).to render_file('/etc/default/autofs').with_content { |content|
-        expect(content).to match(%r(MASTER_MAP_NAME=auto.master))
-        expect(content).to match(%r(LDAP_URI="ldap://ldap01.example.com/ ldap://ldap02.example.com/"))
-        expect(content).to match(%r(ENTRY_ATTRIBUTE="cn"))
-        expect(content).not_to match(%r(ENTRY_ATTRIBUTE="automountKey"))
-      }
+      expect(chef_run).to render_file('/etc/default/autofs')
+                            .with_content(%r(MASTER_MAP_NAME=auto.master))
+                            .with_content(%r(LDAP_URI="ldap://ldap01.example.com/ ldap://ldap02.example.com/"))
+                            .with_content(%r(ENTRY_ATTRIBUTE="cn"))
+      expect(chef_run).to_not render_file('/etc/default/autofs')
+                                .with_content(%r(ENTRY_ATTRIBUTE="automountKey"))
     end
 
     it 'starts the autofs-service' do
@@ -175,10 +177,9 @@ describe 'sys::autofs' do
       expect(chef_run).to create_template('/etc/autofs_ldap_auth.conf')
       .with_mode('0600')
       expect(chef_run).to render_file('/etc/autofs_ldap_auth.conf')
-      .with_content { |content|
-        expect(content).to match(/\s+authrequired="yes"/)
-        expect(content).not_to match(/\s+tlsrequired="yes"/)
-      }
+                            .with_content(/\s+authrequired="yes"/)
+      expect(chef_run).to_not render_file('/etc/autofs_ldap_auth.conf')
+                                .with_content(/\s+tlsrequired="yes"/)
     end
   end
 
@@ -191,10 +192,9 @@ describe 'sys::autofs' do
 
     it 'manages /etc/autofs_ldap_auth.conf' do
       expect(chef_run).to render_file('/etc/autofs_ldap_auth.conf')
-      .with_content { |content|
-        expect(content).to match(/\s+tlsrequired="yes"/)
-        expect(content).not_to match(/\s+authrequired="yes"/)
-      }
+                            .with_content(/\s+tlsrequired="yes"/)
+      expect(chef_run).to_not render_file('/etc/autofs_ldap_auth.conf')
+                                .with_content(/\s+authrequired="yes"/)
     end
   end
 
