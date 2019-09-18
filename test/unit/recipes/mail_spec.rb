@@ -1,3 +1,5 @@
+require 'spec_helper'
+
 describe 'sys::mail' do
   let(:chef_run) { ChefSpec::SoloRunner.new.converge(described_recipe) }
 
@@ -27,7 +29,7 @@ describe 'sys::mail' do
       chef_run.node.default[:sys][:mail][:relay] = 'smtp.example.net'
       @example_alias_name = 'foo'
       @example_alias_value = 'foo@bar.mail'
-      @expected_alias_value = '"foo@bar.mail"'
+      @expected_alias_value = [ "foo@bar.mail" ]
       chef_run.node.default[:sys][:mail][:aliases][@example_alias_name.to_sym] =
         @example_alias_value
       allow(::File).to receive(:exist?).and_call_original
@@ -90,10 +92,14 @@ describe 'sys::mail' do
     update_aliases = 'Update Postfix aliases'
 
     it "manages #{etc_aliases}" do
-      expect(chef_run).to add_sys_mail_alias(@example_alias_name).with_to(@expected_alias_value).with_aliases_file(etc_aliases)
-      expect(chef_run.find_resource(:sys_mail_alias, @example_alias_name)).to notify("execute[#{update_aliases}]").to(:run).delayed
+      expect(chef_run).to add_sys_mail_alias(@example_alias_name)
+                            .with_to(@expected_alias_value)
+                            .with_aliases_file(etc_aliases)
+      expect(chef_run.find_resource(:sys_mail_alias, @example_alias_name))
+        .to notify("execute[#{update_aliases}]").to(:run).delayed
       expect(chef_run).to run_execute(update_aliases)
-      expect(chef_run.execute(update_aliases)).to notify("service[#{postfix}]").to(:reload).delayed
+      expect(chef_run.execute(update_aliases))
+        .to notify("service[#{postfix}]").to(:reload).delayed
       expect(chef_run).to create_file(etc_aliases)
       # we completly mocked away Chef::Util::FileEdit for now,
       #  therefore this will fail:
