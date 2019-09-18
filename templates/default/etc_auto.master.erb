@@ -1,6 +1,6 @@
 <%= template_header %>
 
-<%= '+auto.master' if @maps.empty? %>
++auto.master
 
 <% @maps.each do |config| -%>
 <%= config[:mountpoint] %> <%= config[:mapname] %><%= config[:options] %>

@@ -24,10 +24,9 @@ describe 'sys::autofs' do
       expect(chef_run).to install_package('autofs-ldap')
     end
 
-    it 'does not render /etc/auto.master' do
+    it 'does render /etc/auto.master' do
       expect(chef_run).to render_file('/etc/auto.master').with_content('+auto.master')
     end
-
 
     it 'manages systemd files' do
       expect(chef_run).to create_sys_systemd_unit('autofs.service')
@@ -89,7 +88,7 @@ describe 'sys::autofs' do
     it 'renders /etc/auto.master' do
       expect(chef_run).to render_file('/etc/auto.master').with_content('/map autofs.map -browse')
       expect(chef_run).to render_file('/etc/auto.master').with_content('/oldmap autofs.oldmap')
-      expect(chef_run).not_to render_file('/etc/auto.master').with_content('+auto.master')
+      expect(chef_run).to render_file('/etc/auto.master').with_content('+auto.master')
     end
 
     it 'creates /test' do
@@ -131,7 +130,7 @@ describe 'sys::autofs' do
     it 'manages /etc/auto.master' do
       expect(chef_run).to create_template('/etc/auto.master').with_mode('0644')
       expect(chef_run).to render_file('/etc/auto.master').with_content('/map autofs.map')
-      expect(chef_run).not_to render_file('/etc/auto.master').with_content('+auto.master')
+      expect(chef_run).to render_file('/etc/auto.master').with_content('+auto.master')
       expect(chef_run).to render_file('/etc/auto.master').with_content('+dir:/etc/auto.master.d')
     end
 
@@ -211,7 +210,7 @@ describe 'sys::autofs' do
     it 'manages /etc/auto.master' do
       expect(chef_run).to create_template('/etc/auto.master').with_mode('0644')
       expect(chef_run).to render_file('/etc/auto.master').with_content('/map autofs.map')
-      expect(chef_run).not_to render_file('/etc/auto.master').with_content('+auto.master')
+      expect(chef_run).to render_file('/etc/auto.master').with_content('+auto.master')
       expect(chef_run).not_to render_file('/etc/auto.master').with_content('+dir:/etc/auto.master.d')
     end
   end
