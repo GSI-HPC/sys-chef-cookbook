@@ -10,23 +10,13 @@ services: docker
 # bundler in the travis image is too old:
 before_install:
   - gem install bundler
-  - gem dependency
 
 bundler_args: --without vagrant
 
-install:
-  # chefspec requires that the repo is checked out to a dir
-  #  named like the cookbook name, therefore we check it out again
-  #  cf. https://stackoverflow.com/questions/32580821/
-  #- git clone https://github.com/$TRAVIS_REPO_SLUG.git sys
-  #- cd sys
-  #- git checkout -qf $TRAVIS_COMMIT
-  #- bundle install --without libvirt
-
-after_install:
+before_script:
+  - gem dependency
   - bundle doctor
 
-before_script:
   # integration test for sys::autofs will start automounter
   #  this will fail inside docker container because autofs4 cannot be loaded
   #  pre-loading autofs4 on the host fixes this issue
