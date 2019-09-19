@@ -10,6 +10,7 @@ services: docker
 # bundler in the travis image is too old:
 before_install:
   - gem install bundler
+  - gem dependency
 
 bundler_args: --without vagrant
 
@@ -22,6 +23,9 @@ install:
   #- git checkout -qf $TRAVIS_COMMIT
   #- bundle install --without libvirt
 
+after_install:
+  - bundle doctor
+
 before_script:
   # integration test for sys::autofs will start automounter
   #  this will fail inside docker container because autofs4 cannot be loaded
@@ -33,8 +37,9 @@ env:
     - KITCHEN_LOCAL_YAML=.kitchen.docker.yml
   matrix:
     - CHEF_VERSION=12
+    - CHEF_VERSION=12.14
     - CHEF_VERSION=12.3
-    - CHEF_VERSION=13
+    - CHEF_VERSION=13.8
     - CHEF_VERSION=14
 
 rvm:
