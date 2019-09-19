@@ -24,18 +24,6 @@ require 'spec_helper'
 
 describe 'lwrp: sys_systemd_unit' do
 
-  before do
-    # Mock systemctl daemon-reload
-    allow(Mixlib::ShellOut).to receive(:new).and_call_original
-    allow(Mixlib::ShellOut).to receive(:new).with('systemctl daemon-reload') do
-      instance_double('Mixlib::ShellOut',
-                      'systemctl',
-                      run_command: true,
-                      stdout: '',
-                      exitstatus: 0)
-    end
-  end
-
   let(:runner) do
     ChefSpec::ServerRunner.new(
       :step_into => ['sys_systemd_unit']
@@ -46,6 +34,28 @@ describe 'lwrp: sys_systemd_unit' do
   let(:absolute_path) { '/etc/systemd/network/test.network' }
   let(:unit) { 'test.network' }
   states = [ :enabled, :linked, :masked, :static, :disabled, :unknown ]
+
+  # create a couble for sysctl invocations via Mixlib::ShellOut
+  let(:sysctl_double) do
+    instance_double('Mixlib::ShellOut',
+                    'systemctl',
+                    run_command: true,
+                    stdout: '',
+                    exitstatus: 0)
+  end
+
+  before do
+    # Mock systemctl daemon-reload
+    allow(Mixlib::ShellOut).to receive(:new).and_call_original
+    allow(Mixlib::ShellOut).to receive(:new).with('systemctl daemon-reload')
+                                 .and_return(sysctl_double)
+
+    # mock all "real" invocations of systemctl:
+    %w[disable enable mask reload restart start stop unmask].each do |op|
+      allow(Mixlib::ShellOut).to receive(:new).with("systemctl #{op} #{unit}")
+                                   .and_return(sysctl_double)
+    end
+  end
 
   describe 'action :create' do
     let(:chef_run) { runner.converge('fixtures::sys_systemd_unit_create') }
