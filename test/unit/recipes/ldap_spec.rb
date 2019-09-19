@@ -1,6 +1,5 @@
 #
-# Cookbook Name:: sys
-# Recipe:: default
+# Tests for recipe sys::ldap
 #
 # Copyright 2015 - 2019 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
 #
