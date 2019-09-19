@@ -109,6 +109,9 @@ suites:
           kitchen:
             users:
               SMUTJE:
+                # for kitchen-docker:
+                - kitchen
+                # for kitchen-vagrant:
                 - vagrant
             rules:
               - "SMUTJE ALL=(ALL) NOPASSWD: ALL"
