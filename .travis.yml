@@ -14,9 +14,6 @@ before_install:
 bundler_args: --without vagrant
 
 before_script:
-  - gem dependency
-  - bundle doctor
-
   # integration test for sys::autofs will start automounter
   #  this will fail inside docker container because autofs4 cannot be loaded
   #  pre-loading autofs4 on the host fixes this issue
