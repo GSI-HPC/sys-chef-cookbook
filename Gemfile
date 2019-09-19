@@ -8,6 +8,7 @@ group :development do
   # Newer versions break foodcritic:
   #  https://github.com/Foodcritic/foodcritic/commit/28f6684
   gem 'cucumber-core', '>= 1.3', '< 4.0'
+
   gem 'berkshelf'
 
   # take Chef version from environment, fall back to newest version:
@@ -15,7 +16,9 @@ group :development do
 
   gem 'chefspec', '< 7.2'
   gem 'chefspec-ohai'
-  gem 'test-kitchen'
+
+  # test-kitchen pulls Chef's crappy license-acceptance gem
+  gem 'test-kitchen', '< 2.2'
 
   # gem 'guard-rspec', require: false
   # gem 'libnotify'
