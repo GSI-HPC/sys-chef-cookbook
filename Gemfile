@@ -11,7 +11,7 @@ group :development do
   gem 'berkshelf'
 
   # take Chef version from environment, fall back to newest version:
-  gem 'chef', (ENV['CHEF_VERSION']) ? "~> #{ENV['CHEF_VERSION']}" : "> 1"
+  gem 'chef', (ENV['CHEF_VERSION']) ? "~> #{ENV['CHEF_VERSION']}" : "< 15"
 
   gem 'chefspec', '< 7.2'
   gem 'chefspec-ohai'
