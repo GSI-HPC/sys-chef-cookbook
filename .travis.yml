@@ -26,10 +26,9 @@ env:
   global:
     - KITCHEN_LOCAL_YAML=.kitchen.docker.yml
   matrix:
-    - CHEF_VERSION=12
-    - CHEF_VERSION=12.14
     - CHEF_VERSION=12.3
-    - CHEF_VERSION=13.8
+    - CHEF_VERSION=12.14
+    - CHEF_VERSION=13
     - CHEF_VERSION=14
 
 rvm:
@@ -77,7 +76,7 @@ jobs:
       script: bundle exec kitchen test $KITCHEN_PLATFORM
     - env: KITCHEN_PLATFORM=debian-wheezy
       script: bundle exec kitchen test $KITCHEN_PLATFORM
-    - env: KITCHEN_PLATFORM=ubuntu-1604
+    - env: KITCHEN_PLATFORM=ubuntu-18.04
       script: bundle exec kitchen test $KITCHEN_PLATFORM
     - env: KITCHEN_PLATFORM=centos-7
       script: bundle exec kitchen test $KITCHEN_PLATFORM
