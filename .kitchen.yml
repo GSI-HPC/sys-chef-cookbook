@@ -104,7 +104,7 @@ suites:
           config:
             cleanup: true
             mailfrom: prosecutor@example.com
-            mailto: vagrant
+            mailto: daemon
             mailsub: "[SUDO] RED ALERT!"
           kitchen:
             users:

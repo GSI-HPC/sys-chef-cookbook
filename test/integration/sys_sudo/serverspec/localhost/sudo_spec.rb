@@ -4,7 +4,7 @@ describe file('/etc/sudoers') do
   it { should exist }
   its(:content) do
     should match(/Defaults\s+mailfrom="prosecutor@example.com"/)
-    should match(/Defaults\s+mailto="vagrant"/)
+    should match(/Defaults\s+mailto="daemon"/)
     should match(/Defaults\s+mailsub="\[SUDO\] RED ALERT!"/)
   end
 end
@@ -12,8 +12,8 @@ end
 describe file('/etc/sudoers.d/kitchen') do
   it { should exist }
   its(:content) do
-    should include 'User_Alias SMUTJE = vagrant'
-    should include 'SMUTJE ALL=(ALL) NOPASSWD: ALL'
+    should match(/User_Alias SMUTJE = .*vagrant/)
+    should include('SMUTJE ALL=(ALL) NOPASSWD: ALL')
   end
 end
 
@@ -23,7 +23,7 @@ describe file('/etc/sudoers.d/vagrant') do
 end
 
 # real-life test
-describe file('/var/mail/vagrant') do
+describe file('/var/mail/daemon') do
   # sudo something stupid as nobody:
   before do
     # silence sudo:
