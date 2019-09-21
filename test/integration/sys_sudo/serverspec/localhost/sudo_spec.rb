@@ -22,6 +22,10 @@ describe file('/etc/sudoers.d/vagrant') do
   it { should_not exist }
 end
 
+describe user('daemon') do
+  it { should exist }
+end
+
 # real-life test
 describe file('/var/mail/daemon') do
   # sudo something stupid as nobody:
@@ -29,7 +33,12 @@ describe file('/var/mail/daemon') do
     # silence sudo:
     FileUtils.touch('/var/lib/sudo/lectured/nobody')
     `yes | sudo -u nobody sudo --prompt='' --stdin whoami`
-    sleep 5 # wait for update of mailbox
+    # wait for creation of mailbox:
+    (1..10).each do |i|
+      File.exist?('/var/mail/daemon') && break
+      puts i
+      sleep 1
+    end
   end
 
   it { should exist }
