@@ -1,25 +1,51 @@
+#
+# Cookbook Name:: sys
+# File:: test/unit/recipes/pam_spec.rb
+#
+# Copyright 2015-2019 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+#
+# Authors:
+#  Christopher Huhn <C.Huhn@gsi.de>
+#  Dennis Klein <d.klein@gsi.de>
+#  Matthias Pausch <m.pausch@gsi.de>
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
 describe 'sys::pam' do
+
   let(:chef_run) { ChefSpec::SoloRunner.new.converge(described_recipe) }
 
   context 'node.sys.pam is empty' do
     it 'does nothing' do
       expect(chef_run.run_context.resource_collection
-              .to_hash.keep_if { |x| x['updated'] }).to be_empty
+               .to_hash.keep_if { |x| x['updated'] }).to be_empty
     end
   end
 
   context 'with basic attributes' do
-    before do
-      fqdn = 'node.example.com'
-      chef_run.node.default['sys']['pam']['rules'] = %w(rule_1 rule_2 rule_3)
-      chef_run.node.default['sys']['pam']['access'] = %w(access_1 access_2 access_3)
-      chef_run.node.default['sys']['pamd']['sshd'] = "sshd_1\nsshd_2\nsshd_3"
-      chef_run.node.default['sys']['pamd']['login'] = "login_1\nlogin_2\nlogin_3"
-      chef_run.node.default['sys']['pam']['limits'] = %w(limit_1 limit_2 limit_3)
-      chef_run.node.default['sys']['pam']['group'] = [Hash.new, Hash.new, Hash.new]
-      chef_run.node.automatic['fqdn'] = fqdn
-      chef_run.node.automatic['domain'] = "example.com"
-      chef_run.converge(described_recipe)
+    let(:chef_run) do
+      ChefSpec::SoloRunner.new do |node|
+        fqdn = 'node.example.com'
+        node.default['sys']['pam']['rules'] = %w(rule_1 rule_2 rule_3)
+        node.default['sys']['pam']['access'] = %w(access_1 access_2 access_3)
+        node.default['sys']['pamd']['sshd'] = "sshd_1\nsshd_2\nsshd_3"
+        node.default['sys']['pamd']['login'] = "login_1\nlogin_2\nlogin_3"
+        node.default['sys']['pam']['limits'] = %w(limit_1 limit_2 limit_3)
+        node.default['sys']['pam']['group'] = [{}, {}, {}]
+        node.automatic['fqdn'] = fqdn
+        node.automatic['domain'] = "example.com"
+      end.converge(described_recipe)
     end
 
     it 'manages /etc/security/access.conf' do
