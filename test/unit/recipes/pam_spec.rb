@@ -115,12 +115,19 @@ describe 'sys::pam' do
   end
 
   context "with attributes for active pam-updates" do
-    before do
-      # krb5.keytab existance check turns on Kerberos support:
-      allow(File).to receive(:exist?).and_call_original
-      allow(File).to receive(:exist?).with('/etc/krb5.keytab').and_return(true)
+    shared_context 'keytab', shared_context: :metadata do |args|
+      let(:present) { true unless args.fetch(:present) == false }
+      before do
+        # krb5.keytab existance check turns on Kerberos support:
+        allow(File).to receive(:exist?).and_call_original
+        allow(File).to receive(:exist?).with('/etc/krb5.keytab')
+                         .and_return(present)
+      end
+    end
 
-      chef_run.node.default['sys']['pamupdate'] = {
+    let(:chef_run) do
+      ChefSpec::SoloRunner.new do |node|
+        node.default['sys']['pamupdate'] = {
         "access" => {
           :Name => "access",
           :Default => "yes",
@@ -163,43 +170,49 @@ describe 'sys::pam' do
           :Password => "[success=end default=ignore]	pam_krb5.so minimum_uid=1000 try_first_pass use_authtok",
           :"Password-Initial" => "[success=end default=ignore]	pam_krb5.so minimum_uid=1000",
           :"Session-Type" => "Additional",
-          :Session => "optional			pam_krb5.so minimum_uid=1000" } }
-      chef_run.converge(described_recipe)
+          :Session => "optional			pam_krb5.so minimum_uid=1000" }
+        }
+      end.converge(described_recipe)
     end
 
-    it "should create /etc/pam.d/common-*" do
-      expect(chef_run).to render_file('/etc/pam.d/common-account')
-                            .with_content("account\t\t[success=1 new_authtok_reqd=done default=ignore]\tpam_unix.so")
-                            .with_content("account\t\trequired\t\t\tpam_krb5.so minimum_uid=1000")
-                            .with_content("account\t\trequired\t\t\tpam_access.so")
+    context "/etc/krb5.keytab is present" do
+      include_context 'keytab', present: true
 
-      expect(chef_run).to render_file('/etc/pam.d/common-auth')
-                            .with_content("auth\t\t[success=2 default=ignore]\tpam_krb5.so minimum_uid=1000")
-                            .with_content("auth\t\t[success=1 default=ignore]\tpam_unix.so nullok_secure try_first_pass")
-                            .with_content("auth\t\toptional\t\t\tpam_group.so")
+      it "should create /etc/pam.d/common-*" do
+        expect(chef_run).to render_file('/etc/pam.d/common-account')
+                              .with_content("account\t\t[success=1 new_authtok_reqd=done default=ignore]\tpam_unix.so")
+                              .with_content("account\t\trequired\t\t\tpam_krb5.so minimum_uid=1000")
+                              .with_content("account\t\trequired\t\t\tpam_access.so")
 
-      expect(chef_run).to render_file('/etc/pam.d/common-password')
-                            .with_content("password\t\t[success=2 default=ignore]\tpam_krb5.so minimum_uid=1000")
-                            .with_content("password\t\t[success=1 default=ignore]\tpam_unix.so obscure use_authtok try_first_pass sha512")
-                            .with_content("password\t\trequisite\t\tpam_deny.so")
+        expect(chef_run).to render_file('/etc/pam.d/common-auth')
+                              .with_content("auth\t\t[success=2 default=ignore]\tpam_krb5.so minimum_uid=1000")
+                              .with_content("auth\t\t[success=1 default=ignore]\tpam_unix.so nullok_secure try_first_pass")
+                              .with_content("auth\t\toptional\t\t\tpam_group.so")
 
-      expect(chef_run).to render_file('/etc/pam.d/common-session')
-                            .with_content("session\t\t[default=1]\t\tpam_permit.so")
-                            .with_content("session\t\trequisite\t\tpam_deny.so")
-                            .with_content("session\t\trequired\t\tpam_permit.so")
-                            .with_content("session\t\toptional\t\t\tpam_krb5.so minimum_uid=1000")
-                            .with_content("session\t\trequired\tpam_unix.so")
+        expect(chef_run).to render_file('/etc/pam.d/common-password')
+                              .with_content("password\t\t[success=2 default=ignore]\tpam_krb5.so minimum_uid=1000")
+                              .with_content("password\t\t[success=1 default=ignore]\tpam_unix.so obscure use_authtok try_first_pass sha512")
+                              .with_content("password\t\trequisite\t\tpam_deny.so")
+
+        expect(chef_run).to render_file('/etc/pam.d/common-session')
+                              .with_content("session\t\t[default=1]\t\tpam_permit.so")
+                              .with_content("session\t\trequisite\t\tpam_deny.so")
+                              .with_content("session\t\trequired\t\tpam_permit.so")
+                              .with_content("session\t\toptional\t\t\tpam_krb5.so minimum_uid=1000")
+                              .with_content("session\t\trequired\tpam_unix.so")
+      end
     end
 
-    it "should not configure Kerberos if /etc/krb5.keytab is not present" do
-      allow(File).to receive(:exist?).and_call_original
-      allow(File).to receive(:exist?).with("/etc/krb5.keytab").and_return(false)
-      chef_run.converge(described_recipe)
-      expect(chef_run).to create_template('/etc/pam.d/common-auth')
-      expect(chef_run).to render_file('/etc/pam.d/common-auth')
-                            .with_content("auth\t\t[success=1 default=ignore]\tpam_unix.so nullok_secure")
-      expect(chef_run).to_not render_file('/etc/pam.d/common-auth')
-                                .with_content("session\t\toptional\t\t\tpam_krb5.so minimum_uid=1000")
+    context "/etc/krb5.keytab is not present" do
+      include_context 'keytab', present: false
+
+      it "should not configure Kerberos" do
+        expect(chef_run).to create_template('/etc/pam.d/common-auth')
+        expect(chef_run).to render_file('/etc/pam.d/common-auth')
+                              .with_content("auth\t\t[success=1 default=ignore]\tpam_unix.so nullok_secure")
+        expect(chef_run).to_not render_file('/etc/pam.d/common-auth')
+                                  .with_content("session\t\toptional\t\t\tpam_krb5.so minimum_uid=1000")
+      end
     end
   end
 
