@@ -150,6 +150,7 @@ template '/etc/auto.master.d/README' do
   owner 'root'
   group 'root'
   mode '0644'
+  only_if { node['platform_version'].to_i > 7 }
 end
 
 mountpoints = Array(node['sys']['autofs']['create_mountpoints']) || []
