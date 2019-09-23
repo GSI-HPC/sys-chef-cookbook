@@ -56,8 +56,10 @@ describe 'sys::autofs' do
                             .with_content(/entry_attribute = cn/)
     end
 
-    it 'does not manage /etc/default/autofs' do
-      expect(chef_run).not_to render_file('/etc/default/autofs')
+    it 'manages /etc/default/autofs' do
+      expect(chef_run).not_to render_file('/etc/default/autofs').with_content(
+        '# This file has been deprecated in favor of /etc/autofs.conf'
+      )
     end
 
     it 'does restart autofs-service on config-change' do

@@ -176,7 +176,6 @@ template '/etc/default/autofs' do
   mode '0644'
   variables(config)
   notifies :restart, 'service[autofs]'
-  only_if { node['platform_version'].to_i < 9 }
 end
 
 sys_systemd_unit 'autofs.service' do
