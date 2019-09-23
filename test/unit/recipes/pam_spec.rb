@@ -34,7 +34,7 @@ describe 'sys::pam' do
   end
 
   context 'with basic attributes' do
-    let(:chef_run) do
+    cached(:chef_run) do
       ChefSpec::SoloRunner.new do |node|
         fqdn = 'node.example.com'
         node.default['sys']['pam']['rules'] = %w(rule_1 rule_2 rule_3)
