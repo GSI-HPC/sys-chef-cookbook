@@ -39,8 +39,8 @@ describe 'sys::ldap' do
   end
 
   context 'on jessie with nslcd disabled' do
-    let(:chef_run) do
-      ChefSpec::SoloRunner.new(platform: 'debian', version: '8.9') do |node|
+    cached(:chef_run) do
+      ChefSpec::SoloRunner.new(platform: 'debian', version: '8.11') do |node|
         node.automatic['fqdn'] = 'node.example.com'
         node.default['sys']['ldap']['servers'] = ['ldap01.gsi.de']
         node.default['sys']['ldap']['realm'] = 'EXAMPLE.COM'
@@ -74,8 +74,8 @@ describe 'sys::ldap' do
   end
 
   context 'on jessie with nslcd enabled' do
-    let(:chef_run) do
-      ChefSpec::SoloRunner.new(platform: 'debian', version: '8.9') do |node|
+    cached(:chef_run) do
+      ChefSpec::SoloRunner.new(platform: 'debian', version: '8.11') do |node|
         node.automatic['fqdn'] = 'node.example.com'
         node.default['sys']['ldap']['servers'] = ['ldap01.gsi.de']
         node.default['sys']['ldap']['realm'] = 'EXAMPLE.COM'
