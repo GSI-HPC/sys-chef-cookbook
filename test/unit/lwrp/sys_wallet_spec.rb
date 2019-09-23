@@ -1,14 +1,6 @@
 describe 'lwrp: sys_wallet' do
-  let(:cookbook_paths) do
-    [
-      File.expand_path("#{File.dirname(__FILE__)}/../../../../"),
-      File.expand_path("#{File.dirname(__FILE__)}/../")
-    ]
-  end
-
   let(:runner) do
     ChefSpec::SoloRunner.new(
-      :cookbook_path => cookbook_paths,
       :step_into => ['sys_wallet'],
     ) do |n|
       n.default['sys']['krb5']['realm'] = 'example.com'

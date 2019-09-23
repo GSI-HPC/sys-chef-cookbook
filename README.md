@@ -53,7 +53,6 @@ The "sys" cookbook can be added to a nodes run-list anytime. **By default the co
 * [banner](documents/banner.md) – Sets a welcome message displayed at login. 
 * [boot](documents/boot.md) – Set Grub boot parameters in `/etc/default/grub`.
 * [ca_certificates](documents/ca_certificates.md) – Install/remove CA certificates.
-* [cgroups](documents/cgroups.md) – Define `cgroups` in `/etc/cgconfig.conf` and load sub-systems.
 * [directories](documents/directory.md) – Provides an attribute interface to the directory resource.
 * [fuse](documents/fuse.md) – Setup FUSE in `/etc/fuse.conf`.
 * [hosts](documents/hosts.md) – Local `/etc/hosts`, `/etc/hosts.allow`, and `/etc/hosts.deny` configuration.

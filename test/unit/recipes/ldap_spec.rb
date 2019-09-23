@@ -1,4 +1,33 @@
+#
+# Tests for recipe sys::ldap
+#
+# Copyright 2015 - 2019 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+#
+# Authors:
+#   Matthias Pausch
+#   Bastian Neuburger
+#   Dennis Klein
+#   Christopher Huhn
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
 describe 'sys::ldap' do
+  before do
+    allow(File).to receive(:exist?).and_call_original
+    allow(File).to receive(:exist?).with('/usr/bin/kinit').and_return(true)
+  end
+
   let(:chef_run) do
     ChefSpec::SoloRunner.new.converge(described_recipe)
   end
@@ -10,7 +39,7 @@ describe 'sys::ldap' do
   end
 
   context 'on jessie with nslcd disabled' do
-    cached(:chef_run) do
+    let(:chef_run) do
       ChefSpec::SoloRunner.new(platform: 'debian', version: '8.9') do |node|
         node.automatic['fqdn'] = 'node.example.com'
         node.default['sys']['ldap']['servers'] = ['ldap01.gsi.de']
@@ -45,7 +74,7 @@ describe 'sys::ldap' do
   end
 
   context 'on jessie with nslcd enabled' do
-    cached(:chef_run) do
+    let(:chef_run) do
       ChefSpec::SoloRunner.new(platform: 'debian', version: '8.9') do |node|
         node.automatic['fqdn'] = 'node.example.com'
         node.default['sys']['ldap']['servers'] = ['ldap01.gsi.de']
@@ -68,7 +97,7 @@ describe 'sys::ldap' do
 
   context 'on stretch and later' do
     let(:chef_run) do
-      ChefSpec::SoloRunner.new(platform: 'debian', version: '9.0') do |node|
+      ChefSpec::SoloRunner.new() do |node|
         node.automatic['fqdn'] = 'node.example.com'
         node.default['sys']['ldap']['servers'] = ['ldap01.gsi.de']
         node.default['sys']['ldap']['realm'] = 'EXAMPLE.COM'

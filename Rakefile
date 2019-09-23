@@ -28,7 +28,9 @@ begin
   require 'rspec/core/rake_task'
   RSpec::Core::RakeTask.new(:chefspec) do |task|
     task.pattern = 'test/unit/**/*_spec.rb'
-    task.rspec_opts = '--backtrace --color --format documentation --require spec_helper -I libraries --default-path test/unit'
+    task.rspec_opts = '--backtrace --color --format documentation --profile '\
+                      '--require spec_helper -I libraries '\
+                      '--default-path test/unit'
   end
 rescue LoadError
   desc 'chefspec rake task not available'

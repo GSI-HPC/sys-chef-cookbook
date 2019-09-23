@@ -1,15 +1,31 @@
-describe 'lwrp: sys_systemd_unit' do
+#
+# Tests for custom resource  sys_systemd_unit
+#
+# Copyright 2015 - 2019 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+#
+# Authors:
+#   Dennis Klein
+#   Christopher Huhn
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
 
-  let(:cookbook_paths) do
-    [
-      File.expand_path("#{File.dirname(__FILE__)}/../../../../"),
-      File.expand_path("#{File.dirname(__FILE__)}/../")
-    ]
-  end
+require 'spec_helper'
+
+describe 'lwrp: sys_systemd_unit' do
 
   let(:runner) do
     ChefSpec::ServerRunner.new(
-      :cookbook_path => cookbook_paths,
       :step_into => ['sys_systemd_unit']
     )
   end
@@ -18,6 +34,28 @@ describe 'lwrp: sys_systemd_unit' do
   let(:absolute_path) { '/etc/systemd/network/test.network' }
   let(:unit) { 'test.network' }
   states = [ :enabled, :linked, :masked, :static, :disabled, :unknown ]
+
+  # create a couble for sysctl invocations via Mixlib::ShellOut
+  let(:sysctl_double) do
+    instance_double('Mixlib::ShellOut',
+                    'systemctl',
+                    run_command: true,
+                    stdout: '',
+                    exitstatus: 0)
+  end
+
+  before do
+    # Mock systemctl daemon-reload
+    allow(Mixlib::ShellOut).to receive(:new).and_call_original
+    allow(Mixlib::ShellOut).to receive(:new).with('systemctl daemon-reload')
+                                 .and_return(sysctl_double)
+
+    # mock all "real" invocations of systemctl:
+    %w[disable enable mask reload restart start stop unmask].each do |op|
+      allow(Mixlib::ShellOut).to receive(:new).with("systemctl #{op} #{unit}")
+                                   .and_return(sysctl_double)
+    end
+  end
 
   describe 'action :create' do
     let(:chef_run) { runner.converge('fixtures::sys_systemd_unit_create') }
