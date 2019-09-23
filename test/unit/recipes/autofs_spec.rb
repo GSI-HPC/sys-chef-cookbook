@@ -57,7 +57,7 @@ describe 'sys::autofs' do
     end
 
     it 'manages /etc/default/autofs' do
-      expect(chef_run).not_to render_file('/etc/default/autofs').with_content(
+      expect(chef_run).to render_file('/etc/default/autofs').with_content(
         '# This file has been deprecated in favor of /etc/autofs.conf'
       )
     end
