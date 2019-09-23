@@ -2,7 +2,7 @@ AllCops:
   DisplayCopNames: true
   DisplayStyleGuide: true
 
-Style/AlignHash:
+Layout/AlignHash:
   EnforcedHashRocketStyle: table
   Enabled: false
 
@@ -10,7 +10,7 @@ Style/AlignHash:
 Style/EmptyLiteral:
   Enabled: false
 
-Style/ExtraSpacing:
+Layout/ExtraSpacing:
   ForceEqualSignAlignment: true
   # EqualSignAlignment does not work as expected
   Enabled: false

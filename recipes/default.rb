@@ -19,7 +19,7 @@
 
 # the order of recipes matters!
 %w(
-   apt directory serial boot cgroups control accounts sudo
+   apt directory serial boot control accounts sudo
    time network nsswitch nis hosts resolv mail
    fuse pam ssh banner tmp autofs sdparm
 ).each do |recipe|

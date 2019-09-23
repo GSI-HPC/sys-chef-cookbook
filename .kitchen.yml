@@ -35,7 +35,7 @@ platforms:
         - vagrant.rb
   - name: buster
     driver:
-      box: gsi/buster64
+      box: generic/debian10
       provider: libvirt
       provision: true
       vagrantfiles:
@@ -95,3 +95,23 @@ suites:
             array:
               - '| /bin/true'
               - /tmp/mail.test
+  - name: sys_sudo
+    run_list:
+      - recipe[sys::sudo]
+    attributes:
+      sys:
+        sudo:
+          config:
+            cleanup: true
+            mailfrom: prosecutor@example.com
+            mailto: daemon
+            mailsub: "[SUDO] RED ALERT!"
+          kitchen:
+            users:
+              SMUTJE:
+                # for kitchen-docker:
+                - kitchen
+                # for kitchen-vagrant:
+                - vagrant
+            rules:
+              - "SMUTJE ALL=(ALL) NOPASSWD: ALL"

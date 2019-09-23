@@ -14,6 +14,8 @@
 # limitations under the License.
 #
 
+use_inline_resources
+
 pcommand = "sync; sync; shutdown"
 
 action :reboot do

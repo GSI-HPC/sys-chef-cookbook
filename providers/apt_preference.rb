@@ -14,6 +14,8 @@
 # limitations under the License.
 #
 
+use_inline_resources
+
 base_path = '/etc/apt/preferences.d'
 
 action :set do
@@ -31,7 +33,6 @@ action :set do
     source 'etc_apt_preferences.d_generic.erb'
     mode "0644"
     variables(
-      :name => name,
       :package => new_resource.package,
       :pin => new_resource.pin,
       :priority => new_resource.priority

@@ -14,6 +14,8 @@
 # limitations under the License.
 #
 
+use_inline_resources
+
 base_path = '/etc/apt/apt.conf.d'
 
 action :set do
@@ -32,7 +34,6 @@ action :set do
     mode "0644"
     cookbook "sys"
     variables(
-      :name => name,
       :config => new_resource.config
     )
     notifies :run, "execute[#{update}]", :immediately
