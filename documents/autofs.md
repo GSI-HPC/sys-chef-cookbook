@@ -1,13 +1,22 @@
 Installs and configures the Automounter facility.
 
 ↪ `attributes/autofs.rb`  
+↪ `documents/autofs.md`  
+↪ `files/default/etc_init.d_autofs`  
 ↪ `recipes/autofs.rb`  
-↪ `templates/default/etc_auto.master.d_generic.erb`  
-↪ `tests/unit/recipes/autofs_spec.rb`  
+↪ `templates/default/etc_auto.master.d_README.erb`  
+↪ `templates/default/etc_auto.master.erb`  
+↪ `templates/default/etc_autofs.conf.erb`  
+↪ `templates/default/etc_autofs_ldap_auth.conf.erb`  
+↪ `templates/default/etc_default_autofs.erb`  
+↪ `test/integration/sys_autofs/serverspec/localhost/autofs_spec.rb`  
+↪ `test/unit/recipes/autofs_spec.rb`  
 ↪ `tests/integration/sys_autofs`  
+↪ `tests/roles/sys_autofs_test.rb`  
+↪ `tests/unit/recipes/autofs_spec.rb`  
 
 
-**Attributes**
+**Attributes (specify maps)**
 
 The attribute `node['sys']['autofs']['maps']` contains a hash
 of automounter map definitions hashes.
@@ -33,7 +42,18 @@ Missing attibutes well be derived from the map name, eg.
 will lead to this entry in /etc/auto.master:
 `/misc autofs.misc` (no default options).
 
-**Example**
+**Attributes (nsswitch, files, ldap)**
+By default, `automount` uses nsswitch, to lookup a map called
+`auto.master`.  If `/etc/auto.master` is found, no further lookups
+will be done, especially `auto.master` from ldap will be ignored.  If
+the attribute `node['sys']['autofs']['ldap']['auto.master_from_ldap']`
+evaluates to `true`, `/etc/auto.master` will configured to further go
+through the lookups specified in `/etc/nsswitch.conf`.
+
+This mechanism can be used to choose the maps from ldap, that should
+be available on your machine, see `Example (lookup)` below:
+
+**Example (maps)**
 
 ```ruby
 sys: {
@@ -55,6 +75,50 @@ sys: {
         # options:    ''
       }
     }
+  }
+}
+```
+
+**Example (lookup auto.master from ldap and include local maps)**
+This example configures automount to use every map available in ldap,
+and also `/etc/autofs.local`, which is configured locally.
+
+```ruby
+sys: {
+  autofs: {
+    maps: {
+      local: {}
+    }
+    # node['sys']['autofs']['ldap'] must be non-empty for ldap to be
+	# configured
+	ldap: {
+	  servers: 'ldap.example.com',
+	  searchbase: 'dc=example,dc=com',
+	  auto.master_from_ldap: true
+	}
+  }
+}
+```
+
+**Example (lookup auto.master locally and maps from ldap)**
+This example can be used, if not all maps from ldap should be visible
+on a machine.  In this case, `/etc/auto.master` will contain the line
+`/somemap autofs.somemap`.  Therefore `autofs.somemap` will be taken
+from ldap, but since the line `+auto.master` will be missing, no other
+maps are taken from ldap.
+
+```ruby
+sys: {
+  autofs: {
+    maps: {
+      somemap: {}
+    }
+    # node['sys']['autofs']['ldap'] must be non-empty for ldap to be
+	# configured
+	ldap: {
+	  servers: 'ldap.example.com',
+	  searchbase: 'dc=example,dc=com',
+	}
   }
 }
 ```
