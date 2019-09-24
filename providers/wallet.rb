@@ -28,7 +28,7 @@ action :deploy do
       end
       new_resource.updated_by_last_action(true)
     else
-      Chef::Log.warn("Unable to deploy #{new_recource.principal}.  Please check /etc/krb5.keytab.")
+      Chef::Log.warn("Unable to deploy #{new_recource.principal}: Kerberos not installed or /etc/krb5.keytab missing.")
     end
   end
 
