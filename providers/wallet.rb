@@ -5,28 +5,31 @@ use_inline_resources
 
 action :deploy do
   if ! ::File.exist?(new_resource.place) || ! check_keytab()
-    bash "deploy #{new_resource.principal}" do
-      cwd "/"
-
-      code <<-EOH
-        if [ -e #{new_resource.place}.tmp ]; then
-            rm -f #{new_resource.place}.tmp
-        fi
-        kinit -t /etc/krb5.keytab host/#{node['fqdn']}
-        wallet get keytab #{new_resource.principal}@#{node['sys']['krb5']['realm'].upcase} -f #{new_resource.place}.tmp
-        ret=$?
-        if [ $ret = 0 ]; then
-            mv #{new_resource.place}.tmp #{new_resource.place}
-        else
-            if [ -e #{new_resource.place}.tmp ]; then
-                rm -f #{new_resource.place}.tmp
-            fi
-            exit $ret
-        fi
-        kdestroy
-      EOH
+    if check_krb5
+      bash "deploy #{new_resource.principal}" do
+        cwd "/"
+        code <<-EOH
+          if [ -e #{new_resource.place}.tmp ]; then
+              rm -f #{new_resource.place}.tmp
+          fi
+          kinit -t /etc/krb5.keytab host/#{node['fqdn']}
+          wallet get keytab #{new_resource.principal}@#{node['sys']['krb5']['realm'].upcase} -f #{new_resource.place}.tmp
+          ret=$?
+          if [ $ret = 0 ]; then
+              mv #{new_resource.place}.tmp #{new_resource.place}
+          else
+              if [ -e #{new_resource.place}.tmp ]; then
+                  rm -f #{new_resource.place}.tmp
+              fi
+              exit $ret
+          fi
+          kdestroy
+        EOH
+      end
+      new_resource.updated_by_last_action(true)
+    else
+      Chef::Log.warn("Unable to deploy #{new_recource.principal}.  Please check /etc/krb5.keytab.")
     end
-    new_resource.updated_by_last_action(true)
   end
 
   unless check_stat()
@@ -68,4 +71,8 @@ def check_stat()
     check = check_mode(stat) && check_owner(stat) && check_group(stat)
   end
   return check
+end
+
+def check_krb5()
+  return File.exists?('/etc/krb5.keytab') && File.exists?('/usr/bin/kinit')
 end
