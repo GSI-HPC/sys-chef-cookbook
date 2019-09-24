@@ -61,8 +61,12 @@ if node['sys']['autofs']['ldap']
   config[:searchbase] = node['sys']['autofs']['ldap']['searchbase']
   config[:schema]     = node['sys']['autofs']['ldap']['schema'] || 'rfc2307bis'
 
-  sys_wallet "autofsclient/#{node['fqdn']}" do
-    place '/etc/autofs.keytab'
+  if File.exists?('/etc/krb5.keytab')
+    sys_wallet "autofsclient/#{node['fqdn']}" do
+      place '/etc/autofs.keytab'
+    end
+  else
+    Chef::Log.warn('Unable to deploy keytab for automounter')
   end
 
   template '/etc/autofs_ldap_auth.conf' do
