@@ -6,4 +6,6 @@
 
 <%= '+dir:/etc/auto.master.d' if node['platform_version'].to_i > 7 %>
 
+<% if node['sys']['autofs']['ldap'] && node['sys']['autofs']['ldap']['auto.master_from_ldap'] -%>
 +auto.master
+<% end -%>
