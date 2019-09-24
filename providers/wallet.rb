@@ -9,18 +9,17 @@ action :deploy do
       bash "deploy #{new_resource.principal}" do
         cwd "/"
         code <<-EOH
-          if [ -e #{new_resource.place}.tmp ]; then
-              rm -f #{new_resource.place}.tmp
-          fi
+          TMPFILE=$(mktemp)
+
           kinit -t /etc/krb5.keytab host/#{node['fqdn']}
-          wallet get keytab #{new_resource.principal}@#{node['sys']['krb5']['realm'].upcase} -f #{new_resource.place}.tmp
+          wallet get keytab \
+              #{new_resource.principal}@#{node['sys']['krb5']['realm'].upcase} \
+              -f "$TMPFILE"
           ret=$?
           if [ $ret = 0 ]; then
-              mv #{new_resource.place}.tmp #{new_resource.place}
+              mv "$TMPFILE" #{new_resource.place}
           else
-              if [ -e #{new_resource.place}.tmp ]; then
-                  rm -f #{new_resource.place}.tmp
-              fi
+              rm "$TMPFILE"
               exit $ret
           fi
           kdestroy
@@ -28,7 +27,11 @@ action :deploy do
       end
       new_resource.updated_by_last_action(true)
     else
-      Chef::Log.warn("Unable to deploy #{new_recource.principal}: Kerberos not installed or /etc/krb5.keytab missing.")
+      log 'no-keytab' do
+        level :warn
+        message "Unable to deploy #{new_recource.principal}: "\
+                'Kerberos not installed or /etc/krb5.keytab missing.'
+      end
     end
   end
 
@@ -74,5 +77,5 @@ def check_stat()
 end
 
 def check_krb5()
-  return File.exist?('/etc/krb5.keytab') && File.exist?('/usr/bin/kinit')
+  File.exist?('/etc/krb5.keytab') && File.exist?('/usr/bin/kinit')
 end
