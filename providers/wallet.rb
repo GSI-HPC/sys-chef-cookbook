@@ -74,5 +74,5 @@ def check_stat()
 end
 
 def check_krb5()
-  return File.exists?('/etc/krb5.keytab') && File.exists?('/usr/bin/kinit')
+  return File.exist?('/etc/krb5.keytab') && File.exist?('/usr/bin/kinit')
 end
