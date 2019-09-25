@@ -1,20 +1,15 @@
+Configures the Network Service Switch (NSS) in the file `/etc/nsswitch.conf`.
 
-Configure the Network Service Switch (NSS) in the file `/etc/nsswitch.conf`.
+Define attributes beneath `node['sys']['nsswitch']` e.g.:
 
-Define an attribute `node.sys.nsswitch` containing a single string with the configuration, e.g.:
+```ruby
+default['sys']['nsswitch'] = {
+  passwd:    'files ldap',
+  shadow:    'files ldap',
+  automount: 'files ldap'
+}
+```
 
-    "sys" => {
-      "nsswitch" => "
-        passwd:         files ldap
-        group:          files ldap
-        shadow:         files 
-        hosts:          files dns ldap
-        networks:       files ldap
-        protocols:      db files
-        services:       db files
-        ethers:         db files
-        rpc:            db files
-        netgroup:       nis
-      "
-    }
-
+Defaults will automatically be writtem into `/etc/nsswitch.conf`.
+Without attributes defined, the file will be left untouched
+when calling `sys::nsswitch`.
