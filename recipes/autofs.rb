@@ -3,13 +3,14 @@
 # Cookbook Name:: sys
 # Recipe:: autofs
 #
-# Copyright 2013 -2018 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+# Copyright 2013-2019 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+#
 # Authors:
-#  Victor Penso      2013 - 2015
-#  Christopher Huhn  2013 - 2018
-#  Matthias Pausch   2013 - 2019
-#  Bastian Neuburger 2015
-#  Dennis Klein      2015
+#  Christopher Huhn   <c.huhn@gsi.de>
+#  Dennis Klein       <d.klein@gsi.de>
+#  Bastian Neuburger  <b.neuburger@gsi.de>
+#  Matthias Pausch    <m.pausch@gsi.de>
+#  Victor Penso       <v.penso@gsi.de>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -202,7 +203,7 @@ sys_systemd_unit 'autofs.service' do
       'WantedBy' => 'default.target',
     }
   }
-  cfg['BindsTo'] = 'k5start-autofs.service' if node['sys']['autofs']['ldap']
+  cfg['Unit']['BindsTo'] = 'k5start-autofs.service' if node['sys']['autofs']['ldap']
   config(cfg)
   notifies :restart, 'service[autofs]'
   only_if { node['platform_version'].to_i >= 9 }
