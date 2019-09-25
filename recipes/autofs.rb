@@ -62,7 +62,7 @@ if node['sys']['autofs']['ldap']
   config[:searchbase] = node['sys']['autofs']['ldap']['searchbase']
   config[:schema]     = node['sys']['autofs']['ldap']['schema'] || 'rfc2307bis'
 
-  if File.exists?('/etc/krb5.keytab')
+  if File.exist?('/etc/krb5.keytab')
     sys_wallet "autofsclient/#{node['fqdn']}" do
       place '/etc/autofs.keytab'
     end
@@ -185,7 +185,7 @@ sys_systemd_unit 'autofs.service' do
   cfg = {
     'Unit' => {
       'Description' => 'Automounts filesystems on demand',
-      'After' => 'sssd.service network-online.target remote-fs.target'\
+      'After' => 'sssd.service network-online.target remote-fs.target '\
         'k5start-autofs.service',
       'Requires' => 'network-online.target',
       'Before' => 'graphical.target',
