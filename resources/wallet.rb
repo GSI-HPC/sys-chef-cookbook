@@ -16,6 +16,3 @@ attribute :place,
 attribute :principal,
   kind_of: String,
   name_attribute: true
-attribute :ignore_failure,
-  kind_of: [TrueClass, FalseClass],
-  default: false
