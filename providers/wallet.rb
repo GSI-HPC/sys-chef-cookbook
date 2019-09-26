@@ -33,7 +33,8 @@ action :deploy do
       bash "deploy #{new_resource.principal}" do
         cwd "/"
         code <<-EOH
-          TMPFILE=$(mktemp)
+          # TMPFILE must not exist yet, therefore --dry-run
+          TMPFILE=$(mktemp --dry-run)
 
           kinit -t /etc/krb5.keytab host/#{node['fqdn']}
           wallet get keytab \
