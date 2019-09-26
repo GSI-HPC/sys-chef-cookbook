@@ -1,121 +1,113 @@
-describe 'sys::autofs' do
-  cached(:chef_run) { ChefSpec::SoloRunner.new.converge(described_recipe) }
+require 'spec_helper'
 
-  context 'node.sys.autofs.maps and node.sys.autofs.ldap is empty' do
+describe 'sys::autofs' do
+  let(:chef_run) do
+    ChefSpec::SoloRunner.new.converge(described_recipe)
+  end
+
+  context "with empty node['sys']['autofs']" do
     it 'does nothing' do
       expect(chef_run.run_context.resource_collection).to be_empty
     end
   end
 
-  context 'with basic attributes' do
+  context 'with ldap on stretch' do
+    cached(:chef_run) do
+      ChefSpec::SoloRunner.new do |node|
+        node.default['sys']['autofs']['ldap'] = {
+          'searchbase' => 'dc=example,dc=com',
+          'servers' => 'ldap.example.com',
+          'auto.master_from_ldap' => true
+        }
+      end.converge(described_recipe)
+    end
+
+    it 'installs autofs-ldap' do
+      expect(chef_run).to install_package('autofs')
+      expect(chef_run).to install_package('autofs-ldap')
+    end
+
+    it 'does render /etc/auto.master' do
+      expect(chef_run).to render_file('/etc/auto.master').with_content('+auto.master')
+    end
+
+    it 'manages systemd files' do
+      expect(chef_run).to create_sys_systemd_unit('autofs.service')
+      expect(chef_run).to create_sys_systemd_unit('k5start-autofs.service')
+    end
+
+    it 'does not manage /etc/init.d/autofs' do
+      expect(chef_run).not_to render_file('/etc/init.d/autofs')
+    end
+
+    it 'manages the autofs service' do
+      expect(chef_run).to enable_service('autofs')
+      expect(chef_run).to enable_service('k5start-autofs')
+      expect(chef_run).to start_service('autofs')
+      expect(chef_run).to start_service('k5start-autofs')
+    end
+
+    it 'manages /etc/autofs.conf' do
+      expect(chef_run).to render_file('/etc/autofs.conf')
+                            .with_content(/browse_mode = no/)
+                            .with_content(/search_base = dc=example,dc=com/)
+                            .with_content(/ldap_uri = ldap:\/\/ldap.example.com/)
+                            .with_content(/entry_attribute = automountKey/)
+      expect(chef_run).to_not render_file('/etc/autofs.conf')
+                            .with_content(/entry_attribute = cn/)
+    end
+
+    it 'manages /etc/default/autofs' do
+      expect(chef_run).to render_file('/etc/default/autofs').with_content(
+        '# This file has been deprecated in favor of /etc/autofs.conf'
+      )
+    end
+
+    it 'does restart autofs-service on config-change' do
+      a = chef_run.template('/etc/autofs_ldap_auth.conf')
+      expect(a).to notify('service[autofs]').to(:restart).delayed
+    end
+  end
+
+  context 'with local auto.master' do
     cached(:chef_run) do
       ChefSpec::SoloRunner.new do |node|
         node.default['sys']['autofs']['maps'] = {
-          "/mount/point" => { "path" => "config"}
+          'map' => { 'options' => '-browse'},
+          '/oldmap' => { 'map' => '/some/path/filename' }
         }
+        node.default['sys']['autofs']['create_mountpoints'] = ['/test']
       end.converge(described_recipe)
     end
 
     before do
       allow(File).to receive(:exists?).and_call_original
-      allow(File).to receive(:exists?).with('/mount/point').and_return(false)
+      allow(File).to receive(:exists?).with('/map').and_return(false)
     end
 
     it 'installs autofs' do
       expect(chef_run).to install_package('autofs')
+      expect(chef_run).not_to install_package('ldap-autofs')
     end
 
-    it 'manages /etc/auto.master' do
-      expect(chef_run).to create_template('/etc/auto.master').with_mode("0644").with(
-        :variables => {
-          :maps => { "/mount/point" => { "path" => "config" }}
-        }
-      )
+    it 'renders /etc/auto.master' do
+      expect(chef_run).to render_file('/etc/auto.master').with_content('/map autofs.map -browse')
+      expect(chef_run).to render_file('/etc/auto.master').with_content('/oldmap autofs.oldmap')
+      expect(chef_run).not_to render_file('/etc/auto.master').with_content('+auto.master')
     end
 
-    it 'creates necessary mount-points' do
-      expect(chef_run).to create_directory('/mount/point')
+    it 'creates /test' do
+      expect(chef_run).to create_directory('/test')
     end
 
-    it 'starts the autofs service' do
+    it 'manages systemd files' do
+      expect(chef_run).to create_sys_systemd_unit('autofs.service')
+      expect(chef_run).not_to create_sys_systemd_unit('k5start-autofs.service')
+    end
+
+    it 'manages autofs-service' do
       expect(chef_run).to start_service('autofs')
-    end
-  end
-
-  context 'with ldap attributes' do
-    before do
-      allow(File).to receive(:exist?).and_call_original
-      allow(File).to receive(:exist?).with('/usr/bin/kinit').and_return(true)
-    end
-
-    cached(:chef_run) do
-      ChefSpec::SoloRunner.new do |node|
-        node.automatic['fqdn'] = 'node.example.com'
-        node.automatic['sys']['autofs']['ldap']['servers'] = [
-          'ldap01.example.com', 'ldap02.example.com'
-        ]
-        node.default['sys']['autofs']['maps'] = {
-          "/mount/point" => { "map" => "ldap:ou=autofs.mount,dc=example,dc=com"}
-        }
-        node.default['sys']['autofs']['ldap'] = {:omg => :lol}
-        node.default['sys']['krb5']['realm'] = 'EXAMPLE.COM'
-        node.default['sys']['autofs']['ldap']['searchbase'] = 'dc=example,dc=com'
-        node.automatic['fqdn'] = 'node.example.com'
-      end.converge(described_recipe)
-    end
-
-    it 'installs autofs-ldap' do
-      expect(chef_run).to install_package('autofs-ldap')
-    end
-
-    it 'manages /etc/auto.master' do
-      expect(chef_run).to create_template('/etc/auto.master').with_mode("0644")
-      expect(chef_run).to render_file('/etc/auto.master')
-                           .with_content('')
-    end
-
-    it 'manages /etc/auto.master.d' do
-      expect(chef_run).to create_directory('/etc/auto.master.d')
-      expect(chef_run).to create_template('/etc/auto.master.d/mount_point.autofs').with_mode("0644").with(
-        :variables => {
-          :path => "/mount/point",
-          :map => { 'map' => "ldap:ou=autofs.mount,dc=example,dc=com" }
-        })
-
-      expect(chef_run).to render_file('/etc/auto.master.d/mount_point.autofs').with_content(
-        "/mount/point ldap:ou=autofs.mount,dc=example,dc=com"
-      )
-    end
-
-    it 'manages /etc/autofs_ldap_auth.conf' do
-      # actually this template is rather static and should be a cookbook_file
-      expect(chef_run).to create_template('/etc/autofs_ldap_auth.conf')
-                           .with_mode("0600")
-      expect(chef_run).to render_file('/etc/autofs_ldap_auth.conf')
-                           .with_content('credentialcache="/tmp/krb5cc_autofs"')
-    end
-
-    it 'manages /etc/default/autofs' do
-      expect(chef_run).to create_template('/etc/default/autofs').with_mode("0644").with(
-        :variables => {
-          :uris => [ 'ldap01.example.com', 'ldap02.example.com' ],
-          :searchbase => 'dc=example,dc=com',
-          :browsemode => 'no',
-          :logging => nil
-        }
-      )
-
-      expect(chef_run).to render_file('/etc/default/autofs').with_content(
-        "MASTER_MAP_NAME=/etc/auto.master"
-      )
-
-      expect(chef_run).to render_file('/etc/default/autofs').with_content(
-        'LDAP_URI="ldap://ldap01.example.com/ ldap://ldap02.example.com/'
-      )
-    end
-
-    it 'starts the autofs-service' do
-      expect(chef_run).to start_service('autofs')
+      expect(chef_run).to enable_service('autofs')
     end
 
     it 'does reload autofs-service on config-change' do
@@ -123,26 +115,107 @@ describe 'sys::autofs' do
       expect(resource).to notify('service[autofs]').to(:reload).delayed
     end
 
-    it 'does restart autofs-service on config-change' do
-      a = chef_run.template('/etc/autofs_ldap_auth.conf')
-      expect(a).to notify('service[autofs]').to(:restart).delayed
-      b = chef_run.template('/etc/default/autofs')
-      expect(b).to notify('service[autofs]').to(:restart).delayed
+  end
+
+  context 'with jessie' do
+    cached(:chef_run) do
+      ChefSpec::SoloRunner.new(platform: 'debian', version: '8.9') do |node|
+        node.automatic['fqdn'] = 'node.example.com'
+        node.default['sys']['autofs']['ldap']['servers'] = [
+          'ldap01.example.com', 'ldap02.example.com'
+        ]
+        node.default['sys']['autofs']['maps'] = {
+          'map' => { }
+        }
+        node.default['sys']['autofs']['ldap']['schema'] = 'rfc2307'
+        node.default['sys']['autofs']['ldap']['searchbase'] = 'dc=example,dc=com'
+        node.default['sys']['autofs']['ldap']['auto.master_from_ldap'] = true
+      end.converge(described_recipe)
     end
 
-    # Work in progress
-    context "on Jessie" do
-      xit 'manages /etc/init.d/autofs' do
-        # only valid for Jessie, systemd utilized on Stretch and beyond
-        expect(chef_run).to create_cookbook_file('/etc/init.d/autofs')
-                              .with_mode("0755")
-      end
+    it 'manages /etc/auto.master' do
+      expect(chef_run).to create_template('/etc/auto.master').with_mode('0644')
+      expect(chef_run).to render_file('/etc/auto.master').with_content('/map autofs.map')
+      expect(chef_run).to render_file('/etc/auto.master').with_content('+auto.master')
+      expect(chef_run).to render_file('/etc/auto.master').with_content('+dir:/etc/auto.master.d')
+    end
 
-      xit 'does restart autofs-service on config-change' do
-        c = chef_run.cookbook_file('/etc/init.d/autofs')
-        expect(c).to notify('service[autofs]').to(:restart).delayed
-      end
+    it 'manages /etc/init.d/autofs' do
+      # only valid for Jessie, systemd utilized on Stretch and beyond
+      expect(chef_run).to create_cookbook_file('/etc/init.d/autofs').with_mode('0755')
+    end
 
+    it 'does not manage /etc/autofs.conf' do
+      expect(chef_run).not_to render_file('/etc/autofs.conf')
+    end
+
+    it 'manages /etc/default/autofs' do
+      expect(chef_run).to create_template('/etc/default/autofs').with_mode('0644')
+
+      expect(chef_run).to render_file('/etc/default/autofs')
+                            .with_content(%r(MASTER_MAP_NAME=auto.master))
+                            .with_content(%r(LDAP_URI="ldap://ldap01.example.com/ ldap://ldap02.example.com/"))
+                            .with_content(%r(ENTRY_ATTRIBUTE="cn"))
+      expect(chef_run).to_not render_file('/etc/default/autofs')
+                                .with_content(%r(ENTRY_ATTRIBUTE="automountKey"))
+    end
+
+    it 'starts the autofs-service' do
+      expect(chef_run).to start_service('autofs')
+    end
+
+    it 'does restart autofs-service on config-change' do
+      c = chef_run.cookbook_file('/etc/init.d/autofs')
+      expect(c).to notify('service[autofs]').to(:restart).delayed
+    end
+  end
+
+  context 'with auth switched on' do
+    cached(:chef_run) do
+      ChefSpec::SoloRunner.new do |node|
+        node.default['sys']['autofs']['ldap']['auth'] = true
+      end.converge(described_recipe)
+    end
+
+    it 'manages /etc/autofs_ldap_auth.conf' do
+      expect(chef_run).to create_template('/etc/autofs_ldap_auth.conf')
+      .with_mode('0600')
+      expect(chef_run).to render_file('/etc/autofs_ldap_auth.conf')
+                            .with_content(/\s+authrequired="yes"/)
+      expect(chef_run).to_not render_file('/etc/autofs_ldap_auth.conf')
+                                .with_content(/\s+tlsrequired="yes"/)
+    end
+  end
+
+  context 'with tls switched on' do
+    cached(:chef_run) do
+      ChefSpec::SoloRunner.new do |node|
+        node.default['sys']['autofs']['ldap']['tls'] = true
+      end.converge(described_recipe)
+    end
+
+    it 'manages /etc/autofs_ldap_auth.conf' do
+      expect(chef_run).to render_file('/etc/autofs_ldap_auth.conf')
+                            .with_content(/\s+tlsrequired="yes"/)
+      expect(chef_run).to_not render_file('/etc/autofs_ldap_auth.conf')
+                                .with_content(/\s+authrequired="yes"/)
+    end
+  end
+
+  context 'on wheezy' do
+    cached(:chef_run) do
+      ChefSpec::SoloRunner.new(platform: 'debian', version: '7.11') do |node|
+        node.default['sys']['autofs']['maps'] = {
+          'map' => { }
+        }
+      end.converge(described_recipe)
+    end
+
+    it 'manages /etc/auto.master' do
+      expect(chef_run).to create_template('/etc/auto.master').with_mode('0644')
+      expect(chef_run).to render_file('/etc/auto.master').with_content('/map autofs.map')
+      expect(chef_run).not_to render_file('/etc/auto.master').with_content('+auto.master')
+      expect(chef_run).not_to render_file('/etc/auto.master').with_content('+dir:/etc/auto.master.d')
     end
   end
 end
