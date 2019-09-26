@@ -27,6 +27,18 @@
 
 return if node['sys']['autofs'].empty?
 
+# Cleanup old files
+Dir.glob('/etc/auto.master.d/*.autofs').each do |old_map|
+  cleanup_action = :nothing
+  if File.read(old_map).match %r{ldap:ou=}
+    cleanup_action = :delete
+  end
+
+  file old_map do
+    action cleanup_action
+  end
+end
+
 config = {
   :browsemode => node['sys']['autofs']['browsemode'] || 'no',
   :logging    => node['sys']['autofs']['logging'] || 'none'
