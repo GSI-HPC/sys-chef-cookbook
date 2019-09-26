@@ -118,7 +118,7 @@ if node['sys']['autofs']['ldap']
   end
 
   # 'automount: files' is assumed, if no entry is present in /etc/nsswitch.conf
-  node.default['sys']['nsswitch'] << "\nautomount: files ldap\n"
+  node.default['sys']['nsswitch']['automount'] = 'files ldap'
 end
 
 maps = []
