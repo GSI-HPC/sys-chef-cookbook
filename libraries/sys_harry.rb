@@ -12,7 +12,7 @@ module Sys
       end
 
       flags[:separator] ||= '='
-      flags[:separator].strip!
+      flags[:separator]
 
       if flags[:spaces_around_separator].nil?
         flags[:spaces_around_separator] = true
