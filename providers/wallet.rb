@@ -54,7 +54,7 @@ action :deploy do
     else
       log 'no-keytab' do
         level :warn
-        message "Unable to deploy #{new_recource.principal}: "\
+        message "Unable to deploy #{new_resource.principal}: "\
                 'Kerberos not installed or /etc/krb5.keytab missing.'
       end
     end
