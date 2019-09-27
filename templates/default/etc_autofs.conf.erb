@@ -1,0 +1,29 @@
+<%= template_header %>
+
+[ autofs ]
+master_map_name = auto.master
+timeout = 300
+browse_mode = <%= @browsemode %>
+# none, verbose, or debug
+logging = <%= @logging %>
+<% if node['sys']['autofs']['ldap'] -%>
+<% Array(@uris).each do |uri| -%>
+ldap_uri = <%= "ldap://#{uri}" %>
+<% end -%>
+search_base = <%= @searchbase %>
+auth_conf_file = /etc/autofs_ldap_auth.conf
+
+<% if @schema == 'rfc2307' -%>
+map_object_class = automountMap
+entry_object_class = automount
+map_attribute = ou
+entry_attribute = cn
+value_attribute= automountInformation
+<% elsif @schema == 'rfc2307bis' -%>
+map_object_class = automountMap
+entry_object_class = automount
+map_attribute = automountMapName
+entry_attribute = automountKey
+value_attribute= automountInformation
+<% end -%>
+<% end -%>
