@@ -2,15 +2,16 @@ describe 'Sys::Harry' do
 
   before do
     require_relative '../../../libraries/sys_harry.rb'
-    class Dummy end
+    class Dummy
+    end
     @dummy = Dummy.new
     @dummy.extend(Sys::Harry)
   end
 
   it 'should render config' do
     @single_value = @dummy.generate_harry_config({section: { option: 'value'}}, 0)
-    expect(@single_value).to match /\[section\]/
-    expect(@single_value).to match /^option = value$/
+    expect(@single_value).to match(/\[section\]/)
+    expect(@single_value).to match(/^option = value$/)
   end
 
   it 'should render subgroups' do
@@ -76,7 +77,7 @@ group = {
 EOF
   end
 
-    it 'uses another separator' do
+  it 'uses another separator' do
     hash = {section: {group: {sub: 'group', longsub: 'group2'}}}
     indent = 0
     flags = {spaces_around_separator: false, separator: ': ',
