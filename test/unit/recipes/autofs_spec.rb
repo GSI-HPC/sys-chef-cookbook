@@ -91,8 +91,8 @@ describe 'sys::autofs' do
     end
 
     it 'renders /etc/auto.master' do
-      expect(chef_run).to render_file('/etc/auto.master').with_content('/map autofs.map -browse')
-      expect(chef_run).to render_file('/etc/auto.master').with_content('/oldmap autofs.oldmap')
+      expect(chef_run).to render_file('/etc/auto.master').with_content('/map auto.map -browse')
+      expect(chef_run).to render_file('/etc/auto.master').with_content('/oldmap auto.oldmap')
       expect(chef_run).not_to render_file('/etc/auto.master').with_content('+auto.master')
     end
 
@@ -135,7 +135,7 @@ describe 'sys::autofs' do
 
     it 'manages /etc/auto.master' do
       expect(chef_run).to create_template('/etc/auto.master').with_mode('0644')
-      expect(chef_run).to render_file('/etc/auto.master').with_content('/map autofs.map')
+      expect(chef_run).to render_file('/etc/auto.master').with_content('/map auto.map')
       expect(chef_run).to render_file('/etc/auto.master').with_content('+auto.master')
       expect(chef_run).to render_file('/etc/auto.master').with_content('+dir:/etc/auto.master.d')
     end
@@ -213,7 +213,7 @@ describe 'sys::autofs' do
 
     it 'manages /etc/auto.master' do
       expect(chef_run).to create_template('/etc/auto.master').with_mode('0644')
-      expect(chef_run).to render_file('/etc/auto.master').with_content('/map autofs.map')
+      expect(chef_run).to render_file('/etc/auto.master').with_content('/map auto.map')
       expect(chef_run).not_to render_file('/etc/auto.master').with_content('+auto.master')
       expect(chef_run).not_to render_file('/etc/auto.master').with_content('+dir:/etc/auto.master.d')
     end

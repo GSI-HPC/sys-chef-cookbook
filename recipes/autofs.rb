@@ -59,13 +59,13 @@ package 'autofs'
 # The following steps achieve this configuration.
 # Set 'automount: files ldap' in /etc/nsswitch.conf.
 # Configure ldap, and create /etc/auto.master containing:
-# /b autofs.b
-# /c autofs.c
-# Also create /etc/autofs.c on the system.
+# /b auto.b
+# /c auto.c
+# Also create /etc/auto.c on the system.
 # On autofs-lookup, auto.master from ldap is not considered, because
-# /etc/auto.master is found first.  /etc/autofs.b does not exist, but
+# /etc/auto.master is found first.  /etc/auto.b does not exist, but
 # it is found in ldap, so it is taken from ldap.  /c is found in
-# /etc/autfs.c, so ldap will not be used to lookup /c.
+# /etc/auto.c, so ldap will not be used to lookup /c.
 
 if node['sys']['autofs']['ldap']
   package 'autofs-ldap'
@@ -136,9 +136,10 @@ end
 maps = []
 if node['sys']['autofs']['maps']
   node['sys']['autofs']['maps'].each do |map, values|
+    mapname = map.sub(%r{^/+},'')
     maps << {
-      mountpoint: values['mountpoint'] || "/#{map}",
-      mapname: values['mapname'] || "autofs.#{map.sub(%r{^/+},'').gsub('/','_')}",
+      mountpoint: values['mountpoint'] || "/#{mapname}",
+      mapname: values['mapname'] || "auto.#{mapname.gsub('/','_')}",
       options: values['options'] ? " #{values['options']}" : ''
     }
   end
