@@ -43,5 +43,6 @@ action :remove do
   delete_lines "alias for #{new_resource.name}" do
     path    new_resource.aliases_file
     pattern "^#{new_resource.name}:.*"
+    only_if { ::File.exist?(new_resource.name) }
   end
 end
