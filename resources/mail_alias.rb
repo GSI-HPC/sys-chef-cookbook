@@ -34,8 +34,8 @@ action :add do
     path    new_resource.aliases_file
     pattern "^#{new_resource.name}:.*"
     line    new_line
-    backup  true
-    ignore_missing true
+    backup  true        if respond_to?(:backup)
+    ignore_missing true if respond_to?(:ignore_missing)
   end
 end
 
