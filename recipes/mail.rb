@@ -23,6 +23,12 @@
 
 relay = node['sys']['mail']['relay']
 
+update_virtual = 'Update Postfix virtual aliases'
+etc_postfix_virtual = '/etc/postfix/virtual'
+
+update_aliases = 'Update Postfix aliases'
+etc_aliases = '/etc/aliases'
+
 unless relay.empty?
 
   package 'postfix'
@@ -32,6 +38,24 @@ unless relay.empty?
 
   file '/etc/mailname' do
     content "#{node['fqdn']}\n"
+  end
+
+  template '/etc/postfix/main.cf' do
+    source 'etc_postfix_main.cf.erb'
+    mode '0644'
+    variables(
+      relay:              relay,
+      mynetworks:         node['sys']['mail']['mynetworks'],
+      inet_interfaces:    node['sys']['mail']['inet_interfaces'],
+      ipv4_only:          node['sys']['mail']['disable_ipv6'],
+      default_privs:      node['sys']['mail']['default_privs'],
+      mydestination:      node['sys']['mail']['mydestination'],
+      relay_domains:      node['sys']['mail']['relay_domains'],
+      message_size_limit: node['sys']['mail']['message_size_limit'],
+      virtual_alias_maps: "hash:#{etc_postfix_virtual}"
+    )
+    # after changes to main.cf postfix - sometimes - has to be restarted
+    notifies :restart, 'service[postfix]'
   end
 
   template '/etc/postfix/canonical' do
@@ -49,8 +73,6 @@ unless relay.empty?
     notifies :reload, 'service[postfix]'
   end
 
-  update_virtual = 'Update Postfix virtual aliases'
-  etc_postfix_virtual = '/etc/postfix/virtual'
   execute update_virtual do
     action :nothing
     command "postmap #{etc_postfix_virtual}"
@@ -66,26 +88,6 @@ unless relay.empty?
     notifies :run, "execute[#{update_virtual}]", :immediately
   end
 
-  template '/etc/postfix/main.cf' do
-    source 'etc_postfix_main.cf.erb'
-    mode '0644'
-    variables({
-      relay:              relay,
-      mynetworks:         node['sys']['mail']['mynetworks'],
-      inet_interfaces:    node['sys']['mail']['inet_interfaces'],
-      ipv4_only:          node['sys']['mail']['disable_ipv6'],
-      default_privs:      node['sys']['mail']['default_privs'],
-      mydestination:      node['sys']['mail']['mydestination'],
-      relay_domains:      node['sys']['mail']['relay_domains'],
-      message_size_limit: node['sys']['mail']['message_size_limit'],
-      virtual_alias_maps: "hash:#{etc_postfix_virtual}"
-    })
-    # after changes to main.cf postfix - sometimes - has to be restarted
-    notifies :restart, 'service[postfix]'
-  end
-
-  update_aliases = 'Update Postfix aliases'
-  etc_aliases = '/etc/aliases'
   execute update_aliases do
     action :nothing
     command "postalias #{etc_aliases}"
