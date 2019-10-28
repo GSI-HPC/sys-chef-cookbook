@@ -1,5 +1,5 @@
 <%= template_header %>
 
-<% @map.each do |virtual, aliases| -%>
-<%= virtual %> <%= aliases.join(', ') %>
-<%- end %>
+<%- @map.each do |virtual, aliases| -%>
+<%= virtual %> <%= aliases.is_a?(Array) ? aliases.join(', ') : aliases %>
+<%- end -%>
