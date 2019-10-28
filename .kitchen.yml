@@ -35,7 +35,7 @@ platforms:
         - vagrant.rb
   - name: buster
     driver:
-      box: generic/debian10
+      box: debian/buster64
       provider: libvirt
       provision: true
       vagrantfiles:
