@@ -74,11 +74,12 @@ suites:
       sys:
         autofs:
           maps:
-            /test:
-              map: /etc/autofs.test
+            test:
+              # dummy entry to avoid nil value
+              foo: bar
         file:
           # create a bind mount autofs map for testing
-          /etc/autofs.test:
+          /etc/auto.test:
             content: tempo -fstype=bind :/tmp
             notifies:
               - reload
