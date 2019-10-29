@@ -1,3 +1,27 @@
+#
+# Cookbook Name:: sys
+# Unit tests for sys::mail recipe
+#
+# Copyright 2015-2018 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+#
+# Authors:
+#  Christopher Huhn  <c.huhn@gsi.de>
+#  Dennis Klein      <d.klein@gsi.de>
+#  Matthias Pausch   <m.pausch@gsi.de>
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
 describe 'sys::mail' do
   let(:chef_run) { ChefSpec::SoloRunner.new.converge(described_recipe) }
 
@@ -8,8 +32,7 @@ describe 'sys::mail' do
   end
 
   context 'with some test attributes' do
-    let(:chef_run) { ChefSpec::SoloRunner.new(step_into: ['sys_mail_alias']) }
-    let(:file_edit_dummy) { double('file edit dummy') }
+
     let(:canonical_update_test) do
       'test /etc/postfix/canonical.db -nt /etc/postfix/canonical'
     end
@@ -17,22 +40,20 @@ describe 'sys::mail' do
     before do
       stub_command(canonical_update_test).and_return(true)
 
-      # mock Chef::Util::FileEdit - what a mess
-      allow(Chef::Util::FileEdit).to receive(:new).and_call_original
-      allow(Chef::Util::FileEdit).to receive(:new).with('/etc/aliases')
-                                      .and_return(file_edit_dummy)
-      allow(file_edit_dummy).to receive(:insert_line_if_no_match)
-      allow(file_edit_dummy).to receive(:write_file)
+      @example_alias_name   = 'foo'
+      @example_alias_value  = 'foo@bar.mail'
+      @expected_alias_value = 'foo@bar.mail'
 
-      chef_run.node.default[:sys][:mail][:relay] = 'smtp.example.net'
-      @example_alias_name = 'foo'
-      @example_alias_value = 'foo@bar.mail'
-      @expected_alias_value = '"foo@bar.mail"'
-      chef_run.node.default[:sys][:mail][:aliases][@example_alias_name.to_sym] =
-        @example_alias_value
       allow(::File).to receive(:exist?).and_call_original
-      allow(::File).to receive(:exist?).with('/etc/aliases').and_return(false)
-      chef_run.converge(described_recipe)
+      allow(::File).to receive(:exist?).with('/etc/aliases').and_return(true)
+    end
+
+    let(:chef_run) do
+      ChefSpec::SoloRunner.new do |node|
+        node.default[:sys][:mail][:relay] = 'smtp.example.net'
+        node.default[:sys][:mail][:aliases][@example_alias_name.to_sym] =
+          @example_alias_value
+      end.converge(described_recipe)
     end
 
     postfix = 'postfix'
@@ -75,29 +96,32 @@ describe 'sys::mail' do
     update_virtual = 'Update Postfix virtual aliases'
     it "manages #{etc_postfix_virtual}" do
       expect(chef_run).to create_template(etc_postfix_virtual).with_mode('0600')
-      expect(chef_run.template(etc_postfix_virtual)).to notify("execute[#{update_virtual}]").to(:run).immediately
+      expect(chef_run.template(etc_postfix_virtual))
+        .to notify("execute[#{update_virtual}]").to(:run).immediately
       expect(chef_run.execute(update_virtual)).to do_nothing
-      expect(chef_run.execute(update_virtual)).to notify("service[#{postfix}]").to(:reload).delayed
+      expect(chef_run.execute(update_virtual))
+        .to notify("service[#{postfix}]").to(:reload).delayed
     end
 
     etc_postfix_main_cf = '/etc/postfix/main.cf'
     it "manages #{etc_postfix_main_cf}" do
       expect(chef_run).to create_template(etc_postfix_main_cf).with_mode('0644')
-      expect(chef_run.template(etc_postfix_main_cf)).to notify("service[#{postfix}]").to(:restart).delayed
+      expect(chef_run.template(etc_postfix_main_cf))
+        .to notify("service[#{postfix}]").to(:restart).delayed
     end
 
     etc_aliases = '/etc/aliases'
     update_aliases = 'Update Postfix aliases'
 
     it "manages #{etc_aliases}" do
-      expect(chef_run).to add_sys_mail_alias(@example_alias_name).with_to(@expected_alias_value).with_aliases_file(etc_aliases)
-      expect(chef_run.find_resource(:sys_mail_alias, @example_alias_name)).to notify("execute[#{update_aliases}]").to(:run).delayed
-      expect(chef_run).to run_execute(update_aliases)
-      expect(chef_run.execute(update_aliases)).to notify("service[#{postfix}]").to(:reload).delayed
-      expect(chef_run).to create_file(etc_aliases)
-      # we completly mocked away Chef::Util::FileEdit for now,
-      #  therefore this will fail:
-      #expect(chef_run).to run_ruby_block('SysMailAlias action :add : insert alias')
+      expect(chef_run).to add_sys_mail_alias(@example_alias_name)
+                            .with_to([@expected_alias_value])
+                            .with_aliases_file(etc_aliases)
+      expect(chef_run.find_resource(:sys_mail_alias, @example_alias_name))
+        .to notify("execute[#{update_aliases}]").to(:run).delayed
+      # expect(chef_run).to run_execute(update_aliases)
+      expect(chef_run.execute(update_aliases))
+        .to notify("service[#{postfix}]").to(:reload).delayed
     end
   end
 end

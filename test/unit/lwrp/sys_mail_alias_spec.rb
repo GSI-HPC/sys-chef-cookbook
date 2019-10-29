@@ -1,15 +1,33 @@
+#
+# Cookbook Name:: sys
+# Unit tests for sys_mail_alias custom resource
+#
+# Copyright 2015-2019 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+#
+# Authors:
+#  Christopher Huhn  <C.Huhn@gsi.de>
+#  Dennis Klein      <d.klein@gsi.de>
+#  Matthias Pausch   <m.pausch@gsi.de>
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
 describe 'lwrp: sys_mail_alias' do
   let(:runner) do
     ChefSpec::SoloRunner.new(
       :step_into => ['sys_mail_alias']
     )
   end
-
-  let(:node) { runner.node }
-
-  change_alias_value_block = 'SysMailAlias action :add : change alias value'
-  insert_alias_block = 'SysMailAlias action :add : insert alias'
-  remove_alias_block = 'SysMailAlias action :remove : remove alias'
 
   describe 'action :add' do
     let(:chef_run) { runner.converge('fixtures::sys_mail_alias_add') }
@@ -23,23 +41,21 @@ describe 'lwrp: sys_mail_alias' do
       context 'does not contain alias' do
         before { contains_alias 'not: the@expected.alias' }
         it 'inserts alias' do
-          expect(chef_run).to run_ruby_block(insert_alias_block)
-          expect(chef_run.find_resource(:sys_mail_alias, 'foo').updated).to be
+          expect(chef_run).to add_sys_mail_alias('foo')
         end
       end
 
       context 'contains alias with outdated value' do
         before { contains_alias 'foo: old_value' }
         it 'changes alias value' do
-          expect(chef_run).to run_ruby_block(change_alias_value_block)
-          expect(chef_run.find_resource(:sys_mail_alias, 'foo').updated).to be
+          expect(chef_run).to add_sys_mail_alias('foo')
         end
       end
 
       context 'contains already up-to-date alias' do
         before { contains_alias 'foo: "foo@bar"'}
-        it 'does nothing' do
-          expect(chef_run.find_resource(:sys_mail_alias, 'foo').updated).not_to be
+        it 'still runs the resource' do
+          expect(chef_run).to add_sys_mail_alias('foo')
         end
       end
     end
@@ -47,8 +63,7 @@ describe 'lwrp: sys_mail_alias' do
     context '/etc/aliases does not exist' do
       before { etc_aliases_does_not_exist }
       it 'creates /etc/aliases' do
-        expect(chef_run).to create_file('/etc/aliases')
-        expect(chef_run.find_resource(:sys_mail_alias, 'foo').updated).to be
+        expect(chef_run).to add_sys_mail_alias('foo')
       end
     end
   end
@@ -61,16 +76,14 @@ describe 'lwrp: sys_mail_alias' do
     context 'alias exists' do
       before { contains_alias 'foo: asdf' }
       it 'removes the alias' do
-        expect(chef_run).to run_ruby_block(remove_alias_block)
-        expect(chef_run.find_resource(:sys_mail_alias, 'foo').updated).to be
+        expect(chef_run).to remove_sys_mail_alias('foo')
       end
     end
 
     context 'alias does not exist' do
       before { contains_alias 'not: the_expected_alias' }
       it 'does nothing' do
-        expect(chef_run).not_to run_ruby_block(remove_alias_block)
-        expect(chef_run.find_resource(:sys_mail_alias, 'foo').updated).not_to be
+        expect(chef_run).to remove_sys_mail_alias('foo')
       end
     end
   end
