@@ -19,15 +19,8 @@
 
 unless node['sys']['modules'].empty?
 
-  if node['platform_version'].to_i >= 8
-    package "module-init-tools"
-  end
-
-  if node['platform_version'].to_i >= 9
-    package "kmod"
-  end
-
   node['sys']['modules'].each do |m|
     sys_module m
   end
+  
 end
