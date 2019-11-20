@@ -19,7 +19,7 @@
 
 property :to, [Array, String],
          # turn Strings into Arrays for simplicity:
-         coerce: proc { |t| t.is_a?(String) ? [t] : t }
+         coerce: proc { |t| Array(t) }
 property :aliases_file, String,  default: '/etc/aliases'
 
 default_action :add
