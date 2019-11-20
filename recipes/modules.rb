@@ -2,7 +2,12 @@
 # Cookbook Name:: sys
 # Recipe:: modules
 #
-# Copyright 2014, Victor Penso
+# Copyright 2014-2019 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+#
+# Authors:
+#  Matteo Dessalvi   <m.dessalvi@gsi.de>
+#  Matthias Pausch   <m.pausch@gsi.de>
+#  Victor Penso      <v.penso@gsi.de>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,11 +22,8 @@
 # limitations under the License.
 #
 
-unless node['sys']['modules'].empty?
+return if node['sys']['modules'].empty?
 
-  package "module-init-tools"
-
-  node['sys']['modules'].each do |m|
-    sys_module m
-  end
+node['sys']['modules'].each do |m|
+  sys_module m
 end
