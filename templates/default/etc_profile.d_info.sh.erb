@@ -37,11 +37,13 @@ count=$(ps haeo user | sort | grep -v root | uniq -c | wc -l)
 # wait 2 seconds for df to succeed:
 disk=$(timeout 2 df -lh | grep "^/" | tr -s ' ' | cut -d' ' -f5- |
            awk '{printf "%s %s  ", $2, $1}')
-mem_total=$(grep MemTotal /proc/meminfo | awk '{printf "%sMB",$2/1000}')
-mem_free=$(grep MemFree /proc/meminfo | awk '{printf "%sMB",$2/1000}')
-mem_free_perc=$(free | grep Mem | awk '{printf "%.2f%%" ,  $4/$2 * 100.0}')
-mem_free_perccc=$(free | grep "buffers/cache" |
-                      awk '{printf "%.2f%%" ,  $4/($3+$4) * 100.0}')
+
+mem_info=$(free | sed -ne "s/^Mem://p")
+
+mem_total=$(awk '{printf "%sMB",$1/1000}' <<<$mem_info )
+mem_free=$(awk '{printf "%sMB",$3/1000}' <<<$mem_info)
+mem_free_perc=$(awk '{printf "%d%%" ,  $3/$1 * 100.0}'<<<$mem_info)
+mem_free_perccc=$(awk '{printf "%d%%" , ($3+$5)/$1 * 100.0}' <<<$mem_info)
 
 cat <<INFO
 Node:         <%= node['fqdn'] %> (<%= node['ipaddress'] %>)
