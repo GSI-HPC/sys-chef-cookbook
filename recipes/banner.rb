@@ -2,7 +2,12 @@
 # Cookbook Name:: sys
 # Recipe:: banner
 #
-# Copyright 2012-2013, Victor Penso
+# Copyright 2012-2015 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+#
+# Authors:
+#  Dennis Klein      <d.klein@gsi.de>
+#  Matthias Pausch   <m.pausch@gsi.de>
+#  Victor Penso      <v.penso@gsi.de>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
