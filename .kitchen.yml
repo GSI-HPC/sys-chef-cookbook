@@ -84,6 +84,21 @@ suites:
             notifies:
               - reload
               - service[autofs]
+  - name: sys_banner
+    run_list:
+      - recipe[sys::banner]
+    attributes:
+      sys:
+        banner:
+          header: 'Space: the final frontier.'
+          message:
+            - These are the voyages of the starship Enterprise.
+            - 'Its continuing mission: to explore strange new worlds.'
+            - To seek out new life and new civilizations.
+          service_properties:
+            - To boldly go where no one has gone before!
+          footer: Engage!
+          info: true
   - name: sys_mail
     run_list:
       - recipe[sys::mail]
