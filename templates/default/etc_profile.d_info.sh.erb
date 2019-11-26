@@ -40,10 +40,10 @@ disk=$(timeout 2 df -lh | grep "^/" | tr -s ' ' | cut -d' ' -f5- |
 
 mem_info=$(free | sed -ne "s/^Mem://p")
 
-mem_total=$(awk '{printf "%sMB",$1/1000}' <<<$mem_info )
-mem_free=$(awk '{printf "%sMB",$3/1000}' <<<$mem_info)
-mem_free_perc=$(awk '{printf "%d%%" ,  $3/$1 * 100.0}'<<<$mem_info)
-mem_free_perccc=$(awk '{printf "%d%%" , ($3+$5)/$1 * 100.0}' <<<$mem_info)
+mem_total=$(echo "$mem_info" | awk '{printf "%sMB",$1/1000}')
+mem_free=$(echo "$mem_info" | awk '{printf "%sMB",$3/1000}')
+mem_free_perc=$(echo "$mem_info" | awk '{printf "%d%%" ,  $3/$1 * 100.0}')
+mem_free_perccc=$(echo "$mem_info" | awk '{printf "%d%%" , ($3+$5)/$1 * 100.0}')
 
 cat <<INFO
 Node:         <%= node['fqdn'] %> (<%= node['ipaddress'] %>)
