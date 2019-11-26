@@ -18,6 +18,7 @@ before_script:
   #  this will fail inside docker container because autofs4 cannot be loaded
   #  pre-loading autofs4 on the host fixes this issue
   - sudo modprobe autofs4
+  - bundle exec kitchen list
 
 env:
   global:
