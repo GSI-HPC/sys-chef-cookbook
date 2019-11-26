@@ -3,7 +3,12 @@
 <%= template_header %>
 
 #
-# Copyright 2012, Victor Penso
+# Copyright 2012-2019 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+#
+# Authors:
+#  Christopher Huhn   <c.huhn@gsi.de>
+#  Matthias Pausch    <m.pausch@gsi.de>
+#  Victor Penso       <v.penso@gsi.de>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -29,15 +34,20 @@ cpus=$(top -b -n1 | sed -n '3p' | cut -d':' -f 2- | sed 's/^[ \t]*//')
 users=$(ps haeo user | sort | grep -v "root\|$USER" | uniq -c | sort -nr |
                tr -s ' ' | awk '{ printf "%s(%s) ", $2, $1 }')
 count=$(ps haeo user | sort | grep -v root | uniq -c | wc -l)
-disk=$(df -lh | grep "^/" | tr -s ' ' | cut -d' ' -f5- | awk '{printf "%s %s  ", $2, $1}')
-mem_total=$(grep MemTotal /proc/meminfo | awk '{printf "%sMB",$2/1000}')
-mem_free=$(grep MemFree /proc/meminfo | awk '{printf "%sMB",$2/1000}')
-mem_free_perc=$(free | grep Mem | awk '{printf "%.2f%%" ,  $4/$2 * 100.0}')
-mem_free_perccc=$(free | grep "buffers/cache" | awk '{printf "%.2f%%" ,  $4/($3+$4) * 100.0}')
+# wait 2 seconds for df to succeed:
+disk=$(timeout 2 df -lh | grep "^/" | tr -s ' ' | cut -d' ' -f5- |
+           awk '{printf "%s %s  ", $2, $1}')
 
-echo "
+mem_info=$(free | sed -ne "s/^Mem://p")
+
+mem_total=$(echo "$mem_info" | awk '{printf "%sMB",$1/1000}')
+mem_free=$(echo "$mem_info" | awk '{printf "%sMB",$3/1000}')
+mem_free_perc=$(echo "$mem_info" | awk '{printf "%d%%" ,  $3/$1 * 100.0}')
+mem_free_perccc=$(echo "$mem_info" | awk '{printf "%d%%" , ($3+$5)/$1 * 100.0}')
+
+cat <<INFO
 Node:         <%= node['fqdn'] %> (<%= node['ipaddress'] %>)
-Platform:     <%= node['lsb']['description'] if node['lsb'].has_key? 'description' %>
+Platform:     <%= node['lsb']['description'] if node['lsb'].key? 'description' %>
 <% unless Chef::Config[:solo] %>
 Chef-Server:  <%= Chef::Config.chef_server_url %>
 <% else %>
@@ -51,4 +61,6 @@ RAM:          $mem_total total -- $mem_free ($mem_free_perc) free [$mem_free_per
 Disk(s)%:     $disk
 User(s):      $count
 Who:          $users
-"
+INFO
+
+:
