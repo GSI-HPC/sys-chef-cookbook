@@ -5,8 +5,9 @@ driver:
   provision_command:
     # https://github.com/test-kitchen/kitchen-docker/issues/285:
     - mkdir -p /run/sshd
-    - apt-get -q -y install chef || true
-    - apt-get -q -y install exim4-base || true
+    - apt-get -qq -y install chef || true
+    - apt-get -qq -y install exim4-base || true
+    - apt-get -qq -y install shellckeck || true
   require_chef_omnibus: false
 
 provisioner:
