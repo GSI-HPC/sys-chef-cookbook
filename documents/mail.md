@@ -24,6 +24,8 @@ All attributes in `node['sys']['mail]`:
 
 * `relay` (required) defines the mail relay host FQDN.
 * `aliases` (optional) hash of account name, mail address pairs.
+* `canonical` (optional) hash of mappings for postfix's canonical map
+* `virtual` (optional) hash of mappings for postfix's virtual map
 * `mynetworks` (optional) string with additional space separated values for the
 postfix `mynetworks` configuration option, cause the postfix `inet_interfaces`
 option to be set to `all`, too
