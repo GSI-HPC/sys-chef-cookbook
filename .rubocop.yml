@@ -2,9 +2,13 @@ AllCops:
   DisplayCopNames: true
   DisplayStyleGuide: true
 
-Layout/AlignHash:
+Layout/HashAlignment:
   EnforcedHashRocketStyle: table
   Enabled: false
+
+# allow lines longer than 80 characters
+Layout/LineLength:
+  Max: 120
 
 # Don't force [] instead of Array.new etc.
 Style/EmptyLiteral:
@@ -22,7 +26,3 @@ Style/HashSyntax:
 # Don't check for double quotes vs single quotes for now:
 Style/StringLiterals:
   Enabled: false
-
-# allow lines longer than 80 characters
-Metrics/LineLength:
-  Max: 120
