@@ -1,0 +1,5 @@
+<%= template_header %>
+
+<%- @entries.each do |key, value| -%>
+<%= key %>  <%= value.is_a?(Array) ? value.join(', ') : value %>
+<%- end -%>

@@ -31,7 +31,7 @@ readme_directory = no
 myhostname = <%= node['fqdn'] %>
 alias_maps = hash:/etc/aliases
 alias_database = hash:/etc/aliases
-virtual_alias_maps = <%= @virtual_alias_maps %>
+virtual_alias_maps = hash:/etc/postfix/virtual
 myorigin = /etc/mailname
 mydestination = <%= node['fqdn'] %>, localhost.<%= node['domain'] %>, localhost <%= @mydestination ? ", #{@mydestination}" : '' %>
 <%# TODO: no MX lookups as long as brackets are hard-coded here -%>
@@ -42,12 +42,15 @@ mailbox_size_limit = 0
 <%= "message_size_limit = #{@message_size_limit}" if @message_size_limit %>
 recipient_delimiter = +
 <%= @default_privs ? "default_privs = #{@default_privs}\n" : '' -%>
+<%- if @export_environment -%>
+export_environment = <%= @export_environment.join(' ') %>
+<%- end -%>
 
 # listen for remote connections?
 inet_interfaces = <%= @inet_interfaces || @mynetworks?'all':'loopback-only' %>
-<% if @ipv4_only -%>
+<%- if @ipv4_only -%>
 inet_protocols = ipv4
-<%- end %>
+<%- end -%>
 
 # Seems to be missing since the start of time but is crucial to make e.g. "date | mail -s blabla7 troth" work
 recipient_canonical_maps = hash:/etc/postfix/canonical

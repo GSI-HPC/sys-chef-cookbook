@@ -1,13 +1,13 @@
 #
 # Cookbook Name:: sys
-# Unit tests for sys::mail recipe
+# Unit tests for recipe sys::mail
 #
 # Copyright 2015-2018 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
 #
 # Authors:
-#  Christopher Huhn  <c.huhn@gsi.de>
-#  Dennis Klein      <d.klein@gsi.de>
-#  Matthias Pausch   <m.pausch@gsi.de>
+#  Christopher Huhn   <c.huhn@gsi.de>
+#  Dennis Klein       <d.klein@gsi.de>
+#  Matthias Pausch    <m.pausch@gsi.de>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -34,11 +34,15 @@ describe 'sys::mail' do
   context 'with some test attributes' do
 
     let(:canonical_update_test) do
-      'test /etc/postfix/canonical.db -nt /etc/postfix/canonical'
+      '/usr/bin/test /etc/postfix/canonical.db -nt /etc/postfix/canonical'
+    end
+    let(:virtual_update_test) do
+      '/usr/bin/test /etc/postfix/virtual.db -nt /etc/postfix/virtual'
     end
 
     before do
       stub_command(canonical_update_test).and_return(true)
+      stub_command(virtual_update_test).and_return(true)
 
       @example_alias_name   = 'foo'
       @example_alias_value  = 'foo@bar.mail'
@@ -93,14 +97,11 @@ describe 'sys::mail' do
     end
 
     etc_postfix_virtual = '/etc/postfix/virtual'
-    update_virtual = 'Update Postfix virtual aliases'
     it "manages #{etc_postfix_virtual}" do
       expect(chef_run).to create_template(etc_postfix_virtual).with_mode('0600')
-      expect(chef_run.template(etc_postfix_virtual))
-        .to notify("execute[#{update_virtual}]").to(:run).immediately
-      expect(chef_run.execute(update_virtual)).to do_nothing
-      expect(chef_run.execute(update_virtual))
-        .to notify("service[#{postfix}]").to(:reload).delayed
+      expect(chef_run.template(etc_postfix_virtual)).to notify("execute[update-virtual]").to(:run).immediately
+      expect(chef_run.execute('update-virtual')).to do_nothing
+      expect(chef_run.execute('update-virtual')).to notify("service[#{postfix}]").to(:reload).delayed
     end
 
     etc_postfix_main_cf = '/etc/postfix/main.cf'
