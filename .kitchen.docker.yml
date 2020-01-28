@@ -7,7 +7,7 @@ driver:
     - mkdir -p /run/sshd
     - apt-get -qq -y install chef || true
     - apt-get -qq -y install exim4-base || true
-    - apt-get -qq -y install shellckeck || true
+    - apt-get -qq -y install shellcheck || true
   require_chef_omnibus: false
 
 provisioner:
