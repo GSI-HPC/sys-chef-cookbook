@@ -2,7 +2,12 @@
 # Cookbook Name:: sys
 # Recipe:: nsswitch
 #
-# Copyright 2013, Victor Penso
+# Copyright 2013-2019 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+#
+# Authors:
+#  Christopher Huhn   <C.Huhn@gsi.de>
+#  Matthias Pausch    <m.pausch@gsi.de>
+#  Victor Penso       <v.penso@gsi.de>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,12 +22,36 @@
 # limitations under the License.
 #
 
-unless node['sys']['nsswitch'].empty? # ~FC023 Do not break conventions in sys
+# do nothing until requested
+return if node['sys']['nsswitch'].empty?
 
-  template "/etc/nsswitch.conf" do
-    source "etc_nsswitch.conf.erb"
-    mode '0644'
-    variables :rules => node['sys']['nsswitch'].gsub(/^ */,'')
-  end
+defaults = {
+  passwd:    'compat',
+  group:     'compat',
+  shadow:    'compat',
+  gshadow:   'files',
+  hosts:     'files dns',
+  networks:  'files',
+  protocols: 'db files',
+  services:  'db files',
+  ethers:    'db files',
+  rpc:       'db files',
+  netgroup:  'nis'
+}
 
+# turn hash keys into Strings before merging to avoid dupes:
+config = defaults.map { |k,v| [k.to_s, v] }.to_h
+
+# merge defaults and node attributes
+config.merge!(node['sys']['nsswitch']) do |_k,v1,v2|
+  # make sure no empty values end up in the config:
+  v2 || v1
+end
+
+template "/etc/nsswitch.conf" do
+  source "etc_nsswitch.conf.erb"
+  mode '0644'
+  variables(
+    config: config
+  )
 end

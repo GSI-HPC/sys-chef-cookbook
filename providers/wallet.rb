@@ -1,3 +1,27 @@
+#
+# Cookbook Name:: sys
+# File:: providers/wallet.rb
+#
+# Copyright 2015-2019 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+#
+# Authors:
+#  Christopher Huhn   <C.Huhn@gsi.de>
+#  Dennis Klein       <d.klein@gsi.de>
+#  Matthias Pausch    <m.pausch@gsi.de>
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
 require 'etc'
 require 'open3'
 
@@ -5,28 +29,35 @@ use_inline_resources
 
 action :deploy do
   if ! ::File.exist?(new_resource.place) || ! check_keytab()
-    bash "deploy #{new_resource.principal}" do
-      cwd "/"
-      ignore_failure new_resource.ignore_failure
-      code <<-EOH
-        if [ -e #{new_resource.place}.tmp ]; then
-            rm -f #{new_resource.place}.tmp
-        fi
-        kinit -t /etc/krb5.keytab host/#{node['fqdn']}
-        wallet get keytab #{new_resource.principal}@#{node['sys']['krb5']['realm'].upcase} -f #{new_resource.place}.tmp
-        ret=$?
-        if [ $ret = 0 ]; then
-            mv #{new_resource.place}.tmp #{new_resource.place}
-        else
-            if [ -e #{new_resource.place}.tmp ]; then
-                rm -f #{new_resource.place}.tmp
-            fi
-            exit $ret
-        fi
-        kdestroy
-      EOH
+    if check_krb5
+      bash "deploy #{new_resource.principal}" do
+        cwd "/"
+        code <<-EOH
+          # TMPFILE must not exist yet, therefore --dry-run
+          TMPFILE=$(mktemp --dry-run)
+
+          kinit -t /etc/krb5.keytab host/#{node['fqdn']}
+          wallet get keytab \
+              #{new_resource.principal}@#{node['sys']['krb5']['realm'].upcase} \
+              -f "$TMPFILE"
+          ret=$?
+          if [ $ret = 0 ]; then
+              mv "$TMPFILE" #{new_resource.place}
+          else
+              rm "$TMPFILE"
+              exit $ret
+          fi
+          kdestroy
+        EOH
+      end
+      new_resource.updated_by_last_action(true)
+    else
+      log 'no-keytab' do
+        level :warn
+        message "Unable to deploy #{new_resource.principal}: "\
+                'Kerberos not installed or /etc/krb5.keytab missing.'
+      end
     end
-    new_resource.updated_by_last_action(true)
   end
 
   unless check_stat()
@@ -68,4 +99,8 @@ def check_stat()
     check = check_mode(stat) && check_owner(stat) && check_group(stat)
   end
   return check
+end
+
+def check_krb5()
+  ::File.exist?('/etc/krb5.keytab') && ::File.exist?('/usr/bin/kinit')
 end

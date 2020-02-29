@@ -1,3 +1,26 @@
+#
+# Cookbook Name:: sys
+# Config file for test-kitchen
+#
+# Copyright 2015-2019 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+#
+# Authors:
+#  Christopher Huhn   <c.huhn@gsi.de>
+#  Dennis Klein       <d.klein@gsi.de>
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
 ---
 driver:
   name: vagrant
@@ -35,7 +58,7 @@ platforms:
         - vagrant.rb
   - name: buster
     driver:
-      box: generic/debian10
+      box: debian/buster64
       provider: libvirt
       provision: true
       vagrantfiles:
@@ -74,15 +97,31 @@ suites:
       sys:
         autofs:
           maps:
-            /test:
-              map: /etc/autofs.test
+            test:
+              # dummy entry to avoid nil value
+              foo: bar
         file:
           # create a bind mount autofs map for testing
-          /etc/autofs.test:
+          /etc/auto.test:
             content: tempo -fstype=bind :/tmp
             notifies:
               - reload
               - service[autofs]
+  - name: sys_banner
+    run_list:
+      - recipe[sys::banner]
+    attributes:
+      sys:
+        banner:
+          header: 'Space: the final frontier.'
+          message:
+            - These are the voyages of the starship Enterprise.
+            - 'Its continuing mission: to explore strange new worlds.'
+            - To seek out new life and new civilizations.
+          service_properties:
+            - To boldly go where no one has gone before!
+          footer: Engage!
+          info: true
   - name: sys_mail
     run_list:
       - recipe[sys::mail]

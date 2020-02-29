@@ -1,5 +1,5 @@
 #
-# Copyright 2014 - 2018, GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+# Copyright 2014 - 2019, GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
 # Authors:
 #   Dennis Klein
 #   Christopher Huhn
@@ -17,12 +17,32 @@
 # limitations under the License.
 #
 
-actions :add, :remove
+property :to, [Array, String],
+         # turn Strings into Arrays for simplicity:
+         coerce: proc { |t| Array(t) }
+property :aliases_file, String,  default: '/etc/aliases'
 
 default_action :add
 
-attribute :name, :kind_of => String, :name_attribute => true, :required => true
-attribute :to,   :kind_of => [Array, String], :default => nil
-attribute :aliases_file, :kind_of => String,  :default => '/etc/aliases'
+action :add do
+  new_line = "#{new_resource.name}: "
+  new_line += new_resource.to.map do |e|
+    e =~ /[:@#|]/ ? "\"#{e}\"" : e
+  end.join(', ')
 
-attr_accessor :exists
+  replace_or_add "alias for #{new_resource.name}" do
+    path    new_resource.aliases_file
+    pattern "^#{new_resource.name}:.*"
+    line    new_line
+    backup  true        if respond_to?(:backup)
+    ignore_missing true if respond_to?(:ignore_missing)
+  end
+end
+
+action :remove do
+  delete_lines "alias for #{new_resource.name}" do
+    path    new_resource.aliases_file
+    pattern "^#{new_resource.name}:.*"
+    only_if { ::File.exist?(new_resource.aliases_file) }
+  end
+end

@@ -2,11 +2,13 @@
 # Cookbook Name:: sys
 # Recipe:: mail
 #
-# Copyright 2012 - 2018, GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+# Copyright 2012-2019 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+#
 # Authors:
-#   Victor Penso
-#   Dennis Klein
-#   Christopher Huhn
+#  Christopher Huhn   <c.huhn@gsi.de>
+#  Dennis Klein       <d.klein@gsi.de>
+#  Matthias Pausch    <m.pausch@gsi.de>
+#  Victor Penso       <v.penso@gsi.de>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -23,81 +25,74 @@
 
 relay = node['sys']['mail']['relay']
 
-unless relay.empty?
+return if relay.empty?
 
-  package 'postfix'
-  service 'postfix' do
-    supports :reload => true
-  end
+update_aliases = 'Update Postfix aliases'
+etc_aliases = '/etc/aliases'
 
-  file '/etc/mailname' do
-    content "#{node['fqdn']}\n"
-  end
+maincf_vars = {
+  relay:              relay,
+  mynetworks:         node['sys']['mail']['mynetworks'],
+  inet_interfaces:    node['sys']['mail']['inet_interfaces'],
+  ipv4_only:          node['sys']['mail']['disable_ipv6'],
+  default_privs:      node['sys']['mail']['default_privs'],
+  mydestination:      node['sys']['mail']['mydestination'],
+  relay_domains:      node['sys']['mail']['relay_domains'],
+  message_size_limit: node['sys']['mail']['message_size_limit'],
+}
 
-  template '/etc/postfix/canonical' do
-    source 'etc_postfix_canonical.erb'
+if node['sys']['mail']['export_environment']
+  maincf_vars[:export_environment] =
+    (node['sys']['mail']['export_environment'] + %w[TZ MAIL_CONFIG LANG]).uniq
+end
+
+package 'postfix'
+service 'postfix' do
+  supports :reload => true
+end
+
+file '/etc/mailname' do
+  content "#{node['fqdn']}\n"
+end
+
+template '/etc/postfix/main.cf' do
+  source 'etc_postfix_main.cf.erb'
+  mode '0644'
+  variables maincf_vars
+  # after changes to main.cf postfix - sometimes - has to be restarted
+  notifies :restart, 'service[postfix]'
+end
+
+%w[canonical virtual].each do |map|
+  template "/etc/postfix/#{map}" do
+    source 'etc_postfix_postmap.erb'
     mode '0600'
-    notifies :run, 'execute[update-canonical]', :immediately
+    variables(
+      entries: node['sys']['mail'][map] || {}
+    )
+    notifies :run, "execute[update-#{map}]", :immediately
   end
 
-  execute 'update-canonical' do
+  execute "update-#{map}" do
     action :run
-    command 'postmap /etc/postfix/canonical'
-    # check if /etc/postfix/canonical.db exists and
+    command "postmap /etc/postfix/#{map}"
+    # check if /etc/postfix/<map>.db exists and
     #  run if it doesn't or is outdated:
-    not_if 'test /etc/postfix/canonical.db -nt /etc/postfix/canonical'
+    not_if "/usr/bin/test /etc/postfix/#{map}.db -nt /etc/postfix/#{map}"
     notifies :reload, 'service[postfix]'
   end
+end
 
-  update_virtual = 'Update Postfix virtual aliases'
-  etc_postfix_virtual = '/etc/postfix/virtual'
-  execute update_virtual do
-    action :nothing
-    command "postmap #{etc_postfix_virtual}"
-    notifies :reload, 'service[postfix]'
+execute update_aliases do
+  action :nothing
+  command "postalias #{etc_aliases}"
+  notifies :reload, 'service[postfix]'
+end
+
+node['sys']['mail']['aliases'].each do |account, mail_address|
+  sys_mail_alias account do
+    to mail_address
+    aliases_file etc_aliases
+    notifies :run, "execute[#{update_aliases}]", :delayed
   end
-
-  template etc_postfix_virtual do
-    source 'etc_postfix_virtual.erb'
-    mode '0600'
-    variables({
-      :map => node['sys']['mail']['virtual'] || {}
-    })
-    notifies :run, "execute[#{update_virtual}]", :immediately
-  end
-
-  template '/etc/postfix/main.cf' do
-    source 'etc_postfix_main.cf.erb'
-    mode '0644'
-    variables({
-      relay:              relay,
-      mynetworks:         node['sys']['mail']['mynetworks'],
-      inet_interfaces:    node['sys']['mail']['inet_interfaces'],
-      ipv4_only:          node['sys']['mail']['disable_ipv6'],
-      default_privs:      node['sys']['mail']['default_privs'],
-      mydestination:      node['sys']['mail']['mydestination'],
-      relay_domains:      node['sys']['mail']['relay_domains'],
-      message_size_limit: node['sys']['mail']['message_size_limit'],
-      virtual_alias_maps: "hash:#{etc_postfix_virtual}"
-    })
-    # after changes to main.cf postfix - sometimes - has to be restarted
-    notifies :restart, 'service[postfix]'
-  end
-
-  update_aliases = 'Update Postfix aliases'
-  etc_aliases = '/etc/aliases'
-  execute update_aliases do
-    action :nothing
-    command "postalias #{etc_aliases}"
-    notifies :reload, 'service[postfix]'
-  end
-
-  node['sys']['mail']['aliases'].each do |account, mail_address|
-    sys_mail_alias account do
-      to mail_address
-      aliases_file etc_aliases
-      notifies :run, "execute[#{update_aliases}]", :delayed
-    end
-  end
-
 end

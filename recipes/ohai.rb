@@ -17,7 +17,6 @@
 # limitations under the License.
 #
 
-Ohai::Config[:plugin_path] << node['ohai']['plugin_path']
 Chef::Log.info("ohai plugins will be at: #{node['ohai']['plugin_path']}")
 
 ohai "reload" do
