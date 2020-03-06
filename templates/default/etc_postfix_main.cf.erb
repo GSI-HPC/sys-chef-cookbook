@@ -2,11 +2,13 @@
 
 # See /usr/share/postfix/main.cf.dist for a commented, more complete version
 
+<%- if node['platform_family'] == 'debian' %>
 # Debian specific:  Specifying a file name will cause the first
 # line of that file to be used as the name.  The Debian default
 # is /etc/mailname.
-#myorigin = /etc/mailname
+myorigin = /etc/mailname
 
+<%- end -%>
 smtpd_banner = $myhostname ESMTP $mail_name (Debian/GNU)
 biff = no
 
@@ -32,7 +34,6 @@ myhostname = <%= node['fqdn'] %>
 alias_maps = hash:/etc/aliases
 alias_database = hash:/etc/aliases
 virtual_alias_maps = hash:/etc/postfix/virtual
-myorigin = /etc/mailname
 mydestination = <%= node['fqdn'] %>, localhost.<%= node['domain'] %>, localhost <%= @mydestination ? ", #{@mydestination}" : '' %>
 <%# TODO: no MX lookups as long as brackets are hard-coded here -%>
 relayhost = [<%= @relay %>]
