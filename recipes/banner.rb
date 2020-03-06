@@ -2,9 +2,10 @@
 # Cookbook Name:: sys
 # Recipe:: banner
 #
-# Copyright 2012-2015 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+# Copyright 2012-2020 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
 #
 # Authors:
+#  Christopher Huhn  <c.huhn@gsi.de>
 #  Dennis Klein      <d.klein@gsi.de>
 #  Matthias Pausch   <m.pausch@gsi.de>
 #  Victor Penso      <v.penso@gsi.de>
@@ -43,7 +44,12 @@ end
 
 if node['sys']['banner']['info']
 
-  package 'lsb-release'
+  package case node['platform_family']
+          when 'debian'
+            'lsb-release'
+          when 'rhel'
+            'redhat-lsb-core'
+          end
 
   template '/etc/profile.d/info.sh' do
     source 'etc_profile.d_info.sh.erb'
