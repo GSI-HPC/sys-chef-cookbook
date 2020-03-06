@@ -27,15 +27,19 @@ describe user('daemon') do
 end
 
 # real-life test
-describe file('/var/mail/daemon') do
+
+mbox = (host_inventory['platform'] == 'redhat') ? '/var/mail/root' : '/var/mail/daemon'
+describe file(mbox) do
   # sudo something stupid as nobody:
   before do
     # silence sudo:
-    FileUtils.touch('/var/lib/sudo/lectured/nobody')
+    lectured_dir = (host_inventory['platform'] == 'redhat') ? '/var/db/sudo/lectured' : '/var/lib/sudo/lectured'
+    FileUtils.touch("#{lectured_dir}/nobody")
     `yes | sudo -u nobody sudo --prompt='' --stdin whoami`
+
     # wait for creation of mailbox:
     (1..10).each do |i|
-      File.exist?('/var/mail/daemon') && break
+      File.exist?(mbox) && break
       puts i
       sleep 1
     end
