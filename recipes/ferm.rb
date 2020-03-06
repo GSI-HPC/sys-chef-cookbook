@@ -60,7 +60,7 @@ unless node['sys']['ferm']['rules'].empty?
     fermaction = :stop
   end
 
-  template (node['platform_family'] == 'debian') ? '/etc/ferm/ferm.conf' : '/etc/ferm.conf' do
+  template((node['platform_family'] == 'debian') ? '/etc/ferm/ferm.conf' : '/etc/ferm.conf') do
     source 'etc_ferm_ferm.conf.erb'
     mode   '0644'
     owner  'root'
