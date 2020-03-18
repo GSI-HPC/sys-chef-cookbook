@@ -30,7 +30,7 @@ describe file('/etc/profile.d/info.sh') do
   it { should exist }
 end
 
-describe command('shellcheck /etc/profile.d/info.sh') do
+describe command('sh -n /etc/profile.d/info.sh') do
   its(:exit_status) { should be_zero }
 end
 
