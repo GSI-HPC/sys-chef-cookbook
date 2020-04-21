@@ -2,9 +2,14 @@
 # Cookbook Name:: sys
 # Recipe:: accounts
 #
-# Copyright 2013, Victor Penso
-# Copyright 2015, Dennis Klein
-# Copyright 2015, Christopher Huhn
+# Copyright 2013-2020 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+#
+# Authors:
+#  Christopher Huhn   <c.huhn@gsi.de>
+#  Dennis Klein       <d.klein@gsi.de>
+#  Matthias Pausch    <m.pausch@gsi.de>
+#  Victor Penso       <v.penso@gsi.de>
+#  Thomas Roth        <t.roth@gsi.de>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -137,7 +142,7 @@ unless (node['sys']['accounts'].empty? and node['sys']['groups'].empty?)
       elsif account['manage_home']
         # don't create the account but only its homedir:
         directory account['home'] do
-          owner account['uid']
+          owner account['uid'].to_i
           group account['gid']
           mode 0750
         end
