@@ -2,7 +2,7 @@
 # Cookbook Name:: sys
 # Unit tests for recipe sys::mail
 #
-# Copyright 2015-2018 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+# Copyright 2015-2020 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
 #
 # Authors:
 #  Christopher Huhn   <c.huhn@gsi.de>
@@ -69,7 +69,8 @@ describe 'sys::mail' do
     end
 
     it "manages service '#{postfix}'" do
-      expect(chef_run.service(postfix)).to do_nothing
+      expect(chef_run).to enable_service(postfix)
+      expect(chef_run).to start_service(postfix)
     end
 
     etc_mailname = '/etc/mailname'
