@@ -2,7 +2,7 @@
 # Cookbook Name:: sys
 # Recipe:: mail
 #
-# Copyright 2012-2019 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+# Copyright 2012-2020 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
 #
 # Authors:
 #  Christopher Huhn   <c.huhn@gsi.de>
@@ -47,9 +47,6 @@ if node['sys']['mail']['export_environment']
 end
 
 package 'postfix'
-service 'postfix' do
-  supports :reload => true
-end
 
 file '/etc/mailname' do
   content "#{node['fqdn']}\n"
@@ -95,4 +92,9 @@ node['sys']['mail']['aliases'].each do |account, mail_address|
     aliases_file etc_aliases
     notifies :run, "execute[#{update_aliases}]", :delayed
   end
+end
+
+service 'postfix' do
+  action %i[enable start]
+  supports :reload => true
 end
