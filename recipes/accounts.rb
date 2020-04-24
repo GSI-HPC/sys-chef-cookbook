@@ -145,6 +145,9 @@ unless (node['sys']['accounts'].empty? and node['sys']['groups'].empty?)
           owner account['uid'].to_i
           group account['gid']
           mode 0750
+          # creating a local home dir for a central account will fail
+          #  until the central account information is properly set up
+          ignore_failure true
         end
       end
 
