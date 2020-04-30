@@ -41,10 +41,6 @@ end
 
 describe file('/etc/postfix/main.cf') do
   it { should exist }
-  its(:content) do
-    #should match(/User_Alias SMUTJE = .*vagrant/)
-    #should include('SMUTJE ALL=(ALL) NOPASSWD: ALL')
-  end
 end
 
 maps = %w[/etc/aliases /etc/postfix/canonical /etc/postfix/virtual]
@@ -67,11 +63,10 @@ end
 #  mail to array will be written to /tmp/mail.test
 #  as configured in /etc/alieases
 describe file('/tmp/mail.test') do
+  before(:all) do
+    @timestamp = Time.now.strftime("%Y_%m_%d_%H_%M_%S")
 
-  before do
-    @now = Time.now.strftime("%Y_%m_%d_%H_%M_%S")
-
-    `echo "test mail #{@now}" | mail -s "test-kitchen mail test" array`
+    `echo "test mail #{@timestamp}" | mail -s "test-kitchen mail test" array`
     # wait for creation of mailbox:
     (1..10).each do |i|
       File.exist?('/tmp/mail.test') && break
@@ -81,9 +76,9 @@ describe file('/tmp/mail.test') do
   end
 
   it { should exist }
-  its(:content) { should include 'Subject: test-kitchen mail test' }
-  its(:content) { should include "test mail #{@now}" }
+  its(:content) { should include('Subject: test-kitchen mail test') }
+  its(:content) { should include("test mail #{@timestamp}") }
 
   # 'To: <mail@bla>' on Debian, 'To: mail@bla' on CentOS
-  its(:content) { should match %r{^To: <?array@} }
+  its(:content) { should match(/^To: <?array@/) }
 end
