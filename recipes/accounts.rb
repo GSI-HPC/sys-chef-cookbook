@@ -28,7 +28,13 @@ unless (node['sys']['accounts'].empty? and node['sys']['groups'].empty?)
 
   # required to handle passwords with the 'user' resource
   #  cf. https://docs.chef.io/resource_user.html
-  package 'ruby-shadow'
+  package 'ruby-shadow' do
+    # this should not be required for Omnibus-packaged versions of Chef
+    only_if do
+      node['chef_packages']['chef']['chef_root'] ==
+        '/usr/lib/ruby/vendor_ruby'
+    end
+  end
 
   # TODO: we might want to create groups only implictly defined
   #       from accounts...gid attributes but described in a databag
