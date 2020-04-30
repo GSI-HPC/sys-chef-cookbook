@@ -23,9 +23,8 @@
 # limitations under the License.
 #
 
-# attributes/apt.rb defines many empty attributes beneath node['sys']['apt']
-#  therefore this does not work:
-# return if node['sys']['apt'].empty?
+# apt only meaningful on Debian and its derivatives
+return if node['platform_family'] != 'debian'
 
 # # check if dpkg is running:
 # # FIXME: this should happen during converge?!
