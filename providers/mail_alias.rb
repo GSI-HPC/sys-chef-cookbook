@@ -1,9 +1,10 @@
 #
-# Copyright 2014 - 2018, GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+# Copyright 2014 - 2020, GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+#
 # Authors:
-#   Dennis Klein
-#   Christopher Huhn
-##
+#  Christopher Huhn   <c.huhn@gsi.de>
+#  Dennis Klein       <d.klein@gsi.de>
+#
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
