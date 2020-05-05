@@ -22,11 +22,6 @@ before_script:
 env:
   global:
     - KITCHEN_LOCAL_YAML=.kitchen.docker.yml
-  matrix:
-    - CHEF_VERSION=12.3
-    - CHEF_VERSION=12.14
-    - CHEF_VERSION=13
-    - CHEF_VERSION=14
 
 rvm:
 # - system # does not work with `gem install bundler`
@@ -35,12 +30,6 @@ rvm:
 # - 2.1
 #     before_install:
 #        - gem install bundler -v ‘< 2’
-
-# cf. https://travis-ci.com/chuhn/chef-install-test/
-matrix:
-  exclude:
-    - rvm: 2.3
-      env: CHEF_VERSION=14
 
 stages:
   - rubocop
