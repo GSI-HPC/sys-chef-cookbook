@@ -13,4 +13,6 @@ end
 chef_version     '>= 12.0' if respond_to?(:chef_version)
 supports         'debian'
 
-version          '1.53.3'
+depends          'line', '< 1.0'
+
+version          '1.53.4'
