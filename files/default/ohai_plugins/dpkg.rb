@@ -68,7 +68,7 @@ Ohai.plugin(:Dpkg) do
 
       # Print a warning that this plugin is probably not usefule if
       # platform_family != debian
-      Ohai::Log.warn("Not a debian derivative, #{__FILE__} only collects data for nodes with platform_family.eq? 'debian'.")
+      Ohai::Log.debug("Not a debian derivative, #{__FILE__} only collects data for nodes with platform_family.eq? 'debian'.")
 
     end
 
