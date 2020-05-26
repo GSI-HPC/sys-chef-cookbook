@@ -101,9 +101,9 @@ describe 'sys::mail' do
     it "manages #{etc_postfix_virtual}" do
       expect(chef_run).to create_template(etc_postfix_virtual).with_mode('0600')
       expect(chef_run.template(etc_postfix_virtual))
-        .to notify("execute[#{update_virtual}]").to(:run).immediately
-      expect(chef_run.execute(update_virtual)).to do_nothing
-      expect(chef_run.execute(update_virtual))
+        .to notify("execute[update-virtual]").to(:run).immediately
+      expect(chef_run.execute('update-virtual')).to do_nothing
+      expect(chef_run.execute('update-virtual'))
         .to notify("service[#{postfix}]").to(:reload).delayed
     end
 
