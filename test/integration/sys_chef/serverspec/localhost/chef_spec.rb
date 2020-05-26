@@ -21,11 +21,16 @@
 #
 
 require 'spec_helper'
+require 'chef_zero/server'
 
 context 'chef-client config' do
   before(:all) do
     # start chef-zero
-    `/opt/chef/embedded/bin/chef-zero --daemon --port 4000`
+    server = ChefZero::Server.new(port: 4000)
+    server.start_background
+
+    # create dummy key:
+    `openssl genrsa -out /etc/chef/client.pem`
   end
 
   describe command('chef-client') do
