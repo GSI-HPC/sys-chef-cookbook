@@ -1,5 +1,12 @@
+chef-cookbook-sys (1.53.3-1) unstable; urgency=medium
+
+  * Version bump
+
+ -- Christopher Huhn <C.Huhn@gsi.de>  Wed, 27 May 2020 14:52:02 +0200
+
 chef-cookbook-sys (1.45.0-1) unstable; urgency=medium
 
+  * Add more excludes
   * Upgrade to newest version
 
  -- Christopher Huhn <C.Huhn@gsi.de>  Fri, 30 Nov 2018 16:57:59 +0100
