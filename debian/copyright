@@ -3,7 +3,8 @@ Upstream-Name: sys-chef-cookbook
 Source: https://github.com/GSI-HPC/sys-chef-cookbook
 
 Files: *
-Copyright: 2012 - 2016 GSI HPC department <hpc@gsi.de>
+Copyright: 2012 - 2020 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+License: Apache-2.0
 
 License: Apache-2.0
  Licensed under the Apache License, Version 2.0 (the "License");
