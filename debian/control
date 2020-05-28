@@ -3,7 +3,7 @@ Section: admin
 Priority: optional
 Maintainer: Christopher Huhn <C.Huhn@gsi.de>
 Build-Depends: debhelper (>= 9)
-Standards-Version: 3.9.6
+Standards-Version: 4.3.0
 Homepage: https://github.com/GSI-HPC/sys-chef-cookbook
 Vcs-Git: https://github.com/GSI-HPC/sys-chef-cookbook.git
 Vcs-Browser: https://github.com/GSI-HPC/sys-chef-cookbook 
