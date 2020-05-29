@@ -166,6 +166,27 @@ suites:
             array:
               - '| /bin/true'
               - /tmp/mail.test
+  - name: sys_ssh
+    run_list:
+      - recipe[sys::ssh]
+    attributes:
+      sys:
+        ssh:
+          authorize:
+            root:
+              keys:
+                - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKZ7mI0iEdW2GmHZv+0OknkPDkQaBowEDzfaal2A+eRR
+          config:
+            root:
+              '*':
+                AddKeysToAgent: ask
+          ssh_config:
+            - '*.example.org':
+                SendEnv: TGIF
+        sshd:
+          config:
+            ClientAliveInterval: 4711
+            X11Forwarding: 'no'
   - name: sys_sudo
     run_list:
       - recipe[sys::sudo]
