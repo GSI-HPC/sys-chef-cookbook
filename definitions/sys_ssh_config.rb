@@ -1,5 +1,14 @@
 #
-# Copyright 2013, Victor Penso
+# Cookbook Name:: sys
+# File:: definitions/sys_ssh_config.rb
+#
+# Copyright 2013-2020 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+#
+# Authors:
+#  Christopher Huhn   <c.huhn@gsi.de>
+#  Dennis Klein       <d.klein@gsi.de>
+#  Matthias Pausch    <m.pausch@gsi.de>
+#  Victor Penso       <v.penso@gsi.de>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -22,10 +31,10 @@ define :sys_ssh_config, :config => Hash.new do
       log("Can't deploy SSH config: configuration for account [#{account}] missing") { level :warn }
     else
       # path to the user SSH configuration
-      dot_ssh = "#{node['etc']['passwd'][account].dir}/.ssh"
+      dot_ssh = "#{node['etc']['passwd'][account]['dir']}/.ssh"
       directory dot_ssh do
         owner account
-        group node['etc']['passwd'][account].gid
+        group node['etc']['passwd'][account]['gid']
         mode "0700"
       end
       # path to the user keys file
@@ -33,7 +42,7 @@ define :sys_ssh_config, :config => Hash.new do
       template ssh_config do
         source 'user_ssh_config_generic.erb'
         owner account
-        group node['etc']['passwd'][account].gid
+        group node['etc']['passwd'][account]['gid']
         cookbook 'sys'
         mode "0600"
         variables( 
