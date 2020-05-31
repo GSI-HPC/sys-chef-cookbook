@@ -53,12 +53,10 @@ jobs:
     - stage: chefspec
       script: bundle exec rake chefspec
       env: CHEF_VERSION=13.8
-    - stage: chefspec
-      script: bundle exec rake chefspec
-      env: CHEF_VERSION=14
       rvm: 2.5
     - stage: chefspec
       script: bundle exec rake chefspec
+      env: CHEF_VERSION=14
       rvm: 2.5
     - stage: kitchen
       env: KITCHEN_PLATFORM=debian-stretch
