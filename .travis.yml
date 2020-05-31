@@ -30,14 +30,6 @@ env:
     - KITCHEN_PLATFORM=debian-wheezy
     - KITCHEN_PLATFORM=ubuntu-18.04
     - KITCHEN_PLATFORM=centos-7
-    - KITCHEN_SUITE=accounts
-    - KITCHEN_SUITE=apt
-    - KITCHEN_SUITE=autofs
-    - KITCHEN_SUITE=banner
-    - KITCHEN_SUITE=chef
-    - KITCHEN_SUITE=mail
-    - KITCHEN_SUITE=ssh
-    - KITCHEN_SUITE=mail
 
 rvm:
 # - system # does not work with `gem install bundler`
@@ -80,6 +72,16 @@ jobs:
       rvm: 2.5
     - stage: kitchen
       script: bundle exec kitchen test $KITCHEN_SUITE-$KITCHEN_PLATFORM
+      env:
+        - KITCHEN_SUITE=accounts
+        - KITCHEN_SUITE=apt
+        - KITCHEN_SUITE=autofs
+        - KITCHEN_SUITE=banner
+        - KITCHEN_SUITE=chef
+        - KITCHEN_SUITE=mail
+        - KITCHEN_SUITE=ssh
+        - KITCHEN_SUITE=mail
+
   allow_failures:
     - env: CHEF_VERSION=15
     - env: CHEF_VERSION=14
