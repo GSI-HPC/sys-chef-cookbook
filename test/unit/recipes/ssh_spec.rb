@@ -1,3 +1,27 @@
+#
+# Cookbook Name:: sys
+# Unit tests for recipe sys::ssh
+#
+# Copyright 2015-2020 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+#
+# Authors:
+#  Christopher Huhn   <c.huhn@gsi.de>
+#  Dennis Klein       <d.klein@gsi.de>
+#  Matthias Pausch    <m.pausch@gsi.de>
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
 require 'spec_helper'
 
 describe 'sys::ssh' do
@@ -15,22 +39,25 @@ describe 'sys::ssh' do
         .and_return(0)
       allow(File).to receive(:directory?).and_call_original
       allow(File).to receive(:directory?).with('/home/jdoe').and_return(true)
+    end
 
-      chef_run.node.default['sys']['sshd']['config'] = {
-        'variable' => "value",
-        'X11Forwarding' => "overwritten" }
-      chef_run.node.default['sys']['ssh']['config'] = { "ssh" => "omg" }
-      chef_run.node.default['sys']['ssh']['authorize'] = {
-        'jdoe' => {
-          keys:    [ "BBB" ],
-          managed: true
+    cached(:chef_run) do
+      ChefSpec::SoloRunner.new do |node|
+        node.default['sys']['sshd']['config'] = {
+          'variable' => "value",
+          'X11Forwarding' => "overwritten" }
+        node.default['sys']['ssh']['config'] = { "ssh" => "omg" }
+        node.default['sys']['ssh']['authorize'] = {
+          'jdoe' => {
+            keys:    [ "BBB" ],
+            managed: true
+          }
         }
-      }
-      chef_run.node.default['etc']['passwd']['jdoe']['keys'] = [ "AAA" ]
-      chef_run.node.default['etc']['passwd']['jdoe']['uid'] = 1000
-      chef_run.node.default['etc']['passwd']['jdoe']['gid'] = 1000
-      chef_run.node.default['etc']['passwd']['jdoe']['dir'] = '/home/jdoe'
-      chef_run.converge(described_recipe)
+        node.default['etc']['passwd']['jdoe']['keys'] = [ "AAA" ]
+        node.default['etc']['passwd']['jdoe']['uid'] = 1000
+        node.default['etc']['passwd']['jdoe']['gid'] = 1000
+        node.default['etc']['passwd']['jdoe']['dir'] = '/home/jdoe'
+      end.converge(described_recipe)
     end
 
     it 'installs openssh-server' do
