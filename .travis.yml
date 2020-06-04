@@ -2,7 +2,7 @@
 language: ruby
 cache: bundler
 
-# dist: xenial
+dist: xenial
 
 services: docker
 
@@ -22,14 +22,6 @@ before_script:
 env:
   global:
     - KITCHEN_LOCAL_YAML=.kitchen.docker.yml
-  jobs:
-    - KITCHEN_PLATFORM=debian-stretch
-    - KITCHEN_PLATFORM=debian-buster
-    - KITCHEN_PLATFORM=debian-bullseye
-    - KITCHEN_PLATFORM=debian-jessie
-    - KITCHEN_PLATFORM=debian-wheezy
-    - KITCHEN_PLATFORM=ubuntu-18.04
-    - KITCHEN_PLATFORM=centos-7
 
 rvm:
 # - system # does not work with `gem install bundler`
@@ -66,29 +58,21 @@ jobs:
       script: bundle exec rake chefspec
       env: CHEF_VERSION=14
       rvm: 2.5
-    - stage: chefspec
-      script: bundle exec rake chefspec
-      env: CHEF_VERSION=15
-      rvm: 2.5
     - stage: kitchen
-      script: bundle exec kitchen test $KITCHEN_SUITE-$KITCHEN_PLATFORM
-      env:
-        - KITCHEN_SUITE=accounts
-        - KITCHEN_SUITE=apt
-        - KITCHEN_SUITE=autofs
-        - KITCHEN_SUITE=banner
-        - KITCHEN_SUITE=chef
-        - KITCHEN_SUITE=mail
-        - KITCHEN_SUITE=ssh
-        - KITCHEN_SUITE=mail
-
+      env: KITCHEN_PLATFORM=debian-stretch
+      script: bundle exec kitchen test $KITCHEN_PLATFORM
+    - env: KITCHEN_PLATFORM=debian-jessie
+      script: bundle exec kitchen test $KITCHEN_PLATFORM
+    - env: KITCHEN_PLATFORM=debian-buster
+      script: bundle exec kitchen test $KITCHEN_PLATFORM
+    - env: KITCHEN_PLATFORM=debian-wheezy
+      script: bundle exec kitchen test $KITCHEN_PLATFORM
+    - env: KITCHEN_PLATFORM=ubuntu-18.04
+      script: bundle exec kitchen test $KITCHEN_PLATFORM
+    - env: KITCHEN_PLATFORM=centos-7
+      script: bundle exec kitchen test $KITCHEN_PLATFORM
   allow_failures:
-    - env: CHEF_VERSION=15
     - env: CHEF_VERSION=14
     - env: CHEF_VERSION=13.8
     - env: KITCHEN_PLATFORM=centos-7
-    # bundler fails to install amd breaks verify on Jessie:
-    - env: KITCHEN_PLATFORM=debian-jessie
-    # has a broken sources.list:
-    - env: KITCHEN_PLATFORM=debian-wheezy
     - stage: test
