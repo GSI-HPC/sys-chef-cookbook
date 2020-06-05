@@ -154,6 +154,21 @@ suites:
         chef:
           server_url:
             http://localhost:4000
+  - name: sys_ferm
+    run_list:
+      - recipe[sys::ferm]
+    attributes:
+      sys:
+        ferm:
+          rules:
+            ip:
+              filter:
+                INPUT:
+                  - 'policy ACCEPT;'
+                OUTPUT:
+                  - 'policy ACCEPT;'
+                FORWARD:
+                  - 'policy DROP;'
   - name: sys_mail
     run_list:
       - recipe[sys::mail]
