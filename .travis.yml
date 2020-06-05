@@ -2,7 +2,7 @@
 language: ruby
 cache: bundler
 
-dist: xenial
+dist: bionic
 
 services: docker
 
@@ -66,6 +66,8 @@ jobs:
     - env: KITCHEN_PLATFORM=debian-buster
       script: bundle exec kitchen test $KITCHEN_PLATFORM
     - env: KITCHEN_PLATFORM=debian-wheezy
+      script: bundle exec kitchen test $KITCHEN_PLATFORM
+    - env: KITCHEN_PLATFORM=debian-bullseye
       script: bundle exec kitchen test $KITCHEN_PLATFORM
     - env: KITCHEN_PLATFORM=ubuntu-18.04
       script: bundle exec kitchen test $KITCHEN_PLATFORM
