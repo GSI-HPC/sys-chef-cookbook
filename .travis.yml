@@ -69,7 +69,7 @@ jobs:
       script: bundle exec kitchen test $KITCHEN_PLATFORM
     - env: KITCHEN_PLATFORM=debian-bullseye
       script: bundle exec kitchen test $KITCHEN_PLATFORM
-    - env: KITCHEN_PLATFORM=ubuntu-18.04
+    - env: KITCHEN_PLATFORM=ubuntu-1804
       script: bundle exec kitchen test $KITCHEN_PLATFORM
     - env: KITCHEN_PLATFORM=centos-7
       script: bundle exec kitchen test $KITCHEN_PLATFORM
