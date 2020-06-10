@@ -1,11 +1,12 @@
 #
+# Cookbook Name:: sys
 # Tests for custom resource  sys_systemd_unit
 #
-# Copyright 2015 - 2019 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+# Copyright 2015-2020 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
 #
 # Authors:
-#   Dennis Klein
-#   Christopher Huhn
+#  Christopher Huhn   <c.huhn@gsi.de>
+#  Dennis Klein       <d.klein@gsi.de>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -22,7 +23,8 @@
 
 require 'spec_helper'
 
-describe 'lwrp: sys_systemd_unit' do
+# skip this test on travis as it is very slow and times out with Chef >= 13
+describe 'lwrp: sys_systemd_unit', unless: ENV['TRAVIS'] do
 
   before { skip('Testing the sys_systemd_unit LWRP makes Travis jobs timeout on Chef 13') }
 

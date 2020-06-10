@@ -14,7 +14,8 @@ begin
   require 'foodcritic'
   FoodCritic::Rake::LintTask.new do |task|
     task.options = {
-      :exclude_paths => ['example_config/**/*']
+      exclude_paths: ['example_config/**/*'],
+      fail_tags: %w[!FC091 !FC092]
     }
   end
 rescue LoadError

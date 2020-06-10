@@ -2,7 +2,7 @@
 language: ruby
 cache: bundler
 
-dist: xenial
+dist: bionic
 
 services: docker
 
@@ -53,11 +53,11 @@ jobs:
     - stage: chefspec
       script: bundle exec rake chefspec
       env: CHEF_VERSION=13.8
+      rvm: 2.5
     - stage: chefspec
       script: bundle exec rake chefspec
       env: CHEF_VERSION=14
-    - stage: chefspec
-      script: bundle exec rake chefspec
+      rvm: 2.5
     - stage: kitchen
       env: KITCHEN_PLATFORM=debian-stretch
       script: bundle exec kitchen test $KITCHEN_PLATFORM
@@ -67,7 +67,9 @@ jobs:
       script: bundle exec kitchen test $KITCHEN_PLATFORM
     - env: KITCHEN_PLATFORM=debian-wheezy
       script: bundle exec kitchen test $KITCHEN_PLATFORM
-    - env: KITCHEN_PLATFORM=ubuntu-18.04
+    - env: KITCHEN_PLATFORM=debian-bullseye
+      script: bundle exec kitchen test $KITCHEN_PLATFORM
+    - env: KITCHEN_PLATFORM=ubuntu-1804
       script: bundle exec kitchen test $KITCHEN_PLATFORM
     - env: KITCHEN_PLATFORM=centos-7
       script: bundle exec kitchen test $KITCHEN_PLATFORM

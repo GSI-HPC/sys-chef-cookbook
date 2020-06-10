@@ -1,5 +1,13 @@
+# Cookbook Name:: sys
+# File:: definitions/sys_ssh_authorize.rb
 #
-# Copyright 2012, Victor Penso
+# Copyright 2012-2020 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+#
+# Authors:
+#  Christopher Huhn   <c.huhn@gsi.de>
+#  Dennis Klein       <d.klein@gsi.de>
+#  Matthias Pausch    <m.pausch@gsi.de>
+#  Victor Penso       <v.penso@gsi.de>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -30,8 +38,8 @@ define :sys_ssh_authorize, :keys => Array.new, :managed => false do
       else
         if node['etc']['passwd'].has_key?(account)
           # path to the user SSH configuration
-          dot_ssh = "#{node['etc']['passwd'][account].dir}/.ssh"
-          gid     = node['etc']['passwd'][account].gid
+          dot_ssh = "#{node['etc']['passwd'][account]['dir']}/.ssh"
+          gid     = node['etc']['passwd'][account]['gid']
         elsif node['sys']['accounts'].key?(account) &&
               node['sys']['accounts'][account].key?('home')
           dot_ssh = "#{node['sys']['accounts'][account]['home']}/.ssh"

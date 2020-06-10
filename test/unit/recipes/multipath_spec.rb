@@ -8,9 +8,11 @@ describe 'sys::multipath' do
   end
 
   context 'with some test attributes' do
-    before do
-      chef_run.node.default['sys']['multipath']['defaults']['user_friendly_names'] = 'yes'
-      chef_run.converge(described_recipe)
+    cached(:chef_run) do
+      ChefSpec::SoloRunner.new do |node|
+        node.default['sys']['multipath']['defaults']['user_friendly_names'] =
+          'yes'
+      end.converge(described_recipe)
     end
 
     it 'installs multipath-tools' do

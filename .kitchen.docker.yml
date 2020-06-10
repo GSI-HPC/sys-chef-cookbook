@@ -20,11 +20,13 @@ platforms:
     # wheezy chef package is 10.12
     driver:
       require_chef_omnibus: 12.0.3
+      provision_command:
+        - /bin/true
   - name: debian-buster
   - name: debian-bullseye
   - name: ubuntu-18.04
   - name: centos-7
     driver:
-      require_chef_omnibus: 12
+      require_chef_omnibus: 13
       provision_command:
         - yum install -y rubygems

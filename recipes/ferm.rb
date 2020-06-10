@@ -48,9 +48,8 @@ unless node['sys']['ferm']['rules'].empty?
     end
   end
 
-  package 'ferm' do
-    action :upgrade
-  end
+  package 'libnet-dns-perl' # required for @resolve in ferm.conf
+  package 'ferm'
 
   fermserviceaction = :enable
   fermaction = :start
