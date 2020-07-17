@@ -2,7 +2,14 @@
 # Cookbook Name:: sys
 # Recipe:: pam
 #
-# Copyright 2013, Bastian Neuburger,  Victor Penso
+# Copyright 2013-2019 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+#
+# Authors:
+#  Christopher Huhn    <c.huhn@gsi.de>
+#  Dennis Klein        <d.klein@gsi.de>
+#  Bastian Neuburger   <b.neuburger@gsi.de>
+#  Matthias Pausch     <m.pausch@gsi.de>
+#  Victor Penso        <v.penso@gsi.de>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -25,8 +32,8 @@ if node['sys']['pam']['access'] # ~FC023 Do not break conventions in sys
   template '/etc/security/access.conf' do
     source 'etc_security_access.conf.erb'
     owner 'root'
-    group 'root'
-    mode "0600"
+    group node['sys']['admin_group']
+    mode "0640"
     variables(
       rules:   node['sys']['pam']['access'],
       default: node['sys']['pam']['access_default']
