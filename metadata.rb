@@ -15,4 +15,4 @@ supports         'debian'
 
 depends          'line', '< 1.0'
 
-version          '1.53.8'
+version          '1.54.0'
