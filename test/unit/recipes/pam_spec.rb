@@ -2,12 +2,12 @@
 # Cookbook Name:: sys
 # File:: test/unit/recipes/pam_spec.rb
 #
-# Copyright 2015-2019 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+# Copyright 2015-2020 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
 #
 # Authors:
-#  Christopher Huhn <C.Huhn@gsi.de>
-#  Dennis Klein <d.klein@gsi.de>
-#  Matthias Pausch <m.pausch@gsi.de>
+#  Christopher Huhn <c.huhn@gsi.de>
+#  Dennis Klein     <d.klein@gsi.de>
+#  Matthias Pausch  <m.pausch@gsi.de>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -49,12 +49,13 @@ describe 'sys::pam' do
     end
 
     it 'manages /etc/security/access.conf' do
-      expect(chef_run).to create_template('/etc/security/access.conf').with_mode('0600').with(
-        :variables => {
-          rules: %w(access_1 access_2 access_3),
-          default: nil
-        }
-      )
+      expect(chef_run).to create_template('/etc/security/access.conf')
+                            .with_mode('0640')
+                            .with(variables: {
+                                    rules: %w(access_1 access_2 access_3),
+                                    default: nil
+                                  }
+                                 )
 
       expect(chef_run).to render_file('/etc/security/access.conf').with_content(
         "access_1\naccess_2\naccess_3"
