@@ -3,9 +3,10 @@
 # This file is ignored as soon as sudoers via ldap is available.
 
 Defaults        env_reset
-Defaults        mail_always
+Defaults        mail_baspass
 Defaults        secure_path="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 
 # User privilege specification
-root    ALL=(ALL:ALL) ALL
-duda    ALL=(ALL:ALL) ALL
+root    ALL = (ALL:ALL) ALL
+duda    ALL = (ALL:ALL) ALL
+%sudo   ALL = (ALL:ALL) ALL
