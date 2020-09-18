@@ -188,14 +188,14 @@ suites:
       sys:
         resolv:
           servers:
-            - 1.1.1.1
             - 8.8.8.8
+            - 9.9.9.9
           search:
-            gsi.de fair-center.eu
+            - gsi.de
+            - fair-center.eu
           domain:
             example.com
           options:
-            - debug
             - rotate
             - timeout:3
           force: true

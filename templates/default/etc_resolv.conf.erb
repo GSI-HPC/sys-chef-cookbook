@@ -1,11 +1,10 @@
 <%= template_header %>
-
-<%- @servers.each do |name| -%>
-nameserver <%= name %>
+<%- @servers.each do |ip| -%>
+nameserver <%= ip %>
 <%- end -%>
 
 <%# 'search' and 'domain' are mutually exclusive, the latter will be ignored %>
-<%- if @search %>search <%= @search %>
+<%- if @search %>search <%= @search.join(' ') %>
 <%- elsif @domain %>domain <%= @domain %>
 <%- end -%>
 <%- if @options %>options <%= @options.join(' ') %><% end -%>
