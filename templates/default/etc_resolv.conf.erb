@@ -7,4 +7,4 @@ nameserver <%= ip %>
 <%- if @search %>search <%= @search.join(' ') %>
 <%- elsif @domain %>domain <%= @domain %>
 <%- end -%>
-<%- if @options %>options <%= @options.join(' ') %><% end -%>
+<%- unless @options.empty? %>options <%= @options.join(' ') %><% end -%>
