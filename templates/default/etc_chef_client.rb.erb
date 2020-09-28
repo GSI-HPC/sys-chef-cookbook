@@ -1,7 +1,7 @@
 <%= template_header -%>
 
 <%- nodename = @node_name || node['fqdn'] -%>
-<%- if nodename
+<%- if nodename -%>
 node_name        '<%= nodename %>'
 
 <%- end -%>
