@@ -65,7 +65,6 @@ template '/etc/default/chef-client' do
     :interval => node['sys']['chef']['interval'],
     :splay    => node['sys']['chef']['splay']
   )
-  notifies :restart, "service[chef-client]"
 end
 
 package 'ruby-sysloglogger' if node['sys']['chef']['use_syslog']
@@ -88,8 +87,6 @@ template '/etc/chef/client.rb' do
   group node['sys']['chef']['group']
   mode "0644"
   variables v
-
-  notifies :restart, "service[chef-client]"
   ignore_failure true
 end
 
@@ -115,6 +112,8 @@ end
 file node['sys']['chef']['client_key'] do
   group node['sys']['chef']['group']
   mode  '0640'
+  # don't create the file:
+  only_if { ::File.exist?(node['sys']['chef']['client_key']) }
 end
 
 # Create a script in cron.hourly to make sure chef-client keeps running
@@ -172,4 +171,6 @@ service 'chef-client' do
   supports :restart => true, :status => true
   action actions
   ignore_failure true
+  subscribes :restart, 'template[/etc/default/chef-client]'
+  subscribes :restart, 'template[/etc/chef/client.rb]'
 end
