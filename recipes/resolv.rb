@@ -59,7 +59,8 @@ template '/etc/resolv.conf' do
   mode "0644"
   # don't edit the file /etc/resolv.conf might point to but the file itself
   manage_symlink_source false
-  force_unlink node['sys']['resolv']['force']
+  # FIXME: fix "false" == true logic here:
+  force_unlink node['sys']['resolv']['force'] || false
   variables(
     servers: node['sys']['resolv']['servers'],
     domain:  node['sys']['resolv']['domain'],
