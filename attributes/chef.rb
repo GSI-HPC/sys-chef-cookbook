@@ -12,7 +12,10 @@ default_unless['sys']['chef']['use_syslog']     = false
 default_unless['sys']['chef']['log_level']      = ':info'
 default_unless['sys']['chef']['group']          = 'adm'
 default_unless['sys']['chef']['verify_ssl']     = 'all'
-default_unless['sys']['chef']['trusted_certs_dir'] = '/etc/ssl/certs'
+
+if node['platform_family'] == 'debian'
+  default_unless['sys']['chef']['trusted_certs_dir'] = '/etc/ssl/certs'
+end
 
 default_unless['sys']['chef']['restart_via_cron'] = false
 
