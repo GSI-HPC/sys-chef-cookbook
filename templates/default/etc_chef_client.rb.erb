@@ -1,7 +1,10 @@
 <%= template_header -%>
 
-node_name        '<%= node['fqdn'] %>'
+<%- nodename = @node_name || node['fqdn'] -%>
+<%- if nodename
+node_name        '<%= nodename %>'
 
+<%- end -%>
 chef_server_url  '<%= @server_url %>'
 client_key       '<%= @client_key %>'
 
