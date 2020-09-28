@@ -21,7 +21,7 @@ describe 'sys::ferm' do
     end
 
     it 'upgrades package ferm' do
-      expect(chef_run).to upgrade_package('ferm')
+      expect(chef_run).to install_package('ferm')
     end
 
     it 'manages /etc/ferm/ferm.conf' do

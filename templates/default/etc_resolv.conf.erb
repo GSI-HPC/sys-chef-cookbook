@@ -1,7 +1,10 @@
 <%= template_header %>
+<%- @servers.each do |ip| -%>
+nameserver <%= ip %>
+<%- end -%>
 
-<% @servers.each do |name| %>
-nameserver <%= name %>
-<% end %>
-<% unless @domain.empty? %>domain <%= @domain %><% end %>
-<% unless @search.empty? %>search <%= @search %><% end %>
+<%# 'search' and 'domain' are mutually exclusive, the latter will be ignored %>
+<%- if @search %>search <%= @search.join(' ') %>
+<%- elsif @domain %>domain <%= @domain %>
+<%- end -%>
+<%- unless @options.empty? %>options <%= @options.join(' ') %><% end -%>

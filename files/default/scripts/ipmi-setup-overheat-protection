@@ -4,7 +4,22 @@
 #
 # Requires: freeipmi-tools
 #
-# $Id: setup-ipmi-overheat-protection 38403 2016-01-15 10:44:20Z christo $
+# Copyright 2011-2020 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+#
+# Authors:
+#  Christopher Huhn   <C.Huhn@gsi.de>
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 #
 
 # abort on error
@@ -76,7 +91,7 @@ if [ -z "$SENSOR" ]; then
         SENSOR=4_System_Temp
     else
         # we take the first sensor that suits our naming schema:
-        SENSOR=$(/usr/sbin/ipmi-sensors-config "$REMOTE" --listsections |
+        SENSOR=$(/usr/sbin/ipmi-sensors-config $REMOTE --listsections |
                         egrep "^[0-9]+_(Sys(tem)?|Ambient|Baseboard)_Temp\.?$" |
                         head -1)
     fi
@@ -96,8 +111,9 @@ SENSOR_NUM=$(/usr/sbin/ipmi-sensors -vs "${SENSOR%%_*}" |
 
 # setup sane temperature thresholds
 #  somtimes these thresholds are volatile and have to be reset after power loss/reset of the BMC
-/usr/sbin/ipmi-sensors-config "$REMOTE" --commit -e "${SENSOR}:Upper_Non_Critical_Threshold=${THRESH_WARN}"
-/usr/sbin/ipmi-sensors-config "$REMOTE" --commit -e "${SENSOR}:Upper_Critical_Threshold=${THRESH_CRIT}"
+# TODO: HP has no Upper_Non_Critical_Threshold
+/usr/sbin/ipmi-sensors-config $REMOTE --commit -e "${SENSOR}:Upper_Non_Critical_Threshold=${THRESH_WARN}"
+/usr/sbin/ipmi-sensors-config $REMOTE --commit -e "${SENSOR}:Upper_Critical_Threshold=${THRESH_CRIT}"
 
 PEF_CONFIG="/usr/sbin/pef-config $REMOTE"
 

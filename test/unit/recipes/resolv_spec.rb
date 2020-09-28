@@ -1,16 +1,5 @@
 describe 'sys::resolv' do
 
-  before do
-    stub_command("test -L /etc/resolv.conf").and_return(false)
-  end
-
-  let(:chef_run) do
-    ChefSpec::SoloRunner.new do |node|
-      node.default['sys']['resolv']['servers'] = %w(8.8.4.4 8.8.8.8)
-      node.default['sys']['resolv']['search']  = "example.com"
-    end.converge(described_recipe)
-  end
-
   context "node['sys']['resolv']['servers'] is empty" do
     let(:chef_run) { ChefSpec::SoloRunner.new.converge(described_recipe) }
 
@@ -21,6 +10,20 @@ describe 'sys::resolv' do
   end
 
   context 'with basic attributes' do
+    before do
+      allow(File).to receive(:symlink?).and_call_original
+      allow(File).to receive(:symlink?).with('/etc/resolv.conf')
+                       .and_return(false)
+    end
+
+    let(:chef_run) do
+      ChefSpec::SoloRunner.new do |node|
+        node.default['sys']['resolv']['servers'] =
+          %w(1.2.3.4 5.6.7.8 9.10.11.12)
+        node.default['sys']['resolv']['search']  = 'example.com'
+      end.converge(described_recipe)
+    end
+
     it 'creates /etc/resolv.conf' do
       expect(chef_run).to create_template('/etc/resolv.conf')
     end
@@ -28,7 +31,9 @@ describe 'sys::resolv' do
 
   context '/etc/resolv.conf is a symlink' do
     before do
-      stub_command("test -L /etc/resolv.conf").and_return(true)
+      allow(File).to receive(:symlink).and_call_original
+      allow(File).to receive(:symlink).with('/etc/resolv.conf')
+                       .and_return(true)
     end
 
     let(:chef_run) do
@@ -37,7 +42,7 @@ describe 'sys::resolv' do
       end.converge(described_recipe)
     end
 
-    xit 'emits a warning' do
+    it 'emits a warning' do
       expect(chef_run).to write_log('resolv.conf-symlink')
     end
 
@@ -55,7 +60,7 @@ describe 'sys::resolv' do
       end.converge(described_recipe)
     end
 
-    xit 'emits a warning' do
+    it 'emits a warning' do
       expect(chef_run).to write_log('domain+search')
     end
   end

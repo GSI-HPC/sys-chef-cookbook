@@ -107,7 +107,10 @@ elsif ! node['sys']['sudo_ldap'].empty?
     group 'root'
     mode  '0400'
     variables(
-      servers: node['sys']['sudo_ldap']['servers']
+      servers: Array(node['sys']['sudo_ldap']['servers'])
     )
   end
+
+  # TODO: Start krb5cc for sudoers
+  # TODO: configure nsswitch for sudoers
 end
