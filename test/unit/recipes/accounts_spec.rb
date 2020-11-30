@@ -2,7 +2,7 @@
 # Cookbook Name:: sys
 # Unit tests for recipe sys::accounts
 #
-# Copyright 2015-2019 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+# Copyright 2015-2020 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
 #
 # Authors:
 #  Christopher Huhn  <C.Huhn@gsi.de>
@@ -95,6 +95,9 @@ describe 'sys::accounts' do
         server.create_data_bag('localgroups', {
                                  'g2' => @g2item
                                })
+        # trigger installation of ruby-shadow:
+        node.automatic['chef_packages']['chef']['chef_root'] =
+          '/usr/lib/ruby/vendor_ruby'
       end.converge(described_recipe)
     end
 
