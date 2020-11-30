@@ -30,7 +30,8 @@ describe package('openssh-server') do
   it { should be_installed }
 end
 
-describe service('ssh') do
+# on Debian the unit is named ssh.service, but an alias is defined
+describe service((host_inventory['platform'] == 'redhat') ? 'sshd' : 'ssh') do
   it { should be_enabled }
   it { should be_running }
 end
