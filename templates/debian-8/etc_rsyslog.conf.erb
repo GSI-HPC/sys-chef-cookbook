@@ -103,3 +103,25 @@ news.notice			-/var/log/news/news.notice
 # Emergencies are sent to everybody logged in.
 #
 *.emerg				:omusrmsg:*
+
+#
+# I like to have messages displayed on the console, but only on a virtual
+# console I usually leave idle.
+#
+#daemon,mail.*;\
+#	news.=crit;news.=err;news.=notice;\
+#	*.=debug;*.=info;\
+#	*.=notice;*.=warn	/dev/tty8
+
+# The named pipe /dev/xconsole is for the `xconsole' utility.  To use it,
+# you must invoke `xconsole' with the `-file' option:
+# 
+#    $ xconsole -file /dev/xconsole [...]
+#
+# NOTE: adjust the list below, or you'll go crazy if you have a reasonably
+#      busy site..
+#
+daemon.*;mail.*;\
+	news.err;\
+	*.=debug;*.=info;\
+	*.=notice;*.=warn	|/dev/xconsole

@@ -220,6 +220,19 @@ suites:
           config:
             ClientAliveInterval: 4711
             X11Forwarding: 'no'
+  - name: sys_ssl
+    run_list:
+      - recipe[sys::ssl]
+    attributes:
+      sys:
+        ssl:
+          certs:
+            - {} # will not find data bag item
+            - data_bag_item: www-linux.gsi.de
+            - data_bag: other_certs
+              data_bag_item: alternativlos.org
+              file: /tmp/covfefe.pem
+            - data_bag: nonexistant_databag
   - name: sys_sudo
     run_list:
       - recipe[sys::sudo]
