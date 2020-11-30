@@ -42,7 +42,7 @@ node['sys']['ssl']['certs'].each do |attrs|
       group 'root'
       mode  '0644' # this file is public
     end
-  rescue Net::HTTPServerException => e
+  rescue Net::HTTPServerException
     next
   end
 end
