@@ -48,7 +48,9 @@ unless node['sys']['ferm']['rules'].empty?
     end
   end
 
-  package 'libnet-dns-perl' # required for @resolve in ferm.conf
+  package 'libnet-dns-perl' do # required for @resolve in ferm.conf
+    only_if { node['platform_family'] == 'Debian' }
+  end
   package 'ferm'
 
   fermserviceaction = :enable
