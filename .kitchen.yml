@@ -253,3 +253,14 @@ suites:
                 - vagrant
             rules:
               - "SMUTJE ALL=(ALL) NOPASSWD: ALL"
+  - name: sys_time
+    run_list:
+      - recipe[sys::time]
+    attributes:
+      sys:
+        time:
+          zone: Antarctica/Troll
+          servers:
+            - ntp1.net.berkeley.edu
+            - time1.esa.int
+            - ntp0.as34288.net
