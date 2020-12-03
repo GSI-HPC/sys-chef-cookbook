@@ -2,7 +2,13 @@
 # Cookbook Name:: sys
 # Recipe:: time
 #
-# Copyright 2012, Victor Penso
+# Copyright 2012-2020 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+#
+# Authors:
+#  Christopher Huhn  <c.huhn@gsi.de>
+#  Dennis Klein      <d.klein@gsi.de>
+#  Matthias Pausch   <m.pausch@gsi.de>
+#  Victor Penso      <v.penso@gsi.de>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -28,12 +34,26 @@ unless timezone.empty?
   file '/etc/timezone' do
     content "#{timezone}\n"
     mode "644"
-    notifies :run, "execute[#{configure}]"
   end
 
-  execute configure do
-    action :nothing
-    command 'dpkg-reconfigure -f noninteractive tzdata'
+  (area, zone) = timezone.split('/')
+
+  # invoking dpkg-reconfigure only if neccessary is quite cumpersome:
+  bash configure do
+    code <<CMD
+debconf-set-selections <<-DEBCONF:n
+tzdata tzdata/Zones/#{area} select #{zone}
+tzdata tzdata/Areas select #{area}
+DEBCONF
+dpkg-reconfigure -f noninteractive tzdata
+CMD
+    # TODO: writs and use Ohai provider for debconf data
+    not_if <<TEST
+      debconf-show tzdata |
+         grep '^[* ] tzdata/Areas: #{area}$' &&
+      debconf-show tzdata |
+         grep "^[* ] tzdata/Zones/#{area}: #{zone}$"
+TEST
   end
 
 end
