@@ -10,6 +10,7 @@ Vagrant.configure(2) do |config|
      sudo DEBIAN_FRONTEND=noninteractive apt-get -qq -y install snmp
      # v2 is the last version that works with Ruby 2.1:
      sudo gem install chef-vault --version '< 4'
+     sudo DEBIAN_FRONTEND=noninteractive apt-get -qq -y install snmp
   SHELL
 
   # configure proxy if required:
