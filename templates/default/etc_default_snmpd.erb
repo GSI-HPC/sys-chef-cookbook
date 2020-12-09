@@ -11,4 +11,4 @@ SNMPDRUN=yes
 
 # snmpd options (use syslog, close stdin/out/err).
 <%- ll = %i[emerg alert crit err warn notice info debug].rindex(@log_level.to_i) || 4 -%>
-SNMPDOPTS='-L$<%= ll %>d -Lf /dev/null -u snmp -g snmp -I -smux,mteTrigger,mteTriggerConf -p /run/snmpd.pid'
+SNMPDOPTS='-LS<%= ll %>d -Lf /dev/null -u snmp -g snmp -I -smux,mteTrigger,mteTriggerConf -p /run/snmpd.pid'
