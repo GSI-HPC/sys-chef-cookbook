@@ -1,9 +1,11 @@
 #
-# Cookbook Name:: snmp
-# Recipe:: default
+# Cookbook Name:: sys
+# Recipe:: snmp
 #
-# Copyright 2011 - 2019, GSI Darmstadt
+# Copyright 2011-2020 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
 #
+# Authors:
+#  Christopher Huhn   <C.Huhn@gsi.de>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -52,7 +54,8 @@ if node['sys']['snmp']
     mode 0644
     variables(
       user:  'snmp',
-      group: 'snmp'
+      group: 'snmp',
+      log_level: node['sys']['snmp']['log_level'] || :warn
     )
     notifies :restart, "service[snmpd]"
 

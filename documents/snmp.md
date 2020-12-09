@@ -7,16 +7,20 @@ Installs and configures net-snmpd
 
 The attributes for snmpd configuration are located beneath `node["sys"]["snmp"]`:
 
-`community`:
-Sets the community for read access, defaults to `public`
+`community`
+: Sets the community for read access, defaults to `public`
 
-`full_access`:
-Allow the reader to walk the full tree, otherwise `systemonly`. Default: false
+`full_access`
+: Allow the reader to walk the full tree, otherwise `systemonly`. Default: false
 
-`sys_contact` and `sys_location`:
-Standard SNMP attributes for admin contact and location of the system.
+`sys_contact` and `sys_location`
+: Standard SNMP attributes for admin contact and location of the system.
 
-Other minor tweaks can be set via attributes, check the snmpd.conf template for hints.
+`log_level`
+: messages with the given log level and above will be logged to syslog (facility `daemon`)
+
+Other minor tweaks can be set via attributes,
+check the template `etc_snmp_snmpd.conf.erb` for hints.
 
 ## Defining snmpd extensions
 
