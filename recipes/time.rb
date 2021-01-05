@@ -41,7 +41,7 @@ unless timezone.empty?
   # invoking dpkg-reconfigure only if neccessary is quite cumpersome:
   bash configure do
     code <<CMD
-debconf-set-selections <<-DEBCONF:n
+debconf-set-selections <<-DEBCONF
 tzdata tzdata/Zones/#{area} select #{zone}
 tzdata tzdata/Areas select #{area}
 DEBCONF
