@@ -1,4 +1,9 @@
-Configures Sudo with files in the directory `/etc/sudoers.d/*` containing user,host, and command aliases as well as rules. Furthermore is creates a file `/etc/sudoers` to source all files within this directory.
+# `sys::sudo`
+
+Configures Sudo with files in the directory `/etc/sudoers.d/*` containing user,
+host, and command aliases as well as rules.
+Furthermore is creates a file `/etc/sudoers` to source all files within this
+directory.
 
 ↪ `attributes/sudo.rb`  
 ↪ `recipes/sudo.rb`  
@@ -7,7 +12,7 @@ Configures Sudo with files in the directory `/etc/sudoers.d/*` containing user,h
 ↪ `templates/*/etc_network_sudoers.d_generic.erb`  
 ↪ `tests/roles/sys_sudo_test.rb`
 
-**Resources**
+## Resources
 
 The following code deploys a file called `/etc/sudoers.d/admin`.
 
@@ -19,7 +24,11 @@ The following code deploys a file called `/etc/sudoers.d/admin`.
       )
     end
 
-It defining and `User_Alias` called "ADMIN" and a pair of rules for this group of users. Similar the following code deploys a file `/etc/sudoers.d/monitor` including `Cmnd_Alias`s and a single rule.
+It defines an `User_Alias` called "ADMIN" and a pair of rules for this group of
+users.
+
+Similar the following code deploys a file `/etc/sudoers.d/monitor` including
+`Cmnd_Alias`s and a single rule:
 
     sys_sudo "monitor" do
        commands(
@@ -31,10 +40,12 @@ It defining and `User_Alias` called "ADMIN" and a pair of rules for this group o
 
 The `sys_sudo` resource supports `users`, `hosts`, `commands`, and `rules`.
 
-**Attributes**
+## Attributes
 
-All attributes in `node.sys.sudo`:
+All attributes in `node['sys']['sudo'][_stanza_]`:
 
+* `defaults` (optional) define some `Defaults`
+* `config` (optional) defines some configuration options.
 * `users` (optional) defines a hash of user aliases.
 * `hosts` (optional) defines a hash of host aliases.
 * `commands` (optional) defines a hash of command aliases.
@@ -46,6 +57,7 @@ Configure command execution for a group of administrators:
       "sudo" => {
         "admin" => {
           "users" => { "ADMIN" => ["joe","bob","ted"] },
+          defaults: { user: 'ADMIN', option: 'env_keep += HTTP_PROXY' }
           "rules" => [
             "ADMIN ALL = NOPASSWD: /usr/bin/chef-client",
             "ADMIN ALL = ALL"
@@ -73,4 +85,21 @@ Configure command execution for a group of administrators:
       }
     }
 
-Furthermore some extra command for a monitoring user `mon`, and extra privileges for users.
+Furthermore some extra command for a monitoring user `mon`, and extra privileges
+for users.
+
+### Email Notification Config
+
+`node['sys']['sudo']['config']` accepts the following attributes for
+email notification setup:
+
+* `mailfrom`: the sender address - default: the offending account
+* `mailto`: the recipient address - default: root
+* `mailsub` the notification email subject
+
+### Cleanup/Forced Management
+
+`node['sys']['sudo']['config']['cleanup']` controls whether all files
+in `/etc/sudoers.d/` shall be managed by `sys::sudo`.
+Setting it to `true` will delete all files in `/etc/sudoers.d/` where no
+corresponding `node['sys']['sudo'][…]` attributes are defined.
