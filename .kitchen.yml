@@ -2,7 +2,7 @@
 # Cookbook Name:: sys
 # Config file for test-kitchen
 #
-# Copyright 2015-2020 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+# Copyright 2015-2021 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
 #
 # Authors:
 #  Christopher Huhn   <c.huhn@gsi.de>
@@ -91,7 +91,7 @@ suites:
           simpsons:
   - name: sys_apt
     run_list:
-      - recipe[sys::ohai] # for 'debian' ohai plugin
+      - recipe[sys::ohai]   # for 'debian' ohai plugin
       - recipe[sys::apt]
     attributes:
       sys:
@@ -227,7 +227,7 @@ suites:
       sys:
         ssl:
           certs:
-            - {} # will not find data bag item
+            - {}    # will not find data bag item
             - data_bag_item: www-linux.gsi.de
             - data_bag: other_certs
               data_bag_item: alternativlos.org
@@ -235,9 +235,13 @@ suites:
             - data_bag: nonexistant_databag
   - name: sys_sudo
     run_list:
+      - recipe[sys::env]
       - recipe[sys::sudo]
     attributes:
       sys:
+        env:
+          FFF: "SKOLSTREJK FÖR KLIMATET"
+          RESCUE: "THE PLANET"
         sudo:
           config:
             cleanup: true
@@ -245,12 +249,17 @@ suites:
             mailto: daemon
             mailsub: "[SUDO] RED ALERT!"
           kitchen:
+            defaults:
+              - user: SMUTJE
+                option: "env_keep += FFF"
             users:
               SMUTJE:
                 # for kitchen-docker:
                 - kitchen
                 # for kitchen-vagrant:
                 - vagrant
+                # for env_keep test:
+                - root
             rules:
               - "SMUTJE ALL=(ALL) NOPASSWD: ALL"
   - name: sys_time

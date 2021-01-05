@@ -54,12 +54,14 @@ describe 'sys::sudo' do
 
     it 'manages file /etc/sudoers.d/test' do
       expect(chef_run).to create_template('/etc/sudoers.d/test')
-                           .with(:mode => '0440')
+                           .with(mode: 0o0640)
+                           .with(group: 'sudo')
     end
 
     it 'surrounds some users with double quotes' do
       expect(chef_run).to create_template('/etc/sudoers.d/test').with(
                             variables: {
+                              defaults: [],
                               users: {
                                 'TEST' => [ 'regular', '"with-minus"' ]
                               },
