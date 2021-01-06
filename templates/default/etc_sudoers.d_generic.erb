@@ -1,17 +1,21 @@
 <%= template_header %>
 
-<% @users.each_pair do |name,users| -%>
+<%- @defaults.each do |options| -%>
+Defaults<%= options['user'] ? ":#{options['user']}" : '' %> <%= options['option'] %>
+<%- end -%>
+
+<%- @users.each do |name, users| -%>
 User_Alias <%= name %> = <%= users.join(', ') %>
-<%- end %>
+<%- end -%>
 
-<% @hosts.each_pair do |name,hosts| -%>
+<%- @hosts.each do |name, hosts| -%>
 Host_Alias <%= name %> = <%= hosts.join(', ') %>
-<%- end %>
+<%- end -%>
 
-<% @commands.each_pair do |name,commands| -%>
+<%- @commands.each do |name, commands| -%>
 Cmnd_Alias <%= name %> = <%= commands.join(', ') %>
-<%- end %>
+<%- end -%>
 
-<% @rules.each do |rule| -%>
+<%- @rules.each do |rule| -%>
 <%= rule %>
-<%- end %>
+<%- end -%>
