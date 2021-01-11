@@ -24,17 +24,21 @@ define :sys_sudo do
   name = params[:name]
   users = {}
 
-  params[:users].each_pair do |user_alias, user_list|
-    # user names including dashes must be quoted:
-    users[user_alias] = user_list.map do |user|
-      user.include?('-') ? "\"#{user}\"" : user
+  if params[:users]
+    params[:users].each_pair do |user_alias, user_list|
+      # user names including dashes must be quoted:
+      users[user_alias] = user_list.map do |user|
+        user.include?('-') ? "\"#{user}\"" : user
+      end
     end
   end
 
   template "/etc/sudoers.d/#{name}" do
     source 'etc_sudoers.d_generic.erb'
     owner  'root'
-    group  'sudo'
+    # On Debian Wheezy the group must be root?
+    group((node['platform'] == 'debian' && node['platform_version'].to_i < 8) ?
+            'root' : node['sys']['admin_group'])
     mode   0o0640
     cookbook "sys"
     variables(
