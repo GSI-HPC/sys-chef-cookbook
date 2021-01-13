@@ -1,8 +1,13 @@
 #
-# Cookbook Name:: ohai
-# Recipe:: default
+# Cookbook Name:: sys
+# Recipes:: ohai
 #
-# Copyright 2010, Opscode, Inc
+# Copyright 2013-2019 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+#
+# Authors:
+#  Christopher Huhn   <c.huhn@gsi.de>
+#  Dennis Klein       <d.klein@gsi.de>
+#  Matthias Pausch    <m.pausch@gsi.de>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
