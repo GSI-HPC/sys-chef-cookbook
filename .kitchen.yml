@@ -169,6 +169,9 @@ suites:
                   - 'policy ACCEPT;'
                 FORWARD:
                   - 'policy DROP;'
+  - name: sys_ohai
+    run_list:
+      - recipe[sys::ohai]
   - name: sys_mail
     run_list:
       - recipe[sys::mail]
