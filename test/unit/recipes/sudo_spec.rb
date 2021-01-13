@@ -34,6 +34,7 @@ describe 'sys::sudo' do
             mailsub:  '[sudo] make me a sandwich'
           }
         }
+	node.default['sys']['admin_group'] = 'a-team'
       end.converge(described_recipe)
     end
 
@@ -55,7 +56,7 @@ describe 'sys::sudo' do
     it 'manages file /etc/sudoers.d/test' do
       expect(chef_run).to create_template('/etc/sudoers.d/test')
                            .with(mode: 0o0640)
-                           .with(group: 'sudo')
+                           .with(group: 'a-team')
     end
 
     it 'surrounds some users with double quotes' do
