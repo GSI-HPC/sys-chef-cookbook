@@ -22,7 +22,7 @@
 #
 
 Ohai.plugin(:SSHHostKeyFingerprints) do
-  provides 'keys/ssh'
+  provides 'keys/ssh/fingerprints'
   depends 'keys/ssh'
 
   collect_data(:default) do
