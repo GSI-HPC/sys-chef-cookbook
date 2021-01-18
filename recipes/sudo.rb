@@ -2,11 +2,12 @@
 # Cookbook Name:: sys
 # Recipe:: sudo
 #
-# Copyright 2012-2019, GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+# Copyright 2012-2021, GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+#
 # Authors:
-#  Victor Penso
-#  Matthias Pausch
-#  Christopher Huhn
+#  Christopher Huhn   <c.huhn@gsi.de>
+#  Matthias Pausch    <m.pausch@gsi.de>
+#  Victor Penso       <v.penso@gsi.de>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -73,15 +74,16 @@ if node['sys']['sudo_ldap'].empty? &&
     # filter out config branch from attribute tree:
     node['sys']['sudo'].reject do |key|
       key.to_s == 'config'
-    end.each_pair do |name,config|
-      # skip empty configs:
-      next unless config
+    end.each_pair do |name, options|
+      # skip empty config:
+      next unless options
 
       sys_sudo name do
-        users config[:users] if config.has_key? 'users'
-        hosts config[:hosts] if config.has_key? 'hosts'
-        commands config [:commands] if config.has_key? 'commands'
-        rules config[:rules]
+        defaults options['defaults']
+        users    options['users']
+        hosts    options['hosts']
+        commands options['commands']
+        rules    options['rules']
       end
     end
 elsif ! node['sys']['sudo_ldap'].empty?

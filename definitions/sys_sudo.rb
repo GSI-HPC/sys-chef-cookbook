@@ -1,5 +1,11 @@
 #
-# Copyright 2013, Victor Penso
+# Copyright 2013-2021 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+#
+# Authors:
+#  Christopher Huhn   <c.huhn@gsi.de>
+#  Dennis Klein       <d.klein@gsi.de>
+#  Matthias Pausch    <m.pausch@gsi.de>
+#  Victor Penso       <v.penso@gsi.de>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,23 +20,33 @@
 # limitations under the License.
 #
 
-define :sys_sudo, :users => Hash.new, :hosts => Hash.new, :commands => Hash.new, :rules => Array.new do
+define :sys_sudo do
   name = params[:name]
-  users = Hash.new
-  params[:users].each_pair do |user_alias, user_list|
-    users[user_alias] = user_list.map{ |user| user.include?('-') ? "\"#{user}\"" : user }
+  users = {}
+
+  if params[:users]
+    params[:users].each_pair do |user_alias, user_list|
+      # user names including dashes must be quoted:
+      users[user_alias] = user_list.map do |user|
+        user.include?('-') ? "\"#{user}\"" : user
+      end
+    end
   end
+
   template "/etc/sudoers.d/#{name}" do
     source 'etc_sudoers.d_generic.erb'
-    owner 'root'
-    group 'root'
-    mode "0440"
+    owner  'root'
+    # On Debian Wheezy the group must be root?
+    group((node['platform'] == 'debian' && node['platform_version'].to_i < 8) ?
+            'root' : node['sys']['admin_group'])
+    mode   0o0640
     cookbook "sys"
     variables(
-      :users => users,
-      :hosts => params[:hosts],
-      :commands => params[:commands],
-      :rules => params[:rules]
+      defaults: params[:defaults] || [],
+      users:    users,
+      hosts:    params[:hosts]    || {},
+      commands: params[:commands] || {},
+      rules:    params[:rules]
     )
   end
 end
