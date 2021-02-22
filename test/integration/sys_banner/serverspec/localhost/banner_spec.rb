@@ -2,7 +2,7 @@
 # Cookbook Name:: sys
 # Integration tests for sys::banner
 #
-# Copyright 2019 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+# Copyright 2019-2021 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
 #
 # Authors:
 #  Christopher Huhn   <C.Huhn@gsi.de>
@@ -30,7 +30,8 @@ describe file('/etc/profile.d/info.sh') do
   it { should exist }
 end
 
-describe command('shellcheck /etc/profile.d/info.sh') do
+describe command('shellcheck /etc/profile.d/info.sh'),
+         if: os[:family] != 'cumuluslinux' do   # no shellcheck on cumulus
   its(:exit_status) { should be_zero }
 end
 
