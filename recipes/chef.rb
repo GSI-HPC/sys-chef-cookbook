@@ -64,6 +64,12 @@ end
 
 package 'ruby-sysloglogger' if node['sys']['chef']['use_syslog']
 
+directory '/etc/chef' do
+  owner 'root'
+  group node['sys']['chef']['group']
+  mode  0o0750
+end
+
 # compile attributes for the client.rb template:
 v              = node['sys']['chef'].to_hash
 v[:server_url] = server_url
