@@ -25,6 +25,9 @@
 driver:
   name: vagrant
   box_check_update: true
+  customize:
+    # cumulus needs more RAM:
+    memory: 768
 
 provisioner:
   require_chef_omnibus: false
@@ -38,38 +41,17 @@ provisioner:
 
 verifier:
   name: busser
-  ruby_bindir: /usr/bin
+  # ruby_bindir: /usr/bin
 
 platforms:
-  - name: stretch
+  - name: cumulus
     driver:
-      box: debian/stretch64
+      box: CumulusCommunity/cumulus-vx
+      require_chef_omnibus: 14
       provider: libvirt
       provision: true
-      vagrantfiles:
-        - vagrant.rb
-  - name: jessie
-    driver:
-      box: debian/jessie64
-      require_chef_omnibus: 12.0.3
-      provider: libvirt
-      provision: true
-      vagrantfiles:
-        - vagrant.rb
-  - name: buster
-    driver:
-      box: debian/buster64
-      provider: libvirt
-      provision: true
-      vagrantfiles:
-        - vagrant.rb
-  - name: bionic
-    driver:
-      box: generic/ubuntu1804
-      provider: libvirt
-      provision: true
-      vagrantfiles:
-        - vagrant.rb
+      # vagrantfiles:
+      #   - vagrant.rb
 
 suites:
   - name: sys_accounts
@@ -113,24 +95,25 @@ suites:
           repositories:
             # broken on Ubuntu - needs repo key for sid too
             sid: "deb http://ftp.debian.org/debian sid main"
-  - name: sys_autofs
-    run_list:
-      - recipe[sys::autofs]
-      - recipe[sys::file]
-    attributes:
-      sys:
-        autofs:
-          maps:
-            test:
-              # dummy entry to avoid nil value
-              foo: bar
-        file:
-          # create a bind mount autofs map for testing
-          /etc/auto.test:
-            content: tempo -fstype=bind :/tmp
-            notifies:
-              - reload
-              - service[autofs]
+  # makes no sense on cumulus
+  # - name: sys_autofs
+  #   run_list:
+  #     - recipe[sys::autofs]
+  #     - recipe[sys::file]
+  #   attributes:
+  #     sys:
+  #       autofs:
+  #         maps:
+  #           test:
+  #             # dummy entry to avoid nil value
+  #             foo: bar
+  #       file:
+  #         # create a bind mount autofs map for testing
+  #         /etc/auto.test:
+  #           content: tempo -fstype=bind :/tmp
+  #           notifies:
+  #             - reload
+  #             - service[autofs]
   - name: sys_banner
     run_list:
       - recipe[sys::banner]
