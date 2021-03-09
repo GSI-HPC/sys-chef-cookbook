@@ -69,6 +69,7 @@ The "sys" cookbook can be added to a nodes run-list anytime. **By default the co
 * [serial](documents/serial.md) – Configure `/etc/inittab`.
 * [shutdown](documents/shutdown.md) – Resource to restart and power down the node at a defined time.
 * [ssh](documents/ssh.md) – Configure the SSH daemon and deploy/manage authorized keys.
+* [ssl](documents/ssl.md) – Distribute SSL certs and keys via data bags and chef-vault.
 * [sudo](documents/sudo.md) – Add Sudo privileges to `/etc/sudoers.d/`.
 * [sysctl](documents/sysctl.md) (`sysctl`) – Define kernel variables in `/etc/sysctl.d/`.
 * [time](documents/time.md) – Connect to site NTP server and set local time zone. 
@@ -81,16 +82,23 @@ The `Sys::Secret` enables [transport of encrypted data between nodes](documents/
 
 [reaper]: http://packages.debian.org/search?keywords=tmpreaper
 
+# Authors
+
+* Matteo Dessalvi
+* Stefan Haller
+* Christopher Huhn
+* Gabriele Iannetti
+* André Kerkhoff
+* Dennis Klein
+* Ilona Neis
+* Bastian Neuburger
+* Matthias Pausch
+* Victor Penso
+* Thomas Roth
 
 # License
 
-Author:: Bastian Neuburger  
-Author:: Christopher Huhn  
-Author:: Dennis Klein  
-Author:: Matthias Pausch  
-Author:: Victor Penso  
-
-Copyright:: 2012-2013, GSI HPC Department
+Copyright:: 2012-2021 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
 
