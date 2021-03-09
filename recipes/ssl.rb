@@ -55,7 +55,8 @@ node['sys']['ssl']['certs'].each do |attrs|
       content chef_vault_item(cert['key_vault'], cert['data_bag_item'])['file-content']
       owner 'root'
       group 'ssl-cert'
-      mode  '0640' # this file is public
+      mode  '0640' # this file is only readable for the ssl-cert group
+      sensitive true
     end
   rescue Net::HTTPServerException, ChefVault::Exceptions => e
     Chef::Log.warn "Could not retrieve SSL key for #{cert['data_bag_item']}: #{e}"
