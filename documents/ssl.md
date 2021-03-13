@@ -1,12 +1,13 @@
 # `sys::ssl`
 
-Deploys SSL certificates from data bags.
+Deploys SSL certificates from data bags
+and the corresponding keys from chef vaults.
 
 ↪ `recipes/ssl.rb`  
 ↪ `tests/integration/sys_ssl/`  
 
 ## Attributes
- 
+
 `node['sys']['ssl']['certs']` has to be defined as an *array of hashes*.
 Each hash may contain three elements:
 
@@ -40,7 +41,9 @@ sys: {
 }
 ~~~
 
-It will look into the data bag "ssl_certs" and create the file "/etc/ssl/certs/*FQDN*.pem" from the contents of an item with the nodes FQDN as its `id`.
+It will look into the data bag "ssl_certs" and create
+the file "/etc/ssl/certs/*FQDN*.pem" from the contents
+of an item with the nodes FQDN as its `id`.
 
 ## Data bag format
 
@@ -55,3 +58,20 @@ The data bag item must provide two attribute:
   "file-content": "-----BEGIN CERTIFICATE-----\nAAAA[…]ZZZZ\n-----END CERTIFICATE-----"
 }
 ~~~
+
+## Private keys
+
+Private keys corresponding to SSL certificates con be read from chef vaults.
+The management of the private key is controlled by attributes for the respective
+cert in `node['sys']['ssl']['certs']`.
+
+ `key_vault`
+ : The vault name. Default  `ssl_keys`
+
+`key_file`
+: The file the key is written into. Default: "/etc/ssl/private/*data_bag_item*.key"  
+  The file will be readable for the group `ssl-cert`.
+
+Even without explicitly given options, `sys::ssl` will always look for
+corresponding private key for every certificate found.
+If no appropriate vault item is found, a warning is issued.

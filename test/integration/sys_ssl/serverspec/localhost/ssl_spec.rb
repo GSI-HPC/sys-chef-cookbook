@@ -1,7 +1,7 @@
 # Cookbook Name:: sys
 # Integration tests for recipe sys::ssl
 #
-# Copyright 2020 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+# Copyright 2020-2021 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
 #
 # Authors:
 #  Christopher Huhn   <c.huhn@gsi.de>
@@ -24,6 +24,13 @@ require 'openssl'
 
 describe file('/etc/ssl/certs/www-linux.gsi.de.pem') do
   it { should exist }
+end
+
+describe file('/etc/ssl/private/www-linux.gsi.de.key') do
+  it { should exist }
+  its(:content) do
+    should match(/^-----BEGIN RSA PRIVATE KEY-----\nMIIEcgIBAAK.*/)
+  end
 end
 
 describe file('/tmp/covfefe.pem') do
