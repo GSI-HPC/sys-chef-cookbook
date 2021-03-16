@@ -43,7 +43,7 @@ verifier:
 platforms:
   - name: centos8
     driver:
-      box: centos/8
+      box: centos/stream8
       provider: libvirt
       provision: true
       require_chef_omnibus: 14
