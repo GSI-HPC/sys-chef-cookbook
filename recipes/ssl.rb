@@ -2,7 +2,7 @@
 # Cookbook Name:: sys
 # Recipe:: ssl
 #
-# Copyright 2020 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+# Copyright 2020-2021 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
 #
 # Authors:
 #  Christopher Huhn   <C.Huhn@gsi.de>
@@ -24,10 +24,13 @@
 
 return unless node['sys']['ssl']
 
+package 'ssl-cert'
+
 defaults = {
   cert: {
     'data_bag'      => 'ssl_certs',
-    'data_bag_item' => node['fqdn']
+    'data_bag_item' => node['fqdn'],
+    'key_vault'     => 'ssl_keys'
   }
 }
 
@@ -45,4 +48,17 @@ node['sys']['ssl']['certs'].each do |attrs|
   rescue Net::HTTPServerException
     next
   end
+
+  cert['key_file'] ||= "/etc/ssl/private/#{cert['data_bag_item']}.key"
+  begin
+    file cert['key_file'] do
+      content chef_vault_item(cert['key_vault'], cert['data_bag_item'])['file-content']
+      owner 'root'
+      group 'ssl-cert'
+      mode  '0640' # this file is only readable for the ssl-cert group
+      sensitive true
+    end
+  rescue Net::HTTPServerException, ChefVault::Exceptions => e
+    Chef::Log.warn "Could not retrieve SSL key for #{cert['data_bag_item']}: #{e}"
+ end
 end

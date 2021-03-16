@@ -15,5 +15,6 @@ supports         'debian'
 
 depends          'compat_resource'
 depends          'line'
+depends          'chef-vault'
 
 version          '2.0.0'
