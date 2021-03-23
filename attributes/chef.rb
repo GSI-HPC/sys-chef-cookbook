@@ -15,3 +15,7 @@ default_unless['sys']['chef']['verify_ssl']     = 'all'
 default_unless['sys']['chef']['trusted_certs_dir'] = '/etc/ssl/certs'
 
 default_unless['sys']['chef']['restart_via_cron'] = false
+
+if node['platform_family'] == 'rhel'
+  default_unless['sys']['chef']['init_style'] = 'systemd-timer'
+end
