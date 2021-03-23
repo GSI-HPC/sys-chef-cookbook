@@ -20,5 +20,5 @@ end
 default_unless['sys']['chef']['restart_via_cron'] = false
 
 if node['platform_family'] == 'rhel'
-  default_unless['sys']['chef']['init_style'] = 'systemd'
+  default_unless['sys']['chef']['init_style'] = 'systemd-timer'
 end
