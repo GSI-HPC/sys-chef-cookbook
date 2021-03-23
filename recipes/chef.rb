@@ -125,7 +125,10 @@ if node['sys']['chef']['restart_via_cron'] # ~FC023
   end
 end
 
-if node['sys']['chef']['init_style'] == 'systemd'
+if node['sys']['chef']['init_style'] == 'systemd-timer'
+
+  # creates a one shot service and a systemd.timer to trigger it
+
   # mimic the chef-client cookbook systemd unit:
   systemd_unit 'chef-client.service' do
     content(
@@ -158,19 +161,24 @@ if node['sys']['chef']['init_style'] == 'systemd'
     )
     action [:create, :enable, :start]
   end
+
 else
+
+  # normal systemd/sysvinit service
+
   # Comments in systemctl-src say that update-rc.d does not provide
   # information wheter a service is enabled or not and always returns
   # false.  Work around that.
   actions = [:start]
   actions << :enable if Dir.glob('/etc/rc2.d/*chef-client*').empty?
   actions << :enable if Dir.glob('/etc/rc2.d/*chef-client*').empty?
-end
 
-service 'chef-client' do
-  supports :restart => true, :status => true
-  action actions
-  ignore_failure true
-  subscribes :restart, 'template[/etc/default/chef-client]'
-  subscribes :restart, 'template[/etc/chef/client.rb]'
+  service 'chef-client' do
+    supports :restart => true, :status => true
+    action actions
+    ignore_failure true
+    subscribes :restart, 'template[/etc/default/chef-client]'
+    subscribes :restart, 'template[/etc/chef/client.rb]'
+  end
+
 end
