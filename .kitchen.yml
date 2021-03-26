@@ -63,9 +63,19 @@ platforms:
       provision: true
       vagrantfiles:
         - vagrant.rb
-  - name: bionic
+  - name: bullseye
     driver:
-      box: generic/ubuntu1804
+      box: debian/bullseye64
+      provider: libvirt
+      provision: true
+      vagrantfiles:
+        - vagrant.rb
+      provisioner:
+        chef_omnibus_url: https://omnitruck.cinc.sh/install.sh
+        chef_omnibus_root: /opt/cinc
+  - name: focal
+    driver:
+      box: generic/ubuntu2004
       provider: libvirt
       provision: true
       vagrantfiles:
@@ -151,6 +161,7 @@ suites:
       - recipe[sys::chef]
     attributes:
       sys:
+        admin_group: adm
         chef:
           server_url:
             http://localhost:4000
