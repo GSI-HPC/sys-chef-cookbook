@@ -1,4 +1,5 @@
-<%= template_header -%>
+<%= template_header %>
+# frozen_string_literal: true
 
 <%- nodename = @node_name || node['fqdn'] -%>
 <%- if nodename -%>
@@ -23,7 +24,7 @@ validation_client_name '<%= @validation_client_name %>'
 validation_key   '<%= @validation_key %>'
 
 log_level        <%= @log_level %>
-log_location     <%= @use_syslog?'SyslogLogger.new("chef-client")':'STDOUT' %>
+log_location     <%= @use_syslog?'SyslogLogger.new("chef-client")':'$stdout' %>
 
 file_backup_path '/var/backups/chef'
 file_cache_path  '/var/cache/chef'
@@ -36,5 +37,4 @@ pid_file         '/var/run/chef/client.pid'
 ohai.disabled_plugins =  <%= plugins %>
 <%- end %>
 ohai.plugin_path << '<%= @opath %>'
-
 <%= @custom_config -%>
