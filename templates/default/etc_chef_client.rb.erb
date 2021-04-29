@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 <%- nodename = @node_name || node['fqdn'] -%>
-<%- if nodename -%>
+<%- if nodename && ! @skip_nodename -%>
 node_name        '<%= nodename %>'
 
 <%- end -%>
