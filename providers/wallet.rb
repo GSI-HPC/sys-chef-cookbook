@@ -38,15 +38,14 @@ action :deploy do
 
           kinit -t /etc/krb5.keytab host/#{node['fqdn']}
           wallet get keytab \
-              #{new_resource.principal}@#{node['sys']['krb5']['realm'].upcase} \
+              "#{new_resource.principal}@#{node['sys']['krb5']['realm'].upcase}" \
               -f "$TMPFILE"
           ret=$?
           if [ $ret = 0 ]; then
-              mv "$TMPFILE" #{new_resource.place}
-          else
-              rm "$TMPFILE"
-              exit $ret
+              # in contrast to mv cat follows symlinks:
+              cat "$TMPFILE" > "#{new_resource.place}"
           fi
+          rm "$TMPFILE"
           kdestroy
         EOH
       end
