@@ -1,5 +1,5 @@
 actions :deploy
-default_action :deploy
+default_action node['sys']['wallet']['default_action'] ? node['sys']['wallet']['default_action'].to_sym : :deploy
 
 attribute :owner,
   kind_of: String,
