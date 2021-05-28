@@ -93,7 +93,7 @@ if ! node['sys']['ldap'].empty? && File.exist?('/usr/bin/kinit')
           #'PrivateTmp' => 'yes',
         },
         'Install' => {
-          'WantedBy' => 'gsi-remote.target',
+          'WantedBy' => 'multi-user.target',
         }
       })
       notifies :restart, 'service[nslcd]'
@@ -116,7 +116,7 @@ if ! node['sys']['ldap'].empty? && File.exist?('/usr/bin/kinit')
           #'PrivateTmp' => 'yes',
         },
         'Install' => {
-          'WantedBy' => 'gsi-remote.target',
+          'WantedBy' => 'multi-user.target',
         }
       })
       notifies :restart, 'service[k5start-nslcd]'
