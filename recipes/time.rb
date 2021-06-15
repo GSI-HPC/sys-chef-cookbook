@@ -2,7 +2,7 @@
 # Cookbook Name:: sys
 # Recipe:: time
 #
-# Copyright 2012-2020 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+# Copyright 2012-2021 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
 #
 # Authors:
 #  Christopher Huhn  <c.huhn@gsi.de>
@@ -62,8 +62,9 @@ time_servers = node['sys']['time']['servers']
 
 unless time_servers.empty?
 
-  package 'ntpdate'
   package 'ntp'
+  package 'ntpdate'
+  package 'ntpstat'
 
   template '/etc/ntp.conf' do
     source 'etc_ntp.conf.erb'
