@@ -81,7 +81,7 @@ if ! node['sys']['ldap'].empty? && File.exist?('/usr/bin/kinit')
           'Documentation' => 'man:nslcd',
           'Description' => 'Name service lookup daemon',
           'Before' => ['graphical.target', 'xdm.service', 'nscd.service', 'nss-user-lookup.target'],
-          'Wants' => ['nss-user-lookup.target']
+          'Wants' => ['nss-user-lookup.target'],
           'After' => 'k5start-nslcd.service',
           'BindsTo' => 'k5start-nslcd.service',
           #'JoinsNamespaceOf' => 'k5start-nslcd.service',
