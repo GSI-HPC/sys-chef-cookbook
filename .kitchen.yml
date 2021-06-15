@@ -184,6 +184,15 @@ suites:
             array:
               - '| /bin/true'
               - /tmp/mail.test
+  - name: sys_nsswitch
+    run_list:
+      - recipe[sys::nsswitch]
+    attributes:
+      sys:
+        nsswitch:
+          foo: bar
+          passwd: files
+          netgroup: compat
   - name: sys_resolv
     run_list:
       - recipe[sys::resolv]

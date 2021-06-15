@@ -2,10 +2,10 @@
 # Cookbook Name:: sys
 # Recipe:: nsswitch
 #
-# Copyright 2013-2019 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+# Copyright 2013-2021 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
 #
 # Authors:
-#  Christopher Huhn   <C.Huhn@gsi.de>
+#  Christopher Huhn   <c.huhn@gsi.de>
 #  Matthias Pausch    <m.pausch@gsi.de>
 #  Victor Penso       <v.penso@gsi.de>
 #
@@ -25,33 +25,46 @@
 # do nothing until requested
 return if node['sys']['nsswitch'].empty?
 
-defaults = {
-  passwd:    'compat',
-  group:     'compat',
-  shadow:    'compat',
-  gshadow:   'files',
-  hosts:     'files dns',
-  networks:  'files',
-  protocols: 'db files',
-  services:  'db files',
-  ethers:    'db files',
-  rpc:       'db files',
-  netgroup:  'nis'
-}
+if Gem::Requirement.new('>= 12.5')
+     .satisfied_by?(Gem::Version.new(Chef::VERSION))
 
-# turn hash keys into Strings before merging to avoid dupes:
-config = defaults.map { |k,v| [k.to_s, v] }.to_h
+  # Use the LWRP if the chef version is new enough
+  node['sys']['nsswitch'].each do |db, srcs|
+    sys_nsswitch db do
+      sources srcs
+    end
+  end
 
-# merge defaults and node attributes
-config.merge!(node['sys']['nsswitch']) do |_k,v1,v2|
-  # make sure no empty values end up in the config:
-  v2 || v1
-end
+else
 
-template "/etc/nsswitch.conf" do
-  source "etc_nsswitch.conf.erb"
-  mode '0644'
-  variables(
-    config: config
-  )
+  defaults = {
+    passwd:    'compat',
+    group:     'compat',
+    shadow:    'compat',
+    gshadow:   'files',
+    hosts:     'files dns',
+    networks:  'files',
+    protocols: 'db files',
+    services:  'db files',
+    ethers:    'db files',
+    rpc:       'db files',
+    netgroup:  'nis'
+  }
+  
+  # turn hash keys into Strings before merging to avoid dupes:
+  config = defaults.map { |k,v| [k.to_s, v] }.to_h
+  
+  # merge defaults and node attributes
+  config.merge!(node['sys']['nsswitch']) do |_k,v1,v2|
+    # make sure no empty values end up in the config:
+    v2 || v1
+  end
+  
+  template "/etc/nsswitch.conf" do
+    source "etc_nsswitch.conf.erb"
+    mode '0644'
+    variables(
+      config: config
+    )
+  end
 end
