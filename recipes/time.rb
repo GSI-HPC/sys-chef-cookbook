@@ -64,7 +64,9 @@ unless time_servers.empty?
 
   package 'ntp'
   package 'ntpdate'
-  package 'ntpstat'
+  package 'ntpstat' do
+    not_if { node['lsb']['codename'] == 'wheezy' }
+  end
 
   template '/etc/ntp.conf' do
     source 'etc_ntp.conf.erb'
