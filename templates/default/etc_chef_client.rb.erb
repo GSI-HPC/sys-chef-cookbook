@@ -1,15 +1,16 @@
 <%= template_header %>
+# frozen_string_literal: true
 
 <%- nodename = @node_name || node['fqdn'] -%>
-<%- if nodename -%>
+<%- if nodename && ! @skip_nodename -%>
 node_name        '<%= nodename %>'
 
 <%- end -%>
 chef_server_url  '<%= @server_url %>'
-client_key       "<%= @client_key %>"
+client_key       '<%= @client_key %>'
 
 <% if @trusted_certs_dir -%>
-trusted_certs_dir "<%= @trusted_certs_dir %>"
+trusted_certs_dir '<%= @trusted_certs_dir %>'
 <% end -%>
 <%- if @verify_ssl == 'all' -%>
 # Verify all HTTPS connections
@@ -19,15 +20,15 @@ ssl_verify_mode :verify_peer
 verify_api_cert true
 <%- end -%>
 
-validation_client_name "<%= @validation_client_name %>"
-validation_key   "<%= @validation_key %>"
+validation_client_name '<%= @validation_client_name %>'
+validation_key   '<%= @validation_key %>'
 
 log_level        <%= @log_level %>
-log_location     <%= @use_syslog?'SyslogLogger.new("chef-client")':'STDOUT' %>
+log_location     <%= @use_syslog?'SyslogLogger.new("chef-client")':'$stdout' %>
 
-file_backup_path "/var/backups/chef"
-file_cache_path  "/var/cache/chef"
-pid_file         "/var/run/chef/client.pid"
+file_backup_path '/var/backups/chef'
+file_cache_path  '/var/cache/chef'
+pid_file         '/var/run/chef/client.pid'
 
 # configuration for Ohai:
 <%- unless @odisable.empty? -%>
@@ -35,6 +36,5 @@ pid_file         "/var/run/chef/client.pid"
 <%-   plugins = @odisable.map { |p| p.capitalize.to_sym } -%>
 ohai.disabled_plugins =  <%= plugins %>
 <%- end %>
-ohai.plugin_path      << "<%= @opath %>"
-
-<%= @custom_config %>
+ohai.plugin_path << '<%= @opath %>'
+<%= @custom_config -%>
