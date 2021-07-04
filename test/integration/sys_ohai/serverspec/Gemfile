@@ -1,5 +1,7 @@
 source 'http://rubygems.org'
 
+gem 'ohai'
+
 gem 'public_suffix' # required on Buster?
 
 group :jessie do
