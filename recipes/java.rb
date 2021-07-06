@@ -43,8 +43,11 @@ arch = node['debian']['architecture'] ||
          'amd64'
        end
 
-default_version = node['sys']['java']['default_version'] ||
-                  node['sys']['java']['versions'].first
+default_version = node['sys']['java']['default_version']
+
+if node['sys']['java']['versions']
+  default_version =|| node['sys']['java']['versions'].first
+end
 
 execute 'update-java-alternatives' do
   command "update-java-alternatives --set "\
