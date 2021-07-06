@@ -2,7 +2,7 @@
 # Cookbook Name:: sys
 # File:: definitions/sys_ssh_config.rb
 #
-# Copyright 2013-2020 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+# Copyright 2013-2021 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
 #
 # Authors:
 #  Christopher Huhn   <c.huhn@gsi.de>
@@ -25,16 +25,26 @@
 
 define :sys_ssh_config, :config => Hash.new do
   account = params[:name]
+
+  # catch missing etc or local_etc ohai plugin:
+  if node['etc']
+    passwd = node['etc']['passwd'] || {}
+  else
+    passwd = {}
+  end
+
   # does the user exists?
-  if node['etc']['passwd'].has_key? account
+  if passwd.has_key? account
     if params[:config].empty?
-      log("Can't deploy SSH config: configuration for account [#{account}] missing") { level :warn }
+      log("No SSH config attributes defined for account '#{account}'") do
+        level :warn
+      end
     else
       # path to the user SSH configuration
-      dot_ssh = "#{node['etc']['passwd'][account]['dir']}/.ssh"
+      dot_ssh = "#{passwd[account]['dir']}/.ssh"
       directory dot_ssh do
         owner account
-        group node['etc']['passwd'][account]['gid']
+        group passwd[account]['gid']
         mode "0700"
       end
       # path to the user keys file
@@ -42,16 +52,16 @@ define :sys_ssh_config, :config => Hash.new do
       template ssh_config do
         source 'user_ssh_config_generic.erb'
         owner account
-        group node['etc']['passwd'][account]['gid']
+        group passwd[account]['gid']
         cookbook 'sys'
         mode "0600"
-        variables( 
-          :config => params[:config] 
+        variables(
+          :config => params[:config]
         )
       end
     end
   else
-    log("Can't deploy SSH config: account [#{account}] missing") { level :warn }
+    log("Can't deploy SSH config: account '#{account}' missing") { level :warn }
   end
 
 end
