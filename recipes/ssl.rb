@@ -29,7 +29,7 @@ package 'ssl-cert'
 defaults = {
   cert: {
     'data_bag'      => 'ssl_certs',
-    'data_bag_item' => node['fqdn'],
+    'data_bag_item' => node['fqdn'].gsub('.','_'),
     'key_vault'     => 'ssl_keys'
   }
 }
