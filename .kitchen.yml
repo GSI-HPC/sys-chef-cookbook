@@ -73,6 +73,9 @@ platforms:
       require_chef_omnibus: true
       vagrantfiles:
         - vagrant.rb
+    provisioner:
+      chef_omnibus_url: https://omnitruck.cinc.sh/install.sh
+      chef_omnibus_root: /opt/cinc
   - name: focal
     driver:
       box: generic/ubuntu2004
@@ -242,9 +245,9 @@ suites:
         ssl:
           certs:
             - {}    # will not find data bag item
-            - data_bag_item: www-linux.gsi.de
+            - data_bag_item: www-linux_gsi_de
             - data_bag: other_certs
-              data_bag_item: alternativlos.org
+              data_bag_item: alternativlos_org
               file: /tmp/covfefe.pem
             - data_bag: nonexistant_databag
   - name: sys_sudo
