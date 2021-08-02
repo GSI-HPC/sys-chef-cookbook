@@ -1,7 +1,7 @@
 begin
   require 'rubocop/rake_task'
   RuboCop::RakeTask.new do |task|
-    task.options = ['--lint']
+    task.options = %w[--display-cop-names --display-style-guide --lint]
   end
 rescue LoadError
   desc 'rubocop rake task not available'
@@ -14,8 +14,10 @@ begin
   require 'foodcritic'
   FoodCritic::Rake::LintTask.new do |task|
     task.options = {
+      context: true,
       exclude_paths: ['example_config/**/*'],
-      fail_tags: %w[!FC091 !FC092]
+      fail_tags: %w[!FC091 !FC092],
+      tags: %w[~FC078]
     }
   end
 rescue LoadError
@@ -29,8 +31,8 @@ begin
   require 'rspec/core/rake_task'
   RSpec::Core::RakeTask.new(:chefspec) do |task|
     task.pattern = 'test/unit/**/*_spec.rb'
-    task.rspec_opts = '--backtrace --color --format documentation --profile '\
-                      '--require spec_helper -I libraries '\
+    task.rspec_opts = '--backtrace --color --format documentation --profile'\
+                      '--require spec_helper -I libraries'\
                       '--default-path test/unit'
   end
 rescue LoadError
@@ -62,8 +64,9 @@ begin
 rescue LoadError
   desc 'yard rake task not available'
   task :yard do
-    abort 'yard rake task is not available. Be sure to install yard and yard-chef'
+    abort 'yard rake task is not available. '\
+          'Be sure to install yard and yard-chef'
   end
 end
 
-task default: [:rubocop, :foodcritic, :chefspec]
+task default: %w[rubocop foodcritic chefspec]  # kitchen:all
