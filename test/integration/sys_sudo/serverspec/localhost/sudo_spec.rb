@@ -46,6 +46,11 @@ describe user('daemon') do
   it { should exist }
 end
 
+describe file('/etc/environment') do
+  it { should exist }
+  its(:content) { should match(/^FFF=.+/) }
+end
+
 # test for env_keep in /etc/sudoers.d/kitchen
 describe command('sudo env') do
   its(:exit_status) { should be_zero }
