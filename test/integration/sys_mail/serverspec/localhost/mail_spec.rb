@@ -68,10 +68,10 @@ end
 #  as configured in /etc/alieases
 describe file('/tmp/mail.test') do
 
-  let(:now) { Time.now.strftime("%Y_%m_%d_%H_%M_%S") }
+  @now = Time.now.strftime("%Y_%m_%d_%H_%M_%S")
 
   before do
-    `echo "test mail #{now}" | mail -s "test-kitchen mail test" array`
+    `echo "test mail #{@now}" | mail -s "test-kitchen mail test" array`
     # wait for creation of mailbox:
     (1..10).each do |i|
       File.exist?('/tmp/mail.test') && break
@@ -82,6 +82,6 @@ describe file('/tmp/mail.test') do
 
   it { should exist }
   its(:content) { should include 'Subject: test-kitchen mail test' }
-  its(:content) { should include "test mail #{now}" }
+  its(:content) { should include "test mail #{@now}" }
   its(:content) { should match %r{^To: <array@} }
 end
