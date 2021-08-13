@@ -265,6 +265,15 @@ suites:
                 - root
             rules:
               - "SMUTJE ALL=(ALL) NOPASSWD: ALL"
+  - name: sys_systemd
+    run_list:
+      - recipe[sys::systemd]
+    attributes:
+      sys:
+        systemd:
+          unit:
+            unknown_method:
+              whatever: "Should throw an error but converge"
   - name: sys_time
     run_list:
       - recipe[sys::time]
