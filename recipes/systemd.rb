@@ -2,7 +2,12 @@
 # Cookbook Name:: sys
 # Recipe:: systemd
 #
-# Copyright 2015, Dennis Klein
+# Copyright 2015-2021 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+#
+# Authors:
+#  Christopher Huhn   <c.huhn@gsi.de>
+#  Dennis Klein       <d.klein@gsi.de>
+#  Thomas Roth        <t.roth@gsi.de>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -42,7 +47,12 @@ if systemd_installed? # We do not install systemd for now, just detect if it is 
     node['sys']['systemd']['unit'].each do |name, config|
       sys_systemd_unit name do
         config.each do |key, value|
-          send(key, value)
+          begin
+            send(key, value)
+          rescue NoMethodError => e
+            Chef::Log.error("sys_systemd_unit[#{name}]: "\
+                            "No property '#{key}' (#{e})")
+          end
         end
       end
     end
