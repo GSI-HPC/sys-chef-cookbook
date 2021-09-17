@@ -27,7 +27,7 @@ if Gem::Requirement.new('>= 12.5')
 
   default_action :add
 
-  action :add do        
+  action :add do
     new_line = format('%-15s %s',
                       new_resource.name + ':',
                       new_resource.sources.join(' ')
