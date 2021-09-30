@@ -63,10 +63,10 @@ end
 #  mail to array will be written to /tmp/mail.test
 #  as configured in /etc/alieases
 describe file('/tmp/mail.test') do
-  before(:all) do
-    @timestamp = Time.now.strftime("%Y_%m_%d_%H_%M_%S")
+  @now = Time.now.strftime("%Y_%m_%d_%H_%M_%S")
 
-    `echo "test mail #{@timestamp}" | mail -s "test-kitchen mail test" array`
+  before do
+    `echo "test mail #{@now}" | mail -s "test-kitchen mail test" array`
     # wait for creation of mailbox:
     (1..10).each do |i|
       File.exist?('/tmp/mail.test') && break
@@ -76,8 +76,8 @@ describe file('/tmp/mail.test') do
   end
 
   it { should exist }
-  its(:content) { should include('Subject: test-kitchen mail test') }
-  its(:content) { should include("test mail #{@timestamp}") }
+  its(:content) { should include 'Subject: test-kitchen mail test' }
+  its(:content) { should include "test mail #{@now}" }
 
   # 'To: <mail@bla>' on Debian, 'To: mail@bla' on CentOS
   its(:content) { should match(/^To: <?array@/) }
