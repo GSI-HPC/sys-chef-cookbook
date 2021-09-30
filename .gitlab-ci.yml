@@ -33,8 +33,7 @@ kitchen:
     matrix:
       - PLATFORM:
         # - jessie
-        - stretch
-        - buster
+        - cumulus
         SUITE:
         - accounts
         - apt
