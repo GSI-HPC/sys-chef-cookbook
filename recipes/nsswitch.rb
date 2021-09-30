@@ -50,16 +50,16 @@ else
     rpc:       'db files',
     netgroup:  'nis'
   }
-  
+
   # turn hash keys into Strings before merging to avoid dupes:
   config = defaults.map { |k,v| [k.to_s, v] }.to_h
-  
+
   # merge defaults and node attributes
   config.merge!(node['sys']['nsswitch']) do |_k,v1,v2|
     # make sure no empty values end up in the config:
     v2 || v1
   end
-  
+
   template "/etc/nsswitch.conf" do
     source "etc_nsswitch.conf.erb"
     mode '0644'
