@@ -17,7 +17,7 @@
 #
 # Generate /etc/nsswitch.conf from nsswitch resources
 
-unified_mode true
+# unified_mode true
 
 provides :nsswitch_config
 

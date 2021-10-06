@@ -50,7 +50,7 @@
 # This will result in
 # automount: files sssd ldap
 
-unified_mode true
+#unified_mode true
 
 provides :nsswitch
 
