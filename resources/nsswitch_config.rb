@@ -67,7 +67,7 @@ action :create do
   nsswitches_by_database.each do |db, nss_resources|
     config ||= {}
     nss_resources.each do |r|
-      config[db].merge!(r.sources) do |key, old, new|
+      config[db].merge!(r.sources) do |_key, old, new|
         if new_resource.merge
           [old, new].flatten.sort.uniq
         else
