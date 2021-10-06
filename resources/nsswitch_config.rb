@@ -44,7 +44,7 @@ action_class do
   end
 end
 
-property :filename, String, default: '/etc/nsswitch.conf', name_property: true
+property :filename, String, name_property: true
 property :mode, String, default: '0644'
 property :owner, String, default: 'root'
 property :group, String, default: 'root'
