@@ -25,46 +25,48 @@
 # do nothing until requested
 return if node['sys']['nsswitch'].empty?
 
-if Gem::Requirement.new('>= 12.5')
-     .satisfied_by?(Gem::Version.new(Chef::VERSION))
+sys_nsswitch_config '/etc/nsswitch.conf'
 
-  # Use the LWRP if the chef version is new enough
-  node['sys']['nsswitch'].each do |db, srcs|
-    sys_nsswitch db do
-      sources srcs
-    end
-  end
+sys_nsswitch 'passwd' do
+  sources ['compat']
+end
 
-else
+sys_nsswitch 'group' do
+  sources ['compat']
+end
 
-  defaults = {
-    passwd:    'compat',
-    group:     'compat',
-    shadow:    'compat',
-    gshadow:   'files',
-    hosts:     'files dns',
-    networks:  'files',
-    protocols: 'db files',
-    services:  'db files',
-    ethers:    'db files',
-    rpc:       'db files',
-    netgroup:  'nis'
-  }
+sys_nsswitch 'shadow' do
+  sources ['compat']
+end
 
-  # turn hash keys into Strings before merging to avoid dupes:
-  config = defaults.map { |k,v| [k.to_s, v] }.to_h
+sys_nsswitch 'gshadow' do
+  sources ['files']
+end
 
-  # merge defaults and node attributes
-  config.merge!(node['sys']['nsswitch']) do |_k,v1,v2|
-    # make sure no empty values end up in the config:
-    v2 || v1
-  end
+sys_nsswitch 'hosts' do
+  sources ['files', 'dns']
+end
 
-  template "/etc/nsswitch.conf" do
-    source "etc_nsswitch.conf.erb"
-    mode '0644'
-    variables(
-      config: config
-    )
-  end
+sys_nsswitch 'networks' do
+  sources ['files']
+end
+
+sys_nsswitch 'protocols' do
+  sources ['db', 'files']
+end
+
+sys_nsswitch 'services' do
+  sources ['db', 'files']
+end
+
+sys_nsswitch 'ethers' do
+  sources ['db', 'files']
+end
+
+sys_nsswitch 'rpc' do
+  sources ['db', 'files']
+end
+
+sys_nsswitch 'netgroup' do
+  sources ['nis']
 end

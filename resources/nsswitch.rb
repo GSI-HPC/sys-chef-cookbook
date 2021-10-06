@@ -1,8 +1,7 @@
 #
-# Copyright 2021 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
-#
-# Authors:
-#  Christopher Huhn   <c.huhn@gsi.de>
+# Author:: Matthias Pausch (<m.pausch@gsi.de>)
+# Cookbook:: sys
+# Provider:: nsswitch
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,37 +15,56 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+# Use nsswitch resource to configure a database like so
+#
+# nsswitch 'automount' do
+#   sources ['files', 'ldap']
+# end
+#
+#
+# In case of conflict with other recipes, provide a sources as hash with priority as value:
+#
+# nsswitch 'automount' do
+#   sources ['files', 'ldap']
+# end
+#
+# is equal to
+#
+# nsswitch 'automount' do
+#   sources {
+#      10 => 'files',
+#      20 => 'ldap',
+#   }
+# end
+#
+# And from another recipe:
+#
+# nsswitch 'automount_with_sssd' do
+#   database 'automount'
+#   sources {
+#      10 => 'files',
+#      20 => 'sssd',
+#   }
+# end
+#
+# This will result in
+# automount: files sssd ldap
 
-if Gem::Requirement.new('>= 12.5')
-     .satisfied_by?(Gem::Version.new(Chef::VERSION))
+unified_mode true
 
-  property :sources, [Array, String],
-           # turn Strings into Arrays for simplicity:
-           coerce: proc { |t| Array(t) }
-  # property :aliases_file, String,  default: '/etc/aliases'
+provides :nsswitch
 
-  default_action :add
+property :database, String, name_property: true
+property :sources, [Array, Hash]
+property :notify_nsswitch_coinfg, [true, false], default: true
+property :merge, [true, false], default: true
 
-  action :add do
-    new_line = format('%-15s %s',
-                      new_resource.name + ':',
-                      new_resource.sources.join(' ')
-                     )
+action :create do
+  return unless new_resource.notify_nsswitch_config
 
-    replace_or_add "sources for #{new_resource.name}" do
-      path    '/etc/nsswitch.conf'
-      pattern "^#{new_resource.name}:.*"
-      line    new_line
-      backup  true        if respond_to?(:backup)
-      ignore_missing true if respond_to?(:ignore_missing)
-    end
-  end
+  nsswitch_config_resource = Chef.run_context.resource_collection.find('nsswitch_config')
+  raise 'could not find the nsswitch_config resource' unless nsswitch_config_resource
 
-  action :remove do
-    delete_lines "sources for #{new_resource.name}" do
-      path    '/etc/nsswitch.conf'
-      pattern "^#{new_resource.name}:.*"
-      only_if { ::File.exist?('/etc/nsswitch.conf') }
-    end
-  end
+  new_resource.notifies(:create, nsswitch_config_resource, :delayed)
+  new_resource.updated_by_last_action(true)
 end
