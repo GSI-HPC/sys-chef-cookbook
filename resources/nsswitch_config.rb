@@ -32,7 +32,7 @@ action_class do
     return sources_as_hash
   end
 
-   def lookup_or_create_nsswitch_conf(name)
+  def lookup_or_create_nsswitch_conf(name)
     begin
       nsswitch_conf = Chef.run_context.resource_collection.find(file: name)
     rescue
