@@ -67,6 +67,6 @@ sys_nsswitch 'rpc' do
   sources ['db', 'files']
 end
 
-sys_nsswitch 'netgroup' do
-  sources ['nis']
-end
+#sys_nsswitch 'netgroup' do
+#  sources ['nis']
+#end

@@ -1,8 +1,7 @@
-#
 # Cookbook Name:: sys
 # Integration tests for recipe sys::nsswitch
 #
-# Copyright 2021 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+# Copyright 2020 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
 #
 # Authors:
 #  Christopher Huhn   <c.huhn@gsi.de>
@@ -24,7 +23,18 @@ require 'spec_helper'
 
 describe file('/etc/nsswitch.conf') do
   it { should exist }
-  its(:content) { should match(/^foo: +bar$/) }
-  its(:content) { should match(/^passwd: +files$/) }
-  its(:content) { should match(/^netgroup: +compat$/) }
+  it { should be_file } # link has been replaced
+
+  # standard settings
+  its(:content) { should include 'passwd: compat'}
+  its(:content) { should include 'group: compat'}
+  its(:content) { should include 'shadow: compat'}
+  its(:content) { should include 'gshadow: files'}
+  its(:content) { should include 'hosts: files dns'}
+  its(:content) { should include 'networks: files'}
+  its(:content) { should include 'protocols: db files'}
+  its(:content) { should include 'services: db files'}
+  its(:content) { should include 'ethers: db files'}
+  its(:content) { should include 'rpc: db files'}
+  its(:content) { should_not include 'sources: nis' }
 end
