@@ -1,8 +1,8 @@
 ---
 stages:
-#  - rubocop
-#  - foodcritic
-#  - chefspec
+  - rubocop
+  - foodcritic
+  - chefspec
   - kitchen
 
 rubocop:
