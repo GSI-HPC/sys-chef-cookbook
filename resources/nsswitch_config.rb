@@ -52,7 +52,7 @@ property :group, String, default: 'root'
 action :create do
 #  Chef::Log.fatal(Chef.run_context.resource_collection.map {|r| r.ancestors })
   nsswitches = Chef.run_context.resource_collection.select do |item|
-    item.is_a?(Chef::Resource::Nsswitch)
+    item.is_a?(Chef::Resource::SysNsswitch)
   end
   nsswitches.each do |nsswitch|
     nsswitch.sources = sources_to_hash(new_resource.sources)
