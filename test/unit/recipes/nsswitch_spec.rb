@@ -33,31 +33,15 @@ describe 'sys::nsswitch' do
   context 'with some attributes' do
     cached(:chef_run) do
       ChefSpec::SoloRunner.new do |node|
-        node.default['sys']['nsswitch']['asdf'] = '1qay'
-        node.default['sys']['nsswitch']['protocols'] = 'nunc est bibendum'
-        node.default['sys']['nsswitch']['gshadow'] = nil
+        node.default['sys']['nsswitch']['enabled'] = true
       end.converge(described_recipe)
     end
 
     it 'adds defaults to nsswitch.conf' do
       expect(chef_run).to render_file('/etc/nsswitch.conf')
                             .with_content(/^passwd: +compat/)
-                            .with_content(/^hosts: +files dns/)
+                            .with_content(/^hosts: files dns/)
     end
 
-    it 'adds custom config to nsswitch.conf' do
-      expect(chef_run).to render_file('/etc/nsswitch.conf')
-                            .with_content(/^asdf: +1qay/)
-    end
-
-    it 'adds defaults to nsswitch.conf' do
-      expect(chef_run).to render_file('/etc/nsswitch.conf')
-                            .with_content(/^protocols: +nunc est bibendum/)
-    end
-
-    it 'does not merge nil values' do
-      expect(chef_run).to render_file('/etc/nsswitch.conf')
-                            .with_content(/^gshadow: +files+/)
-    end
   end
 end
