@@ -52,6 +52,7 @@
 
 #unified_mode true
 
+resource_name :nsswitch
 provides :nsswitch
 
 property :database, String, name_property: true
