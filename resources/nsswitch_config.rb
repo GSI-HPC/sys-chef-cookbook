@@ -51,7 +51,7 @@ property :group, String, default: 'root'
 
 action :create do
   nsswitches = Chef.run_context.resource_collection.select do |item|
-    item.is_a?(Chef::Resource::SysNsswitch)
+    item.is_a?(Chef::Resource::Nsswitch)
   end
   nsswitches.each do |nsswitch|
     nsswitch.sources = sources_to_hash(new_resource.sources)
