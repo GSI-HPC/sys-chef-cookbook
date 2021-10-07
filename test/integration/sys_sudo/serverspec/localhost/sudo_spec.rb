@@ -24,11 +24,9 @@ require 'spec_helper'
 
 describe file('/etc/sudoers') do
   it { should exist }
-  its(:content) do
-    should match(/Defaults\s+mailfrom="prosecutor@example.com"/)
-    should match(/Defaults\s+mailto="daemon"/)
-    should match(/Defaults\s+mailsub="\[SUDO\] RED ALERT!"/)
-  end
+  its(:content) { should match(/Defaults\s+mailfrom="prosecutor@example.com"/) }
+  its(:content) { should match(/Defaults\s+mailto="daemon"/) }
+  its(:content) { should match(/Defaults\s+mailsub="\[SUDO\] RED ALERT!"/) }
 end
 
 describe file('/etc/sudoers.d/kitchen') do
@@ -46,18 +44,34 @@ describe user('daemon') do
   it { should exist }
 end
 
-# test for env_keep in /etc/sudoers.d/kitchen
-describe command('sudo env') do
+#
+# env_keep tests
+#
+describe file('/etc/environment') do
+  it { should exist }
+  its(:content) { should match(/^FFF=.+/) }
+end
+
+describe file('/etc/sudoers.d/kitchen') do
+  its(:content) { should match(/^Defaults:SMUTJE env_keep \+= FFF/) }
+end
+
+describe command('su - vagrant -c env') do
+  its(:exit_status) { should be_zero }
+  its(:stdout) { should match(/^FFF=.*/) }
+end
+
+describe command('su - vagrant -c "sudo env"') do
   its(:exit_status) { should be_zero }
   its(:stdout) { should match(/^FFF=.*/) }
 
   # fails on Bionic (different PAM config?):
-  if os[:family] != 'ubuntu'
-    its(:stdout) { should_not match(/^RESCUE=.*/)}
-  end
+  its(:stdout) { should_not match(/^RESCUE=.*/) } if os[:family] != 'ubuntu'
 end
 
+#
 # real-life test (fails on Bionic (different mail setup?))
+#
 describe file('/var/mail/daemon'), if: os[:family] != 'ubuntu' do
   # sudo something stupid as nobody:
   before do
@@ -73,9 +87,7 @@ describe file('/var/mail/daemon'), if: os[:family] != 'ubuntu' do
   end
 
   it { should exist }
-  its(:content) do
-    should include 'From: prosecutor@example.com'
-    should include '[SUDO] RED ALERT!'
-    should match %r{nobody : user NOT in sudoers.*COMMAND=/usr/bin/whoami}
-  end
+  its(:content) { should include 'From: prosecutor@example.com' }
+  its(:content) { should include '[SUDO] RED ALERT!' }
+  its(:content) { should match %r{nobody : user NOT in sudoers.*COMMAND=/usr/bin/whoami} }
 end

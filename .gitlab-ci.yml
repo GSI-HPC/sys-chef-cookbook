@@ -1,0 +1,55 @@
+---
+stages:
+  - rubocop
+  - foodcritic
+  - chefspec
+  - kitchen
+
+rubocop:
+  stage: rubocop
+  script:
+    - rake rubocop
+
+foodcritic:
+  stage: foodcritic
+  script:
+    - rake foodcritic
+
+chefspec:
+  stage: chefspec
+  script:
+    - rake chefspec
+  allow_failure: true
+
+kitchen:
+  stage: kitchen
+  resource_group: $CI_JOB_NAME-$CI_PROJECT_NAME
+  script:
+    - kitchen test $SUITE-$PLATFORM
+  after_script:
+    # make sure failed runs are cleaned up too:
+    - kitchen destroy $SUITE-$PLATFORM
+  parallel:
+    matrix:
+      - PLATFORM:
+        # - jessie
+        - stretch
+        - buster
+        SUITE:
+        - accounts
+        - apt
+        - autofs
+        - banner
+        - chef
+        - ferm
+        - ohai
+        - mail
+        - resolv
+        - ssh
+        - ssl
+        - sudo
+        - time
+
+.post:
+   script:
+    - kitchen destroy
