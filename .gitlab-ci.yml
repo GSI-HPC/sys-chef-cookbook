@@ -44,9 +44,7 @@ kitchen:
         - ferm
         - linuxlogo
         - mail
-        - nftables
         - nsswitch
-        - ohai
         - resolv
         - snmp
         - ssh
