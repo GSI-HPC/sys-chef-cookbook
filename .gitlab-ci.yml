@@ -32,9 +32,7 @@ kitchen:
   parallel:
     matrix:
       - PLATFORM:
-        # - jessie
-        - stretch
-        - buster
+        - bullseye
         SUITE:
         - accounts
         - apt
@@ -42,8 +40,9 @@ kitchen:
         - banner
         - chef
         - ferm
-        - ohai
         - mail
+	- nsswitch
+        - ohai
         - resolv
         - ssh
         - ssl
