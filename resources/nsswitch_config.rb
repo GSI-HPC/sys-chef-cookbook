@@ -50,7 +50,6 @@ property :owner, String, default: 'root'
 property :group, String, default: 'root'
 
 action :create do
-  new_resource.config({}) unless new_resource.config
   nsswitches = Chef.run_context.resource_collection.select do |item|
     item.is_a?(Chef::Resource::SysNsswitch)
   end
