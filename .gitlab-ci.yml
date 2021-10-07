@@ -1,8 +1,8 @@
 ---
 stages:
-  - rubocop
-  - foodcritic
-  - chefspec
+#  - rubocop
+#  - foodcritic
+#  - chefspec
   - kitchen
 
 rubocop:
@@ -36,23 +36,20 @@ kitchen:
         - stretch
         - buster
         SUITE:
-        - accounts
-        - apt
-        - autofs
-        - banner
-        - chef
-        - ferm
-        - linuxlogo
-        - mail
+#        - accounts
+#        - apt
+#        - autofs
+#        - banner
+#        - chef
+#        - ferm
+#        - ohai
+#        - mail
         - nsswitch
-        - resolv
-        - snmp
-        - ssh
-        - ssl
-        - sudo
-        - systemd
-        - time
-        - x509
+#        - resolv
+#        - ssh
+#        - ssl
+#        - sudo
+#        - time
 
 .post:
    script:
