@@ -45,14 +45,14 @@ property :nsswitch_name, String, name_property: true
 
 action :create do
 
+  config_resource = new_resource
+
   with_run_context :root do
-
-    edit_resource('file', new_resource.filename) do
-
-      content(create_content(new_resource.config))
-      mode(new_resource.mode)
-      owner(new_resource.owner)
-      group(new_resource.group)
+    edit_resource('file', config_resource.filename) do
+      content(create_content(config_resource.config))
+      mode(config_resource.mode)
+      owner(config_resource.owner)
+      group(config_resource.group)
 
       action :nothing
       delayed_action :create

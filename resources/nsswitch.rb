@@ -73,12 +73,12 @@ end
 
 action :create do
   return unless new_resource.notify_nsswitch_config
-
+  nsswitch_resource = new_resource
   with_run_context :root do
     edit_resource('sys_nsswitch_config', 'default') do
-      new_resource.sources = sources_to_hash(new_resource.sources)
+      nsswitch_resource.sources = sources_to_hash(nsswitch_resource.sources)
       config[database] ||= {}
-      config[database].merge! new_resource.sources
+      config[database].merge! nsswitch_resource.sources
     end
   end
 end
