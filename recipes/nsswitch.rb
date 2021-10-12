@@ -25,22 +25,24 @@
 # do nothing until requested
 return if node['sys']['nsswitch'].empty?
 
-sys_nsswitch_config 'default'
+sys_nsswitch_config 'default' do
+  action :nothing
+end
 
 sys_nsswitch 'passwd' do
-  sources ['compat']
+  sources 'compat'
 end
 
 sys_nsswitch 'group' do
-  sources ['compat']
+  sources 'compat'
 end
 
 sys_nsswitch 'shadow' do
-  sources ['compat']
+  sources 'compat'
 end
 
 sys_nsswitch 'gshadow' do
-  sources ['files']
+  sources 'files'
 end
 
 sys_nsswitch 'hosts' do
@@ -48,7 +50,7 @@ sys_nsswitch 'hosts' do
 end
 
 sys_nsswitch 'networks' do
-  sources ['files']
+  sources 'files'
 end
 
 sys_nsswitch 'protocols' do

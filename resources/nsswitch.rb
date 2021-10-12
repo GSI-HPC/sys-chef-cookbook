@@ -77,10 +77,14 @@ action :create do
   nsswitch_resource.sources = sources_to_hash(nsswitch_resource.sources)
   with_run_context :root do
     edit_resource('sys_nsswitch_config', 'default') do
+      action :nothing
       old = config.dup
       old[nsswitch_resource.database] ||= {}
       old[nsswitch_resource.database].merge! nsswitch_resource.sources
       config(old)
+    end
+    log "Create nsswitch.conf!" do
+      notifies :create, 'sys_nsswitch_config[default]', :delayed
     end
   end
 end
