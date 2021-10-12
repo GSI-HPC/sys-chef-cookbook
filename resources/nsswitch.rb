@@ -56,7 +56,7 @@ provides :nsswitch
 
 property :database, String, name_property: true
 property :sources, [String, Array, Hash]
-property :notify_nsswitch_coinfg, [true, false], default: true
+property :notify_nsswitch_config, [true, false], default: true
 property :merge, [true, false], default: true
 
 action_class do
