@@ -36,20 +36,20 @@ kitchen:
         - stretch
         - buster
         SUITE:
-#        - accounts
-#        - apt
-#        - autofs
-#        - banner
-#        - chef
-#        - ferm
-#        - ohai
-#        - mail
-        - nsswitch
-#        - resolv
-#        - ssh
-#        - ssl
-#        - sudo
-#        - time
+        - accounts
+        - apt
+        - autofs
+        - banner
+        - chef
+        - ferm
+        - ohai
+        - mail
+       - nsswitch
+        - resolv
+        - ssh
+        - ssl
+        - sudo
+        - time
 
 .post:
    script:
