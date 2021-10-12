@@ -80,7 +80,7 @@ action :create do
       old = config.dup
       Chef::Log.fatal old
       old[nsswitch_resource.database] ||= {}
-      old[nsswitch_resource.database].merge! nsswitch_resource.sources)
+      old[nsswitch_resource.database].merge! nsswitch_resource.sources
       config(old)
     end
   end
