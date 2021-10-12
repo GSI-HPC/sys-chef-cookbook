@@ -23,14 +23,17 @@ provides :nsswitch_config
 
 action_class do
   def create_content(config)
-    Chef::Log.fatal "Create content from #{config}"
     content = ''
     config.each do |db, sources_hash|
-      sorted_sources = sources_hash.keys.sort.inject([]) do |a, key|
-        a << sources_hash[key]
+      sorted_sources = []
+      sources_hash.values.sort.uniq.each do |priority|
+        sources_hash.each do |k,v|
+          sorted_sources << k if v == priority
+        end
       end
       content << "#{db}: "
       content << sorted_sources.join(' ')
+      content << "\n"
     end
     "#{content}\n"
   end
