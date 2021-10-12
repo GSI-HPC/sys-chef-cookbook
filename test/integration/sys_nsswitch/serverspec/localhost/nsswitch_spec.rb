@@ -26,15 +26,15 @@ describe file('/etc/nsswitch.conf') do
   it { should be_file } # link has been replaced
 
   # standard settings
-  its(:content) { should include /passwd:\s+compat/}
-  its(:content) { should include 'group: compat'}
-  its(:content) { should include 'shadow: compat'}
-  its(:content) { should include 'gshadow: files'}
-  its(:content) { should include 'hosts: files dns'}
-  its(:content) { should include 'networks: files'}
-  its(:content) { should include 'protocols: db files'}
-  its(:content) { should include 'services: db files'}
-  its(:content) { should include 'ethers: db files'}
-  its(:content) { should include 'rpc: db files'}
-  its(:content) { should_not include 'sources: nis' }
+  its(:content) { should match /passwd:\s+compat/ }
+  its(:content) { should match /group:\s+compat/ }
+  its(:content) { should match /shadow:\s+compat/ }
+  its(:content) { should match /gshadow:\s+files/ }
+  its(:content) { should match /hosts:\s+files dns/ }
+  its(:content) { should match /networks:\s+files/ }
+  its(:content) { should match /protocols:\s+db files/ }
+  its(:content) { should match /services:\s+db files/ }
+  its(:content) { should match /ethers:\s+db files/ }
+  its(:content) { should match /rpc:\s+db files/ }
+  its(:content) { should_not match /sources:\s+nis/ }
 end
