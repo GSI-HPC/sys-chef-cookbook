@@ -25,7 +25,7 @@
 # do nothing until requested
 return if node['sys']['nsswitch'].empty?
 
-sys_nsswitch_config '/etc/nsswitch.conf'
+sys_nsswitch_config 'default'
 
 sys_nsswitch 'passwd' do
   sources ['compat']

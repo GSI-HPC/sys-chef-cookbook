@@ -22,71 +22,40 @@
 provides :nsswitch_config
 
 action_class do
-  def sources_to_hash(sources)
-    return sources if sources.instance_of?(Hash)
-
-    sources_as_hash = {}
-    sources.each_with_index do |s, i|
-      sources_as_hash[s] = 10*(i + 1)
-    end
-    return sources_as_hash
-  end
-
-  def lookup_or_create_nsswitch_conf(name)
-    begin
-      nsswitch_conf = Chef.run_context.resource_collection.find(file: name)
-    rescue
-      nsswitch_conf = file name do
-        action :nothing
+  def create_content(config)
+    content = ''
+    config.each do |db, sources_hash|
+      sorted_sources = merged_sources.keys.sort.inject([]) do |a, key|
+        a << merged_sources[key]
       end
+      content << "#{db}: "
+      content << sourted_sources.join(' ')
     end
-    nsswitch_conf
+    "#{content}\n"
   end
 end
 
-property :filename, String, name_property: true
+property :filename, String, default: '/etc/nsswitch.conf'
 property :mode, String, default: '0644'
 property :owner, String, default: 'root'
 property :group, String, default: 'root'
+property :config, Hash, default: {}
+property :nsswitch_name, String, name_property: true
+
 
 action :create do
-  Chef::Log.fatal(Chef.run_context.resource_collection.map {|r| r.class.ancestors })
-  nsswitches = Chef.run_context.resource_collection.select do |item|
-    item.is_a?(Chef::Resource::SysNsswitch)
-  end
-  nsswitches.each do |nsswitch|
-    nsswitch.sources = sources_to_hash(new_resource.sources)
-  end
 
-  # nsswitches_by_databse = {
-  #   'automount' => [automount_resource, automount_with_sssd_resource]
-  #   'passwd' => [passwd_resource]
-  # }
-  nsswitches_by_database = nsswitches.group_by { |nsswitch| nsswitch.database }
-  new_config = ''
-  nsswitches_by_database.each do |db, nss_resources|
-    config ||= {}
-    nss_resources.each do |r|
-      config[db].merge!(r.sources) do |_key, old, new|
-        if new_resource.merge
-          [old, new].flatten.sort.uniq
-        else
-          new
-        end
-      end
+  with_run_context :root do
+
+    edit_resource('file', new_resource.filename) do
+
+      content(create_content(new_resource.config))
+      mode(new_resource.mode)
+      owner(new_resource.owner)
+      group(new_resource.group)
+
+      action :nothing
+      delayed_action :create
     end
-    new_config << "#{db}: "
-    sorted_sources = merged_sources.keys.sort.inject([]) do |a, key|
-      a << merged_sources[key]
-    end
-    new_config << sorted_sources.join(' ')
   end
-
-  nsswitch_file = lookup_or_creaet_nsswitch_conf(new_resource.filename)
-  nsswitch_file.content = new_config
-  nsswitch_file.run_action(:create)
-
-  return unless nsswitch_file.updated_by_last_action?
-
-  new_resource.updated_by_last_action(true)
 end

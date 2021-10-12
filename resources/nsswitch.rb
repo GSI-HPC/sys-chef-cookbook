@@ -55,16 +55,30 @@
 provides :nsswitch
 
 property :database, String, name_property: true
-property :sources, [Array, Hash]
+property :sources, [String, Array, Hash]
 property :notify_nsswitch_coinfg, [true, false], default: true
 property :merge, [true, false], default: true
+
+action_class do
+  def sources_to_hash(sources)
+    return sources if sources.instance_of?(Hash)
+
+    sources_as_hash = {}
+    Array(sources).each_with_index do |s, i|
+      sources_as_hash[s] = 10*(i + 1)
+    end
+    return sources_as_hash
+  end
+end
 
 action :create do
   return unless new_resource.notify_nsswitch_config
 
-  nsswitch_config_resource = Chef.run_context.resource_collection.find('nsswitch_config')
-  raise 'could not find the nsswitch_config resource' unless nsswitch_config_resource
-
-  new_resource.notifies(:create, nsswitch_config_resource, :delayed)
-  new_resource.updated_by_last_action(true)
+  with_run_context :root do
+    edit_resource('sys_nsswitch_config', 'default') do
+      new_resource.sources = sources_to_hash(new_resource.sources)
+      config[database] ||= {}
+      config[database].merge! new_resource.sources
+    end
+  end
 end
