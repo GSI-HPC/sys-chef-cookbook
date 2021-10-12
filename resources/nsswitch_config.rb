@@ -26,7 +26,7 @@ action_class do
     content = ''
     config.each do |db, sources_hash|
       sorted_sources = sources_hash.keys.sort.inject([]) do |a, key|
-        a << merged_sources[key]
+        a << sources_hash[key]
       end
       content << "#{db}: "
       content << sorted_sources.join(' ')
@@ -46,7 +46,7 @@ property :nsswitch_name, String, name_property: true
 action :create do
 
   config_resource = new_resource
-
+  Chef::Log.fatal config_resource.config
   with_run_context :root do
     edit_resource('file', config_resource.filename) do
       content(create_content(config_resource.config))

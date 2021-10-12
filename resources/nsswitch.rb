@@ -78,7 +78,6 @@ action :create do
   with_run_context :root do
     edit_resource('sys_nsswitch_config', 'default') do
       old = config.dup
-      Chef::Log.fatal old
       old[nsswitch_resource.database] ||= {}
       old[nsswitch_resource.database].merge! nsswitch_resource.sources
       config(old)
