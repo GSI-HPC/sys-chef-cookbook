@@ -61,7 +61,7 @@ The data bag item must provide two attribute:
 
 ## Private keys
 
-Private keys corresponding to SSL certificates con be read from chef vaults.
+Private keys corresponding to SSL certificates can be read from chef vaults.
 The management of the private key is controlled by attributes for the respective
 cert in `node['sys']['ssl']['certs']`.
 
