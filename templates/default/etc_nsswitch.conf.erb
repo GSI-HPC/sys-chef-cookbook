@@ -1,5 +1,3 @@
 <%= template_header %>
 
-<%- @config.each do |key, value| -%>
-<%= format('%-15s %s', key + ':', value) %>
-<%- end -%>
+<%= @config %>

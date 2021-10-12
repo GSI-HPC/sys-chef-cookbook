@@ -26,7 +26,7 @@ describe file('/etc/nsswitch.conf') do
   it { should be_file } # link has been replaced
 
   # standard settings
-  its(:content) { should include 'passwd: compat'}
+  its(:content) { should include /passwd:\s+compat/}
   its(:content) { should include 'group: compat'}
   its(:content) { should include 'shadow: compat'}
   its(:content) { should include 'gshadow: files'}

@@ -50,8 +50,11 @@ property :nsswitch_name, String, name_property: true
 
 
 action :create do
-  file new_resource.filename do
-    content create_content(new_resource.config)
+  template new_resource.filename do
+    source 'etc_nsswitch.conf.erb'
+    variables(
+      config: create_content(new_resource.config)
+    )
     mode new_resource.mode
     owner new_resource.owner
     group new_resource.group
