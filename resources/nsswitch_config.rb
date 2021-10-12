@@ -29,7 +29,7 @@ action_class do
         a << merged_sources[key]
       end
       content << "#{db}: "
-      content << sourted_sources.join(' ')
+      content << sorted_sources.join(' ')
     end
     "#{content}\n"
   end
