@@ -24,6 +24,7 @@ provides :nsswitch_config
 action_class do
   def create_content(config)
     content = ''
+    max_db_length = config.keys.max{|a,b| a.length <=> b.length}.length
     config.each do |db, sources_hash|
       sorted_sources = []
       sources_hash.values.sort.uniq.each do |priority|
@@ -31,7 +32,8 @@ action_class do
           sorted_sources << k if v == priority
         end
       end
-      content << "#{db}: "
+      zeros = max_db_length - db.length
+      content << "#{db}:#{' '*zeros} "
       content << sorted_sources.join(' ')
       content << "\n"
     end
