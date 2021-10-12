@@ -25,7 +25,7 @@ action_class do
   def create_content(config)
     content = ''
     config.each do |db, sources_hash|
-      sorted_sources = merged_sources.keys.sort.inject([]) do |a, key|
+      sorted_sources = sources_hash.keys.sort.inject([]) do |a, key|
         a << merged_sources[key]
       end
       content << "#{db}: "
