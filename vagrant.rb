@@ -5,6 +5,7 @@ Vagrant.configure(2) do |config|
      sudo apt-get -qq update
      sudo DEBIAN_FRONTEND=noninteractive apt-get -qq -y install chef
      sudo DEBIAN_FRONTEND=noninteractive apt-get -qq -y install exim4-base
+     sudo DEBIAN_FRONTEND=noninteractive apt-get -qq -y install mailutils
      sudo DEBIAN_FRONTEND=noninteractive apt-get -qq -y install shellcheck
      sudo DEBIAN_FRONTEND=noninteractive apt-get -qq -y install snmp
      # v2 is the last version that works with Ruby 2.1:
