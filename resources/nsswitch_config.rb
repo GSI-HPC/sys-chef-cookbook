@@ -19,44 +19,46 @@
 
 # unified_mode true
 
-provides :nsswitch_config
+if Gem::Requirement.new('>= 12.5')
+     .satisfied_by?(Gem::Version.new(Chef::VERSION))
 
-action_class do
-  def create_content(config)
-    content = ''
-    max_db_length = config.keys.max{|a,b| a.length <=> b.length}.length
-    config.each do |db, sources_hash|
-      sorted_sources = []
-      sources_hash.values.sort.uniq.each do |priority|
-        sources_hash.each do |k,v|
-          sorted_sources << k if v == priority
+  provides :nsswitch_config
+
+  action_class do
+    def create_content(config)
+      content = []
+      config.each do |db, sources_hash|
+        sorted_sources = []
+        sources_hash.values.sort.uniq.each do |priority|
+          sources_hash.each do |k,v|
+            sorted_sources << k if v == priority
+          end
         end
+        content.push(format("%-15s %s", db + ':',
+                            sorted_sources.join(' ')))
       end
-      zeros = max_db_length - db.length
-      content << "#{db}:#{' '*zeros} "
-      content << sorted_sources.join(' ')
-      content << "\n"
+      content.join("\n")
     end
-    "#{content}\n"
   end
-end
 
-property :filename, String, default: '/etc/nsswitch.conf'
-property :mode, String, default: '0644'
-property :owner, String, default: 'root'
-property :group, String, default: 'root'
-property :config, Hash, default: {}
-property :nsswitch_name, String, name_property: true
+  property :filename, String, default: '/etc/nsswitch.conf'
+  property :mode, String, default: '0644'
+  property :owner, String, default: 'root'
+  property :group, String, default: 'root'
+  property :config, Hash, default: {}
+  property :nsswitch_name, String, name_property: true
 
+  default_action :create
 
-action :create do
-  template new_resource.filename do
-    source 'etc_nsswitch.conf.erb'
-    variables(
-      config: create_content(new_resource.config)
-    )
-    mode new_resource.mode
-    owner new_resource.owner
-    group new_resource.group
+  action :create do
+    template new_resource.filename do
+      source 'etc_nsswitch.conf.erb'
+      variables(
+        config: create_content(new_resource.config)
+      )
+      mode new_resource.mode
+      owner new_resource.owner
+      group new_resource.group
+    end
   end
 end
