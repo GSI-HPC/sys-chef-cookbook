@@ -22,7 +22,7 @@ provides :nsswitch
 
   property :database, String, name_property: true
   property :sources, [String, Array, Hash],
-    coerce: proc do |sources|
+    coerce: proc { |sources|
       if sources.instance_of?(Hash)
         sources
       else
@@ -32,7 +32,7 @@ provides :nsswitch
         end
         sources_as_hash
       end
-    end
+    }
   property :notify_nsswitch_config, [true, false], default: true
 
 action_class do
