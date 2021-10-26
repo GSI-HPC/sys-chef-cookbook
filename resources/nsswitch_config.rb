@@ -34,7 +34,7 @@ if Gem::Requirement.new('>= 12.5')
             sorted_sources << k if v == priority
           end
         end
-        content.push(format("%-15s %s", db + ':',
+        content.push(format("%-15s %s", "#{db}:",
                             sorted_sources.join(' ')))
       end
       content.join("\n")
