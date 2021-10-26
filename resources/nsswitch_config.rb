@@ -28,7 +28,7 @@ if Gem::Requirement.new('>= 12.5')
     def sort_sources(config)
       sorted_sources = {}
       config.each do |db, sources_hash|
-        sources_by_prio = sources_hash.group_by {|src, prio| prio}
+        sources_by_prio = sources_hash.group_by {|_src, prio| prio}
         sorted_prios = sources_by_prio.keys.sort
         sorted_prios.each do |prio|
           sorted_sources[db] = sources_by_prio[prio].to_h.keys.sort
