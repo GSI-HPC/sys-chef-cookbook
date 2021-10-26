@@ -1,11 +1,10 @@
 # `sys::nsswitch`
 
 ↪ `resources/nsswitch.rb`  
+↪ `resources/nsswitch.rb`  
 ↪ `recipes/nsswitch.rb`  
 
-Configures the Network Service Switch (NSS) in the file `/etc/nsswitch.conf`.
-
-Entries in `/etc/nsswitch.conf` that are not explictly handled by the Chef will be left untouched.
+Configures the Name Service Switch (NSS) in the file `/etc/nsswitch.conf`.
 
 ## Attributes
 
@@ -13,18 +12,54 @@ Define attributes beneath `node['sys']['nsswitch']` e.g.:
 
 ```ruby
 default['sys']['nsswitch'] = {
-  passwd:    'files ldap',
-  shadow:    'files ldap',
-  automount: 'files ldap'
+  passwd:    ['files', 'ldap'],
+  shadow:    ['files', 'ldap'],
+  automount: ['files', 'ldap']
 }
 ```
 
 ## Custom Resource
 
-Entries in `nsswitch.conf` can be tweaked from inside recipes:
+Use the `sys_nsswitch`-resource to configure a database like so
 
 ```ruby
-sys_nsswitch sudo' do
-  sources 'files ldap'
+sys_nsswitch 'automount' do
+  sources ['files', 'ldap']
 end
 ```
+
+In case of conflict with other recipes, provide a sources as hash with priority as value.
+If two or more sources have the same priority, they will be ordered lexically.
+
+```ruby
+sys_nsswitch 'automount' do
+  sources ['files', 'ldap']
+end
+```
+
+is equal to
+
+```ruby
+sys_nsswitch 'automount' do
+  sources {
+     'files' => 10,
+     'ldap'  => 20,
+  }
+end
+```
+
+And from another recipe:
+
+```ruby
+sys_nsswitch 'automount_with_sssd' do
+  database 'automount'
+  sources {
+     'files' => 10,
+     'nis'   => 20,
+     'sssd'  => 30,
+  }
+end
+```
+
+This will result in
+`automount: files ldap nis sssd`

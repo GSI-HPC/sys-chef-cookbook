@@ -15,40 +15,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-# Use nsswitch resource to configure a database like so
-#
-# nsswitch 'automount' do
-#   sources ['files', 'ldap']
-# end
-#
-#
-# In case of conflict with other recipes, provide a sources as hash with priority as value:
-#
-# nsswitch 'automount' do
-#   sources ['files', 'ldap']
-# end
-#
-# is equal to
-#
-# nsswitch 'automount' do
-#   sources {
-#      10 => 'files',
-#      20 => 'ldap',
-#   }
-# end
-#
-# And from another recipe:
-#
-# nsswitch 'automount_with_sssd' do
-#   database 'automount'
-#   sources {
-#      10 => 'files',
-#      20 => 'sssd',
-#   }
-# end
-#
-# This will result in
-# automount: files sssd ldap
 
 #unified_mode true
 
