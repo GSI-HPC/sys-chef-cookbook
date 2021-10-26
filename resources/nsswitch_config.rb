@@ -25,19 +25,16 @@ if Gem::Requirement.new('>= 12.5')
   provides :nsswitch_config
 
   action_class do
-    def create_content(config)
-      content = []
+    def sort_sources(config)
+      sorted_sources = {}
       config.each do |db, sources_hash|
-        sorted_sources = []
-        sources_hash.values.sort.uniq.each do |priority|
-          sources_hash.each do |k,v|
-            sorted_sources << k if v == priority
-          end
+        sources_by_prio = sources_hash.group_by {|src, prio| prio}
+        sorted_prios = sources_by_prio.keys.sort
+        sorted_prios.each do |prio|
+          sorted_sources[db] = sources_by_prio[prio].to_h.keys.sort
         end
-        content.push(format("%-15s %s", "#{db}:",
-                            sorted_sources.join(' ')))
       end
-      content.join("\n")
+      sorted_sources
     end
   end
 
@@ -54,7 +51,7 @@ if Gem::Requirement.new('>= 12.5')
     template new_resource.filename do
       source 'etc_nsswitch.conf.erb'
       variables(
-        config: create_content(new_resource.config)
+        config: sort_sources(new_resource.config)
       )
       mode new_resource.mode
       owner new_resource.owner

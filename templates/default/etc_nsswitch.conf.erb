@@ -1,3 +1,5 @@
 <%= template_header %>
 
-<%= @config %>
+<% @config.each do |db, sources| -%>
+<%= format("%-15s %s", "#{db}:", sources.join(' ') %>
+<% end -%>
