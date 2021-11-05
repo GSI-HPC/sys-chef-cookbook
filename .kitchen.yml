@@ -307,4 +307,4 @@ suites:
           servers:
             - ntp1.net.berkeley.edu
             - time1.esa.int
-            - ntp0.as34288.net
+            - zeit.fu-berlin.de

@@ -1,7 +1,7 @@
 # Cookbook Name:: sys
 # Integration tests for recipe sys::time
 #
-# Copyright 2020 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+# Copyright 2020-2021 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
 #
 # Authors:
 #  Christopher Huhn   <c.huhn@gsi.de>
@@ -51,7 +51,7 @@ end
 
 context 'ntp' do
 
-  ntp_servers = %w[ntp1.net.berkeley.edu time1.esa.int ntp0.as34288.net]
+  ntp_servers = %w[ntp1.net.berkeley.edu time1.esa.int zeit.fu-berlin.de]
 
   describe file('/etc/ntp.conf') do
     it { should be_readable.by_user('ntp') }

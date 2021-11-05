@@ -47,7 +47,9 @@ describe "plugins" do
     end
 
     it { should be_a(Mash) }
-    it { should include(platform: 'debian') }
+    context 'on debian', :if => os[:family] == 'debian' do
+      it { should include(platform: 'debian') }
+    end
   end
 
   describe 'debian' do

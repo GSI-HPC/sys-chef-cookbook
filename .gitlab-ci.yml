@@ -41,7 +41,7 @@ kitchen:
         - chef
         - ferm
         - mail
-	- nsswitch
+        - nsswitch
         - ohai
         - resolv
         - ssh
