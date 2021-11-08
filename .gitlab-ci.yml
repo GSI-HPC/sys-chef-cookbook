@@ -40,8 +40,8 @@ kitchen:
         - banner
         - chef
         - ferm
-        - mail
-	- nsswitch
+        - mai
+        - nsswitch
         - ohai
         - resolv
         - ssh
