@@ -24,7 +24,7 @@
 # limitations under the License.
 #
 
-return if node['sys']['ldap'].empty? || ! File.exist?('/usr/bin/kinit')
+return if node['sys']['ldap'].empty?
 
 %w[ldap-utils libnss-ldapd nslcd].each do |p|
   package p
