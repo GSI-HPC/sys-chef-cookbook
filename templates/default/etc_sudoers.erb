@@ -10,7 +10,9 @@ Defaults        mailfrom="<%= @mailfrom %>"
 Defaults        mailsub="<%= @mailsub || '*** SECURITY information for %h ***' %>"
 
 # Host alias specification
+<%- if node['fqdn'] -%>
 Host_Alias  LOCAL = <%= node['fqdn'] %>
+<%- end -%>
 
 # User alias specification
 
