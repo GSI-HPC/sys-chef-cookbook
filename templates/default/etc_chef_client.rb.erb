@@ -1,8 +1,8 @@
 <%= template_header %>
 # frozen_string_literal: true
 
-<%- nodename = @node_name || node['fqdn'] -%>
-<%- if nodename && ! @skip_nodename -%>
+<%- nodename = @node_name || node['fqdn'] || '' -%>
+<%- unless nodename.empty? || @skip_nodename -%>
 node_name        '<%= nodename %>'
 
 <%- end -%>

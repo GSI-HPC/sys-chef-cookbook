@@ -8,6 +8,7 @@ Vagrant.configure(2) do |config|
      sudo DEBIAN_FRONTEND=noninteractive apt-get -qq -y install exim4-base
      sudo DEBIAN_FRONTEND=noninteractive apt-get -qq -y install mailutils
      sudo DEBIAN_FRONTEND=noninteractive apt-get -qq -y install shellcheck
+     sudo DEBIAN_FRONTEND=noninteractive apt-get -qq -y install snmp
      sudo gem install chef-vault --version '< 4'
   SHELL
 

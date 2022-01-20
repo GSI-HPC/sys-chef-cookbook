@@ -2,7 +2,7 @@
 # Cookbook Name:: sys
 # Config file for test-kitchen
 #
-# Copyright 2015-2021 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+# Copyright 2015-2022 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
 #
 # Authors:
 #  Christopher Huhn   <c.huhn@gsi.de>
@@ -24,7 +24,7 @@
 ---
 driver:
   name: vagrant
-  box_check_update: true
+  box_auto_update: true
 
 provisioner:
   require_chef_omnibus: false
@@ -225,6 +225,20 @@ suites:
             - rotate
             - timeout:3
           force: true
+  - name: sys_snmp
+    run_list:
+      - recipe[sys::hosts]
+      - recipe[sys::snmp]
+    attributes:
+      sys:
+        hosts:
+          allow:
+            - "snmpd: 127.0.0.1"
+        snmp:
+          community: oz
+          sys_contact: Dorothy Gale
+          sys_location: Somewhere over the rainbow
+          log_level: alert
   - name: sys_ssh
     run_list:
       - recipe[sys::ssh]
