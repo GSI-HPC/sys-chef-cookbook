@@ -46,6 +46,7 @@ kitchen:
         - mail
         - nsswitch
         - resolv
+        - snmp
         - ssh
         - ssl
         - sudo
