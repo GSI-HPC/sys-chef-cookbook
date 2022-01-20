@@ -2,7 +2,7 @@
 # Cookbook Name:: sys
 # Config file for test-kitchen
 #
-# Copyright 2015-2021 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+# Copyright 2015-2022 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
 #
 # Authors:
 #  Christopher Huhn   <c.huhn@gsi.de>
@@ -24,7 +24,7 @@
 ---
 driver:
   name: vagrant
-  box_check_update: true
+  box_auto_update: true
 
 provisioner:
   require_chef_omnibus: false
