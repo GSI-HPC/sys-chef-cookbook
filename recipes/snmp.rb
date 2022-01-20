@@ -2,7 +2,7 @@
 # Cookbook Name:: sys
 # Recipe:: snmp
 #
-# Copyright 2011-2020 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+# Copyright 2011-2022 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
 #
 # Authors:
 #  Christopher Huhn   <C.Huhn@gsi.de>
@@ -54,7 +54,7 @@ when 'rhel'
   end
 when 'debian'
   # different user name on Stretch and beyond:
-  if node['platform'] == 'debian' && node['platform_version'].to_i >= 9
+  unless node['platform_version'].to_i < 9
     snmpd_user = 'Debian-snmp'
     snmpd_group = 'Debian-snmp'
   end
@@ -65,7 +65,7 @@ package snmpd_package
 # the systemd unit shipped by Debian does not take
 #  `/etc/default/snmpd` into account
 #  (and the latter is no EnvironmentFile but a shell script)
-if node['platform'] == 'debian' && node['platform_version'].to_i >= 9
+if node['platform_family'] == 'debian' && node['platform_version'].to_i >= 9
 
   directory '/etc/systemd/system/snmpd.service.d/'
 
@@ -78,11 +78,14 @@ if node['platform'] == 'debian' && node['platform_version'].to_i >= 9
 
 [Service]
 ExecStart=
-ExecStart=/usr/sbin/snmpd -LS#{log_level_num}d -Lf /dev/null -u #{snmpd_user} -g #{snmpd_user} -I -smux,mteTrigger,mteTriggerConf -
+ExecStart=/usr/sbin/snmpd -LS#{log_level_num}d -Lf /dev/null \\
+    -u #{snmpd_user} -g #{snmpd_user} -I -smux,mteTrigger,mteTriggerConf \\
+    -f -p /run/snmpd.pid
 EOF
-    # notifies :run, 'execute[systemctl daemon-reload]'
+    notifies :run, 'execute[sys-systemd-reload]'
   end
 
+  include_recipe 'sys::systemd' # for systemctl daemon-reload
 else
 
   template snmpd_defaults do
