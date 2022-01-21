@@ -35,8 +35,8 @@ provisioner:
   name: chef_zero
   chef_client_path: /usr/bin/chef-client
   data_bags_path: test/integration/data_bags
+  # product_name: cinc
   chef_omnibus_url: https://omnitruck.cinc.sh/install.sh
-  chef_omnibus_root: /opt/cinc
 
 verifier:
   name: busser
@@ -73,9 +73,6 @@ platforms:
       require_chef_omnibus: true
       vagrantfiles:
         - vagrant.rb
-    provisioner:
-      chef_omnibus_url: https://omnitruck.cinc.sh/install.sh
-      chef_omnibus_root: /opt/cinc
   - name: focal
     driver:
       box: generic/ubuntu2004
