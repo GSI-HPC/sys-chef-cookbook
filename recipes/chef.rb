@@ -5,7 +5,7 @@
 #
 # set's up the chef-client
 #
-# Copyright 2011-2020 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+# Copyright 2011-2022 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
 #
 # Authors:
 #  Christopher Huhn    <c.huhn@gsi.de>
@@ -129,12 +129,34 @@ if node['sys']['chef']['init_style'] == 'systemd-timer'
 
   # creates a one shot service and a systemd.timer to trigger it
 
+  include_recipe 'sys::systemd'
+
+  # mimic the chef-client cookbook systemd unit:
+  systemd_unit 'chef-client.timer' do
+    content(
+      'Unit' => { 'Description' => 'chef-client periodic run' },
+      'Install' => { 'WantedBy' => 'timers.target' },
+      'Timer' => {
+        'OnBootSec' => '30sec',
+        # restart timer should be set to interval - splay - chef_run duration
+        #  randomized delay is evenly distributed between 0 and splay
+        #  median should be at splay/2, duration of chef_run is left out
+        'OnUnitInactiveSec' => ( node['sys']['chef']['interval'].to_i -
+                                 node['sys']['chef']['splay'].to_i/2
+                               ).to_s + 'sec',
+        'RandomizedDelaySec' => "#{node['sys']['chef']['splay']}sec"
+      }
+    )
+    action [:create, :enable, :start]
+    notifies :run, 'execute[sys-systemd-reload]'
+  end
+
   # mimic the chef-client cookbook systemd unit:
   systemd_unit 'chef-client.service' do
     content(
       'Unit' => {
         'Description' => 'Chef Infra Client',
-        'After' => 'network.target auditd.service',
+        'After' => 'network.target auditd.service'
       },
       'Service' => {
         'Type' => 'oneshot',
@@ -143,23 +165,14 @@ if node['sys']['chef']['init_style'] == 'systemd-timer'
         'ExecReload' => '/bin/kill -HUP $MAINPID',
         'SuccessExitStatus' => 3,
       },
-      'Install' => { 'WantedBy' => 'multi-user.target' },
-    )
-    action :create
-  end
-
-  # mimic the chef-client cookbook systemd unit:
-  systemd_unit 'chef-client.timer' do
-    content(
-      'Unit' => { 'Description' => 'chef-client periodic run' },
-      'Install' => { 'WantedBy' => 'timers.target' },
-      'Timer' => {
-        'OnBootSec' => '1min',
-        'OnUnitInactiveSec' => "#{node['sys']['chef']['interval']}sec",
-        'RandomizedDelaySec' => "#{node['sys']['chef']['splay']}sec",
+      'Install' => {
+        'Alias' => 'chef.service',
+        'WantedBy' => 'multi-user.target'
       }
     )
-    action [:create, :enable, :start]
+    # what effect has stop when this chef run was started by systemd timer?
+    action %i[create stop]
+    notifies :run, 'execute[sys-systemd-reload]', :immediately
   end
 
 else
