@@ -38,3 +38,8 @@ context 'chef-client config' do
     its(:stdout) { should contain('Chef Run complete') }
   end
 end
+
+describe service 'chef-client.timer' do
+  it { should be_running }
+  it { should be_enabled }
+end
