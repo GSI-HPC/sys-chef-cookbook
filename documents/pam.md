@@ -1,3 +1,5 @@
+# `sys::pam`
+
 Configures Linux authentication modules (PAM).
 
 ↪ `attributes/pam.rb`  
@@ -8,43 +10,87 @@ Configures Linux authentication modules (PAM).
 ↪ `tests/roles/sys_pam_test.rb`  
 ↪ `files/*/etc_pam.d_sshd`  
 ↪ `files/*/etc_pam.d_login`  
+↪ `libraries/pamupdate_*.rb`  
 
 
-**Attributes**
+## Attributes
 
-All attributes in `node.sys.pam`:
+All attributes in `node['sys']['pam']`:
 
 * `limits` holds an array of ulimits written to `/etc/security/limits.conf`.
 * `access` holds an array of rules written to `/etc/security/access.conf`.
-* `group` holds an array of rules written to `/etc/security/group.conf`.
+* `group`  holds an array of rules written to `/etc/security/group.conf`.
 
-It is possible to write any file in the `/etc/pam.d/` directory using attributes in `node.sys.pamd`. The key needs to be called like the file to be altered (e.g. `xscreensaver` or `ssh`) and the value is a string containing the entire configuration. However, if you want to change something in the `/etc/pam.d/common-*`-files, you are best adviced to use the attributes in `node.sys.pamupdate`.
+It is possible to write any file in the `/etc/pam.d/` directory using attributes
+in `node⌷'sys']['pamd']`. The key needs to be used as the file to be altered
+(e.g. `xscreensaver` or `ssh`) and the value is a string containing the entire
+configuration. However, to change the content of `/etc/pam.d/common-*` files,
+you are best adviced to use the attributes in `node['sys']['pamupdate']`.
 
-**Pam-Update**
-As the name suggests, this is a small rewrite in ruby of pam-auth-update. The options are a little more complicated than just providing one giant string, but it offers more flexibilty. Pamupdate configuration is done with `profiles`. Each profile configures at least one of the `/etc/pam.d/common-_`-files, and provides information on how to be merged with other profiles configuring the same files.
-The pam-configuration in the `/etc/pam.d/common-_`-files is always devided into two block, the primary and the additional block.
+## Pam-Update
 
-**Primary**
-The Primary block contains information modules that either deny or permit access. If none of these modules succeeds, pam_deny is used as fallback which prevents login. The priority of the profile determines the position of the module in the pam-stack. E.g. libpam-heimdal ships a default configuration with priority 704. Since the default unix-profile has a priority of 256, authentication is first delegated to the heimdal-module, only afterwards the unix-module is asked. If two profiles have equal priorities the name of the profile is used for sorting.
+This is a minimal ruby rewrite of [pam-auth-update](https://manpages.debian.org/bullseye/libpam-runtime/pam-auth-update.8.en.html).
+The options are a little more complicated than just providing one giant string,
+but it offers more flexibilty.
+Pamupdate configuration is done with *profiles*.
+Each profile configures at least one of the `/etc/pam.d/common-_`-files,
+and provides information on how to be merged with other profiles configuring
+the same files.
+The pam-configuration in the `/etc/pam.d/common-_`-files is always divided
+into two block, the primary and the additional block.
 
-**Additional**
-In this block modules are configured, which often just modify the user's groups, limits, session or the like. Again, modules are inserted here by highest priority or by name if they have equal priorities.
+### Primary
 
-**Creation**
-If you specify configuration of a profile, you must at a minimum provide a number of fields, so that the configuartion can work at all:
+The Primary block contains information modules that either deny or permit
+access.
+If none of these modules succeeds, pam_deny is used as fallback which prevents
+login.
+The priority of the profile determines the position of the module in the pam-stack.
+E.g. libpam-heimdal ships a default configuration with priority 704.
+Since the default unix-profile has a priority of 256, authentication is first
+delegated to the heimdal-module, only afterwards the unix-module is asked.
+If two profiles have equal priorities the name of the profile is used
+for sorting.
 
-* `Name`: This makes the profiles unique, it can be anything you, just try to keep it different from the other modules.
-* `Default`: Set this to "yes" to enable the profile. Anything else disables it. It must be present, i.e. not `nil`
-* `Priority`: Must be present to sort the profiles.
+### Additional
 
-To define a profile use the `PamUpdate`-library as in `sys::pam.rb`:
+In this block modules are configured, which often just modify the user's groups,
+limits, session or the like.
+Again, modules are inserted here by highest priority or by name if they have
+equal priorities.
 
-* Create Profiles with `PamUpdate::Profile.new(values)`. Values can either be a hash of hashes, or a filename. This way you can either configure it from scratch, or use configuration which ships with the packages, e.g. `/usr/share/pam-configs/krb5`.
-* Put all the profiles in an array which is used to initialize a writer object: `generate = PamUpdate::Writer.new(profile-array)`. then get the needed strings by running `generate.auth`. Supported methods are `account`, `auth`, `password`, `session` and `session-noninteractive`.
+### Creation
+
+If you specify configuration of a profile, you must at a minimum provide a
+number of fields, so that the configuartion can work at all:
+
+*Name*
+: This makes the profiles unique, it can be anything you,
+  just try to keep it different from the other modules.
+
+*Default*
+: Set this to "yes" to enable the profile. Anything else disables it.
+  It must be present, i.e. not `nil`
+*Priority*
+: Must be present to sort the profiles.
+
+To define a profile use the `PamUpdate`-library as in `sys::pam`:
+
+* Create Profiles with `PamUpdate::Profile.new(values)`.
+  Values can either be a hash of hashes, or a filename.
+  This way you can either configure it from scratch,
+  or use configuration which ships with the packages,
+  e.g. `/usr/share/pam-configs/krb5`.
+* Put all the profiles in an array which is used to initialize a writer object:
+  `generate = PamUpdate::Writer.new(profile-array)`. then get the needed strings
+  by running `generate.auth`.
+  Supported methods are `account`, `auth`, `password`, `session` and
+  `session-noninteractive`.
 
 
-For Example:
+## Example
 
+```
     "sys" => {
       "pam" => {
         "access" => [
@@ -89,7 +135,16 @@ For Example:
         }
       }
     }
+```
 
-`files/*/etc_pam.d_login` is deployed at `/etc/pam.d/login` if the `[:sys][:pam][:access]` attribute is set. It is the default file shipped with the `login` package and commented-in pam_access line.
+## Access control with `pam_access`
 
-`files/*/etc_pam.d_sshd` is deployed at `/etc/pam.d/sshd` if the `[:sys][:pam][:access]` attribute is set and the file `/etc/ssh/sshd_config` exists (meaning `openssh-server` package is installed). It is the default file shipped with the `openssh-server` package and commented-in pam_access line.
+If the attribute `node['sys']['pam']['access']` is set:
+* `files/*/etc_pam.d_login` is deployed at `/etc/pam.d/login`.
+  It contains the default config as shipped by the `login` package with
+  the `pam_access` module enabled.
+
+* `files/*/etc_pam.d_sshd` is deployed to `/etc/pam.d/sshd`
+  if `/etc/ssh/sshd_config` exists (ie. SSH server is installed).
+  It contains the default config as shipped by the `openssh-server`
+  package with the `pam_access` module enabled. See also [`sys::ssh`](ssh.md)

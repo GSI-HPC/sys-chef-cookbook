@@ -2,6 +2,10 @@
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## Unreleased
+### Changed
+- Updated [documentation for `sys::pam`](documents/pam.md)
+
 ## [1.63.0] - 2022-02-07
 
 ### Added
