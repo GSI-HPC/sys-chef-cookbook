@@ -42,9 +42,10 @@ kitchen:
         - banner
         - chef
         - ferm
-        - ohai
+        - linuxlogo
         - mail
         - nsswitch
+        - ohai
         - resolv
         - snmp
         - ssh

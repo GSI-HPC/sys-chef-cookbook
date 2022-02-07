@@ -169,6 +169,12 @@ suites:
                   - 'policy ACCEPT;'
                 FORWARD:
                   - 'policy DROP;'
+  - name: sys_linuxlogo
+    run_list:
+      - recipe[sys::linuxlogo]
+    attributes:
+      sys:
+        linuxlogo: absolutely!
   - name: sys_ohai
     run_list:
       - recipe[sys::ohai]
