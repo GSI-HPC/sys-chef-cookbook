@@ -5,6 +5,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## Unreleased
 ### Changed
 - Updated [documentation for `sys::pam`](documents/pam.md)
+- Send chef-client output to logfile in systemd-timer mode (!39)
 
 ## [1.63.0] - 2022-02-07
 
