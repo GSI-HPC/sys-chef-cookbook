@@ -161,7 +161,7 @@ if node['sys']['chef']['init_style'] == 'systemd-timer'
       'Service' => {
         'Type' => 'oneshot',
         'EnvironmentFile' => '/etc/default/chef-client',
-        'ExecStart' => '/usr/bin/chef-client -c $CONFIG $OPTIONS',
+        'ExecStart' => '/usr/bin/chef-client -c $CONFIG -L $LOGFILE $OPTIONS',
         'ExecReload' => '/bin/kill -HUP $MAINPID',
         'SuccessExitStatus' => 3,
       },
