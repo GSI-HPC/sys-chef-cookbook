@@ -131,25 +131,6 @@ if node['sys']['chef']['init_style'] == 'systemd-timer'
 
   include_recipe 'sys::systemd'
 
-  # mimic the chef-client cookbook systemd unit:
-  systemd_unit 'chef-client.timer' do
-    content(
-      'Unit' => { 'Description' => 'chef-client periodic run' },
-      'Install' => { 'WantedBy' => 'timers.target' },
-      'Timer' => {
-        'OnBootSec' => '30sec',
-        # restart timer should be set to interval - splay - chef_run duration
-        #  randomized delay is evenly distributed between 0 and splay
-        #  median should be at splay/2, duration of chef_run is left out
-        'OnUnitInactiveSec' => ( node['sys']['chef']['interval'].to_i -
-                                 node['sys']['chef']['splay'].to_i/2
-                               ).to_s + 'sec',
-        'RandomizedDelaySec' => "#{node['sys']['chef']['splay']}sec"
-      }
-    )
-    action [:create, :enable, :start]
-    notifies :run, 'execute[sys-systemd-reload]'
-  end
 
   # mimic the chef-client cookbook systemd unit:
   systemd_unit 'chef-client.service' do
@@ -173,6 +154,26 @@ if node['sys']['chef']['init_style'] == 'systemd-timer'
     # what effect has stop when this chef run was started by systemd timer?
     action %i[create stop]
     notifies :run, 'execute[sys-systemd-reload]', :immediately
+  end
+
+  # mimic the chef-client cookbook systemd unit:
+  systemd_unit 'chef-client.timer' do
+    content(
+      'Unit' => { 'Description' => 'chef-client periodic run' },
+      'Install' => { 'WantedBy' => 'timers.target' },
+      'Timer' => {
+        'OnBootSec' => '30sec',
+        # restart timer should be set to interval - splay - chef_run duration
+        #  randomized delay is evenly distributed between 0 and splay
+        #  median should be at splay/2, duration of chef_run is left out
+        'OnUnitInactiveSec' => ( node['sys']['chef']['interval'].to_i -
+                                 node['sys']['chef']['splay'].to_i/2
+                               ).to_s + 'sec',
+        'RandomizedDelaySec' => "#{node['sys']['chef']['splay']}sec"
+      }
+    )
+    action [:create, :enable, :start]
+    notifies :run, 'execute[sys-systemd-reload]'
   end
 
 else
