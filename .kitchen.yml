@@ -169,6 +169,14 @@ suites:
                   - 'policy ACCEPT;'
                 FORWARD:
                   - 'policy DROP;'
+  - name: sys_firewall
+    run_list:
+      - recipe[firewall-test::default]
+    attributes:
+      sys:
+        firewall:
+          manage: true
+          disable: false
   - name: sys_linuxlogo
     run_list:
       - recipe[sys::linuxlogo]
