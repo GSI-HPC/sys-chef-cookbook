@@ -18,7 +18,10 @@
 
 #unified_mode true
 
-provides :nsswitch
+if Gem::Requirement.new('>= 12.13')
+     .satisfied_by?(Gem::Version.new(Chef::VERSION))
+
+  provides :nsswitch
 
   property :database, String, name_property: true
   property :sources, [String, Array, Hash],

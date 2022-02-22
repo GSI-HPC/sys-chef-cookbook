@@ -19,7 +19,7 @@
 
 # unified_mode true
 
-if Gem::Requirement.new('>= 12.5')
+if Gem::Requirement.new('>= 12.13')
      .satisfied_by?(Gem::Version.new(Chef::VERSION))
 
   provides :nsswitch_config
