@@ -39,7 +39,7 @@ defaults = {
 }
 
 # turn hash keys into Strings before merging to avoid dupes:
-config = defaults.map { |k,v| [k.to_s, Array(v)] }.to_h
+config = defaults.map { |k,v| [k.to_s, v] }.to_h
 
 sys_nsswitch 'shadow' do
   sources 'compat'
