@@ -33,7 +33,7 @@ defaults = {
   hosts:     ['files', 'dns'],
   networks:  'files',
   protocols: ['db', 'files'],
-  services:  ['db',' files'],
+  services:  ['db', 'files'],
   ethers:    ['db', 'files'],
   rpc:       ['db', 'files'],
 }
