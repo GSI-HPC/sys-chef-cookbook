@@ -31,7 +31,8 @@ if Gem::Requirement.new('>= 12.15')
         sources_by_prio = sources_hash.group_by {|_src, prio| prio}
         sorted_prios = sources_by_prio.keys.sort
         sorted_prios.each do |prio|
-          sorted_sources[db] = sources_by_prio[prio].to_h.keys.sort
+          sorted_sources[db] ||= []
+          sorted_sources[db] << sources_by_prio[prio].first.first
         end
       end
       sorted_sources
