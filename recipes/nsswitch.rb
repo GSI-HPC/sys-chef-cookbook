@@ -25,17 +25,21 @@
 # do nothing until requested
 return if node['sys']['nsswitch'].empty?
 
-sys_nsswitch_config 'default' do
-  action :nothing
-end
+defaults = {
+  passwd:    'compat',
+  group:     'compat',
+  shadow:    'compat',
+  gshadow:   'files',
+  hosts:     ['files', 'dns'],
+  networks:  'files',
+  protocols: ['db', 'files'],
+  services:  ['db',' files'],
+  ethers:    ['db', 'files'],
+  rpc:       ['db', 'files'],
+}
 
-sys_nsswitch 'passwd' do
-  sources 'compat'
-end
-
-sys_nsswitch 'group' do
-  sources 'compat'
-end
+# turn hash keys into Strings before merging to avoid dupes:
+config = defaults.map { |k,v| [k.to_s, Array(v)] }.to_h
 
 sys_nsswitch 'shadow' do
   sources 'compat'
