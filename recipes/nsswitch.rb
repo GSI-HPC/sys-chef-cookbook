@@ -45,9 +45,8 @@ sys_nsswitch 'gshadow' do
   sources 'files'
 end
 
-sys_nsswitch 'hosts' do
-  sources ['files', 'dns']
-end
+if Gem::Requirement.new('>= 12.13')
+     .satisfied_by?(Gem::Version.new(Chef::VERSION))
 
 sys_nsswitch 'networks' do
   sources 'files'
