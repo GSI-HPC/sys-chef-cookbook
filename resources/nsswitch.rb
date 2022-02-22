@@ -49,9 +49,7 @@ action_class do
         old[nsswitch_resource.database] ||= {}
         old[nsswitch_resource.database].merge! nsswitch_resource.sources
         config(old)
-      end
-      log "Create nsswitch.conf!" do
-        notifies :create, 'sys_nsswitch_config[default]', :delayed
+        delayed_action :create
       end
     end
   end
