@@ -45,7 +45,7 @@ sys_nsswitch 'gshadow' do
   sources 'files'
 end
 
-if Gem::Requirement.new('>= 12.13')
+if Gem::Requirement.new('>= 12.15')
      .satisfied_by?(Gem::Version.new(Chef::VERSION))
 
 sys_nsswitch 'networks' do
