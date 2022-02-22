@@ -44,13 +44,12 @@ action_class do
 
   action :create do
     return unless new_resource.notify_nsswitch_config
-    nsswitch_resource = new_resource
     with_run_context :root do
-      edit_resource('sys_nsswitch_config', 'default') do
+      edit_resource('sys_nsswitch_config', 'default') do |nss_resource|
         action :nothing
         old = config.dup
-        old[nsswitch_resource.database] ||= {}
-        old[nsswitch_resource.database].merge! nsswitch_resource.sources
+        old[nss_resource.database] ||= {}
+        old[nss_resource.database].merge! nss_resource.sources
         config(old)
         delayed_action :create
       end
