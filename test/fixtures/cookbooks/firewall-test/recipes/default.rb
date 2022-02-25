@@ -1,3 +1,5 @@
+return unless Gem::Requirement.new('>= 12.15').satisfied_by?(Gem::Version.new(Chef::VERSION))
+
 include_recipe 'sys::firewall'
 
 firewall_rule 'ssh22' do
