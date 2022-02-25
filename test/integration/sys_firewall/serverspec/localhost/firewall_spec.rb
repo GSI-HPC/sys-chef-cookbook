@@ -50,17 +50,30 @@ expected_rules = [
   /\s+ip6 nexthdr ah accept.*$/,
 ]
 
-describe command('nft -nn list ruleset') do
-  expected_rules.each do |r|
-    its(:stdout) { should match(r) }
+if os[:release].to_i >= 10
+
+  describe command('nft -nn list ruleset') do
+    expected_rules.each do |r|
+      its(:stdout) { should match(r) }
+    end
   end
-end
 
-describe package('nftables') do
-  it { should be_installed }
-end
+  describe package('nftables') do
+    it { should be_installed }
+  end
 
-describe service('nftables') do
-  it { should be_enabled }
-  it { should be_running }
+  describe service('nftables') do
+    it { should be_enabled }
+    it { should be_running }
+  end
+
+else
+  describe package('nftables') do
+    it { should_not be_installed }
+  end
+
+  describe service('nftables') do
+    it { should_not be_enabled }
+    it { should_not be_running }
+  end
 end
