@@ -1,7 +1,7 @@
 # `sys::nsswitch`
 
 ↪ `resources/nsswitch.rb`  
-↪ `resources/nsswitch.rb`  
+↪ `resources/nsswitch_config.rb`  
 ↪ `recipes/nsswitch.rb`  
 
 Configures the Name Service Switch (NSS) in the file `/etc/nsswitch.conf`.
@@ -63,3 +63,5 @@ end
 
 This will result in
 `automount: files ldap nis sssd`
+
+For more examples see the recipe [nsswitch-test::default](test/fixtures/cookbooks/nsswitch-test/recipes/default.rb).
