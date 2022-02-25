@@ -209,7 +209,7 @@ suites:
               - /tmp/mail.test
   - name: sys_nsswitch
     run_list:
-      - recipe[sys::nsswitch]
+      - recipe[nsswitch-test::default]
     attributes:
       sys:
         nsswitch:

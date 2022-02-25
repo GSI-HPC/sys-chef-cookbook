@@ -1,6 +1,6 @@
 #
-# Cookbook Name:: sys
-# Recipe:: nsswitch_test
+# Cookbook Name:: nsswitch-test
+# Recipe:: default
 #
 # Copyright 2013-2021 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
 #
