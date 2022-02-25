@@ -25,28 +25,28 @@ include_recipe 'sys::nsswitch'
 if Gem::Requirement.new('>= 12.15')
     .satisfied_by?(Gem::Version.new(Chef::VERSION))
 
-  # coerces to {'string' => {'source' => 10}}
+  # coerced to {'string' => {'source' => 10}}
   # renders to 'string: source'
   sys_nsswitch 'string' do
     sources 'source'
   end
 
-  # coerces {'hash' => {'prio20' => 20, 'prio10' => 10}}
+  # coerced {'hash' => {'prio20' => 20, 'prio10' => 10}}
   # renders to 'hash: prio10 prio20'
   sys_nsswitch 'hash' do
-    sources ({
+    sources({
       'prio20' => 20,
       'prio10' => 10
     })
   end
 
-  # coerces to {'array' => {array1 => 10, array2 => 20}}
+  # coerced to {'array' => {array1 => 10, array2 => 20}}
   # renders to 'array: array1 array2
   sys_nsswitch 'array' do
     sources ['array1', 'array2']
   end
 
-  # coerces to:
+  # coerced to:
   # 'merge' => {
   #   'merge10a' => 10
   # }
@@ -54,15 +54,15 @@ if Gem::Requirement.new('>= 12.15')
     sources 'merge10a'
   end
 
-  # coerces to:
+  # coerced to:
   # 'merge' => {
   #   'merge20a' => 20
   # }
   sys_nsswitch 'merge' do
-    sources ({'merge20a' => 20})
+    sources({'merge20a' => 20})
   end
 
-  # coerces to:
+  # coerceto:
   # 'merge' => {
   #   'merge10b' => 10,
   #   'merge20b' => 20,
@@ -75,7 +75,7 @@ if Gem::Requirement.new('>= 12.15')
     sources ['merge10b', 'merge20b', 'merge30a', 'merge40']
   end
 
-  # coerces to:
+  # coerced to:
   # 'merge' => {
   #   'merge10c' => 10,
   #   'merge30b' => 30,
@@ -88,7 +88,7 @@ if Gem::Requirement.new('>= 12.15')
   # finally renders to:
   # merge:          merge9 merge10c merge20b merge30b merge40 merge50
   sys_nsswitch 'merge' do
-    sources ({
+    sources({
       'merge10c' => 10,
       'merge30b' => 30,
       'merge20b' => 60,
