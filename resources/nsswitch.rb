@@ -47,11 +47,10 @@ action_class do
     with_run_context :root do
       edit_resource('sys_nsswitch_config', 'default') do |nss_resource|
         action :nothing
-        new = {nss_resource.database => nss_resource.sources}
         old = config.dup
         old[nss_resource.database] ||= {}
-        new[nss_resource.database].merge! old[nss_resource.database]
-        config(new)
+        old[nss_resource.database].merge! nss_resource.sources
+        config(old)
         delayed_action :create
       end
     end

@@ -69,8 +69,8 @@ if Gem::Requirement.new('>= 12.15')
   #   'merge30a' => 30,
   #   'merge40' => 40
   # }
-  # overwrites previous merge20a with merge20
-  # overwrites previous merge10a with merge10b
+  # Adds merge20b to previous merge20a
+  # Adds merge10b to previous merge10a
   sys_nsswitch 'merge' do
     sources ['merge10b', 'merge20b', 'merge30a', 'merge40']
   end
@@ -82,13 +82,16 @@ if Gem::Requirement.new('>= 12.15')
   #   'merge9' => 9,
   #   'merge50' => 50
   # }
-  # merge overwrite previous merge10b with merge20
+  # Adds merge30b
+  # Adds merge30b
+  # Overwrites priority of merge20b with 60, because it is later in the run list.
   # finally renders to:
   # merge:          merge9 merge10c merge20b merge30b merge40 merge50
   sys_nsswitch 'merge' do
     sources ({
       'merge10c' => 10,
       'merge30b' => 30,
+      'merge20b' => 60,
       'merge9' => 9,
       'merge50' => 50
     })

@@ -32,8 +32,9 @@ if Gem::Requirement.new('>= 12.15')
         sorted_prios = sources_by_prio.keys.sort
         sorted_prios.each do |prio|
           sorted_sources[db] ||= []
-          sorted_sources[db] << sources_by_prio[prio].first.first
+          sorted_sources[db] << sources_by_prio[prio].map { |s| s.first }.sort
         end
+        sorted_sources[db].flatten!
       end
       sorted_sources
     end
