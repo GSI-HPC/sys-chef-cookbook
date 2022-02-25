@@ -23,7 +23,7 @@
 # This code is an adjustment of https://github.com/sous-chefs/firewall
 #
 
-if Gem::Requirement.new('>= 12.5').satisfied_by?(Gem::Version.new(Chef::VERSION))
+if Gem::Requirement.new('>= 12.15').satisfied_by?(Gem::Version.new(Chef::VERSION))
 
   action_class do
 

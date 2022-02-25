@@ -23,7 +23,7 @@
 # This code is an adjustment of https://github.com/sous-chefs/firewall
 #
 
-if Gem::Requirement.new('>= 12.5').satisfied_by?(Gem::Version.new(Chef::VERSION))
+if Gem::Requirement.new('>= 12.15').satisfied_by?(Gem::Version.new(Chef::VERSION))
   require 'ipaddr'
   action_class do
     include Sys::Helpers::Firewall

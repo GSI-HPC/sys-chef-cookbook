@@ -23,36 +23,38 @@
 # This code is an adjustment of https://github.com/sous-chefs/firewall
 #
 
-if node['sys']['firewall']['manage']
-  fw_action = node['sys']['firewall']['disable'] ? :disable : :install
-  firewall 'default' do
-    action fw_action
-  end
 
-  firewall_rule 'allow loopback' do
-    interface 'lo'
-    protocol :none
-    command :allow
-    only_if { node['sys']['firewall']['allow_loopback'] }
-  end
+return unless node['sys']['firewall']['manage']
+return unless Gem::Requirement.new('>= 12.15').satisfied_by?(Gem::Version.new(Chef::VERSION))
 
-  firewall_rule 'allow icmp' do
-    protocol :icmp
-    command :allow
-    only_if { node['sys']['firewall']['allow_icmp'] }
-  end
+fw_action = node['sys']['firewall']['disable'] ? :disable : :install
+firewall 'default' do
+  action fw_action
+end
 
-  firewall_rule 'allow world to ssh' do
-    port 22
-    source '0.0.0.0/0'
-    only_if { node['sys']['firewall']['allow_ssh'] }
-  end
+firewall_rule 'allow loopback' do
+  interface 'lo'
+  protocol :none
+  command :allow
+  only_if { node['sys']['firewall']['allow_loopback'] }
+end
 
-  # allow established connections
-  firewall_rule 'established' do
-    stateful [:related, :established]
-    protocol :none # explicitly don't specify protocol
-    command :allow
-    only_if { node['sys']['firewall']['allow_established'] }
-  end
+firewall_rule 'allow icmp' do
+  protocol :icmp
+  command :allow
+  only_if { node['sys']['firewall']['allow_icmp'] }
+end
+
+firewall_rule 'allow world to ssh' do
+  port 22
+  source '0.0.0.0/0'
+  only_if { node['sys']['firewall']['allow_ssh'] }
+end
+
+# allow established connections
+firewall_rule 'established' do
+  stateful [:related, :established]
+  protocol :none # explicitly don't specify protocol
+  command :allow
+  only_if { node['sys']['firewall']['allow_established'] }
 end
