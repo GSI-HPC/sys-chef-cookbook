@@ -1,7 +1,7 @@
 # Cookbook Name:: sys
 # File:: definitions/sys_ssh_authorize.rb
 #
-# Copyright 2012-2020 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+# Copyright 2012-2022 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
 #
 # Authors:
 #  Christopher Huhn   <c.huhn@gsi.de>
@@ -54,6 +54,10 @@ define :sys_ssh_authorize, :keys => Array.new, :managed => false do
 
         unless File.directory?(File.dirname(dot_ssh))
           raise "#{account} has no home dir"
+        end
+
+        unless File.writable?(File.dirname(dot_ssh))
+          raise "~#{account} is not writable (root_squash?)"
         end
 
         # Create the ~/.ssh directory if missing

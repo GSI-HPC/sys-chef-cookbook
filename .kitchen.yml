@@ -7,6 +7,7 @@
 # Authors:
 #  Christopher Huhn   <c.huhn@gsi.de>
 #  Dennis Klein       <d.klein@gsi.de>
+#  Matthias Pausch    <m.pausch@gsi.de>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -234,11 +235,18 @@ suites:
           log_level: alert
   - name: sys_ssh
     run_list:
+      - recipe[sys::accounts]
       - recipe[sys::ssh]
     attributes:
       sys:
+        accounts:
+          mchammer:
+            home: /home/mchammer
         ssh:
           authorize:
+            mchammer:
+              keys:
+                - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAID+UAVz/kz0W/kTg0FGenwvJKZxxuBfLOKfg+VaKq9hB
             root:
               keys:
                 - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKZ7mI0iEdW2GmHZv+0OknkPDkQaBowEDzfaal2A+eRR
