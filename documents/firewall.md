@@ -1,3 +1,5 @@
+# `sys::firewall`
+
 Use the firewall recipe to configure nftables.
 
 ↪ `attributes/firewall.rb`  
@@ -8,20 +10,21 @@ Use the firewall recipe to configure nftables.
 ↪ `documents/firewall.rb`  
 ↪ `test/unit/recipies/firewall_spec.rb`  
 
-# Examples
+## Basic Usage
 
-## Disable nftables
+The `sys::firewall` recipe **does nothing unless explicitly activated** by setting `node['sys']['firewall']['manage']` to `true`.
 
-Use attributes in `node['sys']['firewall']`, e.g. to switch off nftables:
+### Disable nftables
 
-    node['sys']['firewall']['manage']  = true       # To manage nftables at all
-    node['sys']['firewall']['disable'] = true       # To disable nftables
+`node['sys']['firewall']['disable']` will turn off *nftables*:
+ ```ruby
+node['sys']['firewall']['manage']  = true       # To manage nftables at all
+node['sys']['firewall']['disable'] = true       # To disable nftables
+```
 
-## Default rules
+### Default rules
 
-If you want to use `sys::firewall`, just include the recipe and set
-`node['sys']['firewall']['manage']  = true`.  Adjust the follwing
-self-explaining attributes to your needs.  They all default to true:
+When `sys::firewall` is activated and *nftables*  is not disabled, the default rules are applied via the following self-explaining attributes, all of which default to true. Adjust to your needs:
 
 ↪ `node['sys']['firewall']['allow_established']`  
 ↪ `node['sys']['firewall']['allow_icmp']`  
@@ -73,9 +76,11 @@ Depend on the `sys`-cookbook in the `metadata.rb` and include
 `sys::firewall` in the runlist.  If access via ports `443` and `80`
 should be possible, write a resource like this:
 
-    firewall_rule 'allow http(s)` do
-      port [80,443]
-    end
+```ruby
+firewall_rule 'allow http(s)` do
+  port [80,443]
+end
+```
 
 For further examples see the recipe
 [sys::firewall](recipes/firewall.rb) and the recipe [firewall-test::default](test/fixtures/cookbooks/firewall-test/recipes/default.rb).
