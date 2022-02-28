@@ -2,8 +2,8 @@
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-## Unreleased
 ## [1.64.0]
+
 ### Added
 - New recipe [`sys::firewall`](recipes/firewall.rb)
 - New resource [`firewall`](resources/firewall_rule.rb)
@@ -12,9 +12,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - [`Documentation`](documents/firewall.md)
 - Tests
 
-### Changed
+## [1.63.1] - 2022-02-28
+
+## Changed
 - Updated [documentation for `sys::pam`](documents/pam.md)
 - Send chef-client output to logfile in systemd-timer mode (!39)
+- Shorter PGP key for `apt-key` test - goodbye fefe (!41)
+- Catch missing home dir write permissions in `sys_ssh_authorize`
 
 ## [1.63.0] - 2022-02-07
 

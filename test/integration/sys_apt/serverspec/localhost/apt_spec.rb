@@ -65,10 +65,10 @@ describe command('apt-key list') do
   its(:exit_status) { should be_zero }
   # stderr of apt-key contains a warning when it is not a terminal
   its(:stdout) do
-    should include('2DEC 3301 51BB 9F7D AD8B  0BDC FC32 CEEC A534 A9C6')
+    should include('744B 9D32 A1F8 6D35 EF99  A0D1 25A0 AD16 5D3F 07EF')
   end
   its(:stdout) do
-    should include('uid           [ unknown] Felix von Leitner <felix@fefe.de>')
+    should include('uid           [ unknown] Zappergeck (Ein schwieriges Kind) <zappergeck@example.com>')
   end
 end
 
