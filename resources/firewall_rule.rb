@@ -97,13 +97,17 @@ if Gem::Requirement.new('>= 12.15').satisfied_by?(Gem::Version.new(Chef::VERSION
     return if return_early?(new_resource)
 
     with_run_context :root do
-      edit_resource('sys_firewall', new_resource.firewall_name) do |fw_rule|
-        r = rules.dup || {}
-        r.merge!({
-          build_firewall_rule(fw_rule) => fw_rule.position
-        })
-        rules(r)
-        delayed_action :rebuild
+      begin
+        edit_resource!('sys_firewall', new_resource.firewall_name) do |fw_rule|
+          r = rules.dup || {}
+          r.merge!({
+            build_firewall_rule(fw_rule) => fw_rule.position
+          })
+          rules(r)
+          delayed_action :rebuild
+        end
+      rescue Chef::Exceptions::ResourceNotFound
+        Chef::Log.warn "Resource firewall['#{new_resource.firewall_name}'] not found in resource collection.  Not configuring firewall."
       end
     end
   end
