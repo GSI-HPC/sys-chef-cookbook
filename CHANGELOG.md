@@ -2,6 +2,16 @@
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [1.64.0]
+
+### Added
+- New recipe [`sys::firewall`](recipes/firewall.rb)
+- New resource [`firewall`](resources/firewall_rule.rb)
+- New resource [`firewall_rule`](resources/firewall_rule.rb)
+- New attributes for configuring [`firewall`](attributes/firewall.rb)
+- [`Documentation`](documents/firewall.md)
+- Tests
+
 ## [1.63.1] - 2022-02-28
 
 ## Changed
