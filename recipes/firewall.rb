@@ -1,5 +1,4 @@
 #
-# Author:: Matthias Pausch (<m.pausch@gsi.de>)
 # Cookbook Name:: sys
 # Recipe:: firewall
 #
@@ -22,7 +21,6 @@
 #
 # This code is an adjustment of https://github.com/sous-chefs/firewall
 #
-
 
 return unless node['sys']['firewall']['manage']
 return unless Gem::Requirement.new('>= 12.15').satisfied_by?(Gem::Version.new(Chef::VERSION))

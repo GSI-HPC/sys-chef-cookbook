@@ -1,5 +1,4 @@
 #
-# Author:: Matthias Pausch (<m.pausch@gsi.de>)
 # Cookbook Name:: sys
 # Library:: Helpers::Firewall
 #

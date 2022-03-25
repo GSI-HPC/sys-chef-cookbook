@@ -2,7 +2,7 @@
 # Cookbook Name:: sys
 # Integration tests for sys::firewall
 #
-# Copyright 2022-2022 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+# Copyright 2022 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
 #
 # Authors:
 #  Matthias Pausch (m.pausch@gsi.de)
@@ -19,7 +19,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+
 require 'spec_helper'
+
 expected_rules = [
   /^table inet filter {$/,
   /\s+type filter hook output priority.*/,
