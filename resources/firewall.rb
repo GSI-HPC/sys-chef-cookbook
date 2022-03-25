@@ -102,13 +102,11 @@ if Gem::Requirement.new('>= 12.15').satisfied_by?(Gem::Version.new(Chef::VERSION
     else
       nftables_service.run_action(:start)
     end
-    new_resource.updated_by_last_action(true) if nftables_service.updated_by_last_action?
   end
 
   action :restart do
     nftables_service = lookup_or_create_service('nftables')
     nftables_service.run_action(:restart)
-    new_resource.updated_by_last_action(true)
   end
 
   action :disable do
@@ -116,7 +114,6 @@ if Gem::Requirement.new('>= 12.15').satisfied_by?(Gem::Version.new(Chef::VERSION
     nftables_service = lookup_or_create_service('nftables')
     %i(disable stop).each do |a|
       nftables_service.run_action(a)
-      new_resource.updated_by_last_action(true) if nftables_service.updated_by_last_action?
     end
   end
 end
