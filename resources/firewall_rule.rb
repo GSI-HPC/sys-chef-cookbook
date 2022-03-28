@@ -94,13 +94,14 @@ if Gem::Requirement.new('>= 12.15').satisfied_by?(Gem::Version.new(Chef::VERSION
 
   action :create do
     return if return_early?(new_resource)
+    fwr = build_firewall_rule(new_resource)
 
     with_run_context :root do
       begin
         edit_resource!('sys_firewall', new_resource.firewall_name) do |fw_rule|
           r = rules.dup || {}
           r.merge!({
-            build_firewall_rule(fw_rule) => fw_rule.position
+            fwr => fw_rule.position
           })
           rules(r)
           delayed_action :rebuild
