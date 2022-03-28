@@ -79,7 +79,7 @@ if Gem::Requirement.new('>= 12.15').satisfied_by?(Gem::Version.new(Chef::VERSION
   end
 
   action :rebuild do
-    return if !managed?
+    return unless managed?
 
     ensure_default_rules_exist(node, new_resource)
     # prints all the firewall rules
