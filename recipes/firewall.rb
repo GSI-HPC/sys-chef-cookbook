@@ -51,6 +51,7 @@ end
 
 # allow established connections
 firewall_rule 'established' do
+  position 40
   stateful [:related, :established]
   protocol :none # explicitly don't specify protocol
   command :allow
