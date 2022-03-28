@@ -42,6 +42,19 @@ module Sys
         end
       end
 
+      def build_set_of_ips(ips)
+        set_of_ips = Array(ips).map { |ip| IPAddr.new(ip) }
+
+        # Only works on buster and newer. In older debian-versions
+        # there is no prefix-method for IPv4-addresses.
+        addrs = set_of_ips.map { |ip| "#{ip}/#{ip.prefix}" }
+        if addrs.length == 1
+          addrs.first
+        else
+          "{#{addrs.join(', ')}}"
+        end
+      end
+
       def port_to_s(p)
         if p.is_a?(String)
           p
@@ -116,19 +129,14 @@ module Sys
         firewall_rule << "oif #{rule_resource.dest_interface} " if rule_resource.dest_interface
 
         if rule_resource.source
-          source_ips = Array(rule_resource.source).map { |ip| IPAddr.new(ip) }
-          source_ips.delete(IPAddr.new('0.0.0.0/0'))
-          source_ips.delete(IPAddr.new('::/128'))
-          # Only works on buster and newer. In older debian-versions
-          # there is no prefix-method for IPv4-addresses.
-          addrs = source_ips.map { |ip| "#{ip}/#{ip.prefix}" }
-          if addrs.length == 1
-            firewall_rule << "#{ip_family} saddr #{addrs.first} "
-          elsif addrs.length > 1
-            firewall_rule << "#{ip_family} saddr {#{addrs.join(',')}} "
-          end
+          source_set = build_set_of_ips(rule_resource.source)
+          firewall_rule << "#{ip_family} saddr #{source_set} "
         end
-        firewall_rule << "#{ip_family} daddr #{rule_resource.destination} " if rule_resource.destination
+
+        if rule_resource.destination
+          destination_set = build_set_of_ips(rule_resource.destination)
+          firewall_rule << "#{ip_family} daddr #{destination_set} "
+        end
 
         case rule_resource.protocol
         when :icmp

@@ -68,6 +68,17 @@ firewall_rule 'block ip-range' do
   command :drop
 end
 
+firewall_rule "block single destination ip" do
+  destination '192.168.99.99'
+  position 49
+  command :reject
+end
+
+firewall_rule 'block destination ip-range' do
+  destination ['192.168.99.99', '192.168.100.100']
+  command :drop
+end
+
 firewall_rule 'ipv6-source' do
   port 80
   family :ip6
