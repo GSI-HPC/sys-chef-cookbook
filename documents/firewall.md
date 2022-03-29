@@ -32,6 +32,7 @@ activated**.  To active the recipe, the following steps are required:
 
 This will give you a rather permissive default-set of rules, since the
 following attributes default to `true`.  Adjust to your needs:
+
 ↪ `node['sys']['firewall']['allow_established']`  
 ↪ `node['sys']['firewall']['allow_icmp']`  
 ↪ `node['sys']['firewall']['allow_loopback']`  
@@ -89,7 +90,7 @@ firewall_rule 'example-ips from rfc5737' do
 end
 ```
 
-Make sure to [disable](#1-disable-nftables) the firewall.  These steps
+Make sure to [disable](#disable-nftables) the firewall.  These steps
 should disable nftables but still generate `/etc/nftables.conf`.
 
 ## Using `sys::firewall` from other recipes
@@ -99,7 +100,7 @@ Depend on the `sys`-cookbook in the `metadata.rb` and include
 should be possible, write a resource like this:
 
 ```ruby
-firewall_rule 'allow http(s)` do
+firewall_rule 'allow http(s)' do
   port [80,443]
 end
 ```
