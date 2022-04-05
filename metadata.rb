@@ -17,4 +17,4 @@ depends          'compat_resource'
 depends          'line'
 depends          'chef-vault'
 
-version          '1.60.6'
+version          '1.64.2'

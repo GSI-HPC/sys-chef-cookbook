@@ -53,7 +53,8 @@ Ohai.plugin(:LsiController) do
     require 'open3'
     require 'treetop'
 
-    cmd = '/usr/sbin/MegaCli64 -AdpAllInfo -aALL'
+    #cmd = '/usr/sbin/MegaCli64 -AdpAllInfo -aALL'
+    cmd = 'MegaCli64 -PDlist -aALL -NoLog'
 
     status = shell_out(cmd).stdout
 

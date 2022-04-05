@@ -43,15 +43,23 @@ will lead to this entry in /etc/auto.master:
 `/misc autofs.misc` (no default options).
 
 **Attributes (nsswitch, files, ldap)**
+
 By default, `automount` uses nsswitch, to lookup a map called
 `auto.master`.  If `/etc/auto.master` is found, no further lookups
 will be done, especially `auto.master` from ldap will be ignored.  If
 the attribute `node['sys']['autofs']['ldap']['auto.master_from_ldap']`
-evaluates to `true`, `/etc/auto.master` will configured to further go
+evaluates to `true`, `/etc/auto.master` will be configured to further go
 through the lookups specified in `/etc/nsswitch.conf`.
 
 This mechanism can be used to choose the maps from ldap, that should
 be available on your machine, see `Example (lookup)` below:
+
+**Misc Attributes**
+
+`logging`
+: `node['sys']['autofs']['logging']` controls the verbosity of the automounter logs.  
+Possible values: `none` (default), `verbose`, `debug`
+
 
 **Example (maps)**
 

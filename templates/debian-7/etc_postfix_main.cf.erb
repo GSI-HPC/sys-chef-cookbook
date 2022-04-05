@@ -1,0 +1,56 @@
+<%= template_header %>
+
+# See /usr/share/postfix/main.cf.dist for a commented, more complete version
+
+# Debian specific:  Specifying a file name will cause the first
+# line of that file to be used as the name.  The Debian default
+# is /etc/mailname.
+#myorigin = /etc/mailname
+
+smtpd_banner = $myhostname ESMTP $mail_name (Debian/GNU)
+biff = no
+
+# appending .domain is the MUA's job.
+append_dot_mydomain = no
+
+# Uncomment the next line to generate "delayed mail" warnings
+#delay_warning_time = 4h
+
+readme_directory = no
+
+# TLS parameters
+#smtpd_tls_cert_file=/etc/ssl/certs/ssl-cert-snakeoil.pem
+#smtpd_tls_key_file=/etc/ssl/private/ssl-cert-snakeoil.key
+#smtpd_use_tls=yes
+#smtpd_tls_session_cache_database = btree:${data_directory}/smtpd_scache
+#smtp_tls_session_cache_database = btree:${data_directory}/smtp_scache
+
+# See /usr/share/doc/postfix/TLS_README.gz in the postfix-doc package for
+# information on enabling SSL in the smtp client.
+
+myhostname = <%= node['fqdn'] %>
+alias_maps = hash:/etc/aliases
+alias_database = hash:/etc/aliases
+virtual_alias_maps = hash:/etc/postfix/virtual
+myorigin = /etc/mailname
+mydestination = <%= node['fqdn'] %>, localhost.<%= node['domain'] %>, localhost <%= @mydestination ? ", #{@mydestination}" : '' %>
+<%# TODO: no MX lookups as long as brackets are hard-coded here -%>
+relayhost = [<%= @relay %>]
+<%= "relay_domains = #{@relay_domains.join(', ')}" if @relay_domains %>
+mynetworks = 127.0.0.0/8 [::ffff:127.0.0.0]/104 [::1]/128 <%= @mynetworks %>
+mailbox_size_limit = 0
+<%= "message_size_limit = #{@message_size_limit}" if @message_size_limit %>
+recipient_delimiter = +
+<%= @default_privs ? "default_privs = #{@default_privs}\n" : '' -%>
+<%- if @export_environment -%>
+export_environment = <%= @export_environment.join(' ') %>
+<%- end -%>
+
+# listen for remote connections?
+inet_interfaces = <%= @inet_interfaces || @mynetworks?'all':'loopback-only' %>
+<%- if @ipv4_only -%>
+inet_protocols = ipv4
+<%- end -%>
+
+# Seems to be missing since the start of time but is crucial to make e.g. "date | mail -s blabla7 troth" work
+recipient_canonical_maps = hash:/etc/postfix/canonical

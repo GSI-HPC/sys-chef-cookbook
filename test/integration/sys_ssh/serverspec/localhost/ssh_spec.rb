@@ -1,7 +1,7 @@
 # Cookbook Name:: sys
 # Integration tests for recipe sys::ssh
 #
-# Copyright 2020 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+# Copyright 2020-2022 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
 #
 # Authors:
 #  Christopher Huhn   <c.huhn@gsi.de>
@@ -20,7 +20,7 @@
 #
 
 #
-# SSH is dificult to test as it is already configured and running inside vagrant VMs
+# SSH is difficult to test as it is already configured and running inside vagrant VMs
 #
 require 'spec_helper'
 
@@ -64,6 +64,12 @@ describe file('/root/.ssh') do
   it { should exist }
   it { should be_directory }
   it { should be_mode('700') }
+end
+
+# the homedir should not be writable and sys_ssh_authorize should catch that
+#  without failing
+describe file('/home/mchammer/.ssh/authorized_keys') do
+  it { should_not exist }
 end
 
 describe file('/root/.ssh/authorized_keys') do

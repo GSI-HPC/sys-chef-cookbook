@@ -2,7 +2,7 @@
 # Cookbook Name:: sys
 # Recipe:: systemd
 #
-# Copyright 2015-2021 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+# Copyright 2015-2022 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
 #
 # Authors:
 #  Christopher Huhn   <c.huhn@gsi.de>
@@ -26,6 +26,11 @@ Chef::Recipe.include(Sys::Helper)
 Chef::Resource.include(Sys::Helper)
 
 if systemd_installed? # We do not install systemd for now, just detect if it is available
+
+  execute 'sys-systemd-reload' do
+    command 'systemctl daemon-reload'
+    action :nothing
+  end
 
   if node['sys']['systemd']['networkd']['clean_legacy']
     # This works for current usecases, but may be too radical. Probably needs

@@ -2,41 +2,25 @@
 # Cookbook Name:: sys
 # Recipe:: nftables
 #
-# Copyright 2014, HPC Team
+# Copyright 2014-2022 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+#
+# Authors:
+#  Matthias Pausch   <m.pausch@gsi.de>
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 #
 
-unless node['sys']['nftables'].empty?
+# this recipe has been superseded by sys::firewall
+return unless node['sys']['nftables']
 
-  if node['debian'] && node['debian']['codename'] && node['debian']['codename'].eql?('stretch')
-
-    package 'nftables' do
-      action :upgrade
-    end
-
-    # Future version will not include the init-script, cf. https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=804648
-    file '/etc/init.d/nftables' do
-      action :delete
-    end
-
-    nftables_serviceaction = :enable
-    nftables_action = :start
-
-    unless node['sys']['nftables']['active']
-      nftables_serviceaction = :disable
-      nftables_action = :stop
-    end
-
-    template '/etc/nftables.conf' do
-      source 'etc_nftables.conf.erb'
-      mode   '0644'
-      owner  'root'
-      group  'adm'
-      notifies :reload, 'service[nftables]', :immediately
-    end
-
-    service 'nftables' do
-      supports :reload => true, :restart => true
-      action [ nftables_action, nftables_serviceaction ]
-    end
-  end
-end
+Chef::Log.warn('The sys::nftables recipe has been removed. Use sys::firewall instead')
