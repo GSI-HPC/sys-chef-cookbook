@@ -105,6 +105,7 @@ if Gem::Requirement.new('>= 12.15').satisfied_by?(Gem::Version.new(Chef::VERSION
   end
 
   action :restart do
+    return unless managed?
     nftables_service = lookup_or_create_service('nftables')
     nftables_service.run_action(:restart)
   end
