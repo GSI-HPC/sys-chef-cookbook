@@ -2,7 +2,7 @@
 # Cookbook Name:: sys
 # Recipe:: accounts
 #
-# Copyright 2013-2020 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+# Copyright 2013-2022 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
 #
 # Authors:
 #  Christopher Huhn   <c.huhn@gsi.de>
@@ -186,7 +186,7 @@ unless (node['sys']['accounts'].empty? and node['sys']['groups'].empty?)
 
     rescue StandardError => e
       Chef::Log.error("Creation of user resource '#{name}' failed: " +
-                      e.message)
+                      e.message + e.backtrace)
     end
   end
 end
