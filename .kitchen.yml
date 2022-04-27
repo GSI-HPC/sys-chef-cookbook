@@ -71,6 +71,13 @@ platforms:
       provision: true
       vagrantfiles:
         - vagrant.rb
+  - name: focal
+    driver:
+      box: generic/ubuntu2004
+      provider: libvirt
+      provision: true
+      vagrantfiles:
+        - vagrant.rb
 
 suites:
   - name: sys_accounts
