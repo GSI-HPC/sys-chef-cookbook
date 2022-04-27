@@ -24,15 +24,17 @@
 # limitations under the License.
 #
 
-unless (node['sys']['accounts'].empty? and node['sys']['groups'].empty?)
+unless node['sys']['accounts'].empty? && node['sys']['groups'].empty?
 
   # required to handle passwords with the 'user' resource
   #  cf. https://docs.chef.io/resource_user.html
   package 'ruby-shadow' do
     # this should not be required for Omnibus-packaged versions of Chef
     only_if do
-      node['chef_packages']['chef']['chef_root'] ==
-        '/usr/lib/ruby/vendor_ruby'
+      node['chef_packages']['chef']['chef_root'] =~
+        # Ubuntu 20 chef/cinc package follows the new Debian Ruby packaging
+        #  schema and installs to /usr/share/rubygems-integration
+        %r{^/usr/(lib/ruby/vendor_ruby$|share/rubygems-integration/all/gems/chef-)}
     end
   end
 
@@ -45,7 +47,7 @@ unless (node['sys']['accounts'].empty? and node['sys']['groups'].empty?)
       if bag.include?(name)
         item = data_bag_item('localgroups', name)
         grp = grp.to_h
-        grp['gid']     ||= item['gid']
+        grp['gid'] ||= item['gid']
       else
         log "No data bag item for group '#{name}'" do
           level :debug
@@ -53,7 +55,7 @@ unless (node['sys']['accounts'].empty? and node['sys']['groups'].empty?)
       end
     end
 
-    #begin
+    # begin
       group name do
         # grp.each{|k,v| send(k,v)} is elegant
         #  but hard to handle for account attributes
@@ -63,16 +65,16 @@ unless (node['sys']['accounts'].empty? and node['sys']['groups'].empty?)
         append  grp['append']  || false
         system  grp['system']  || false
       end
-    #rescue StandardError => e
-    #  Chef::Log.error("Creation of group resource '#{name}' failed: " +
-    #                  e.message)
-    #end
+    # rescue StandardError => e
+    #   Chef::Log.error("Creation of group resource '#{name}' failed: " +
+    #                   e.message)
+    # end
   end
 
   bag = data_bag('accounts') unless Chef::Config[:solo]
   node['sys']['accounts'].each do |name, caccount|
     # gives us a mutable copy of the ImmutableMash:
-    account = (caccount) ? caccount.merge({}) : {}
+    account = caccount ? caccount.merge({}) : {}
     unless Chef::Config[:solo]
       if bag.include?(name)
         item = data_bag_item('accounts', name)
@@ -88,7 +90,6 @@ unless (node['sys']['accounts'].empty? and node['sys']['groups'].empty?)
     end
 
     begin
-
       comment = account['comment'] || 'managed by Chef via sys::accounts recipe'
 
       # 'supports(manage_home: ... )' has become 'manage_home ...'
@@ -107,18 +108,25 @@ unless (node['sys']['accounts'].empty? and node['sys']['groups'].empty?)
         if account.key?('gid')
 
           # Make sure that it exists already...
-          group_exists = (node['etc']['group'].has_key?(account['gid']) or
-                          node['etc']['group'].values.detect do |g|
-                            g['gid'] == account['gid']
-                          end)
+          group_exists =
+            begin
+              (node['etc']['group'].key?(account['gid']) ||
+               node['etc']['group'].values.detect do |g|
+                 g['gid'] == account['gid']
+               end)
+            rescue NoMethodError
+              Chef::Log.warn("node['etc']['group'] not collected by Ohai?!")
+              false
+            end
+
           # ...or that it has been create during this Chef run
-          was_just_created = (node['sys']['groups'].has_key?(account['gid']) or
+          was_just_created = (node['sys']['groups'].key?(account['gid']) ||
                               node['sys']['groups'].values.detect do |g|
                                 g['gid'] == account['gid']
                               end)
 
           # If this isn't the case something went wrong!
-          unless group_exists or was_just_created
+          unless group_exists || was_just_created
             raise "The given group '#{account['gid']}' "\
                   "does not exist or wasn't defined"
           end
@@ -150,7 +158,7 @@ unless (node['sys']['accounts'].empty? and node['sys']['groups'].empty?)
         directory account['home'] do
           owner account['uid'].to_i
           group account['gid']
-          mode 0750
+          mode 0o750
           # creating a local home dir for a central account will fail
           #  until the central account information is properly set up
           ignore_failure true
@@ -158,13 +166,13 @@ unless (node['sys']['accounts'].empty? and node['sys']['groups'].empty?)
       end
 
       # add sudo rules from the sudo attribute:
-      if account.has_key?('sudo')
+      if account.key?('sudo')
         rule = "#{name} #{node['fqdn']} = #{account['sudo']}"
-        if node['sys']['sudo'].has_key?('localadmin')
+        if node['sys']['sudo'].key?('localadmin')
           node.default['sys']['sudo']['localadmin']['rules'].push(rule)
           Chef::Log.debug("Adding #{name} to localadmin sudoers")
         else
-          node.default['sys']['sudo']['localadmin'] = { 'rules' => [ rule ] }
+          node.default['sys']['sudo']['localadmin'] = { 'rules' => [rule] }
           Chef::Log.debug("Creating localadmin sudoers for #{name}")
         end
       end
@@ -183,10 +191,9 @@ unless (node['sys']['accounts'].empty? and node['sys']['groups'].empty?)
           level :debug
         end
       end
-
     rescue StandardError => e
-      Chef::Log.error("Creation of user resource '#{name}' failed: " +
-                      e.message + e.backtrace)
+      Chef::Log.error(["Creation of user resource '#{name}' failed: #{e}",
+                       e.backtrace[0..5]].join("\n    "))
     end
   end
 end

@@ -2,6 +2,27 @@
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [1.64.3]
+
+### Added
+- Ubuntu 20.04 *focal* added as test platform
+
+### Fixed
+- Improved error handling in `sys::accounts`
+
+## [1.64.2]
+
+### Added
+- Support for Arrays of CIDRs in firewall rules
+
+### Fixed
+- Firewall rule for outgoing SSH setup
+
+## [1.64.1]
+
+### Fixed
+- Firewall ruleq for established connections rearranged
+
 ## [1.64.0]
 
 ### Added
