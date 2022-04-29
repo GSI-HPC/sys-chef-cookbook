@@ -1,6 +1,6 @@
 # Chef cookbook `sys`
 
-[![Pipeline Status] (https://git.gsi.de/chef/cookbooks/sys/badges/master/pipeline.svg?ignore_skipped=true)](https://travis-ci.org/GSI-HPC/sys-chef-cookbook)
+[![Pipeline Status](https://git.gsi.de/chef/cookbooks/sys/badges/master/pipeline.svg?ignore_skipped=true)](https://travis-ci.org/GSI-HPC/sys-chef-cookbook)
 [![Code Climate](https://codeclimate.com/github/GSI-HPC/sys-chef-cookbook/badges/gpa.svg)](https://codeclimate.com/github/GSI-HPC/sys-chef-cookbook)
 
 ## Description
@@ -9,7 +9,6 @@ The "sys" cookbook helps integrating a (Debian) node into an enterprise computin
 It configures various services in a single cookbook eg. apt repositories,
 automount, NTP, IPMI BMCs, postfix, SNMP, aso.
 *But* it concentrates on client setup and does not configure the respective central services.
-
 
 **Requirements**
 
