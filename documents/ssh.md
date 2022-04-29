@@ -113,7 +113,7 @@ This is controlled via `node['sys']['ssh']['known_hosts']`.
 The attribute format is a hash with the hostnames or IPs pointing to
 a hash of keytypes as keys and the base64-encoded keys as velues.
 The keytypes and keys can be acquired with `ssh-keyscan`.
-The format and options of the `known_hosts` file is explained in the `sshd` man page.
+The format and options of the `known_hosts` file is explained in the [`sshd` man page](https://manpages.debian.org/openssh-server/sshd.8.en.html#SSH_KNOWN_HOSTS_FILE_FORMAT).
 
 Example:
 
