@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Added
 - Ubuntu 20.04 *focal* added as test platform
+- [`sys::chef`] Detect Chef system installation following the latest Ruby packaging schema
+  on Ubuntu Focal
 
 ### Fixed
 - Improved error handling in `sys::accounts`
