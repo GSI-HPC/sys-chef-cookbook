@@ -2,6 +2,11 @@
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [1.65.0] - 2022-04-29
+
+### Added
+- [`sys::ssh`] [Manage `/etc/ssh/ssh_known_hosts`](https://git.gsi.de/chef/cookbooks/sys/-/merge_requests/44)
+
 ## [1.64.3] - 2022-04-27
 
 ### Added
