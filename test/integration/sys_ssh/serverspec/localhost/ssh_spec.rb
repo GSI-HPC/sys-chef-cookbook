@@ -87,3 +87,19 @@ describe file('/root/.ssh/config') do
     should match(/^Host \*\n\s*AddKeysToAgent ask$/m)
   end
 end
+
+# test /etc/ssh/ssh_known_hosts
+describe file('/etc/ssh/ssh_known_hosts') do
+  it { should exist }
+  it { should be_mode('644') }
+  its(:content) do
+    should match(/^github.com ssh-rsa AAAA\S+==$/)
+  end
+end
+
+describe command 'ssh -v git@github.com' do
+  its(:exit_status) { should eq 255 } # permission denied
+  its(:stdout) { should be_empty }
+  its(:stderr) { should include "debug1: Host 'github.com' is known and matches the ECDSA host key." }
+  its(:stderr) { should match %r{^debug1: Found key in /etc/ssh/ssh_known_hosts:\d+} }
+end
