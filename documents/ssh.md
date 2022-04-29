@@ -75,7 +75,7 @@ All hashes in `node['sys']['ssh']['authorize'][account]` (where account is an ex
 have the following attributes:
 
 * `keys` (required) contains at least one SSH public key per user account.
-* `managed` (default false) overwrites existing keys deviating form the given list `keys` when true.
+* `managed` (default `false`) set to true to delete existing keys not on the given list `keys`.
 
 For example:
 
