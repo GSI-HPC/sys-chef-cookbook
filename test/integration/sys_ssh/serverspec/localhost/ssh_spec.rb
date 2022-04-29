@@ -97,9 +97,9 @@ describe file('/etc/ssh/ssh_known_hosts') do
   end
 end
 
-describe command 'ssh -v git@github.com' do
+describe command 'ssh -o BatchMode=yes -v git@git.gsi.de' do
   its(:exit_status) { should eq 255 } # permission denied
   its(:stdout) { should be_empty }
-  its(:stderr) { should include "debug1: Host 'github.com' is known and matches the ECDSA host key." }
+  its(:stderr) { should include "debug1: Host 'git.gsi.de' is known and matches the ECDSA host key." }
   its(:stderr) { should match %r{^debug1: Found key in /etc/ssh/ssh_known_hosts:\d+} }
 end

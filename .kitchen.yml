@@ -276,6 +276,10 @@ suites:
               '*':
                 AddKeysToAgent: ask
           known_hosts:
+            git.gsi.de:
+              ssh-rsa: AAAAB3NzaC1yc2EAAAADAQABAAABAQCeDOfPabxvYr+HNlBfE4plYktECkYIDRE3ggxjPOSGIH1SEMp+eMvbm46/aGXRBtEcHDXNju+CS2P+RjiNVV7UWzbkrsi3uyjDoDwMRlJyhvPR79fS4nsxI04ztk0GrYYZRGoDj9LcVdXWHYN/Ru70K2U+G2bQ8l2otMYVKdnsIssd1MOBpISy7fursYmC31U/Bpn19nfn0sRpdL8WNrjmJukFTzaSAJQIzciF/uTkAw5qmmJXRsl7aXyk5S690SQx8Wj1Jk8+AM508zdeD/M6vnWXDQQWZPYi1IcB+GA+7mQr9ijo3qJ9dIT54iZUAWmZU1KGYh5PBD93OnuiFh3P
+              ecdsa-sha2-nistp256: AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBHXJoiDuGO3tveTCbbQONo9mBCXohPlziqGJAMvW8BY/WRMTW+C4Thoc2L69JZtV/FHF7fGpJ/g81Ljrxm4Huk8=
+              ssh-ed25519: AAAAC3NzaC1lZDI1NTE5AAAAINftkQCmVICGs0rdcZ13OQhdaQMjrYhsFF1ACtNwMseR
             github.com:
               ecdsa-sha2-nistp256: AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBEmKSENjQEezOmxkZMy7opKgwFB9nkt5YRrYMjNuG5N87uRgg6CLrbo5wAdT/y6v0mKV0U2w0WZ2YB/++Tpockg=
               ssh-ed25519: AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2l9GKJl
