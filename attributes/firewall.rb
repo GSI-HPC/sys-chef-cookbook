@@ -9,12 +9,16 @@ default['sys']['firewall']['defaults']['policy'] = {
   'forward' => 'drop',
   'output'  => 'accept',
 }
-default['sys']['firewall']['defaults']['ruleset'] = {
-  'add table inet filter' => 1,
-  "add chain inet filter input { type filter hook input priority 0 ; policy #{node['sys']['firewall']['defaults']['policy']['input']}; }" => 2,
-  "add chain inet filter output { type filter hook output priority 0 ; policy #{node['sys']['firewall']['defaults']['policy']['output']}; }" => 2,
-  "add chain inet filter forward { type filter hook forward priority 0 ; policy #{node['sys']['firewall']['defaults']['policy']['forward']}; }" => 2,
-}
+policy_output = node['sys']['firewall']['defaults']['policy']['output']
+policy_input = node['sys']['firewall']['defaults']['policy']['input']
+policy_forward = node['sys']['firewall']['defaults']['policy']['forward']
+input = "add chain inet filter input { type filter hook input priority 0 ; policy #{policy_input}; }"
+output = "add chain inet filter output { type filter hook output priority 0 ; policy #{policy_output}; }"
+forward = "add chain inet filter forward { type filter hook forward priority 0 ; policy #{policy_forward}; }"
+default['sys']['firewall']['defaults']['ruleset']['add table inet filter'] = 1
+default['sys']['firewall']['defaults'][input] = 2
+default['sys']['firewall']['defaults'][output] = 2
+default['sys']['firewall']['defaults'][forward] = 2
 
 if node['sys']['firewall']['table_ip_nat']
   default['sys']['firewall']['defaults']['ruleset']['add table ip nat'] = 1
