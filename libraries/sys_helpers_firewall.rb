@@ -88,11 +88,11 @@ module Sys
 
       unless defined? CHAIN
         CHAIN = {
-          in: 'INPUT',
-          out: 'OUTPUT',
-          pre: 'PREROUTING',
-          post: 'POSTROUTING',
-          forward: 'FORWARD',
+          in: 'input',
+          out: 'output',
+          pre: 'prerouting',
+          post: 'postrouting',
+          forward: 'forward',
         }.freeze
       end
 

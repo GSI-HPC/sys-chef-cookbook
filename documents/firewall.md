@@ -41,7 +41,7 @@ following attributes default to `true`.  Adjust to your needs:
 This will give you the following default rules:
 
     table inet filter {
-            chain INPUT {
+            chain input {
                     type filter hook input priority 0; policy drop;
                     iif "lo" accept comment "allow loopback"
                     icmp type echo-request accept comment "allow icmp"
@@ -49,29 +49,29 @@ This will give you the following default rules:
                     ct state established,related accept comment "established"
             }
     
-            chain OUTPUT {
+            chain output {
                     type filter hook output priority 0; policy accept;
             }
     
-            chain FOWARD {
+            chain foward {
                     type filter hook forward priority 0; policy drop;
             }
     }
     table ip6 nat {
-            chain POSTROUTING {
+            chain postrouting {
                     type nat hook postrouting priority 100; policy accept;
             }
     
-            chain PREROUTING {
+            chain prerouting {
                     type nat hook prerouting priority -100; policy accept;
             }
     }
     table ip nat {
-            chain POSTROUTING {
+            chain postrouting {
                     type nat hook postrouting priority 100; policy accept;
             }
     
-            chain PREROUTING {
+            chain prerouting {
                     type nat hook prerouting priority -100; policy accept;
             }
     }
