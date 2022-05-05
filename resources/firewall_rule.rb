@@ -30,8 +30,7 @@ if Gem::Requirement.new('>= 12.15').satisfied_by?(Gem::Version.new(Chef::VERSION
     def return_early?(new_resource)
       !new_resource.notify_firewall ||
         !(new_resource.action.include?(:create) &&
-          !new_resource.should_skip?(:create)) ||
-        !managed?
+          !new_resource.should_skip?(:create))
     end
   end
 

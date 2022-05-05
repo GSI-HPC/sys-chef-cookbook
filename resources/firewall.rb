@@ -56,14 +56,30 @@ if Gem::Requirement.new('>= 12.15').satisfied_by?(Gem::Version.new(Chef::VERSION
   provides :firewall, os: 'linux', platform: %w(debian)
 
   property :rules, Hash
+  property :input_policy,
+         String,
+         equal_to: %w(drop accept),
+         default: 'accept'
+  property :output_policy,
+         String,
+         equal_to: %w(drop accept),
+         default: 'accept'
+  property :forward_policy,
+         String,
+         equal_to: %w(drop accept),
+         default: 'accept'
+  property :table_ip_nat,
+         [true, false],
+         default: false
+  property :table_ip6_nat,
+         [true, false],
+         default: false
 
   def whyrun_supported?
     false
   end
 
   action :install do
-    return unless managed?
-
     # Ensure the package is installed
     nft_pkg = package 'nftables' do
       action :nothing
@@ -79,8 +95,6 @@ if Gem::Requirement.new('>= 12.15').satisfied_by?(Gem::Version.new(Chef::VERSION
   end
 
   action :rebuild do
-    return unless managed?
-
     ensure_default_rules_exist(node, new_resource)
     # prints all the firewall rules
     log_nftables
@@ -89,10 +103,8 @@ if Gem::Requirement.new('>= 12.15').satisfied_by?(Gem::Version.new(Chef::VERSION
     nftables_file = lookup_or_create_rulesfile('/etc/nftables.conf')
     nftables_file.content "#!/usr/sbin/nft -f\nflush ruleset\n#{build_rule_file(new_resource.rules)}"
     nftables_file.run_action(:create)
-    if disabled?
-      new_resource.run_action(:disable)
-      return
-    end
+
+    return if new_resource.action.include?(:disable)
 
     nftables_service = lookup_or_create_service('nftables')
     nftables_service.run_action(:enable)
@@ -105,13 +117,11 @@ if Gem::Requirement.new('>= 12.15').satisfied_by?(Gem::Version.new(Chef::VERSION
   end
 
   action :restart do
-    return unless managed?
     nftables_service = lookup_or_create_service('nftables')
     nftables_service.run_action(:restart)
   end
 
   action :disable do
-    return unless managed?
     nftables_service = lookup_or_create_service('nftables')
     %i(disable stop).each do |a|
       nftables_service.run_action(a)

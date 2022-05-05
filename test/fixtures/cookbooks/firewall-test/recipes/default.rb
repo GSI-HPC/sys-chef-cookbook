@@ -1,6 +1,38 @@
 return unless Gem::Requirement.new('>= 12.15').satisfied_by?(Gem::Version.new(Chef::VERSION))
 
-include_recipe 'sys::firewall'
+firewall 'default' do
+  table_ip_nat true
+  table_ip6_nat true
+  input_policy 'drop'
+end
+
+firewall_rule 'allow loopback' do
+  interface 'lo'
+  protocol :none
+  command :allow
+  only_if { node['sys']['firewall']['allow_loopback'] }
+end
+
+firewall_rule 'allow icmp' do
+  protocol :icmp
+  command :allow
+  only_if { node['sys']['firewall']['allow_icmp'] }
+end
+
+firewall_rule 'allow world to ssh' do
+  port 22
+  only_if { node['sys']['firewall']['allow_ssh'] }
+end
+
+# allow established connections
+firewall_rule 'established' do
+  position 40
+  stateful [:related, :established]
+  protocol :none # explicitly don't specify protocol
+  command :allow
+  only_if { node['sys']['firewall']['allow_established'] }
+end
+
 
 firewall_rule 'ssh22' do
   port 22

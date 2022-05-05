@@ -68,14 +68,6 @@ module Sys
         end
       end
 
-      def disabled?
-        node['sys']['firewall']['disable']
-      end
-
-      def managed?
-        node['sys']['firewall']['manage']
-      end
-
       def build_rule_file(rules)
         contents = []
         sorted_values = rules.values.sort.uniq
@@ -168,8 +160,25 @@ module Sys
         Chef::Log.info('log_nftables timed out!')
       end
 
-      def default_ruleset(current_node)
-        current_node['sys']['firewall']['defaults']['ruleset'].to_h
+      def default_ruleset(new_resource)
+        rules = {
+          'add table inet filter' => 1,
+          "add chain inet filter INPUT { type filter hook input priority 0 ; policy #{new_resource.input_policy}; }" => 2,
+          "add chain inet filter OUTPUT { type filter hook output priority 0 ; policy #{new_resource.output_policy}; }" => 2,
+          "add chain inet filter FOWARD { type filter hook forward priority 0 ; policy #{new_resource.forward_policy}; }" => 2,
+        }
+        if new_resource.table_ip_nat
+          rules['add table ip nat'] = 1
+          rules['add chain ip nat POSTROUTING { type nat hook postrouting priority 100 ;}'] = 2
+          rules['add chain ip nat PREROUTING { type nat hook prerouting priority -100 ;}'] = 2
+        end
+        if new_resource.table_ip6_nat
+          rules['add table ip6 nat'] = 1
+          rules['add chain ip6 nat POSTROUTING { type nat hook postrouting priority 100 ;}'] = 2
+          rules['add chain ip6 nat PREROUTING { type nat hook prerouting priority -100 ;}'] = 2
+        end
+        rules
+
       end
 
       def ensure_default_rules_exist(current_node, new_resource)
