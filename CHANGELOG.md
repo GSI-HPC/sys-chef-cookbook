@@ -2,6 +2,14 @@
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [1.66.0] - 2022-05-05
+
+### Changed
+- Use a more modern approach for the `firewall` and `firewall_rule` resources.
+- No attributes to configure the `firewall` or `firewall_rule` resources
+- No default recipe
+- Rename the resources to `nftables` and `nftables_rule`.
+
 ## [1.65.0] - 2022-04-29
 
 ### Added

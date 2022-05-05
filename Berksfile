@@ -10,5 +10,5 @@ cookbook 'fixtures', path: 'test/unit/fixtures', group: :chefspec
 cookbook 'line', github: 'sous-chefs/line', tag: "v0.6.3"
 
 group :integration do
-  cookbook 'firewall-test', path: 'test/fixtures/cookbooks/firewall-test'
+  cookbook 'nftables-test', path: 'test/fixtures/cookbooks/nftables-test'
 end
