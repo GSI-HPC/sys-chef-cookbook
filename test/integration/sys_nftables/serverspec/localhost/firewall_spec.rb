@@ -1,6 +1,6 @@
 #
 # Cookbook Name:: sys
-# Integration tests for sys::firewall
+# Integration tests for resource nftables
 #
 # Copyright 2022 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
 #

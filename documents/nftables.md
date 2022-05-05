@@ -1,19 +1,19 @@
-# `resource::firewall`
+# `resource::nftables`
 
-Use the firewall resource to configure nftables.
+Use the nftables resource to configure nftables.
 
-↪ `resources/firewall.rb`  
-↪ `resources/firewall_rule.rb`  
-↪ `libraries/sys_helpers_firewall.rb`  
-↪ `documents/firewall.rb`  
-↪ `test/unit/recipies/firewall_spec.rb`  
+↪ `resources/nftables.rb`  
+↪ `resources/nftables_rule.rb`  
+↪ `libraries/sys_helpers_nftables.rb`  
+↪ `documents/nftables.rb`  
+↪ `test/unit/recipies/nftables_spec.rb`  
 
 ## Basic Usage
 
 ### Disable nftables
 
 ```ruby
-firewall 'default' do
+nftables 'default' do
   action :disable
 end
 ```
@@ -21,7 +21,7 @@ end
 ### Enable nftables
 
 ```ruby
-firewall 'default'
+nftables 'default'
 ```
 
 This will give you the following default rules:
@@ -43,14 +43,14 @@ This will give you the following default rules:
 ### You are scared and just want to take a look
 
 If you want to generate the nftables rule-set but not activate it, use
-your own firewall-recipe, like so:
+your own nftables-recipe, like so:
 
 ```RUBY
-firewall 'default' do
+nftables 'default' do
  action [:rebuild, :disable]
 end
 
-firewall_rule 'example-ips from rfc5737' do
+nftables_rule 'example-ips from rfc5737' do
   source ['192.0.2.0/24', '198.51.100.0/24', '203.0.113.0/24']
   port 22
 end
@@ -59,20 +59,20 @@ end
 Setting `action` to [:rebuild, :disable] will disable nftables but
 still generate `/etc/nftables.conf`.
 
-## Using the `firewall`-resource
+## Using the `nftables`-resource
 
 Depend on the `sys`-cookbook in the `metadata.rb`.  Write a recipe to
 configure nftables, e.g. to configure a ruleset which only allows
 access via port `22`, write a recipe like this
 
 ```ruby
-firewall 'default' do
+nftables 'default' do
   input_policy 'drop'
 end
 
-firewall_rule 'allow http(s)' do
+nftables_rule 'allow http(s)' do
   port [80,443]
 end
 ```
 
-For further examples see [firewall-test::default](test/fixtures/cookbooks/firewall-test/recipes/default.rb).
+For further examples see [nftables-test::default](test/fixtures/cookbooks/nftables-test/recipes/default.rb).

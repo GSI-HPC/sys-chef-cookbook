@@ -1,6 +1,6 @@
 #
 # Cookbook Name:: sys
-# Library:: Helpers::Firewall
+# Library:: Helpers::Nftables
 #
 # Copyright 2022 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
 #
@@ -24,7 +24,7 @@
 
 module Sys
   module Helpers
-    module Firewall
+    module Nftables
       require 'ipaddr'
       include Chef::Mixin::ShellOut
 
@@ -101,7 +101,7 @@ module Sys
         }.freeze
       end
 
-      def build_firewall_rule(rule_resource)
+      def build_nftables_rule(rule_resource)
         return rule_resource.raw.strip if rule_resource.raw
 
         ip_family = rule_resource.family
@@ -110,46 +110,46 @@ module Sys
                 else
                   'filter'
                 end
-        firewall_rule = if table == 'nat'
+        nftables_rule = if table == 'nat'
                           "add rule #{ip_family} #{table} "
                         else
                           "add rule inet #{table} "
                         end
-        firewall_rule << CHAIN.fetch(rule_resource.direction.to_sym)
-        firewall_rule << ' '
-        firewall_rule << "iif #{rule_resource.interface} " if rule_resource.interface
-        firewall_rule << "oif #{rule_resource.dest_interface} " if rule_resource.dest_interface
+        nftables_rule << CHAIN.fetch(rule_resource.direction.to_sym)
+        nftables_rule << ' '
+        nftables_rule << "iif #{rule_resource.interface} " if rule_resource.interface
+        nftables_rule << "oif #{rule_resource.outerface} " if rule_resource.dest_interface
 
         if rule_resource.source
           source_set = build_set_of_ips(rule_resource.source)
-          firewall_rule << "#{ip_family} saddr #{source_set} "
+          nftables_rule << "#{ip_family} saddr #{source_set} "
         end
 
         if rule_resource.destination
           destination_set = build_set_of_ips(rule_resource.destination)
-          firewall_rule << "#{ip_family} daddr #{destination_set} "
+          nftables_rule << "#{ip_family} daddr #{destination_set} "
         end
 
         case rule_resource.protocol
         when :icmp
-          firewall_rule << 'icmp type echo-request '
+          nftables_rule << 'icmp type echo-request '
         when :'ipv6-icmp', :icmpv6
-          firewall_rule << 'icmpv6 type { echo-request, nd-router-solicit, nd-neighbor-solicit, nd-router-advert, nd-neighbor-advert } '
+          nftables_rule << 'icmpv6 type { echo-request, nd-router-solicit, nd-neighbor-solicit, nd-router-advert, nd-neighbor-advert } '
         when :tcp, :udp
-          firewall_rule << "#{rule_resource.protocol} sport #{port_to_s(sport(rule_resource))} " if sport(rule_resource)
-          firewall_rule << "#{rule_resource.protocol} dport #{port_to_s(dport(rule_resource))} " if dport(rule_resource)
+          nftables_rule << "#{rule_resource.protocol} sport #{port_to_s(rule_resource.sport)} " if sport(rule_resource)
+          nftables_rule << "#{rule_resource.protocol} dport #{port_to_s(rule_resource.dport)} " if dport(rule_resource)
         when :esp, :ah
-          firewall_rule << "#{ip_family} #{ip_family == :ip6 ? 'nexthdr' : 'protocol'} #{rule_resource.protocol} "
+          nftables_rule << "#{ip_family} #{ip_family == :ip6 ? 'nexthdr' : 'protocol'} #{rule_resource.protocol} "
 
         # nothing to do default :ipv6, :none
         end
 
-        firewall_rule << "ct state #{Array(rule_resource.stateful).join(',').downcase} " if rule_resource.stateful
-        firewall_rule << "#{TARGET[rule_resource.command.to_sym]} "
-        firewall_rule << " to #{rule_resource.redirect_port} " if rule_resource.command == :redirect
-        firewall_rule << "comment \"#{rule_resource.description}\" " if rule_resource.include_comment
-        firewall_rule.strip!
-        firewall_rule
+        nftables_rule << "ct state #{Array(rule_resource.stateful).join(',').downcase} " if rule_resource.stateful
+        nftables_rule << "#{TARGET[rule_resource.command.to_sym]} "
+        nftables_rule << " to #{rule_resource.redirect_port} " if rule_resource.command == :redirect
+        nftables_rule << "comment \"#{rule_resource.description}\" " if rule_resource.include_comment
+        nftables_rule.strip!
+        nftables_rule
       end
 
       def log_nftables

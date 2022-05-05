@@ -183,14 +183,9 @@ suites:
                   - 'policy ACCEPT;'
                 FORWARD:
                   - 'policy DROP;'
-  - name: sys_firewall
+  - name: sys_nftables
     run_list:
-      - recipe[firewall-test::default]
-    attributes:
-      sys:
-        firewall:
-          manage: true
-          disable: false
+      - recipe[nftables-test::default]
   - name: sys_linuxlogo
     run_list:
       - recipe[sys::linuxlogo]

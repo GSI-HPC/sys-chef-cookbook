@@ -1,6 +1,6 @@
 #
 # Cookbook Name:: sys
-# Resource:: firewall
+# Resource:: nftables
 #
 # Copyright 2022 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
 #
@@ -26,7 +26,7 @@ if Gem::Requirement.new('>= 12.15').satisfied_by?(Gem::Version.new(Chef::VERSION
 
   action_class do
 
-    include Sys::Helpers::Firewall
+    include Sys::Helpers::Nftables
 
     def lookup_or_create_service(name)
       begin
@@ -53,9 +53,10 @@ if Gem::Requirement.new('>= 12.15').satisfied_by?(Gem::Version.new(Chef::VERSION
 
   #unified_mode true
 
-  provides :firewall, os: 'linux', platform: %w(debian)
+  provides :nftables, os: 'linux', platform: %w(debian)
 
-  property :rules, Hash
+  property :rules,
+           Hash
   property :input_policy,
          String,
          equal_to: %w(drop accept),
@@ -87,7 +88,7 @@ if Gem::Requirement.new('>= 12.15').satisfied_by?(Gem::Version.new(Chef::VERSION
     nft_pkg.run_action(:install)
 
     with_run_context :root do
-      edit_resource('sys_firewall', new_resource.name) do
+      edit_resource('sys_nftables', new_resource.name) do
         action :nothing
         delayed_action :rebuild
       end
@@ -96,7 +97,7 @@ if Gem::Requirement.new('>= 12.15').satisfied_by?(Gem::Version.new(Chef::VERSION
 
   action :rebuild do
     ensure_default_rules_exist(node, new_resource)
-    # prints all the firewall rules
+    # prints all the nftables rules
     log_nftables
 
     # this takes the commands in each hash entry and builds a rule file
