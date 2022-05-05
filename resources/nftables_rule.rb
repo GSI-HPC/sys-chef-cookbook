@@ -122,7 +122,7 @@ if Gem::Requirement.new('>= 12.15').satisfied_by?(Gem::Version.new(Chef::VERSION
 
     with_run_context :root do
       begin
-        edit_resource!('sys_nftables', new_resource.nftables_name) do |fw_rule|
+        edit_resource!('nftables', new_resource.nftables_name) do |fw_rule|
           r = rules.dup || {}
           r.merge!({
             fwr => fw_rule.position,
