@@ -1,8 +1,8 @@
 #
-# Cookbook Name:: sys
+# Cookbook:: sys
 # Resource:: nftables_rule
 #
-# Copyright 2022 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+# Copyright:: 2022 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
 #
 # Authors:
 #  Matthias Pausch (m.pausch@gsi.de)
@@ -35,6 +35,7 @@ if Gem::Requirement.new('>= 12.15').satisfied_by?(Gem::Version.new(Chef::VERSION
   end
 
   provides :nftables_rule
+  # unified_mode true
   default_action :create
 
   property :nftables_name,
@@ -43,15 +44,15 @@ if Gem::Requirement.new('>= 12.15').satisfied_by?(Gem::Version.new(Chef::VERSION
   property :command,
            Symbol,
            default: :allow,
-           equal_to: %i[
+           equal_to: %i(
            accept allow deny drop log masquerade redirect reject
-           ]
+           )
   property :protocol,
            [Integer, Symbol],
            default: :tcp,
            callbacks: { 'must be valid IP protocol specification' =>
-                        lambda(p) do
-                          %i[udp tcp icmp icmpv6 ipv6-icmp esp ah ipv6 none].include?(p) || (0..142).include?(p)
+                        lambda do |p|
+                          %i(udp tcp icmp icmpv6 ipv6-icmp esp ah ipv6 none).include?(p) || (0..142).include?(p)
                         end }
   property :direction,
            Symbol,
@@ -70,11 +71,11 @@ if Gem::Requirement.new('>= 12.15').satisfied_by?(Gem::Version.new(Chef::VERSION
   property :source,
            [String, Array],
            callbacks: {
-             'must be a valid ip address' => lambda(ips) do
+             'must be a valid ip address' => lambda do |ips|
                Array(ips).inject(false) do |a, ip|
                  a || !!IPAddr.new(ip)
                end
-             end
+             end,
            }
   property :sport,
            [Integer, String, Array, Range]
@@ -85,11 +86,11 @@ if Gem::Requirement.new('>= 12.15').satisfied_by?(Gem::Version.new(Chef::VERSION
   property :destination,
            [String, Array],
            callbacks: {
-             'must be a valid ip address' => lambda(ips) do
+             'must be a valid ip address' => lambda do |ips|
                Array(ips).inject(false) do |a, ip|
                  a || !!IPAddr.new(ip)
                end
-             end
+             end,
            }
   property :outerface,
            String
@@ -124,7 +125,7 @@ if Gem::Requirement.new('>= 12.15').satisfied_by?(Gem::Version.new(Chef::VERSION
         edit_resource!('sys_nftables', new_resource.nftables_name) do |fw_rule|
           r = rules.dup || {}
           r.merge!({
-            fwr => fw_rule.position
+            fwr => fw_rule.position,
           })
           rules(r)
           delayed_action :rebuild

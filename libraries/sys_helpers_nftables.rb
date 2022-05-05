@@ -1,8 +1,8 @@
 #
-# Cookbook Name:: sys
+# Cookbook:: sys
 # Library:: Helpers::Nftables
 #
-# Copyright 2022 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+# Copyright:: 2022 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
 #
 # Authors:
 #  Matthias Pausch (m.pausch@gsi.de)
@@ -28,14 +28,6 @@ module Sys
       require 'ipaddr'
       include Chef::Mixin::ShellOut
 
-      def dport(new_resource)
-        new_resource.dest_port || new_resource.port
-      end
-
-      def sport(new_resource)
-        new_resource.source_port
-      end
-
       def valid_ips?(ips)
         Array(ips).inject(false) do |a, ip|
           a || !!IPAddr.new(ip)
@@ -55,16 +47,16 @@ module Sys
         end
       end
 
-      def port_to_s(p)
-        if p.is_a?(String)
-          p
-        elsif p && p.is_a?(Integer)
-          p.to_s
-        elsif p && p.is_a?(Array)
-          p_strings = p.map { |o| port_to_s(o) }
-          "{#{p_strings.sort.join(',')}}"
-        elsif p && p.is_a?(Range)
-          "#{p.first}-#{p.last}"
+      def port_to_s(port)
+        if port.is_a?(String)
+          port
+        elsif port && port.is_a?(Integer)
+          port.to_s
+        elsif port && port.is_a?(Array)
+          port_strings = port.map { |o| port_to_s(o) }
+          "{#{port_strings.sort.join(',')}}"
+        elsif port && port.is_a?(Range)
+          "#{port.first}-#{port.last}"
         end
       end
 
@@ -73,33 +65,29 @@ module Sys
         sorted_values = rules.values.sort.uniq
         sorted_values.each do |sorted_value|
           contents << "# position #{sorted_value}"
-          contents << rules.select { |_,v| v == sorted_value }.keys.join("\n")
+          contents << rules.select { |_, v| v == sorted_value }.keys.join("\n")
         end
         "#{contents.join("\n")}\n"
       end
 
-      unless defined? CHAIN
-        CHAIN = {
-          in: 'input',
-          out: 'output',
-          pre: 'prerouting',
-          post: 'postrouting',
-          forward: 'forward',
-        }.freeze
-      end
+      CHAIN ||= {
+        in: 'input',
+        out: 'output',
+        pre: 'prerouting',
+        post: 'postrouting',
+        forward: 'forward',
+      }.freeze
 
-      unless defined? TARGET
-        TARGET = {
-          accept: 'accept',
-          allow: 'accept',
-          deny: 'drop',
-          drop: 'drop',
-          log: 'log prefix "nftables:" group 0',
-          masquerade: 'masquerade',
-          redirect: 'redirect',
-          reject: 'reject',
-        }.freeze
-      end
+      TARGET ||= {
+        accept: 'accept',
+        allow: 'accept',
+        deny: 'drop',
+        drop: 'drop',
+        log: 'log prefix "nftables:" group 0',
+        masquerade: 'masquerade',
+        redirect: 'redirect',
+        reject: 'reject',
+      }.freeze
 
       def build_nftables_rule(rule_resource)
         return rule_resource.raw.strip if rule_resource.raw
@@ -118,7 +106,7 @@ module Sys
         nftables_rule << CHAIN.fetch(rule_resource.direction.to_sym)
         nftables_rule << ' '
         nftables_rule << "iif #{rule_resource.interface} " if rule_resource.interface
-        nftables_rule << "oif #{rule_resource.outerface} " if rule_resource.dest_interface
+        nftables_rule << "oif #{rule_resource.outerface} " if rule_resource.outerface
 
         if rule_resource.source
           source_set = build_set_of_ips(rule_resource.source)
@@ -136,12 +124,12 @@ module Sys
         when :'ipv6-icmp', :icmpv6
           nftables_rule << 'icmpv6 type { echo-request, nd-router-solicit, nd-neighbor-solicit, nd-router-advert, nd-neighbor-advert } '
         when :tcp, :udp
-          nftables_rule << "#{rule_resource.protocol} sport #{port_to_s(rule_resource.sport)} " if sport(rule_resource)
-          nftables_rule << "#{rule_resource.protocol} dport #{port_to_s(rule_resource.dport)} " if dport(rule_resource)
+          nftables_rule << "#{rule_resource.protocol} sport #{port_to_s(rule_resource.sport)} " if rule_resource.sport
+          nftables_rule << "#{rule_resource.protocol} dport #{port_to_s(rule_resource.dport)} " if rule_resource.dport
         when :esp, :ah
           nftables_rule << "#{ip_family} #{ip_family == :ip6 ? 'nexthdr' : 'protocol'} #{rule_resource.protocol} "
 
-        # nothing to do default :ipv6, :none
+          # nothing to do default :ipv6, :none
         end
 
         nftables_rule << "ct state #{Array(rule_resource.stateful).join(',').downcase} " if rule_resource.stateful
@@ -152,39 +140,29 @@ module Sys
         nftables_rule
       end
 
-      def log_nftables
-        shell_out!('nft -n list ruleset')
-      rescue Mixlib::ShellOut::ShellCommandFailed
-        Chef::Log.info('log_nftables failed!')
-      rescue Mixlib::ShellOut::CommandTimeout
-        Chef::Log.info('log_nftables timed out!')
-      end
-
       def default_ruleset(new_resource)
         rules = {
           'add table inet filter' => 1,
-          "add chain inet filter INPUT { type filter hook input priority 0 ; policy #{new_resource.input_policy}; }" => 2,
-          "add chain inet filter OUTPUT { type filter hook output priority 0 ; policy #{new_resource.output_policy}; }" => 2,
-          "add chain inet filter FOWARD { type filter hook forward priority 0 ; policy #{new_resource.forward_policy}; }" => 2,
+          "add chain inet filter input { type filter hook input priority 0 ; policy #{new_resource.input_policy}; }" => 2,
+          "add chain inet filter output { type filter hook output priority 0 ; policy #{new_resource.output_policy}; }" => 2,
+          "add chain inet filter forward { type filter hook forward priority 0 ; policy #{new_resource.forward_policy}; }" => 2,
         }
         if new_resource.table_ip_nat
           rules['add table ip nat'] = 1
-          rules['add chain ip nat POSTROUTING { type nat hook postrouting priority 100 ;}'] = 2
-          rules['add chain ip nat PREROUTING { type nat hook prerouting priority -100 ;}'] = 2
+          rules['add chain ip nat postrouting { type nat hook postrouting priority 100 ;}'] = 2
+          rules['add chain ip nat prerouting { type nat hook prerouting priority -100 ;}'] = 2
         end
         if new_resource.table_ip6_nat
           rules['add table ip6 nat'] = 1
-          rules['add chain ip6 nat POSTROUTING { type nat hook postrouting priority 100 ;}'] = 2
-          rules['add chain ip6 nat PREROUTING { type nat hook prerouting priority -100 ;}'] = 2
+          rules['add chain ip6 nat postrouting { type nat hook postrouting priority 100 ;}'] = 2
+          rules['add chain ip6 nat prerouting { type nat hook prerouting priority -100 ;}'] = 2
         end
         rules
-
       end
 
-      def ensure_default_rules_exist(current_node, new_resource)
+      def ensure_default_rules_exist(new_resource)
         input = new_resource.rules || {}
-        input.merge!(default_ruleset(current_node).to_h)
-        new_resource.rules(input)
+        input.merge!(default_ruleset(new_resource))
       end
     end
   end

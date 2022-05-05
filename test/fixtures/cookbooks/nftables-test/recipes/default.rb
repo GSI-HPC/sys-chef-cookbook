@@ -1,180 +1,171 @@
 return unless Gem::Requirement.new('>= 12.15').satisfied_by?(Gem::Version.new(Chef::VERSION))
 
-firewall 'default' do
+nftables 'default' do
   table_ip_nat true
   table_ip6_nat true
   input_policy 'drop'
 end
 
-firewall_rule 'allow loopback' do
+nftables_rule 'allow loopback' do
   interface 'lo'
   protocol :none
   command :allow
-  only_if { node['sys']['firewall']['allow_loopback'] }
 end
 
-firewall_rule 'allow icmp' do
+nftables_rule 'allow icmp' do
   protocol :icmp
   command :allow
-  only_if { node['sys']['firewall']['allow_icmp'] }
-end
-
-firewall_rule 'allow world to ssh' do
-  port 22
-  only_if { node['sys']['firewall']['allow_ssh'] }
 end
 
 # allow established connections
-firewall_rule 'established' do
+nftables_rule 'established' do
   position 40
   stateful [:related, :established]
   protocol :none # explicitly don't specify protocol
   command :allow
-  only_if { node['sys']['firewall']['allow_established'] }
 end
 
 
-firewall_rule 'ssh22' do
-  port 22
+nftables_rule 'ssh22' do
+  dport 22
+end
+
+nftables_rule 'port array' do
+  dport [2222, 2200]
   command :allow
 end
 
-firewall_rule 'port array' do
-  port [2222, 2200]
+nftables_rule 'range' do
+  dport 1000..1100
   command :allow
 end
 
-firewall_rule 'range' do
-  port 1000..1100
-  command :allow
-end
-
-firewall_rule 'range-udp' do
-  port 60000..61000
+nftables_rule 'range-udp' do
+  dport 60000..61000
   protocol :udp
 end
 
-firewall_rule 'ping6' do
+nftables_rule 'ping6' do
   protocol :icmpv6
 end
 
 # other rules
-firewall_rule 'temp1' do
-  port 1234
+nftables_rule 'temp1' do
+  dport 1234
   command :deny
 end
 
-firewall_rule 'temp2' do
-  port 1235
+nftables_rule 'temp2' do
+  dport 1235
   command :reject
 end
 
-firewall_rule 'addremove' do
-  port 1236
+nftables_rule 'addremove' do
+  dport 1236
   command :allow
 end
 
-firewall_rule 'addremove2' do
-  port 1236
+nftables_rule 'addremove2' do
+  dport 1236
   command :deny
 end
 
-firewall_rule 'protocolnum' do
+nftables_rule 'protocolnum' do
   protocol 112
   command :allow
 end
 
-firewall_rule 'prepend' do
-  port 7788
+nftables_rule 'prepend' do
+  dport 7788
   position 5
 end
 
-firewall_rule "block single ip" do
+nftables_rule "block single ip" do
   source '192.168.99.99'
   position 49
   command :reject
 end
 
-firewall_rule 'block ip-range' do
+nftables_rule 'block ip-range' do
   source ['192.168.99.99', '192.168.100.100']
   command :drop
 end
 
-firewall_rule "block single destination ip" do
+nftables_rule "block single destination ip" do
   destination '192.168.99.99'
   position 49
   command :reject
 end
 
-firewall_rule 'block destination ip-range' do
+nftables_rule 'block destination ip-range' do
   destination ['192.168.99.99', '192.168.100.100']
   command :drop
 end
 
-firewall_rule 'ipv6-source' do
-  port 80
+nftables_rule 'ipv6-source' do
+  dport 80
   family :ip6
   source '2001:db8::ff00:42:8329'
   command :allow
 end
 
-firewall_rule 'array' do
-  port [1234, 5000..5100, '5678']
+nftables_rule 'array' do
+  dport [1234, 5000..5100, '5678']
   command :allow
 
 end
 
-firewall_rule 'RPC Port Range In' do
-  port 5000..5100
+nftables_rule 'RPC Port Range In' do
+  dport 5000..5100
   protocol :tcp
   command :allow
   direction :in
 
 end
 
-firewall_rule 'HTTP HTTPS' do
-  port [80, 443]
+nftables_rule 'HTTP HTTPS' do
+  dport [80, 443]
   protocol :tcp
   direction :out
   command :allow
 end
 
-firewall_rule 'port2433' do
+nftables_rule 'port2433' do
   description 'This should not be included'
   include_comment false
   source    '127.0.0.0/8'
-  port      2433
+  dport      2433
   direction :in
   command   :allow
 end
 
-firewall_rule 'esp' do
+nftables_rule 'esp' do
   protocol :esp
   command :allow
 end
 
-firewall_rule 'ah' do
+nftables_rule 'ah' do
   protocol :ah
   command :allow
 end
 
-firewall_rule 'esp-ipv6' do
+nftables_rule 'esp-ipv6' do
   source '::'
   family :ip6
   protocol :esp
   command :allow
 end
 
-firewall_rule 'ah-ipv6' do
+nftables_rule 'ah-ipv6' do
   source '::'
   family :ip6
   protocol :ah
   command :allow
 end
 
-firewall_rule 'redirect' do
+nftables_rule 'redirect' do
   direction :pre
-  port 5555
+  dport 5555
   redirect_port 6666
   command :redirect
 end

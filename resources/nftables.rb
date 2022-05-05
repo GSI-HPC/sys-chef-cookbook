@@ -1,8 +1,8 @@
 #
-# Cookbook Name:: sys
+# Cookbook:: sys
 # Resource:: nftables
 #
-# Copyright 2022 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+# Copyright:: 2022 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
 #
 # Authors:
 #  Matthias Pausch (m.pausch@gsi.de)
@@ -25,7 +25,6 @@
 if Gem::Requirement.new('>= 12.15').satisfied_by?(Gem::Version.new(Chef::VERSION))
 
   action_class do
-
     include Sys::Helpers::Nftables
 
     def lookup_or_create_service(name)
@@ -51,30 +50,29 @@ if Gem::Requirement.new('>= 12.15').satisfied_by?(Gem::Version.new(Chef::VERSION
     end
   end
 
-  #unified_mode true
-
   provides :nftables, os: 'linux', platform: %w(debian)
+  # unified_mode true
 
   property :rules,
            Hash
   property :input_policy,
-         String,
-         equal_to: %w(drop accept),
-         default: 'accept'
+           String,
+           equal_to: %w(drop accept),
+           default: 'accept'
   property :output_policy,
-         String,
-         equal_to: %w(drop accept),
-         default: 'accept'
+           String,
+           equal_to: %w(drop accept),
+           default: 'accept'
   property :forward_policy,
-         String,
-         equal_to: %w(drop accept),
-         default: 'accept'
+           String,
+           equal_to: %w(drop accept),
+           default: 'accept'
   property :table_ip_nat,
-         [true, false],
-         default: false
+           [true, false],
+           default: false
   property :table_ip6_nat,
-         [true, false],
-         default: false
+           [true, false],
+           default: false
 
   def whyrun_supported?
     false
@@ -91,14 +89,17 @@ if Gem::Requirement.new('>= 12.15').satisfied_by?(Gem::Version.new(Chef::VERSION
       edit_resource('sys_nftables', new_resource.name) do
         action :nothing
         delayed_action :rebuild
+        forward_policy new_resource.forward_policy
+        output_policy new_resource.output_policy
+        input_policy new_resource.input_policy
+        table_ip_nat new_resource.table_ip_nat
+        table_ip6_nat new_resource.table_ip6_nat
       end
     end
   end
 
   action :rebuild do
-    ensure_default_rules_exist(node, new_resource)
-    # prints all the nftables rules
-    log_nftables
+    ensure_default_rules_exist(new_resource)
 
     # this takes the commands in each hash entry and builds a rule file
     nftables_file = lookup_or_create_rulesfile('/etc/nftables.conf')
