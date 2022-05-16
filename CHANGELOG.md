@@ -10,6 +10,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - No default recipe
 - Rename the resources to `nftables` and `nftables_rule`.
 
+## [1.65.1] - 2022-05-04
+
+### Changed
+- Revised the [README](README.md)
+
 ## [1.65.0] - 2022-04-29
 
 ### Added
