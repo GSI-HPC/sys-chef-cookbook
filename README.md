@@ -1,6 +1,6 @@
 # Chef cookbook `sys`
 
-[![Pipeline Status](https://git.gsi.de/chef/cookbooks/sys/badges/master/pipeline.svg?ignore_skipped=true)](https://travis-ci.org/GSI-HPC/sys-chef-cookbook)
+[![Pipeline Status](https://git.gsi.de/chef/cookbooks/sys/badges/master/pipeline.svg?ignore_skipped=true)](https://git.gsi.de/chef/cookbooks/sys/-/pipelines)
 [![Code Climate](https://codeclimate.com/github/GSI-HPC/sys-chef-cookbook/badges/gpa.svg)](https://codeclimate.com/github/GSI-HPC/sys-chef-cookbook)
 
 ## Description
