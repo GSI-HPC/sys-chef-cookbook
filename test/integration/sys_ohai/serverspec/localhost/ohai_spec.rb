@@ -1,7 +1,7 @@
 # Cookbook Name:: sys
 # Integration tests for recipe sys::ohai
 #
-# Copyright 2021 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+# Copyright 2021-2022 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
 #
 # Authors:
 #  Christopher Huhn   <c.huhn@gsi.de>
@@ -64,8 +64,10 @@ describe "plugins" do
       # the base-files package should always be installed:
       should include(packages: a_hash_including(
                        'base-files' => {
-                         version: anything,
-                         status: 'install ok installed'
+                         version:  anything,
+                         status:  'install ok installed',
+                         arch:    'amd64',
+                         src_pkg: 'base-files'
                        }
                      ))
     end
