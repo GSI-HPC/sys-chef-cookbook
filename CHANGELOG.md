@@ -2,6 +2,12 @@
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [1.66.1] - 2022-05-18
+
+### Added
+- Ohai plugin [`dpkg.rb`](files/default/ohai_plugins/dpkg.rb) now also collects
+  information on architecture and source package name of installed packages
+
 ## [1.66.0] - 2022-05-05
 
 ### Changed
