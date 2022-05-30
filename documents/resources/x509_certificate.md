@@ -28,6 +28,11 @@ object `node['fqdn']` in the chef vault `ssl_keys`.
 | `description`      | ✓     | String |                                          |
 | `certificate_path` |       | String | `"/etc/ssl/certs/#{node['fqdn']}.pem"`   |
 | `key_path`         |       | String | `"/etc/ssl/private/#{node['fqdn']}.pem"` |
+| `data_bag`         |       | String | `ssl_certs`                              |
+| `data_bag_item`    |       | String | `node['fqdn']`                           |
+| `chef_vault`       |       | String | `ssl_keys`                               |
+| `chef_vault_item`  |       | String | `node['fqdn']`                           |
+
 
 ## Examples
 
