@@ -286,6 +286,9 @@ suites:
           config:
             ClientAliveInterval: 4711
             X11Forwarding: 'no'
+  - name: sys_x509
+    run_list:
+      - recipe[x509-test::default]
   - name: sys_ssl
     run_list:
       - recipe[sys::ssl]

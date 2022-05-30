@@ -75,7 +75,7 @@ from wrapper cookbooks.
 * [tmp](documents/tmp.md) – Deploy [Tmpreaper][reaper] to clean directories like `/tmp/`.
 
 ### Resources
-
+* [`x509_certificate`](documents/resources/x509_certificate.md)
 * [`sys_ca_certificates`](documents/ca_certificates.md) – Install/remove CA certificates.
 * [`sys_shutdown`](documents/shutdown.md) – Resource to restart and power down the node at a defined time.
 
