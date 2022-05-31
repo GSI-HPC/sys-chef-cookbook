@@ -53,6 +53,7 @@ kitchen:
         - ssl
         - sudo
         - time
+        - x509
 
 .post:
    script:
