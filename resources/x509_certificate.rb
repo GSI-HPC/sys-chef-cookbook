@@ -25,7 +25,19 @@
 if Gem::Requirement.new('>= 12.15').satisfied_by?(Gem::Version.new(Chef::VERSION))
 
   action_class do
-    include Sys::Helpers::X509
+    def certificate_file_content
+      cert_item = data_bag_item(new_resource.data_bag, new_resource.bag_item)
+      cert_item['file-content']
+    end
+
+    def key_vault_item
+      new_resource.vault_item || new_resource.bag_item
+    end
+
+    def key_file_content
+      key_item = chef_vault_item(new_resource.chef_vault, key_vault_item)
+      key_item['file-content']
+    end
   end
 
   provides :x509_certificate, os: 'linux'
@@ -55,7 +67,7 @@ if Gem::Requirement.new('>= 12.15').satisfied_by?(Gem::Version.new(Chef::VERSION
 
     begin
       file new_resource.certificate_path do
-        content certificate_file_content(new_resource)
+        content certificate_file_content
         owner 'root'
         group 'root'
         mode '0644'
@@ -66,7 +78,7 @@ if Gem::Requirement.new('>= 12.15').satisfied_by?(Gem::Version.new(Chef::VERSION
 
     begin
       file new_resource.key_path do
-        content key_file_content(new_resource)
+        content key_file_content
         owner 'root'
         group 'ssl-cert'
         mode '0640'
