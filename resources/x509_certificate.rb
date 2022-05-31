@@ -32,9 +32,11 @@ if Gem::Requirement.new('>= 12.15').satisfied_by?(Gem::Version.new(Chef::VERSION
   # unified_mode true
 
   property :certificate_path,
-           String
+           String,
+           default: lazy { "/etc/ssl/certs/#{bag_item}.pem" }
   property :key_path,
-           String
+           String,
+           default: lazy { "/etc/ssl/private/#{vault_item}.pem" }
   property :data_bag,
            String,
            default: 'ssl_certs'
@@ -51,7 +53,7 @@ if Gem::Requirement.new('>= 12.15').satisfied_by?(Gem::Version.new(Chef::VERSION
     package 'ssl-cert'
 
     begin
-      file cert_path(new_resource) do
+      file new_resource.certificate_path do
         content certificate_file_content(new_resource)
         owner 'root'
         group 'root'
@@ -62,7 +64,7 @@ if Gem::Requirement.new('>= 12.15').satisfied_by?(Gem::Version.new(Chef::VERSION
     end
 
     begin
-      file keyfile_path(new_resource) do
+      file new_resource.key_path do
         content key_file_content(new_resource)
         owner 'root'
         group 'ssl-cert'

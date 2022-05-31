@@ -25,22 +25,8 @@
 module Sys
   module Helpers
     module X509
-      def cert_path(new_resource)
-        new_resource.certificate_path ||
-          "/etc/ssl/certs/#{new_resource.bag_item}.pem"
-      end
-
-      def keyfile_path(new_resource)
-        new_resource.key_path || "/etc/ssl/private/#{key_vault_item(new_resource)}.pem"
-      end
-
-      def cert_bag_item(new_resource)
-        new_resource.bag_item || new_resource.name
-      end
-
       def certificate_file_content(new_resource)
-        cert_item = data_bag_item(new_resource.data_bag,
-                                  cert_bag_item(new_resource))
+        cert_item = data_bag_item(new_resource.data_bag, new_resource.bag_item)
         cert_item['file-content']
       end
 
