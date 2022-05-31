@@ -39,10 +39,16 @@ use_resource = Gem::Requirement.new('>= 12.15').satisfied_by?(Gem::Version.new(C
 node['sys']['ssl']['certs'].each do |attrs|
   cert = defaults[:cert].merge(attrs)
   cert['file'] ||= "/etc/ssl/certs/#{cert['data_bag_item']}.pem"
+  cert['key_file'] ||= "/etc/ssl/private/#{cert['data_bag_item']}.key"
 
   if use_resource
 
-    x509_certificate cert['data_bag_item']
+    x509_certificate cert['data_bag_item'] do
+      certificate_path cert['file']
+      key_path cert['key_file']
+      data_bag cert['data_bag']
+      chef_vault cert['key_vault']
+    end
 
   else
 
@@ -57,7 +63,6 @@ node['sys']['ssl']['certs'].each do |attrs|
       next
     end
 
-    cert['key_file'] ||= "/etc/ssl/private/#{cert['data_bag_item']}.key"
     begin
       file cert['key_file'] do
         content chef_vault_item(cert['key_vault'], cert['data_bag_item'])['file-content']
