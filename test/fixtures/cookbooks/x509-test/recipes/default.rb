@@ -1,12 +1,8 @@
 return unless Gem::Requirement.new('>= 12.15').satisfied_by?(Gem::Version.new(Chef::VERSION))
 
-x509_certificate 'www-linux' do
-  bag_item 'www-linux.gsi.de'
-  certificate_path '/etc/ssl/certs/www-linux.gsi.de.pem'
-  key_path '/etc/ssl/private/www-linux.gsi.de.key'
-end
+x509_certificate 'www-linux.gsi.de'
 
-x509_certificate 'alternativlos.org' do
+x509_certificate 'alternativlos' do
   data_bag 'other_certs'
   bag_item 'alternativlos.org'
   certificate_path '/tmp/covfefe.pem'
