@@ -24,37 +24,35 @@
 
 if Gem::Requirement.new('>= 12.15').satisfied_by?(Gem::Version.new(Chef::VERSION))
 
+  action_class do
+    include Sys::Helpers::X509
+  end
+
   provides :x509_certificate, os: 'linux'
   # unified_mode true
 
-  property :description,
-           String,
-           name_property: true
   property :certificate_path,
-           String,
-           default: lazy { "/etc/ssl/certs/#{node['fqdn']}.pem" }
+           String
   property :key_path,
-           String,
-           default: lazy { "/etc/ssl/private/#{node['fqdn']}.pem" }
+           String
   property :data_bag,
            String,
            default: 'ssl_certs'
-  property :data_bag_item,
+  property :bag_item,
            String,
-           default: lazy { node['fqdn'] }
+           name_property: true
   property :chef_vault,
            String,
            default: 'ssl_keys'
-  property :chef_vault_item,
-           String,
-           default: lazy { node['fqdn'] }
+  property :vault_item,
+           String
 
   action :install do
     package 'ssl-cert'
 
     begin
-      file new_resource.certificate_path do
-        content data_bag_item(new_resource.data_bag, new_resource.data_bag_item)['file-content']
+      file cert_path(new_resource) do
+        content certificate_file_content(new_resource)
         owner 'root'
         group 'root'
         mode '0644'
@@ -64,8 +62,8 @@ if Gem::Requirement.new('>= 12.15').satisfied_by?(Gem::Version.new(Chef::VERSION
     end
 
     begin
-      file new_resource.key_path do
-        content chef_vault_item(new_resource.chef_vault, new_resource.chef_vault_item)['file-content']
+      file keyfile_path(new_resource) do
+        content key_file_content(new_resource)
         owner 'root'
         group 'ssl-cert'
         mode '0640'

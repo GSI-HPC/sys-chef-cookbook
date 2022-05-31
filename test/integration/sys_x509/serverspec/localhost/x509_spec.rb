@@ -15,6 +15,6 @@ describe file('/tmp/covfefe.pem') do
   it { should exist }
 end
 
-describe OpenSSL::X509::Certificate.new(File.read('/tmp/covfefe.pem')) do
-  its(:subject) { should eq 'alternativlos.org' }
+describe x509_certificate('/tmp/covfefe.pem') do
+  its('subject') { should eq 'CN = alternativlos.org' }
 end
