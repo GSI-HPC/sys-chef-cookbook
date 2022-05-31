@@ -36,7 +36,7 @@ if Gem::Requirement.new('>= 12.15').satisfied_by?(Gem::Version.new(Chef::VERSION
            default: lazy { "/etc/ssl/certs/#{bag_item}.pem" }
   property :key_path,
            String,
-           default: lazy { "/etc/ssl/private/#{vault_item}.pem" }
+           default: lazy { "/etc/ssl/private/#{vault_item}.key" }
   property :data_bag,
            String,
            default: 'ssl_certs'
