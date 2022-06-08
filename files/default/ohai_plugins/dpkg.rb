@@ -34,7 +34,7 @@ Ohai.plugin(:Dpkg) do
   depends 'platform_version'
 
   # Which attribute name space will this plugin take care of?
-  provides 'debian'
+  provides 'debian', 'packages'
 
   # read a list of installed packages:
   # dpkg-query can be told to produce arbitrary output
@@ -72,8 +72,11 @@ Ohai.plugin(:Dpkg) do
     end
 
     debian Mash.new
+    packages Mash.new
 
-    debian['packages'] = package_data
+    package_data.each do |name, info|
+      packages[name] = info
+    end
 
     # figure out the debian architecture
     #  (differs from  node['kernel']['machine']!)

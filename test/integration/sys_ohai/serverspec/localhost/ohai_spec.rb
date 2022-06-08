@@ -52,6 +52,27 @@ describe "plugins" do
     end
   end
 
+  describe 'packages' do
+    subject do
+      @ohai.require_plugin('debian')
+
+      @ohai.data['packages']
+    end
+
+    it { should be_a(Mash) }
+    it do
+      # the base-files package should always be installed:
+      should include(
+               'base-files' => {
+                 version:  anything,
+                 status:  'install ok installed',
+                 arch:    'amd64',
+                 src_pkg: 'base-files'
+               }
+             )
+    end
+  end
+
   describe 'debian' do
     subject do
       @ohai.require_plugin('debian')
@@ -60,17 +81,7 @@ describe "plugins" do
     end
 
     it { should be_a(Mash) }
-    it do
-      # the base-files package should always be installed:
-      should include(packages: a_hash_including(
-                       'base-files' => {
-                         version:  anything,
-                         status:  'install ok installed',
-                         arch:    'amd64',
-                         src_pkg: 'base-files'
-                       }
-                     ))
-    end
+    it { should include(architecture: 'amd64') }
   end
 
   describe 'ssh fingerprints' do
