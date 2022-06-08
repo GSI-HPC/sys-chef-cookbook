@@ -1,4 +1,6 @@
-Configures the SSH daemon and deploys a public keys an configurations for a given user account.
+# `sys::ssh`
+
+Globally configures the SSH daemon and client and deploys public keys and configs for given user accounts.
 
 ↪ `attributes/ssh.rb`  
 ↪ `recipes/ssh.rb`  
@@ -8,8 +10,9 @@ Configures the SSH daemon and deploys a public keys an configurations for a give
 
 ## Global Daemon Configuration 
  
-Configure the SSH daemon using attributes in `node.sys.sshd.config` (read the `sshd_config` manual for a list of all available configuration key-value pairs). Note that when the daemon configuration is empty the original `/etc/ssh/sshd_config` file wont be modified.
-
+Configure the SSH daemon using attributes in `node['sys']['sshd']['config']`
+(read the `sshd_config` manual for a list of all available configuration key-value pairs).  
+The original `/etc/ssh/sshd_config` file will be left untouched if `node['sys']['sshd']['config']` is empty.
 
     "sys" => {
       "sshd" => {
@@ -23,7 +26,11 @@ Configure the SSH daemon using attributes in `node.sys.sshd.config` (read the `s
 
 ## User Configuration
 
-All hashes in `node.sys.ssh.config[account]` (where account is an existing user) represent an SSH configuration (read the `ssh_config` manual for a list of all available configuration options). The user specific configuration is written to `$HOME/.ssh/config`. A key defines the `Host` keywords restriction pattern, and the value contains a list of configuration key-value pairs stored in a hash:
+All hashes in `node['sys']['ssh']['config'][account]` (where account is an existing user) represent an SSH configuration
+(read the `ssh_config` manual for a list of all available configuration options).
+The user specific configuration is written to `$HOME/.ssh/config`.
+A key defines the `Host` keywords restriction pattern, and the
+value contains a list of configuration key-value pairs stored in a hash:
 
     "sys" => {
       "ssh" => {
@@ -46,7 +53,7 @@ All hashes in `node.sys.ssh.config[account]` (where account is an existing user)
       }
     }
 
-The example above writes configuration files for the users `devops` and `noops` into their home-directories.
+The example above writes configuration files for the users `devops` and `noops` into their `~/.ssh/config`.
 
 Alternatively use the resource `sys_ssh_config`:
 
@@ -64,10 +71,11 @@ Alternatively use the resource `sys_ssh_config`:
 
 ## User Authorized Keys
 
-All hashes in `node.sys.ssh.authorize[account]` (where account is an existing user) have the following attributes:
+All hashes in `node['sys']['ssh']['authorize'][account]` (where account is an existing user)
+have the following attributes:
 
 * `keys` (required) contains at least one SSH public key per user account.
-* `managed` (default false) overwrites existing keys deviating form the given list `keys` when true.
+* `managed` (default `false`) set to true to delete existing keys not on the given list `keys`.
 
 For example:
 
@@ -98,3 +106,29 @@ Alternatively use the resource `sys_ssh_authorize` like:
       managed true
     end
 
+## Known Hosts
+
+`sys::ssh` can manage the system-wide `/etc/ssh/ssh_known_hosts`.
+This is controlled via `node['sys']['ssh']['known_hosts']`.
+The attribute format is a hash with the hostnames or IPs pointing to
+a hash of keytypes as keys and the base64-encoded keys as velues.
+The keytypes and keys can be acquired with `ssh-keyscan`.
+The format and options of the `known_hosts` file is explained in the [`sshd` man page](https://manpages.debian.org/openssh-server/sshd.8.en.html#SSH_KNOWN_HOSTS_FILE_FORMAT).
+
+Example:
+
+```ruby
+  sys: {
+    ssh: {
+      known_hosts: {
+        'login.example.com': {
+          'ssh-rsa': 'AAAA…==',
+          'ssh-ed25519': 'AAAA…'
+        },
+        'gitlab.com': {
+          …
+        }
+      }
+    }
+  }
+```

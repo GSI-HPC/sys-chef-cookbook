@@ -1,7 +1,7 @@
 # Cookbook Name:: sys
 # Integration tests for recipe sys::ssh
 #
-# Copyright 2020 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+# Copyright 2020-2022 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
 #
 # Authors:
 #  Christopher Huhn   <c.huhn@gsi.de>
@@ -20,7 +20,7 @@
 #
 
 #
-# SSH is dificult to test as it is already configured and running inside vagrant VMs
+# SSH is difficult to test as it is already configured and running inside vagrant VMs
 #
 require 'spec_helper'
 
@@ -65,6 +65,12 @@ describe file('/root/.ssh') do
   it { should be_mode('700') }
 end
 
+# the homedir should not be writable and sys_ssh_authorize should catch that
+#  without failing
+describe file('/home/mchammer/.ssh/authorized_keys') do
+  it { should_not exist }
+end
+
 describe file('/root/.ssh/authorized_keys') do
   it { should exist }
   its(:content) do
@@ -80,4 +86,20 @@ describe file('/root/.ssh/config') do
   its(:content) do
     should match(/^Host \*\n\s*AddKeysToAgent ask$/m)
   end
+end
+
+# test /etc/ssh/ssh_known_hosts
+describe file('/etc/ssh/ssh_known_hosts') do
+  it { should exist }
+  it { should be_mode('644') }
+  its(:content) do
+    should match(/^github.com ssh-rsa AAAA\S+==$/)
+  end
+end
+
+describe command 'ssh -o BatchMode=yes -v git@git.gsi.de' do
+  its(:exit_status) { should eq 255 } # permission denied
+  its(:stdout) { should be_empty }
+  its(:stderr) { should include "debug1: Host 'git.gsi.de' is known and matches the ECDSA host key." }
+  its(:stderr) { should match %r{^debug1: Found key in /etc/ssh/ssh_known_hosts:\d+} }
 end

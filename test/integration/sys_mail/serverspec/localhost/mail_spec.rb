@@ -2,7 +2,7 @@
 # Cookbook Name:: sys
 # Serverspec integration tests for sys::mail
 #
-# Copyright 2020 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+# Copyright 2020-2022 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
 #
 # Authors:
 #  Christopher Huhn   <C.Huhn@gsi.de>
@@ -61,6 +61,12 @@ maps.each do |mapfile|
   describe command("/usr/bin/test \"#{mapfile}\" -ot \"#{mapfile}.db\"") do
     its(:exit_status) { should be_zero }
   end
+end
+
+describe command 'postconf' do
+  its(:exit_status) { should be_zero }
+  its(:stderr) { should be_empty }
+  its(:stdout) { should match %r{^message_size_limit = 1234567890$} }
 end
 
 # real-life test:

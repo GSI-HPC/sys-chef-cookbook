@@ -1,0 +1,7 @@
+<%= template_header %>
+
+<%- @hosts.each do |host, pairs| -%>
+<%- pairs.each do |algo, key| -%>
+<%= host %> <%= algo %> <%= key %>
+<%- end -%>
+<%- end -%>
