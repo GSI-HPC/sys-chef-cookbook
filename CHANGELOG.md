@@ -2,6 +2,12 @@
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [1.67.1] - 2022-06-09
+
+### Added
+- New Ohai plugin [`sysctl.rb`](files/default/ohai_plugins/sysctl.rb) added to collect
+  information on sysctl settings
+
 ## [1.67.0] - 2022-06-08
 
 ### Changed
