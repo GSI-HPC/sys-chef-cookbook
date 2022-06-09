@@ -101,4 +101,22 @@ describe "plugins" do
                      })
     end
   end
+
+  describe 'sysctl' do
+    subject do
+      @ohai.require_plugin('sysctl')
+
+      @ohai.data['sysctl']
+    end
+
+    it { should be_a(Mash) }
+    it do
+      # TODO: don't hard-code rsa here
+      #  'anything'  or match(...) don't seem to work for a hash key though
+      should include(kernel: a_hash_including(
+                       ostype: 'Linux',
+                       version: anything
+                     ))
+    end
+  end
 end
