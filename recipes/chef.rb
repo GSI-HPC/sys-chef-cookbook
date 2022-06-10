@@ -116,21 +116,11 @@ file node['sys']['chef']['client_key'] do
   only_if { ::File.exist?(node['sys']['chef']['client_key']) }
 end
 
-# Create a script in cron.hourly to make sure chef-client keeps running
-if node['sys']['chef']['restart_via_cron'] # ~FC023
-  template '/etc/cron.hourly/chef-client' do
-    source 'etc_cron.hourly_chef-client.erb'
-    mode   '0755'
-    helpers(Sys::Helper)
-  end
-end
-
 if node['sys']['chef']['init_style'] == 'systemd-timer'
 
   # creates a one shot service and a systemd.timer to trigger it
 
   include_recipe 'sys::systemd'
-
 
   # mimic the chef-client cookbook systemd unit:
   systemd_unit 'chef-client.service' do
@@ -185,7 +175,6 @@ else
   # false.  Work around that.
   actions = [:start]
   actions << :enable if Dir.glob('/etc/rc2.d/*chef-client*').empty?
-  actions << :enable if Dir.glob('/etc/rc2.d/*chef-client*').empty?
 
   service 'chef-client' do
     supports :restart => true, :status => true
@@ -193,6 +182,15 @@ else
     ignore_failure true
     subscribes :restart, 'template[/etc/default/chef-client]'
     subscribes :restart, 'template[/etc/chef/client.rb]'
+  end
+
+  # Create a script in cron.hourly to make sure chef-client keeps running
+  if node['sys']['chef']['restart_via_cron'] # ~FC023
+    template '/etc/cron.hourly/chef-client' do
+      source 'etc_cron.hourly_chef-client.erb'
+      mode   '0755'
+      helpers(Sys::Helper)
+    end
   end
 
 end
