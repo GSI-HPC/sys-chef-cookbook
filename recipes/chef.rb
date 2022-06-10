@@ -156,7 +156,9 @@ if node['sys']['chef']['init_style'] == 'systemd-timer'
     content(
       'Unit' => {
         'Description' => 'Chef Infra Client',
-        'After' => 'network.target auditd.service'
+        'After' => 'network.target auditd.service',
+        # do not start while dpkg is running:
+        'ConditionPathExists' => '!/var/lib/dpkg/lock'
       },
       'Service' => {
         'Type' => 'oneshot',
