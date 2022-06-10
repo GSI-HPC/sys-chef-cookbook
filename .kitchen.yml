@@ -74,6 +74,26 @@ platforms:
       require_chef_omnibus: true
       vagrantfiles:
         - vagrant.rb
+    provisioner:
+      client_rb:
+        # Chef 15 no longer collects passwd information by default
+        # cf. https://stackoverflow.com/a/70749387/9793012
+        'ohai.optional_plugins = ':
+          - :Passwd
+  - name: bookworm
+    driver:
+      box: debian/testing64
+      provider: libvirt
+      provision: true
+      require_chef_omnibus: true
+      vagrantfiles:
+        - vagrant.rb
+    provisioner:
+      client_rb:
+        # Chef 15 no longer collects passwd information by default
+        # cf. https://stackoverflow.com/a/70749387/9793012
+        'ohai.optional_plugins = ':
+          - :Passwd
   - name: focal
     driver:
       box: generic/ubuntu2004
