@@ -22,6 +22,8 @@
 
 return unless node['sys']['snmp']
 
+Chef::Recipe.include(Sys::Helper)
+
 # some defaults:
 
 snmpd_package = 'snmpd'
