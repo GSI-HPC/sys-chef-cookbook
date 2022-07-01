@@ -24,7 +24,7 @@ require 'spec_helper'
 describe file '/etc/systemd/journald.conf' do
   it { should exist }
   its(:content) { should contain '# This file is managed by chef' }
-  its(:content) { should match /^Storage=volatile$/ }
+  its(:content) { should match %r{^Storage=volatile$} }
 end
 
 describe service 'systemd-journald' do
