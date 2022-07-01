@@ -33,6 +33,21 @@ execute 'sys-systemd-reload' do
   action :nothing
 end
 
+service 'systemd-journald' do
+  action :nothing
+end
+
+template '/etc/systemd/journald.conf' do
+  source 'systemd_unit_generic.erb'
+  variables(
+    config: {
+      'Journal' => node['sys']['systemd']['journald']
+    }
+  )
+  only_if { node['sys']['systemd']['journald'] }
+  notifies :restart, 'service[systemd-journald]'
+end
+
 if node['sys']['systemd']['networkd']['clean_legacy']
   # This works for current usecases, but may be too radical. Probably needs
   # to be changed again, when we understand, how to use systemd-networkd.service
