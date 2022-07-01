@@ -88,22 +88,23 @@ if node['sys']['systemd']['networkd']['make_primary_interface_persistent']
   gateway = node['network']['default_gateway'].to_s
   cidr = node['network']['interfaces'][interface]['addresses'][ipaddress]['prefixlen'].to_s
 
-  unless interface.empty? || ipaddress.empty? || gateway.empty? || cidr.empty? # ~FC023
-    sys_systemd_unit "#{interface}.network" do
-      directory '/etc/systemd/network'
-      config({
-               'Match' => {
-                 'Name' => interface
-               },
-               'Network' => {
-                 'Address' => "#{ipaddress}/#{cidr}",
-               },
-               'Route' => {
-                 'Gateway' => gateway
-               }
-             })
-      action :create
-      notifies(:restart, 'service[systemd-networkd]', :delayed) if systemd_active?
-    end
+  sys_systemd_unit "#{interface}.network" do
+    directory '/etc/systemd/network'
+    config(
+      'Match' => {
+        'Name' => interface
+      },
+      'Network' => {
+        'Address' => "#{ipaddress}/#{cidr}",
+      },
+      'Route' => {
+        'Gateway' => gateway
+      }
+    )
+    action :create
+    notifies(:restart, 'service[systemd-networkd]',
+             :delayed) if systemd_active?
+    # only create the network config if the gathered info is complete:
+    only_if { interface && ipaddress && gateway && cidr }
   end
 end
