@@ -7,6 +7,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Changed
 - prevent startup of `chef-client.service` in systemd-timer mode while `dpkg` is running.
 
+### Added
+- [`sys::systemd`] Support for configuration of `systemd-journald` via attributes
+
 ## [1.67.1] - 2022-06-09
 
 ### Added
