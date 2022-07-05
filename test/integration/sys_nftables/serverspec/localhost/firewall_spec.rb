@@ -26,7 +26,6 @@ expected_rules = [
   /^table inet filter {$/,
   /\s+type filter hook output priority.*/,
   /\s+type filter hook forward priority.*/,
-  /\s+type filter hook input priority 0; policy drop;/,
   /\s+tcp dport 7788 accept.*/,
   /\s+ip saddr 192.168.99.99 reject.*/,
   /\s+ip saddr { 192.168.99.99, 192.168.100.100 } drop.*/,
@@ -53,9 +52,18 @@ expected_rules = [
   /\s+ip6 nexthdr ah accept.*$/,
 ]
 
+cmd = 'nft list ruleset'
+
+if os[:release].to_i >= 11
+  expected_rules << /\s+type filter hook input priority filter; policy drop;/
+else
+  expected_rules << /\s+type filter hook input priority 0; policy drop;/
+  cmd = 'nft -nn list ruleset'
+end
+
 if os[:release].to_i >= 10
 
-  describe command('nft -nn list ruleset') do
+  describe command(cmd) do
     expected_rules.each do |r|
       its(:stdout) { should match(r) }
     end
