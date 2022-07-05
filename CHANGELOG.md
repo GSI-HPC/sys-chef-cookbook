@@ -2,10 +2,13 @@
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-## Unreleased
+## [1.68.0] - 2022-07-05
 
 ### Changed
-- prevent startup of `chef-client.service` in systemd-timer mode while `dpkg` is running.
+- [`sys::chef`] prevent startup of `chef-client.service` in systemd-timer mode while `dpkg` is running.
+
+### Fixed
+- [`sys::snmp`] proper systemd detection instead of shaky Debian version heuristic.
 
 ### Added
 - [`sys::systemd`] Support for configuration of `systemd-journald` via attributes
