@@ -1,8 +1,8 @@
-# x509_certificate
+# `sys_x509_certificate` resource
 
 [Back to resource list](../../README.md#resources)
 
-The resource deploys `x509`-certificates and keys. The certificate will have
+This resource deploys `x509` certificates and keys. The certificate will have
 owner `root` and group `root`, permissions will be `-rw-r--r--`.  The
 key will have owner `root` and group `ssl-cert`, permissions will be
 `-rw-r-----`.
