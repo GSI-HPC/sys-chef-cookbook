@@ -2,15 +2,12 @@
 
 [Back to resource list](../../README.md#resources)
 
-This resource deploys `x509` certificates and keys. The certificate will have
-owner `root` and group `root`, permissions will be `-rw-r--r--`.  The
-key will have owner `root` and group `ssl-cert`, permissions will be
-`-rw-r-----`.
+This resource deploys `x509` certificates and keys, with the following defaults:
 
-The resource expects the certificate to be available as `file-content`
-at the object `node['fqdn']` in the data bag `ssl_certs`.
-
-The resource expects the key to be available as `file-content` at the
+- The certificate will have owner `root` and group `root`, permissions will be `-rw-r--r--`
+- The key will have owner `root` and group `ssl-cert`, permissions will be `-rw-r-----`.
+- The resource expects the certificate to be available as `file-content` at the object `node['fqdn']` in the data bag `ssl_certs`.
+- The resource expects the key to be available as `file-content` at the
 object `node['fqdn']` in the chef vault `ssl_keys`.
 
 ## Provides
