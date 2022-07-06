@@ -40,7 +40,7 @@ if Gem::Requirement.new('>= 12.15').satisfied_by?(Gem::Version.new(Chef::VERSION
     end
   end
 
-  provides :x509_certificate, os: 'linux'
+  provides :sys_x509_certificate, os: 'linux'
   # unified_mode true
 
   property :certificate_path,
