@@ -15,7 +15,7 @@ object `node['fqdn']` in the chef vault `ssl_keys`.
 
 ## Provides
 
-- :x509_certificate
+- :sys_x509_certificate
 
 ## Actions
 
@@ -36,7 +36,7 @@ object `node['fqdn']` in the chef vault `ssl_keys`.
 ## Examples
 
 ```ruby
-x509_certificate 'some_certificate' do
+sys_x509_certificate 'some_certificate' do
   certificate_path '/alternate/path.pem'
   key_path '/super/secret/path.pem'
 end
