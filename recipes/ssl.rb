@@ -43,7 +43,7 @@ node['sys']['ssl']['certs'].each do |attrs|
 
   if use_resource
 
-    x509_certificate cert['data_bag_item'] do
+    sys_x509_certificate cert['data_bag_item'] do
       certificate_path cert['file']
       key_path cert['key_file']
       data_bag cert['data_bag']
