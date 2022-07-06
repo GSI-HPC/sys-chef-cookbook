@@ -63,6 +63,7 @@ if Gem::Requirement.new('>= 12.15').satisfied_by?(Gem::Version.new(Chef::VERSION
            default: lazy { bag_item }
 
   action :install do
+    package 'ssl-cert'
 
     begin
       file new_resource.certificate_path do
