@@ -25,86 +25,101 @@
 Chef::Recipe.include(Sys::Helper)
 Chef::Resource.include(Sys::Helper)
 
-if systemd_installed? # We do not install systemd for now, just detect if it is available
+# We do not install systemd for now, just detect if it is available:
+return unless systemd_installed?
 
-  execute 'sys-systemd-reload' do
-    command 'systemctl daemon-reload'
-    action :nothing
+execute 'sys-systemd-reload' do
+  command 'systemctl daemon-reload'
+  action :nothing
+end
+
+service 'systemd-journald' do
+  action :nothing
+end
+
+template '/etc/systemd/journald.conf' do
+  source 'systemd_unit_generic.erb'
+  variables(
+    config: {
+      'Journal' => node['sys']['systemd']['journald']
+    }
+  )
+  only_if { node['sys']['systemd']['journald'] }
+  notifies :restart, 'service[systemd-journald]'
+end
+
+if node['sys']['systemd']['networkd']['clean_legacy']
+  # This works for current usecases, but may be too radical. Probably needs
+  # to be changed again, when we understand, how to use systemd-networkd.service
+  # in other scenarios
+
+  interfacesd = '/etc/network/interfaces.d/*'
+  execute "rm -rf #{interfacesd}" do
+    not_if { Dir[interfacesd].empty? }
   end
 
-  if node['sys']['systemd']['networkd']['clean_legacy']
-    # This works for current usecases, but may be too radical. Probably needs
-    # to be changed again, when we understand, how to use systemd-networkd.service
-    # in other scenarios
-
-    interfacesd = '/etc/network/interfaces.d/*'
-    execute "rm -rf #{interfacesd}" do
-      not_if { Dir[interfacesd].empty? }
-    end
-
-    file '/etc/network/interfaces' do
-      content "# No longer used, see SYSTEMD-NETWORKD.SERVICE(8)\n"
-    end
+  file '/etc/network/interfaces' do
+    content "# No longer used, see SYSTEMD-NETWORKD.SERVICE(8)\n"
   end
+end
 
-  # Create custom units from attributes
-  unless node['sys']['systemd']['unit'].empty?
-    node['sys']['systemd']['unit'].each do |name, config|
-      sys_systemd_unit name do
-        config.each do |key, value|
-          begin
-            send(key, value)
-          rescue NoMethodError => e
-            Chef::Log.error("sys_systemd_unit[#{name}]: "\
-                            "No property '#{key}' (#{e})")
-          end
+# Create custom units from attributes
+unless node['sys']['systemd']['unit'].empty?
+  node['sys']['systemd']['unit'].each do |name, config|
+    sys_systemd_unit name do
+      config.each do |key, value|
+        begin
+          send(key, value)
+        rescue NoMethodError => e
+          Chef::Log.error("sys_systemd_unit[#{name}]: "\
+                          "No property '#{key}' (#{e})")
         end
       end
     end
   end
+end
 
-  # Enable/Start systemd-networkd
-  # This is e.g. needed for the systemd-networkd-wait-online.service to work.
-  if node['sys']['systemd']['networkd']['enable']
-    if systemd_active?
-      service 'systemd-networkd' do
-        supports restart: true
-        action [ :enable, :start ]
-      end
-    else
-      # We might be in a chroot
-      execute 'systemctl enable systemd-networkd.service'
+# Enable/Start systemd-networkd
+# This is e.g. needed for the systemd-networkd-wait-online.service to work.
+if node['sys']['systemd']['networkd']['enable']
+  if systemd_active?
+    service 'systemd-networkd' do
+      supports restart: true
+      action [ :enable, :start ]
     end
+  else
+    # We might be in a chroot
+    execute 'systemctl enable systemd-networkd.service'
   end
+end
 
-  if node['sys']['systemd']['networkd']['make_primary_interface_persistent']
-    # This uses ohai data, so any manual change to the network interface
-    # will be made permanent. This flag is intended to be used by a one-time
-    # mechanism like an OS installer.
+if node['sys']['systemd']['networkd']['make_primary_interface_persistent']
+  # This uses ohai data, so any manual change to the network interface
+  # will be made permanent. This flag is intended to be used by a one-time
+  # mechanism like an OS installer.
 
-    interface = node['network']['default_interface'].to_s
-    ipaddress = node['ipaddress'].to_s
-    gateway = node['network']['default_gateway'].to_s
-    cidr = node['network']['interfaces'][interface]['addresses'][ipaddress]['prefixlen'].to_s
+  interface = node['network']['default_interface'].to_s
+  ipaddress = node['ipaddress'].to_s
+  gateway = node['network']['default_gateway'].to_s
+  cidr = node['network']['interfaces'][interface]['addresses'][ipaddress]['prefixlen'].to_s
 
-    unless interface.empty? || ipaddress.empty? || gateway.empty? || cidr.empty? # ~FC023
-      sys_systemd_unit "#{interface}.network" do
-        directory '/etc/systemd/network'
-        config({
-          'Match' => {
-            'Name' => interface
-          },
-          'Network' => {
-            'Address' => "#{ipaddress}/#{cidr}",
-          },
-          'Route' => {
-            'Gateway' => gateway
-          }
-        })
-        action :create
-        notifies(:restart, 'service[systemd-networkd]', :delayed) if systemd_active?
-      end
-    end
+  sys_systemd_unit "#{interface}.network" do
+    directory '/etc/systemd/network'
+    config(
+      'Match' => {
+        'Name' => interface
+      },
+      'Network' => {
+        'Address' => "#{ipaddress}/#{cidr}",
+      },
+      'Route' => {
+        'Gateway' => gateway
+      }
+    )
+    action :create
+    notifies(:restart, 'service[systemd-networkd]',
+             :delayed) if systemd_active?
+    # only create the network config if the gathered info is complete:
+    only_if { interface && ipaddress && gateway && cidr }
   end
-
 end

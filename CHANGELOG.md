@@ -2,10 +2,21 @@
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-## Unreleased
+## [1.69.0] - 2022-07-07
+
+### Added
+- [`sys::ssl`] New custom resource [`sys_x509_certificate`](documents/resources/sys_x509_certificate.md) for deployment of SSL certificates
+
+## [1.68.0] - 2022-07-05
 
 ### Changed
-- prevent startup of `chef-client.service` in systemd-timer mode while `dpkg` is running.
+- [`sys::chef`] prevent startup of `chef-client.service` in systemd-timer mode while `dpkg` is running.
+
+### Fixed
+- [`sys::snmp`] proper systemd detection instead of shaky Debian version heuristic.
+
+### Added
+- [`sys::systemd`] Support for configuration of `systemd-journald` via attributes
 
 ## [1.67.1] - 2022-06-09
 

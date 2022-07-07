@@ -16,4 +16,4 @@ supports         'debian'
 depends          'line'
 depends          'chef-vault'
 
-version          '1.67.1'
+version          '1.69.0'

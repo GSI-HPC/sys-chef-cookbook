@@ -50,7 +50,9 @@ kitchen:
         - ssh
         - ssl
         - sudo
+        - systemd
         - time
+        - x509
 
 .post:
    script:

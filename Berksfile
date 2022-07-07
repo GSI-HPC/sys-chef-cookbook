@@ -11,4 +11,5 @@ cookbook 'line' #, github: 'sous-chefs/line', tag: "v0.6.3"
 
 group :integration do
   cookbook 'nftables-test', path: 'test/fixtures/cookbooks/nftables-test'
+  cookbook 'x509-test', path: 'test/fixtures/cookbooks/x509-test'
 end

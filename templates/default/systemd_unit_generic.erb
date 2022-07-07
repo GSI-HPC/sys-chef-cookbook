@@ -1,10 +1,9 @@
 <%= template_header %>
 
-<% Hash[@config.sort].each do |section, attributes| -%>
+<%- Hash[@config.sort].each do |section, attributes| -%>
 [<%= section %>]
-<%   Hash[attributes.sort].each do |key, value|
-       value = value.join(' ') if value.kind_of?(Array) -%>
-<%= key %>=<%= value %>
-<%   end -%>
+<%-   Hash[attributes.sort].each do |key, value| -%>
+<%= key %>=<%= value.kind_of?(Array) ? value.join(' ') : value %>
+<%-   end -%>
 
-<% end -%>
+<%- end -%>
