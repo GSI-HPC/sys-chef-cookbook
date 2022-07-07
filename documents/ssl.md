@@ -5,6 +5,7 @@ and the corresponding keys from chef vaults.
 
 ↪ `recipes/ssl.rb`  
 ↪ `tests/integration/sys_ssl/`  
+↪ `resources/sys_x509_certificate`  
 
 ## Attributes
 

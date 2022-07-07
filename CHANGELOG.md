@@ -2,6 +2,11 @@
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [1.69.0] - 2022-07-07
+
+### Added
+- [`sys::ssl`] New custom resource [`sys_x509_certificate`](documents/resources/sys_x509_certificate.md) for deployment of SSL certificates
+
 ## [1.68.0] - 2022-07-05
 
 ### Changed
