@@ -6,9 +6,14 @@ This resource deploys `x509` certificates and keys, with the following defaults:
 
 - The certificate will have owner `root` and group `root`, permissions will be `-rw-r--r--`
 - The key will have owner `root` and group `ssl-cert`, permissions will be `-rw-r-----`.
-- By default, the resource expects the certificate to be available as `file-content` at the object `node['fqdn']` in the data bag `ssl_certs`. This can be configured by the `data_bag` and `bag_item` properties.
-- By default, he resource expects the key to be available as `file-content` at the
-object `node['fqdn']` in the chef vault `ssl_keys`. This can be configured by the `chef_vault` and `vault_item` properties.
+- By default, the resource expects the certificate to be available as
+`file-content` at the object `bag_item` (which defaults the resource
+name) in the data bag `ssl_certs`. This can be configured by the
+`data_bag` and `bag_item` properties.
+- By default, the resource expects the key to be available as `file-content` at the
+object `vault_item` (which defaults to `bag_item` in the chef vault
+`ssl_keys`. This can be configured by the `chef_vault` and
+`vault_item` properties.
 
 The structure of the private key can be obtained on the command line by running, e.g.
 ```
