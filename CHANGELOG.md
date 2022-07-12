@@ -2,6 +2,11 @@
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## Unreleased
+
+### Changed
+- [`sys::systemd`] [documentation update](documents/systemd.md)
+
 ## [1.69.0] - 2022-07-07
 
 ### Added
