@@ -52,26 +52,28 @@ end
 if Gem::Requirement.new('>= 12.15')
      .satisfied_by?(Gem::Version.new(Chef::VERSION))
 
-sys_nsswitch 'networks' do
-  sources 'files'
-end
+  sys_nsswitch 'networks' do
+    sources 'files'
+  end
 
-sys_nsswitch 'protocols' do
-  sources ['db', 'files']
-end
+  sys_nsswitch 'protocols' do
+    sources ['db', 'files']
+  end
 
-sys_nsswitch 'services' do
-  sources ['db', 'files']
-end
+  sys_nsswitch 'services' do
+    sources ['db', 'files']
+  end
 
-sys_nsswitch 'ethers' do
-  sources ['db', 'files']
-end
+  sys_nsswitch 'ethers' do
+    sources ['db', 'files']
+  end
 
-sys_nsswitch 'rpc' do
-  sources ['db', 'files']
-end
+  sys_nsswitch 'rpc' do
+    sources ['db', 'files']
+  end
 
-#sys_nsswitch 'netgroup' do
-#  sources ['nis']
-#end
+  #sys_nsswitch 'netgroup' do
+  #  sources ['nis']
+  #end
+
+end

@@ -26,16 +26,16 @@ if Gem::Requirement.new('>= 12.15')
   property :database, String, name_property: true
   property :sources, [String, Array, Hash],
            coerce: proc { |sources|
-    if sources.instance_of?(Hash)
-      sources
-    else
-      sources_as_hash = {}
-      Array(sources).each_with_index do |s, i|
-        sources_as_hash[s] = 10*(i + 1)
-      end
-      sources_as_hash
-    end
-  }
+             if sources.instance_of?(Hash)
+               sources
+             else
+               sources_as_hash = {}
+               Array(sources).each_with_index do |s, i|
+                 sources_as_hash[s] = 10*(i + 1)
+               end
+               sources_as_hash
+             end
+           }
   property :notify_nsswitch_config, [true, false], default: true
 
   action_class do
