@@ -1,6 +1,6 @@
-# sys_nftables_rule
+# nftables_rule
 
-[Back to resource list](../README.md#resources)
+[Back to resource list](README.md#resources)
 
 ## Provides
 
