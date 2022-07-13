@@ -38,21 +38,15 @@ if Gem::Requirement.new('>= 12.15')
            }
   property :notify_nsswitch_config, [true, false], default: true
 
-  action_class do
-    def sources_to_hash(sources)
-      return sources if sources.instance_of?(Hash)
-
-      action :create do
-        return unless new_resource.notify_nsswitch_config
-        with_run_context :root do
-          edit_resource!('sys_nsswitch_config', 'default') do |nss_resource|
-            old = config.dup
-            old[nss_resource.database] ||= {}
-            old[nss_resource.database].merge! nss_resource.sources
-            config(old)
-            delayed_action :create
-          end
-        end
+  action :create do
+    return unless new_resource.notify_nsswitch_config
+    with_run_context :root do
+      edit_resource!('sys_nsswitch_config', 'default') do |nss_resource|
+        old = config.dup
+        old[nss_resource.database] ||= {}
+        old[nss_resource.database].merge! nss_resource.sources
+        config(old)
+        delayed_action :create
       end
     end
   end
