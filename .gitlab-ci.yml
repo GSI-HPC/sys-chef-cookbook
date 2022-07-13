@@ -42,14 +42,19 @@ kitchen:
         - banner
         - chef
         - ferm
-        - ohai
+        - linuxlogo
         - mail
+        - nftables
         - nsswitch
+        - ohai
         - resolv
+        - snmp
         - ssh
         - ssl
         - sudo
+        - systemd
         - time
+        - x509
 
 .post:
    script:

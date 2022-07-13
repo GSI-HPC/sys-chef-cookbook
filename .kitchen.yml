@@ -207,13 +207,16 @@ suites:
             array:
               - '| /bin/true'
               - /tmp/mail.test
+          message_size_limit: 1234567890
   - name: sys_nsswitch
     run_list:
       - recipe[nsswitch-test::default]
     attributes:
       sys:
         nsswitch:
-          enabled: true
+          foo: bar
+          passwd: files
+          netgroup: compat
   - name: sys_resolv
     run_list:
       - recipe[sys::resolv]
