@@ -25,33 +25,35 @@ if Gem::Requirement.new('>= 12.15')
 
   property :database, String, name_property: true
   property :sources, [String, Array, Hash],
-    coerce: proc { |sources|
-      if sources.instance_of?(Hash)
-        sources
-      else
-        sources_as_hash = {}
-        Array(sources).each_with_index do |s, i|
-          sources_as_hash[s] = 10*(i + 1)
-        end
-        sources_as_hash
+           coerce: proc { |sources|
+    if sources.instance_of?(Hash)
+      sources
+    else
+      sources_as_hash = {}
+      Array(sources).each_with_index do |s, i|
+        sources_as_hash[s] = 10*(i + 1)
       end
-    }
+      sources_as_hash
+    end
+  }
   property :notify_nsswitch_config, [true, false], default: true
 
-action_class do
-  def sources_to_hash(sources)
-    return sources if sources.instance_of?(Hash)
+  action_class do
+    def sources_to_hash(sources)
+      return sources if sources.instance_of?(Hash)
 
-  action :create do
-    return unless new_resource.notify_nsswitch_config
-    with_run_context :root do
-      edit_resource('sys_nsswitch_config', 'default') do |nss_resource|
-        action :nothing
-        old = config.dup
-        old[nss_resource.database] ||= {}
-        old[nss_resource.database].merge! nss_resource.sources
-        config(old)
-        delayed_action :create
+      action :create do
+        return unless new_resource.notify_nsswitch_config
+        with_run_context :root do
+          edit_resource('sys_nsswitch_config', 'default') do |nss_resource|
+            action :nothing
+            old = config.dup
+            old[nss_resource.database] ||= {}
+            old[nss_resource.database].merge! nss_resource.sources
+            config(old)
+            delayed_action :create
+          end
+        end
       end
     end
   end
