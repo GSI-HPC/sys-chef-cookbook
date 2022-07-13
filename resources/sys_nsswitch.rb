@@ -46,7 +46,6 @@ if Gem::Requirement.new('>= 12.15')
         return unless new_resource.notify_nsswitch_config
         with_run_context :root do
           edit_resource!('sys_nsswitch_config', 'default') do |nss_resource|
-            action :nothing
             old = config.dup
             old[nss_resource.database] ||= {}
             old[nss_resource.database].merge! nss_resource.sources
