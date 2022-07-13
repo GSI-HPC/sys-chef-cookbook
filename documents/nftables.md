@@ -6,6 +6,8 @@ Use the nftables resource to configure nftables.
 ↪ `resources/nftables_rule.rb`  
 ↪ `libraries/sys_helpers_nftables.rb`  
 ↪ `documents/nftables.rb`  
+↪ `documents/resources/nftables.rb`  
+↪ `documents/resources/nftables_rule.rb`  
 ↪ `test/unit/recipies/nftables_spec.rb`  
 
 ## Basic Usage
@@ -75,4 +77,4 @@ nftables_rule 'allow http(s)' do
 end
 ```
 
-For further examples see [nftables-test::default](test/fixtures/cookbooks/nftables-test/recipes/default.rb).
+For further examples see [nftables-test::default](test/fixtures/cookbooks/nftables-test/recipes/default.rb) and the documentation for the [`nftables`-resource](documents/resources/nftables.md) and the [`nftables_rule`-resource](documents/resources/nftables_rule.md)
