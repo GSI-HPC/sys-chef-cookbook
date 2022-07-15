@@ -2,12 +2,16 @@
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-## Unreleased
+## [1.69.1] - 2022-07-15
 
 ### Changed
 - [`sys::systemd`] [documentation update](documents/systemd.md)
 - [`resource::nftables`] [documentation update](documents/resources/nftables.md)
 - [`resource::nftables_rule`] [documentation update](documents/resources/nftables_rule.md)
+
+### Fixed
+- [`sys::chef`] reverted 59794a47a0 due to unexpectedly different lockfile handling of `dpkg` and `apt`,
+                replaced with `lockfile-check`
 
 ## [1.69.0] - 2022-07-07
 
