@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #
 # Cookbook Name:: sys
 # Recipe:: chef
@@ -127,16 +126,16 @@ if node['sys']['chef']['init_style'] == 'systemd-timer'
     content(
       'Unit' => {
         'Description' => 'Chef Infra Client',
-        'After' => 'network.target auditd.service',
-        # do not start while dpkg is running:
-        'ConditionPathExists' => '!/var/lib/dpkg/lock'
+        'After' => 'network.target auditd.service'
       },
       'Service' => {
         'Type' => 'oneshot',
         'EnvironmentFile' => '/etc/default/chef-client',
+        # do not start while dpkg is running:
+        'ExecCondition' => "bash -c '/usr/bin/lockfile-check -l /var/lib/dpkg/lock && exit 255 || exit 0'",
         'ExecStart' => '/usr/bin/chef-client -c $CONFIG -L $LOGFILE $OPTIONS',
         'ExecReload' => '/bin/kill -HUP $MAINPID',
-        'SuccessExitStatus' => 3,
+        'SuccessExitStatus' => 3
       },
       'Install' => {
         'Alias' => 'chef.service',
