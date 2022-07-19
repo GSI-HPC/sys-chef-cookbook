@@ -2,7 +2,7 @@
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-## [1.69.1] - 2022-07-15
+## [1.69.1] - 2022-07-19
 
 ### Changed
 - [`sys::systemd`] [documentation update](documents/systemd.md)
@@ -11,7 +11,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Fixed
 - [`sys::chef`] reverted 59794a47a0 due to unexpectedly different lockfile handling of `dpkg` and `apt`,
-                replaced with `lockfile-check`
+                replacement with `lockfile-check` not working due to systemd being too old for `ExecCondition`
 
 ## [1.69.0] - 2022-07-07
 
