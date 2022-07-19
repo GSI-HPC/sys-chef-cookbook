@@ -160,8 +160,9 @@ if node['sys']['chef']['init_style'] == 'systemd-timer'
       'Service' => {
         'Type' => 'oneshot',
         'EnvironmentFile' => '/etc/default/chef-client',
-        # do not start while dpkg is running:
-        'ExecCondition' => "bash -c '/usr/bin/lockfile-check -l /var/lib/dpkg/lock && exit 255 || exit 0'",
+        # TODO: do not start while dpkg is running
+        # ExecCondition requires systemd >= 243 ie. Bullseye ...
+        # 'ExecCondition' => "bash -c '/usr/bin/lockfile-check -l /var/lib/dpkg/lock && exit 255 || exit 0'",
         'ExecStart' => '/usr/bin/chef-client -c $CONFIG -L $LOGFILE $OPTIONS',
         'ExecReload' => '/bin/kill -HUP $MAINPID',
         'SuccessExitStatus' => 3
