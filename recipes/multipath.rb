@@ -25,7 +25,11 @@ unless config.empty?
   service 'multipath-tools' do
     supports :reload => true
     status_command 'ps -p $(cat /var/run/multipathd.pid)'
-    action [:enable, :start]
+    if node['sys']['multipath']['delay_start']
+      action [:disable]
+    else
+      action [:enable, :start]
+    end
   end
 
   execute 'regenerate-initramdisk' do
