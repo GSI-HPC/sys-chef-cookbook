@@ -25,7 +25,7 @@ unless config.empty?
   service 'multipath-tools' do
     supports :reload => true
     status_command 'ps -p $(cat /var/run/multipathd.pid)'
-    if node['sys']['multipath']['delay_start']
+    if node['sys']['multipath']['disable']
       action [:disable]
     else
       action [:enable, :start]
