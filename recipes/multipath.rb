@@ -22,6 +22,7 @@
 #
 
 config = node['sys']['multipath'].to_hash
+config.delete('disable')
 config.delete('regenerate_initramdisk')
 
 unless config.empty?

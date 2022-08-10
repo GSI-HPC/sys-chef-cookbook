@@ -242,6 +242,7 @@ suites:
     attributes:
       sys:
         multipath:
+          disable: false
           regenerate_initramdisk: true
           defaults:
             verbosity: 5
