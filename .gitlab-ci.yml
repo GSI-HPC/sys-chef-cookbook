@@ -42,6 +42,7 @@ kitchen:
         - ferm
         - linuxlogo
         - mail
+        - multipath
         - nftables
         - nsswitch
         - ohai
