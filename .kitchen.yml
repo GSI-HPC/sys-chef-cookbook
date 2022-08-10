@@ -192,9 +192,6 @@ suites:
     attributes:
       sys:
         linuxlogo: absolutely!
-  - name: sys_ohai
-    run_list:
-      - recipe[sys::ohai]
   - name: sys_mail
     run_list:
       - recipe[sys::mail]
@@ -208,6 +205,16 @@ suites:
               - '| /bin/true'
               - /tmp/mail.test
           message_size_limit: 1234567890
+  - name: sys_multipath
+    run_list:
+      - recipe[sys::multipath]
+    attributes:
+      sys:
+        multipath:
+          disable: false
+          regenerate_initramdisk: true
+          defaults:
+            verbosity: 5
   - name: sys_nsswitch
     run_list:
       - recipe[sys::nsswitch]
@@ -217,6 +224,9 @@ suites:
           foo: bar
           passwd: files
           netgroup: compat
+  - name: sys_ohai
+    run_list:
+      - recipe[sys::ohai]
   - name: sys_resolv
     run_list:
       - recipe[sys::resolv]
