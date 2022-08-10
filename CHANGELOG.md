@@ -2,7 +2,7 @@
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-## Unreleased
+## [1.69.2] - 2022-08-10
 
 ### Added
 - [`sys::multipath`] Add option to disable multipathd service and add test suite
