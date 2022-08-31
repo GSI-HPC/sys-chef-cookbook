@@ -79,6 +79,7 @@ if systemd_installed?
 # Created by sys::snmp
 
 [Service]
+Type=simple
 ExecStart=
 ExecStart=/usr/sbin/snmpd -LS#{log_level_num}d -Lf /dev/null \\
     -u #{snmpd_user} -g #{snmpd_user} -I -smux,mteTrigger,mteTriggerConf \\
