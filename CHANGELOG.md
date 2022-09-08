@@ -2,6 +2,11 @@
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [1.69.3] - 2022-09-08
+
+### Fixed
+- [`sys::snmp`] Fix snmpd systemd unit startup type (cf !51)
+
 ## [1.69.2] - 2022-08-10
 
 ### Added
