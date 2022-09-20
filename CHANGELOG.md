@@ -2,6 +2,11 @@
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [1.69.4] - 2022-09-20
+
+### Fixed
+- [`sys_x509_certificate`] Fix resource name when called from other cookbooks (cf. !52)
+
 ## [1.69.3] - 2022-09-08
 
 ### Fixed
