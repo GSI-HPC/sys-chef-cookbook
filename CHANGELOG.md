@@ -2,6 +2,17 @@
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [1.69.5] - 2022-10-12
+
+### Changed
+- [`sys::apt`] `ignore_failure` when running `dpkg --configure -a`  
+  This is a workaround for Stretch→Buster upgrade issues
+  when chef-client is configured for systemd-timer mode  :
+  postinst script of chef restarts chef-client.service  
+  which triggers chef-client run  
+  which triggers `dpkg --configure -a`  
+  which fails because dpkg started the whole thing and is locked
+
 ## [1.69.4] - 2022-09-20
 
 ### Fixed
