@@ -338,9 +338,9 @@ suites:
         ssl:
           certs:
             - {}    # will not find data bag item
-            - data_bag_item: www-linux_gsi_de
+            - data_bag_item: www-linux.gsi.de
             - data_bag: other_certs
-              data_bag_item: alternativlos_org
+              data_bag_item: alternativlos.org
               file: /tmp/covfefe.pem
             - data_bag: nonexistant_databag
   - name: sys_sudo
