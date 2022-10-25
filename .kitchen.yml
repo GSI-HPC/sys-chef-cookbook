@@ -227,6 +227,10 @@ suites:
   - name: sys_ohai
     run_list:
       - recipe[sys::ohai]
+    driver:
+      vagrantfiles:
+        - vagrant.rb
+        - vagrant_buildenv.rb
   - name: sys_resolv
     run_list:
       - recipe[sys::resolv]
