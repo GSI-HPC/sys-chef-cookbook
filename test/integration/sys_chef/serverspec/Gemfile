@@ -1,5 +1,7 @@
 source 'http://rubygems.org'
 
+gem 'chef-zero'
+
 group :jessie do
   # net-ssh >= 5 requires ruby 2.2 and
   # net-telnet >= 0.2 requires ruby 2.3

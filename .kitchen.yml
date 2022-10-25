@@ -199,6 +199,10 @@ suites:
         chef:
           server_url: http://localhost:4000
           init_style: systemd-timer
+    driver:
+      vagrantfiles:
+        - vagrant.rb
+        - vagrant_buildenv.rb # required to install chef-zero gem
   - name: sys_ferm
     run_list:
       - recipe[sys::ferm]
@@ -261,7 +265,7 @@ suites:
     driver:
       vagrantfiles:
         - vagrant.rb
-        - vagrant_buildenv.rb
+        - vagrant_buildenv.rb  # required to install ohai gem
   - name: sys_resolv
     run_list:
       - recipe[sys::resolv]
