@@ -1,4 +1,11 @@
-default_unless['sys']['chef']['product_name'] = ChefUtils::Dist::Infra::SHORT
+# read product name from ChefUtils::Dist::Infra::SHORT ('chef' or 'cinc')
+default_unless['sys']['chef']['product_name'] =
+  begin
+    ChefUtils::Dist::Infra::SHORT
+  rescue NameError
+    'chef' # fallback if chef too old
+  end
+
 default_unless['sys']['chef']['config_dir'] =
   "/etc/#{node['sys']['chef']['product_name']}"
 

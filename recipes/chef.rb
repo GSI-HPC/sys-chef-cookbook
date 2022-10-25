@@ -78,6 +78,7 @@ end
 
 link '/etc/chef' do
   to node['sys']['chef']['config_dir']
+  not_if { node['sys']['chef']['product_name'] == 'chef' }
 end
 
 # compile attributes for the client.rb template:
@@ -127,28 +128,53 @@ if node['sys']['chef']['init_style'] == 'systemd-timer'
 
   include_recipe 'sys::systemd'
 
+  chef_service_unit = {
+    'Unit' => {
+      'Description' => 'Chef Infra Client',
+      'After' => 'network.target auditd.service'
+    },
+    'Service' => {
+      'Type' => 'oneshot',
+      'EnvironmentFile' => "/etc/default/#{chef_client}",
+      # TODO: do not start while dpkg is running
+      # ExecCondition requires systemd >= 243 ie. Bullseye ...
+      # 'ExecCondition' => "bash -c '/usr/bin/lockfile-check -l /var/lib/dpkg/lock && exit 255 || exit 0'",
+      'ExecStart' => "/usr/bin/#{chef_client} -c $CONFIG -L $LOGFILE $OPTIONS",
+      'ExecReload' => '/bin/kill -HUP $MAINPID',
+      'SuccessExitStatus' => 3
+    },
+    'Install' => {
+      'Alias' => %w[chef.service],
+      'WantedBy' => 'multi-user.target'
+    }
+  }
+
+  chef_timer_unit = {
+    'Unit' => { 'Description' => "#{chef_client} periodic run" },
+    'Install' => {
+      'WantedBy' => 'timers.target'
+    },
+    'Timer' => {
+      'OnBootSec' => '30sec',
+      # restart timer should be set to interval - splay - chef_run duration
+      #  randomized delay is evenly distributed between 0 and splay
+      #  median should be at splay/2, duration of chef_run is left out
+      'OnUnitInactiveSec' => ( node['sys']['chef']['interval'].to_i -
+                               node['sys']['chef']['splay'].to_i/2
+                             ).to_s + 'sec',
+      'RandomizedDelaySec' => "#{node['sys']['chef']['splay']}sec"
+    }
+  }
+
+  # add alias to chef-client.service if we configure cinc:
+  if node['sys']['chef']['product_name'] != 'chef'
+    chef_service_unit['Install']['Alias'].push 'chef-client.service'
+    chef_timer_unit['Install']['Alias'] = 'chef-client.timer'
+end
+
   # mimic the chef-client cookbook systemd unit:
   systemd_unit "#{chef_client}.service" do
-    content(
-      'Unit' => {
-        'Description' => 'Chef Infra Client',
-        'After' => 'network.target auditd.service'
-      },
-      'Service' => {
-        'Type' => 'oneshot',
-        'EnvironmentFile' => "/etc/default/#{chef_client}",
-        # TODO: do not start while dpkg is running
-        # ExecCondition requires systemd >= 243 ie. Bullseye ...
-        # 'ExecCondition' => "bash -c '/usr/bin/lockfile-check -l /var/lib/dpkg/lock && exit 255 || exit 0'",
-        'ExecStart' => "/usr/bin/#{chef_client} -c $CONFIG -L $LOGFILE $OPTIONS",
-        'ExecReload' => '/bin/kill -HUP $MAINPID',
-        'SuccessExitStatus' => 3
-      },
-      'Install' => {
-        'Alias' => %w[chef.service chef-client.service],
-        'WantedBy' => 'multi-user.target'
-      }
-    )
+    content chef_service_unit
     # what effect has stop when this chef run was started by systemd timer?
     action %i[create stop]
     notifies :run, 'execute[sys-systemd-reload]', :immediately
@@ -156,23 +182,7 @@ if node['sys']['chef']['init_style'] == 'systemd-timer'
 
   # mimic the chef-client cookbook systemd unit:
   systemd_unit "#{chef_client}.timer" do
-    content(
-      'Unit' => { 'Description' => "#{chef_client} periodic run" },
-      'Install' => {
-        'WantedBy' => 'timers.target',
-        'Alias' => 'chef-client.timer'
-      },
-      'Timer' => {
-        'OnBootSec' => '30sec',
-        # restart timer should be set to interval - splay - chef_run duration
-        #  randomized delay is evenly distributed between 0 and splay
-        #  median should be at splay/2, duration of chef_run is left out
-        'OnUnitInactiveSec' => ( node['sys']['chef']['interval'].to_i -
-                                 node['sys']['chef']['splay'].to_i/2
-                               ).to_s + 'sec',
-        'RandomizedDelaySec' => "#{node['sys']['chef']['splay']}sec"
-      }
-    )
+    content chef_timer_unit
     action [:create, :enable, :start]
     notifies :run, 'execute[sys-systemd-reload]'
   end
