@@ -29,6 +29,8 @@
 
 server_url = node['sys']['chef']['server_url']
 
+chef_client = "#{node['sys']['chef']['product_name']}-client"
+
 # fallback for figuring out the chef server url following the "old" conventions
 #  introduced by the chef cookbook
 begin
@@ -55,7 +57,7 @@ end
 # actually we don't neccessarily need the Ohai recipe
 include_recipe 'sys::ohai'
 
-template '/etc/default/chef-client' do
+template "/etc/default/#{chef_client}" do
   source 'etc_default_chef_client.erb'
   owner 'root'
   group 'root'
@@ -68,10 +70,14 @@ end
 
 package 'ruby-sysloglogger' if node['sys']['chef']['use_syslog']
 
-directory '/etc/chef' do
+directory node['sys']['chef']['config_dir'] do
   owner 'root'
   group node['sys']['chef']['group']
   mode  0o0750
+end
+
+link '/etc/chef' do
+  to node['sys']['chef']['config_dir']
 end
 
 # compile attributes for the client.rb template:
@@ -80,7 +86,7 @@ v[:server_url] = server_url
 v[:opath]      = node['ohai']['plugin_path']
 v[:odisable]   = node['ohai']['disabled_plugins']
 
-template '/etc/chef/client.rb' do
+template "#{node['sys']['chef']['config_dir']}/client.rb" do
   source 'etc_chef_client.rb.erb'
   owner 'root'
   group node['sys']['chef']['group']
@@ -122,7 +128,7 @@ if node['sys']['chef']['init_style'] == 'systemd-timer'
   include_recipe 'sys::systemd'
 
   # mimic the chef-client cookbook systemd unit:
-  systemd_unit 'chef-client.service' do
+  systemd_unit "#{chef_client}.service" do
     content(
       'Unit' => {
         'Description' => 'Chef Infra Client',
@@ -130,16 +136,16 @@ if node['sys']['chef']['init_style'] == 'systemd-timer'
       },
       'Service' => {
         'Type' => 'oneshot',
-        'EnvironmentFile' => '/etc/default/chef-client',
+        'EnvironmentFile' => "/etc/default/#{chef_client}",
         # TODO: do not start while dpkg is running
         # ExecCondition requires systemd >= 243 ie. Bullseye ...
         # 'ExecCondition' => "bash -c '/usr/bin/lockfile-check -l /var/lib/dpkg/lock && exit 255 || exit 0'",
-        'ExecStart' => '/usr/bin/chef-client -c $CONFIG -L $LOGFILE $OPTIONS',
+        'ExecStart' => "/usr/bin/#{chef_client} -c $CONFIG -L $LOGFILE $OPTIONS",
         'ExecReload' => '/bin/kill -HUP $MAINPID',
         'SuccessExitStatus' => 3
       },
       'Install' => {
-        'Alias' => 'chef.service',
+        'Alias' => %w[chef.service chef-client.service],
         'WantedBy' => 'multi-user.target'
       }
     )
@@ -149,10 +155,13 @@ if node['sys']['chef']['init_style'] == 'systemd-timer'
   end
 
   # mimic the chef-client cookbook systemd unit:
-  systemd_unit 'chef-client.timer' do
+  systemd_unit "#{chef_client}.timer" do
     content(
-      'Unit' => { 'Description' => 'chef-client periodic run' },
-      'Install' => { 'WantedBy' => 'timers.target' },
+      'Unit' => { 'Description' => "#{chef_client} periodic run" },
+      'Install' => {
+        'WantedBy' => 'timers.target',
+        'Alias' => 'chef-client.timer'
+      },
       'Timer' => {
         'OnBootSec' => '30sec',
         # restart timer should be set to interval - splay - chef_run duration
@@ -176,19 +185,19 @@ else
   # information wheter a service is enabled or not and always returns
   # false.  Work around that.
   actions = [:start]
-  actions << :enable if Dir.glob('/etc/rc2.d/*chef-client*').empty?
+  actions << :enable if Dir.glob("/etc/rc2.d/*#{chef_client}*").empty?
 
-  service 'chef-client' do
+  service chef_client do
     supports :restart => true, :status => true
     action actions
     ignore_failure true
-    subscribes :restart, 'template[/etc/default/chef-client]'
-    subscribes :restart, 'template[/etc/chef/client.rb]'
+    subscribes :restart, "template[/etc/default/#{chef_client}]"
+    subscribes :restart, "template[#{node['sys']['chef']['config_dir']}/client.rb]"
   end
 
   # Create a script in cron.hourly to make sure chef-client keeps running
   if node['sys']['chef']['restart_via_cron'] # ~FC023
-    template '/etc/cron.hourly/chef-client' do
+    template "/etc/cron.hourly/#{chef_client}" do
       source 'etc_cron.hourly_chef-client.erb'
       mode   '0755'
       helpers(Sys::Helper)
