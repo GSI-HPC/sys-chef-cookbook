@@ -35,7 +35,7 @@ context 'chef-client config' do
 
   describe command('chef-client') do
     its(:exit_status) { should be_zero }
-    its(:stdout) { should contain('Chef Run complete') }
+    its(:stdout) { should contain %r{^(Chef Run|Infra Phase) complete,} }
   end
 end
 
