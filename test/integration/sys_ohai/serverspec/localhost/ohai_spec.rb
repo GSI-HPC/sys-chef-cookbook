@@ -41,7 +41,7 @@ describe "plugins" do
 
   describe 'platform' do
     subject do
-      @ohai.require_plugin('platform')
+      @ohai.all_plugins('platform')
 
       @ohai.data
     end
@@ -54,7 +54,7 @@ describe "plugins" do
 
   describe 'packages' do
     subject do
-      @ohai.require_plugin('debian')
+      @ohai.all_plugins('debian')
 
       @ohai.data['packages']
     end
@@ -75,7 +75,7 @@ describe "plugins" do
 
   describe 'debian' do
     subject do
-      @ohai.require_plugin('debian')
+      @ohai.all_plugins('debian')
 
       @ohai.data['debian']
     end
@@ -86,7 +86,7 @@ describe "plugins" do
 
   describe 'ssh fingerprints' do
     subject do
-      @ohai.require_plugin('keys/ssh/fingerprints')
+      @ohai.all_plugins('keys/ssh/fingerprints')
 
       @ohai.data['keys']['ssh']['fingerprints']
     end
@@ -104,7 +104,7 @@ describe "plugins" do
 
   describe 'sysctl' do
     subject do
-      @ohai.require_plugin('sysctl')
+      @ohai.all_plugins('sysctl')
 
       @ohai.data['sysctl']
     end
