@@ -1,14 +1,21 @@
 source 'http://rubygems.org'
 
+ruby_version = Gem::Version.new(RUBY_VERSION)
+
+gems = {}
+
+if ruby_version < Gem::Version.new('2.2.0')
+  # net-ssh >= 5 requires ruby 2.2
+  gems['net-ssh'] = '< 5'
+elsif ruby_version < Gem::Version.new('2.6.0')
+  # net-ssh >= 7 requires ruby 2.6
+  gems['net-ssh'] = '< 7'
+end
+
+gems.each do |name, constraint|
+  gem name, constraint
+end
+
 gem 'ohai'
 
 gem 'public_suffix' # required on Buster?
-
-group :jessie do
-  # net-ssh >= 5 requires ruby 2.2 and
-  # net-telnet >= 0.2 requires ruby 2.3
-  if Gem::Version.new(RUBY_VERSION.dup) < Gem::Version.new('2.2.0')
-    gem 'net-ssh',    '< 5'
-    gem 'net-telnet', '< 0.2'
-  end
-end
