@@ -170,7 +170,7 @@ if node['sys']['chef']['init_style'] == 'systemd-timer'
   if node['sys']['chef']['product_name'] != 'chef'
     chef_service_unit['Install']['Alias'].push 'chef-client.service'
     chef_timer_unit['Install']['Alias'] = 'chef-client.timer'
-end
+  end
 
   # mimic the chef-client cookbook systemd unit:
   systemd_unit "#{chef_client}.service" do
