@@ -32,6 +32,7 @@ kitchen:
   parallel:
     matrix:
       - PLATFORM:
+        - buster
         - bullseye
         SUITE:
         - accounts
