@@ -16,4 +16,5 @@ gems.each do |name, constraint|
   gem name, constraint
 end
 
-gem 'chef-zero'
+# install chef-zero unless it was installed via package
+gem 'chef-zero' unless File.exist?('/usr/bin/chef-zero')
