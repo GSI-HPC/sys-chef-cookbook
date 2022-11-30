@@ -36,26 +36,27 @@ kitchen:
         - stretch
         - buster
         SUITE:
-        - accounts
-        - apt
-        - autofs
-        - banner
-        - chef
-        - ferm
-        - linuxlogo
-        - mail
-        - multipath
-        - nftables
-        - nsswitch
-        - ohai
-        - resolv
-        - snmp
-        - ssh
-        - ssl
-        - sudo
-        - systemd
-        - time
-        - x509
+        # - accounts
+        # - apt
+        # - autofs
+        # - banner
+        # - chef
+        - fail2ban
+        # - ferm
+        # - linuxlogo
+        # - mail
+        # - multipath
+        # - nftables
+        # - nsswitch
+        # - ohai
+        # - resolv
+        # - snmp
+        # - ssh
+        # - ssl
+        # - sudo
+        # - systemd
+        # - time
+        # - x509
 
 .post:
    script:
