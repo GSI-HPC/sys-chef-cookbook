@@ -2,7 +2,11 @@
 # Cookbook Name:: sys
 # Recipe:: fail2ban
 #
-# Copyright 2017, GSI HPC department
+# Copyright 2017-2022 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+#
+# Authors:
+#  Christopher Huhn   <c.huhn@gsi.de>
+#  Matthias Pausch    <m.pausch@gsi.de>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,28 +21,27 @@
 # limitations under the License.
 #
 
-if node['sys']['fail2ban']
+return unless node['sys']['fail2ban']
 
-  package 'fail2ban'
+package 'fail2ban'
 
-  service 'fail2ban' do
-    action [:start, :enable]
-    supports reload: true
-  end
+service 'fail2ban' do
+  action [:start, :enable]
+  supports reload: true
+end
 
-  file '/etc/fail2ban/jail.local' do
-    content "[DEFAULT]\nbanaction = nftables"
-    mode '0644'
-    owner 'root'
-    group 'root'
-    notifies :restart, 'service[fail2ban]'
-  end
+file '/etc/fail2ban/jail.local' do
+  content "[DEFAULT]\nbanaction = nftables"
+  mode '0644'
+  owner 'root'
+  group 'root'
+  notifies :restart, 'service[fail2ban]'
+end
 
-  file '/etc/fail2ban/fail2ban.local' do
-    content "[DEFAULT]\nlogtarget = SYSLOG"
-    mode '0644'
-    owner 'root'
-    group 'root'
-    notifies :restart, 'service[fail2ban]'
-  end
+file '/etc/fail2ban/fail2ban.local' do
+  content "[DEFAULT]\nlogtarget = SYSLOG"
+  mode '0644'
+  owner 'root'
+  group 'root'
+  notifies :restart, 'service[fail2ban]'
 end
