@@ -37,7 +37,7 @@ if node['platform_version'].to_i <= 10
 end
 
 file '/etc/fail2ban/jail.local' do
-  content "[DEFAULT]\nbanaction = #{banaction}\n"
+  content "[DEFAULT]\nbanaction = #{banaction}\naction=%(action_mw)s\n"
   mode '0644'
   owner 'root'
   group 'root'
