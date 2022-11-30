@@ -21,27 +21,24 @@ if node['sys']['fail2ban']
 
   package 'fail2ban'
 
-  jail_local = { }
-
-  jail_local['DEFAULT'] = {
-    destemail: node['sys']['fail2ban']['mailto'] || 'root@localhost'
-  }
-
-  jails = node['sys']['fail2ban']['jails'] || {}
-
-  jails.each do |jail, conf|
-    # read jails config from node attribute, may be nil
-    jail_local[jail] = conf || {}
-
-    # default to enable the given jail
-    jail_local[jail]['enabled'] = conf['enabled'] || true
+  service 'fail2ban' do
+    action [:start, :enable]
+    supports reload: true
   end
 
-  # FIXME: for Stretch this should go to /etc/fail2ban/jail.d/bla.conf
-  template '/etc/fail2ban/jail.local' do
-    source 'etc_fail2ban_jail.local.erb'
-    variables(
-      config: jail_local
-    )
+  file '/etc/fail2ban/jail.local' do
+    content "[DEFAULT]\nbanaction = nftables"
+    mode '0644'
+    owner 'root'
+    group 'root'
+    notifies :restart, 'service[fail2ban]'
+  end
+
+  file '/etc/fail2ban/fail2ban.local' do
+    content "[DEFAULT]\nlogtarget = SYSLOG"
+    mode '0644'
+    owner 'root'
+    group 'root'
+    notifies :restart, 'service[fail2ban]'
   end
 end
