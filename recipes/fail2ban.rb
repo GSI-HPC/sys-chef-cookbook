@@ -30,8 +30,14 @@ service 'fail2ban' do
   supports reload: true
 end
 
+banaction = 'nftables'
+
+if node['platform_version'].to_i <= 10
+  banaction = 'nftables-multiport'
+end
+
 file '/etc/fail2ban/jail.local' do
-  content "[DEFAULT]\nbanaction = nftables"
+  content "[DEFAULT]\nbanaction = #{banaction}\n"
   mode '0644'
   owner 'root'
   group 'root'
