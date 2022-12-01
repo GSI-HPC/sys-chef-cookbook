@@ -42,7 +42,7 @@ jail_local = {
   }
 }
 
-jail_local['DEFAULT'].merge! node['sys']['fail2ban']['jail.local']
+jail_local[:DEFAULT].merge! node['sys']['fail2ban']['jail.local']
 
 template '/etc/fail2ban/jail.local' do
   helpers(Sys::Harry)
