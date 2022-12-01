@@ -45,7 +45,7 @@ file '/etc/fail2ban/jail.local' do
 end
 
 file '/etc/fail2ban/fail2ban.local' do
-  content "[DEFAULT]\nlogtarget = SYSLOG"
+  content "[DEFAULT]\nlogtarget = SYSLOG\n"
   mode '0644'
   owner 'root'
   group 'root'
