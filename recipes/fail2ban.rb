@@ -36,8 +36,18 @@ if node['platform_version'].to_i <= 10
   banaction = 'nftables-multiport'
 end
 
-file '/etc/fail2ban/jail.local' do
-  content "[DEFAULT]\nbanaction = #{banaction}\n"
+jail_local = {
+  DEFAULT: {
+    banaction: banaction,
+  }
+}
+
+jail_local['DEFAULT'].merge! node['sys']['fail2ban']['jail.local']
+
+template '/etc/fail2ban/jail.local' do
+  helpers(Sys::Harry)
+  source 'harry.erb'
+  variables(config: jail_local)
   mode '0644'
   owner 'root'
   group 'root'

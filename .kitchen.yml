@@ -178,7 +178,10 @@ suites:
     attributes:
       sys:
         fail2ban:
-          anything: goes
+          jail.local:
+            bantime: '10m'
+            maxretry: '100'
+            findtime: '30m'
   - name: sys_ferm
     run_list:
       - recipe[sys::ferm]

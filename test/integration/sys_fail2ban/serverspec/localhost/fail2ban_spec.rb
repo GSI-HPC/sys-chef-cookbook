@@ -30,3 +30,7 @@ describe service('fail2ban') do
   it { should be_enabled }
   it { should be_running }
 end
+
+describe file('/etc/fail2ban/jail.local') do
+  its(:content) { should include('bantime') }
+end
