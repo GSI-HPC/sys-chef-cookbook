@@ -26,11 +26,24 @@ describe package 'fail2ban' do
   it { should be_installed }
 end
 
-describe service('fail2ban') do
+describe service 'fail2ban' do
   it { should be_enabled }
   it { should be_running }
 end
 
-describe file('/etc/fail2ban/jail.local') do
+describe file '/etc/fail2ban/jail.local' do
   its(:content) { should include('bantime') }
+end
+
+describe command 'fail2ban-client status' do
+  its(:stdout) { should match /Number of jail:\s+\d+/ }
+  its(:stdout) { should match /Jail list:\s+sshd/ }
+end
+
+describe command 'fail2ban-client get sshd bantime' do
+  its(:stdout) { should eq "#{123*60}\n" }
+end
+
+describe file '/var/log/syslog' do
+  its(:content) [ should match /fail2ban-server\[\d+\]: Server ready$/ }
 end

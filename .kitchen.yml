@@ -179,8 +179,8 @@ suites:
       sys:
         fail2ban:
           jail.local:
-            bantime: '10m'
-            maxretry: '100'
+            bantime: '123m'
+            maxretry: '4'
             findtime: '30m'
   - name: sys_ferm
     run_list:
