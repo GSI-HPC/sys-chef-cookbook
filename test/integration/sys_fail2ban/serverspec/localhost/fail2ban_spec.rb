@@ -45,5 +45,5 @@ describe command 'fail2ban-client get sshd bantime' do
 end
 
 describe file '/var/log/syslog' do
-  its(:content) [ should match /fail2ban-server\[\d+\]: Server ready$/ }
+  its(:content) { should match /fail2ban-server\[\d+\]: Server ready$/ }
 end
