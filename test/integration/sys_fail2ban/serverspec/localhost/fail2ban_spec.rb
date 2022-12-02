@@ -36,8 +36,8 @@ describe file '/etc/fail2ban/jail.local' do
 end
 
 describe command 'fail2ban-client status' do
-  its(:stdout) { should match /Number of jail:\s+\d+/ }
-  its(:stdout) { should match /Jail list:\s+sshd/ }
+  its(:stdout) { should match(/Number of jail:\s+\d+/) }
+  its(:stdout) { should match(/Jail list:\s+sshd/) }
 end
 
 describe command 'fail2ban-client get sshd bantime' do
@@ -45,5 +45,5 @@ describe command 'fail2ban-client get sshd bantime' do
 end
 
 describe file '/var/log/syslog' do
-  its(:content) { should match /fail2ban-server\[\d+\]: Server ready$/ }
+  its(:content) { should match(/fail2ban-server\[\d+\]: Server ready$/) }
 end
