@@ -190,7 +190,7 @@ suites:
   - name: sys_nftables
     run_list:
       - recipe[nftables-test::default]
-  - name: sys_nftables_empty
+  - name: sys_nftablesempty
     run_list:
       - recipe[nftables-test::empty]
   - name: sys_linuxlogo
