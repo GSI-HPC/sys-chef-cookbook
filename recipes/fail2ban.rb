@@ -23,8 +23,8 @@
 
 return unless node['sys']['fail2ban']
 
+nftables 'default'
 package 'fail2ban'
-package 'nftables'
 
 service 'fail2ban' do
   action [:start, :enable]
