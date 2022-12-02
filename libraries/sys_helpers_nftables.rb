@@ -162,7 +162,7 @@ module Sys
 
       def ensure_default_rules_exist(new_resource)
         input = new_resource.rules || {}
-        input.merge!(default_ruleset(new_resource))
+        new_resource.rules = input.merge!(default_ruleset(new_resource))
       end
     end
   end
