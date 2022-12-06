@@ -41,7 +41,12 @@ describe command 'fail2ban-client status' do
 end
 
 describe command 'fail2ban-client get sshd bantime' do
-  its(:stdout) { should eq "#{123*60}\n" }
+  if os[:release].to_i <= 9
+    # Older fail2ban-versions do not accept time as minutes, so it defaults to 600s
+    its(:stdout) { should eq "600\n" }
+  else
+    its(:stdout) { should eq "#{123*60}\n" }
+  end
 end
 
 describe file '/var/log/syslog' do
