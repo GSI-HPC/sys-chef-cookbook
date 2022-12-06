@@ -23,27 +23,12 @@
 
 return unless node['sys']['fail2ban']
 
-nftables 'default'
 package 'fail2ban'
 
 service 'fail2ban' do
   action [:start, :enable]
   supports reload: true
 end
-
-banaction = 'nftables'
-
-if node['platform_version'].to_i <= 10
-  banaction = 'nftables-multiport'
-end
-
-jail_local = {
-  DEFAULT: {
-    banaction: banaction,
-  }
-}
-
-jail_local[:DEFAULT].merge! node['sys']['fail2ban']['jail.local']
 
 template '/etc/fail2ban/jail.local' do
   helpers(Sys::Harry)
@@ -53,6 +38,7 @@ template '/etc/fail2ban/jail.local' do
   owner 'root'
   group 'root'
   notifies :restart, 'service[fail2ban]'
+  only_if { node['sys']['fail2ban']['jail.local'] }
 end
 
 file '/etc/fail2ban/fail2ban.local' do
