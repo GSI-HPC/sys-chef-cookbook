@@ -183,8 +183,6 @@ suites:
               bantime: '123m'
               maxretry: '4'
               findtime: '30m'
-            apache-auth:
-              enabled: true
   - name: sys_ferm
     run_list:
       - recipe[sys::ferm]
