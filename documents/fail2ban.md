@@ -19,9 +19,16 @@ default options like so:
 sys: {
   fail2ban: {
     jail.local: {
-      bantime: '10m',
-      maxretry: '30'
-      action: '%(action_mw)s'
+      DEFAULT: {
+        bantime: '10m',
+        maxretry: '30',
+        findtime: '60m',
+        # if you need emails:
+        action: '%(action_mw)s',
+      },
+      'apache-auth': {
+        enable: true
+      }
     }
   }
 }
