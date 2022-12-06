@@ -45,5 +45,9 @@ describe command 'fail2ban-client get sshd bantime' do
 end
 
 describe file '/var/log/syslog' do
-  its(:content) { should match(/fail2ban-server\[\d+\]: Server ready$/) }
+  if os[:release].to <= 9
+    its(:content) { should match(/Started Fail2Ban Service/) }
+  else
+    its(:content) { should match(/fail2ban-server\[\d+\]: Server ready$/) }
+  end
 end
