@@ -33,7 +33,7 @@ end
 template '/etc/fail2ban/jail.local' do
   helpers(Sys::Harry)
   source 'harry.erb'
-  variables(config: jail_local)
+  variables(config: node['sys']['fail2ban']['jail.local'])
   mode '0644'
   owner 'root'
   group 'root'
