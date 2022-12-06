@@ -37,7 +37,7 @@ end
 
 describe command 'fail2ban-client status' do
   its(:stdout) { should match(/Number of jail:\s+\d+/) }
-  its(:stdout) { should match(/Jail list:\s+sshd/) }
+  its(:stdout) { should match(/Jail list:\s+apache-auth\+sshd/) }
 end
 
 describe command 'fail2ban-client get sshd bantime' do

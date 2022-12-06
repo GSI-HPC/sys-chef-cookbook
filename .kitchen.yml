@@ -179,9 +179,12 @@ suites:
       sys:
         fail2ban:
           jail.local:
-            bantime: '123m'
-            maxretry: '4'
-            findtime: '30m'
+            DEFAULT:
+              bantime: '123m'
+              maxretry: '4'
+              findtime: '30m'
+            apache-auth:
+              enable: true
   - name: sys_ferm
     run_list:
       - recipe[sys::ferm]
