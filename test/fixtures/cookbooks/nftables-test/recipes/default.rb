@@ -25,6 +25,18 @@ nftables_rule 'established' do
   command :allow
 end
 
+nftables_rule 'named set' do
+  position 39
+  raw "add set inet filter networks { type ipv4_addr; flags constant, interval; elements={ 192.0.2.0/24 } } }"
+end
+
+nftables_rule 'variable' do
+  raw 'define quad9 = 9.9.9.9'
+end
+
+nftables_rule 'test named set' do
+  source '@networks'
+end
 
 nftables_rule 'ssh22' do
   dport 22

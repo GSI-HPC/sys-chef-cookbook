@@ -34,16 +34,28 @@ module Sys
         end
       end
 
-      def build_set_of_ips(ips)
-        set_of_ips = Array(ips).map { |ip| IPAddr.new(ip) }
-
+      # ips could be like '192.0.2.1', but also '$some_variable'
+      def s2ip_with_prefix(ip)
         # Only works on buster and newer. In older debian-versions
         # there is no prefix-method for IPv4-addresses.
-        addrs = set_of_ips.map { |ip| "#{ip}/#{ip.prefix}" }
-        if addrs.length == 1
-          addrs.first
+        addr = IPAddr.new(ip)
+        "#{addr}/#{addr.prefix}"
+      rescue IPAddr::InvalidAddressError
+        ip
+      end
+
+      def build_set_of_ips(ips)
+        if ips.instance_of?(String)
+          s2ip_with_prefix(ips)
         else
-          "{#{addrs.join(', ')}}"
+          ips.map! do |ip|
+            s2ip_with_prefix(ip)
+          end
+          if ips.length == 1
+            ips.first
+          else
+          "{#{ips.join(', ')}}"
+          end
         end
       end
 

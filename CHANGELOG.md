@@ -2,6 +2,11 @@
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [1.70.1] - 2022-12-10
+
+### Changed
+- [`resource::nftables_rule`] handles arbitrary strings correctly
+
 ## [1.70.0] - 2022-12-09
 
 ### Added
