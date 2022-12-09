@@ -172,6 +172,17 @@ suites:
       vagrantfiles:
         - vagrant.rb
         - vagrant_buildenv.rb # required to install chef-zero gem
+  - name: sys_fail2ban
+    run_list:
+      - recipe[sys::fail2ban]
+    attributes:
+      sys:
+        fail2ban:
+          jail.local:
+            DEFAULT:
+              bantime: 1234
+              maxretry: '4'
+              findtime: 2468
   - name: sys_ferm
     run_list:
       - recipe[sys::ferm]
