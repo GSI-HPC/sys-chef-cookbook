@@ -2,8 +2,12 @@
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-## Unreleased
+## [1.70.0] - 2022-12-09
 
+### Added
+- [`sys::fail2ban`] New recipe to [install and configure fail2ban](documents/fail2ban.md)
+
+### Changed
 - [kitchen] Pin net-ssh gem in serverspec test suite installation for Ruby 2.5
   compatibility.
 
