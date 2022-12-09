@@ -10,8 +10,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [1.69.7] - 2022-12-09
 
 ### Changed
-- [`resource::nftables_rule`] allows arbitrary strings as source, so
-  that named sets may be used
+- [`resource::nftables_rule`] allows arbitrary strings as source and
+  destination, so that named sets may be used
 
 ## [1.69.6] - 2022-12-06
 
