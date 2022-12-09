@@ -7,6 +7,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - [kitchen] Pin net-ssh gem in serverspec test suite installation for Ruby 2.5
   compatibility.
 
+## [1.69.6] - 2022-12-09
+
+### Changed
+- [`resource/nftables_rule`] allows arbitrary strings as source, so
+  that named sets may be used
+
 ## [1.69.5] - 2022-10-12
 
 ### Changed
