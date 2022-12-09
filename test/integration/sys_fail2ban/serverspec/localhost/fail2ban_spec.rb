@@ -41,18 +41,45 @@ describe command 'fail2ban-client status' do
 end
 
 describe command 'fail2ban-client get sshd bantime' do
-  if os[:release].to_i <= 9
-    # Older fail2ban-versions do not accept time as minutes, so it defaults to 600s
-    its(:stdout) { should eq "600\n" }
-  else
-    its(:stdout) { should eq "#{123*60}\n" }
-  end
+  its(:stdout) { should eq "1234\n" }
 end
 
-describe file '/var/log/syslog' do
-  if os[:release].to_i <= 9
-    its(:content) { should match(/Started Fail2Ban Service/) }
-  else
-    its(:content) { should match(/fail2ban-server\[\d+\]: Server ready$/) }
+context 'test the banning' do
+
+  before :all do
+    # unsuccessfully connect to localhost via its public IP multiple times:
+    cmd = "ssh -o StrictHostKeyChecking=no -o BatchMode=yes"\
+          " -o ConnectTimeout=10"\
+          " hackerman@#{host_inventory['ohai']['ipaddress']}"
+    5.times do
+      `#{cmd}`
+      sleep 1
+    end
   end
+
+  describe file '/var/log/syslog' do
+    if os[:release].to_i <= 9
+      its(:content) { should match(/Started Fail2Ban Service/) }
+    else
+      its(:content) { should match(/fail2ban-server\[\d+\]: Server ready$/) }
+    end
+
+    # banning has been logged:
+    its(:content) do
+      should(
+        match(
+          %r{fail2ban.actions +\[\d+\]: NOTICE +\[sshd\] Ban #{host_inventory['ohai']['ipaddress']}$}
+        )
+      )
+    end
+  end
+
+  describe command 'fail2ban-client status sshd' do
+    its(:exit_status) { should be_zero }
+    its(:stdout) do
+      should match %r{`- Banned IP list:\s*#{host_inventory['ohai']['ipaddress']}}
+    end
+    its(:stderr) { should be_empty }
+  end
+
 end

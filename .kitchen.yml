@@ -180,9 +180,9 @@ suites:
         fail2ban:
           jail.local:
             DEFAULT:
-              bantime: '123m'
+              bantime: 1234
               maxretry: '4'
-              findtime: '30m'
+              findtime: 2468
   - name: sys_ferm
     run_list:
       - recipe[sys::ferm]
