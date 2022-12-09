@@ -241,6 +241,7 @@ suites:
             array:
               - '| /bin/true'
               - /tmp/mail.test
+            nobody: knowsthetroubleiveseen@example.org
           message_size_limit: 1234567890
   - name: sys_multipath
     run_list:

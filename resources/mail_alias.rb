@@ -1,5 +1,5 @@
 #
-# Copyright 2014-2020 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+# Copyright 2014-2022 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
 #
 # Authors:
 #  Christopher Huhn   <c.huhn@gsi.de>
@@ -24,34 +24,54 @@ if Gem::Requirement.new('>= 12.5')
 
   property :to, [Array, String],
            # turn Strings into Arrays for simplicity:
-           coerce: proc { |t| Array(t) }
+           coerce: proc { |t| t.is_a?(Array) ? t : t.split(/,\s*/) }
   property :aliases_file, String,  default: '/etc/aliases'
 
   default_action :add
 
+  load_current_value do |new_resource|
+    if ::File.exist?(new_resource.aliases_file)
+      ::File.readlines(new_resource.aliases_file).each do |line|
+        if line =~ /^#{new_resource.name}:(.*)/
+          to $1.split(/,\s*/)
+          break
+        end
+      end
+    else
+      current_value_does_not_exist!
+    end
+  end
+
   action :add do
     new_line = "#{new_resource.name}: "
+    # man aliases:
+    # > Use double quotes when the **name** contains any special characters
+    # > such  as whitespace, `#', `:', or `@'
     new_line += new_resource.to.map do |e|
-      e =~ /[:@#|]/ ? "\"#{e}\"" : e
+      e =~ /[:@#|\s]/ ? "\"#{e}\"" : e
     end.join(', ')
 
-    replace_or_add "alias for #{new_resource.name}" do
-      path    new_resource.aliases_file
-      pattern "^#{new_resource.name}:.*"
-      line    new_line
-      backup  true        if respond_to?(:backup)
-      ignore_missing true if respond_to?(:ignore_missing)
+    aliases_file = Chef::Util::FileEdit.new(new_resource.aliases_file)
+    if current_resource.to
+      aliases_file.search_file_replace_line(/^#{new_resource.name}:/, new_line)
+    else
+      aliases_file.insert_line_if_no_match(/^#{new_resource.name}:/, new_line)
     end
+    aliases_file.write_file
+
+    execute "postalias #{new_resource.aliases_file}"
   end
 
   action :remove do
-    delete_lines "alias for #{new_resource.name}" do
-      path    new_resource.aliases_file
-      pattern "^#{new_resource.name}:.*"
-      only_if { ::File.exist?(new_resource.aliases_file) }
-    end
+    aliases_file = Chef::Util::FileEdit.new(new_resource.aliases_file)
+    aliases_file.search_file_delete_line(/^#{new_resource.name}:/)
+    aliases_file.write_file
+
+    execute "postalias #{new_resource.aliases_file}"
   end
+
 else
+
   actions :add, :remove
 
   default_action :add

@@ -63,6 +63,11 @@ maps.each do |mapfile|
   end
 end
 
+describe file '/etc/aliases' do
+  its(:content) { should match %r{^array: | /bin/true, /tmp/mail.test} }
+  its(:content) { should match %r{^nobody: "knowsthetroubleiveseen@example.org"$} }
+end
+
 describe command 'postconf' do
   its(:exit_status) { should be_zero }
   its(:stderr) { should be_empty }
