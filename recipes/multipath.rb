@@ -2,8 +2,11 @@
 # Cookbook Name:: sys
 # Recipe:: multipath
 #
-# Copyright 2014, Thomas Roth
-# Copyright 2015, Dennis Klein
+# Copyright 2014-2022 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+#
+# Authors:
+#  Dennis Klein   <d.klein@gsi.de>
+#  Thomas Roth    <t.roth@gsi.de>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,7 +20,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-config = node['sys']['multipath'].to_hash.tap{ |hs| hs.delete('regenerate_initramdisk') }
+
+config = node['sys']['multipath'].to_hash
+config.delete('disable')
+config.delete('regenerate_initramdisk')
 
 unless config.empty?
   package 'multipath-tools'
@@ -25,13 +31,17 @@ unless config.empty?
   service 'multipath-tools' do
     supports :reload => true
     status_command 'ps -p $(cat /var/run/multipathd.pid)'
-    action [:enable, :start]
+    if node['sys']['multipath']['disable']
+      action [:disable]
+    else
+      action [:enable, :start]
+    end
   end
 
-  execute 'regenerate-initramdisk' do
+  execute 'regenerate_initramdisk' do
     command '/etc/kernel/postinst.d/initramfs-tools `uname -r`'
     action :nothing
-    only_if node['sys']['multipath']['regenerate-initramdisk']
+    only_if { node['sys']['multipath']['regenerate_initramdisk'] }
   end
 
   template '/etc/multipath.conf' do
@@ -42,7 +52,7 @@ unless config.empty?
     })
     notifies :reload, 'service[multipath-tools]'
     if node['sys']['multipath']['regenerate_initramdisk']
-      notifies :run, 'execute[regenerate-initramdisk]'
+      notifies :run, 'execute[regenerate_initramdisk]'
     end
   end
 end

@@ -2,12 +2,62 @@
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-## Unreleased
+## [1.70.0] - 2022-12-09
+
+### Added
+- [`sys::fail2ban`] New recipe to [install and configure fail2ban](documents/fail2ban.md)
+
+### Changed
+- [kitchen] Pin net-ssh gem in serverspec test suite installation for Ruby 2.5
+  compatibility.
+
+## [1.69.7] - 2022-12-09
+
+### Changed
+- [`resource::nftables_rule`] allows arbitrary strings as source and
+  destination, so that named sets may be used
+
+## [1.69.6] - 2022-12-06
+
+### Changed
+- [`resource::nftables`] deploys default rules, if no rules are provided.
+
+## [1.69.5] - 2022-10-12
+
+### Changed
+- [`sys::apt`] `ignore_failure` when running `dpkg --configure -a`  
+  This is a workaround for Stretch→Buster upgrade issues
+  when chef-client is configured for systemd-timer mode  :
+  postinst script of chef restarts chef-client.service  
+  which triggers chef-client run  
+  which triggers `dpkg --configure -a`  
+  which fails because dpkg started the whole thing and is locked
+
+## [1.69.4] - 2022-09-20
+
+### Fixed
+- [`sys_x509_certificate`] Fix resource name when called from other cookbooks (cf. !52)
+
+## [1.69.3] - 2022-09-08
+
+### Fixed
+- [`sys::snmp`] Fix snmpd systemd unit startup type (cf !51)
+
+## [1.69.2] - 2022-08-10
+
+### Added
+- [`sys::multipath`] Add option to disable multipathd service and add test suite
+
+## [1.69.1] - 2022-07-19
 
 ### Changed
 - [`sys::systemd`] [documentation update](documents/systemd.md)
 - [`resource::nftables`] [documentation update](documents/resources/nftables.md)
 - [`resource::nftables_rule`] [documentation update](documents/resources/nftables_rule.md)
+
+### Fixed
+- [`sys::chef`] reverted 59794a47a0 due to unexpectedly different lockfile handling of `dpkg` and `apt`,
+                replacement with `lockfile-check` not working due to systemd being too old for `ExecCondition`
 
 ## [1.69.0] - 2022-07-07
 

@@ -69,14 +69,7 @@ if Gem::Requirement.new('>= 12.15').satisfied_by?(Gem::Version.new(Chef::VERSION
            equal_to: [:ip6, :ip],
            default: :ip
   property :source,
-           [String, Array],
-           callbacks: {
-             'must be a valid ip address' => lambda do |ips|
-               Array(ips).inject(false) do |a, ip|
-                 a || !!IPAddr.new(ip)
-               end
-             end,
-           }
+           [String, Array]
   property :sport,
            [Integer, String, Array, Range]
   property :interface,
@@ -84,14 +77,7 @@ if Gem::Requirement.new('>= 12.15').satisfied_by?(Gem::Version.new(Chef::VERSION
   property :dport,
            [Integer, String, Array, Range]
   property :destination,
-           [String, Array],
-           callbacks: {
-             'must be a valid ip address' => lambda do |ips|
-               Array(ips).inject(false) do |a, ip|
-                 a || !!IPAddr.new(ip)
-               end
-             end,
-           }
+           [String, Array]
   property :outerface,
            String
   property :position,

@@ -168,6 +168,21 @@ suites:
         chef:
           server_url: http://localhost:4000
           init_style: systemd-timer
+    driver:
+      vagrantfiles:
+        - vagrant.rb
+        - vagrant_buildenv.rb # required to install chef-zero gem
+  - name: sys_fail2ban
+    run_list:
+      - recipe[sys::fail2ban]
+    attributes:
+      sys:
+        fail2ban:
+          jail.local:
+            DEFAULT:
+              bantime: 1234
+              maxretry: '4'
+              findtime: 2468
   - name: sys_ferm
     run_list:
       - recipe[sys::ferm]
@@ -186,15 +201,15 @@ suites:
   - name: sys_nftables
     run_list:
       - recipe[nftables-test::default]
+  - name: sys_nftablesempty
+    run_list:
+      - recipe[nftables-test::empty]
   - name: sys_linuxlogo
     run_list:
       - recipe[sys::linuxlogo]
     attributes:
       sys:
         linuxlogo: absolutely!
-  - name: sys_ohai
-    run_list:
-      - recipe[sys::ohai]
   - name: sys_mail
     run_list:
       - recipe[sys::mail]
@@ -208,6 +223,16 @@ suites:
               - '| /bin/true'
               - /tmp/mail.test
           message_size_limit: 1234567890
+  - name: sys_multipath
+    run_list:
+      - recipe[sys::multipath]
+    attributes:
+      sys:
+        multipath:
+          disable: false
+          regenerate_initramdisk: true
+          defaults:
+            verbosity: 5
   - name: sys_nsswitch
     run_list:
       - recipe[nsswitch-test::default]
@@ -217,6 +242,13 @@ suites:
           foo: bar
           passwd: files
           netgroup: compat
+  - name: sys_ohai
+    run_list:
+      - recipe[sys::ohai]
+    driver:
+      vagrantfiles:
+        - vagrant.rb
+        - vagrant_buildenv.rb  # required to install ohai gem
   - name: sys_resolv
     run_list:
       - recipe[sys::resolv]
