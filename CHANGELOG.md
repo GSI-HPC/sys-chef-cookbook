@@ -2,6 +2,11 @@
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [1.71.0] - 2023-01-16
+
+### Added
+- [`resource::nftables_rule`] Handle unknown protocols
+
 ## [1.70.1] - 2022-12-10
 
 ### Changed

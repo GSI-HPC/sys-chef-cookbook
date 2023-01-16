@@ -140,8 +140,9 @@ module Sys
           nftables_rule << "#{rule_resource.protocol} dport #{port_to_s(rule_resource.dport)} " if rule_resource.dport
         when :esp, :ah
           nftables_rule << "#{ip_family} #{ip_family == :ip6 ? 'nexthdr' : 'protocol'} #{rule_resource.protocol} "
-
-          # nothing to do default :ipv6, :none
+        when :none
+        else
+          nftables_rule << "#{ip_family} protocol #{rule_resource.protocol} "
         end
 
         nftables_rule << "ct state #{Array(rule_resource.stateful).join(',').downcase} " if rule_resource.stateful
