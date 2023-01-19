@@ -27,7 +27,7 @@ end
 
 nftables_rule 'named set' do
   position 39
-  raw "add set inet filter networks { type ipv4_addr; flags constant, interval; elements={ 192.0.2.0/24 } } }"
+  raw "add set inet filter networks { type ipv4_addr; flags constant, interval; elements={ 192.0.2.0/24 } }"
 end
 
 nftables_rule 'variable' do
@@ -180,4 +180,21 @@ nftables_rule 'redirect' do
   dport 5555
   redirect_port 6666
   command :redirect
+end
+
+nftables_rule 'log_without_prefix' do
+  dport 1
+  command :log
+end
+
+nftables_rule 'log_with_prefix' do
+  dport 1
+  log_prefix 'nflog by chef:'
+  log_group 1
+  command :log
+end
+
+nftables_rule 'multiple commands' do
+  dport 2
+  command [:counter, :log, :accept]
 end
