@@ -2,6 +2,11 @@
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [1.71.1] - 2023-01-19
+
+### Changed
+- [`chef`] Rename service unit to `chef-client-oneshot.service` when configuring in systemd-timer mode
+
 ## [1.71.0] - 2023-01-16
 
 ### Added
