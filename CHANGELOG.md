@@ -1,6 +1,10 @@
 # Changelog
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
+## [1.72.0] - 2023-01-19
+
+### Added
+- [`libraries/sys_helpers_nftables`] Add support for multiple actions in nftables rules.
 
 ## [1.71.1] - 2023-01-19
 
