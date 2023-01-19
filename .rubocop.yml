@@ -26,8 +26,3 @@ Style/HashSyntax:
 # Don't check for double quotes vs single quotes for now:
 Style/StringLiterals:
   Enabled: false
-# Offense count: 1
-# Configuration parameters: AllowComments.
-Lint/EmptyWhen:
-  Exclude:
-    - 'libraries/sys_helpers_nftables.rb'
