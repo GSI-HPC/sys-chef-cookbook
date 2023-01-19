@@ -141,6 +141,7 @@ module Sys
         when :esp, :ah
           nftables_rule << "#{ip_family} #{ip_family == :ip6 ? 'nexthdr' : 'protocol'} #{rule_resource.protocol} "
         when :none
+          nil # do nothing
         else
           nftables_rule << "#{ip_family} protocol #{rule_resource.protocol} "
         end
