@@ -93,13 +93,70 @@ module Sys
       TARGET ||= {
         accept: 'accept',
         allow: 'accept',
+        counter: 'counter',
         deny: 'drop',
         drop: 'drop',
-        log: 'log prefix "nftables:" group 0',
+        log: 'log',
         masquerade: 'masquerade',
         redirect: 'redirect',
         reject: 'reject',
       }.freeze
+
+      def nftables_command_log(rule_resource)
+        log_prefix = 'prefix '
+        log_prefix << if rule_resource.log_prefix.nil?
+                        "\"#{CHAIN[rule_resource.direction]}:\""
+                      else
+                        "\"#{rule_resource.log_prefix}\""
+                      end
+        log_group = if rule_resource.log_group.nil?
+                      nil
+                    else
+                      "group #{rule_resource.log_group} "
+                    end
+        "log #{log_prefix} #{log_group}"
+      end
+
+      def nftables_command_redirect(rule_resource)
+        if rule_resource.redirect_port.nil?
+          raise 'Specify redirect_port when using :redirect as commmand'
+        end
+
+        "redirect to #{rule_resource.redirect_port} "
+      end
+
+      def nftables_commands(rule_resource)
+        nftables_rule = ''
+        commands = Array(rule_resource.command).map do |command|
+          begin
+            TARGET.fetch(command.to_sym)
+          rescue KeyError
+            raise "Invalid command: #{command.inspect}. Use one of #{TARGET.keys}"
+          end
+        end
+
+        commands.sort!.uniq!
+        # Add non-terminal statements first
+        if commands.include?('log')
+          nftables_rule << nftables_command_log(rule_resource)
+          commands -= ['log']
+        end
+        if commands.include?('counter')
+          nftables_rule << 'counter '
+          commands -= ['counter']
+        end
+        raise "Only one terminal statement is possible, provided were #{commands.join(',')}" if commands.length > 1
+        Chef::Log.error commands
+        commands.each do |cmd|
+          nftables_rule << case cmd
+                           when 'redirect'
+                             nftables_command_redirect(rule_resource)
+                           else
+                             "#{cmd} "
+                           end
+        end
+        nftables_rule
+      end
 
       def build_nftables_rule(rule_resource)
         return rule_resource.raw.strip if rule_resource.raw
@@ -146,8 +203,7 @@ module Sys
         end
 
         nftables_rule << "ct state #{Array(rule_resource.stateful).join(',').downcase} " if rule_resource.stateful
-        nftables_rule << "#{TARGET[rule_resource.command.to_sym]} "
-        nftables_rule << " to #{rule_resource.redirect_port} " if rule_resource.command == :redirect
+        nftables_rule << nftables_commands(rule_resource)
         nftables_rule << "comment \"#{rule_resource.description}\" " if rule_resource.include_comment
         nftables_rule.strip!
         nftables_rule
