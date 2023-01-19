@@ -2,7 +2,7 @@
 # Cookbook Name:: sys
 # Serverspec integration tests for sys::chef
 #
-# Copyright 2020-2022 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+# Copyright 2020-2023 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
 #
 # Authors:
 #  Christopher Huhn   <C.Huhn@gsi.de>
@@ -47,12 +47,12 @@ context 'not on Stretch', if: os[:release].to_i >= 10 || os[:family] != 'debian'
   end
 end
 
-describe service 'chef-client.service' do
+describe service 'chef-client-oneshot.service' do
   it { should_not be_running } # oneshot servive
   it { should_not be_enabled } # triggered by timer
 end
 
-describe command 'systemctl status chef-client.service' do
+describe command 'systemctl status chef-client-oneshot.service' do
   # chef should not be running in daemon mode:
   its(:stdout) { should_not match %r{/usr/bin/chef-client\s(.*\s)?-d\s} }
 end
