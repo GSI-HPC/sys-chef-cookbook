@@ -146,7 +146,6 @@ module Sys
           commands -= ['counter']
         end
         raise "Only one terminal statement is possible, provided were #{commands.join(',')}" if commands.length > 1
-        Chef::Log.error commands
         commands.each do |cmd|
           nftables_rule << case cmd
                            when 'redirect'
