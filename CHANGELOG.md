@@ -1,11 +1,45 @@
 # Changelog
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
+## [1.72.0] - 2023-01-19
 
-## Unreleased
+### Added
+- [`libraries/sys_helpers_nftables`] Add support for multiple actions in nftables rules.
 
+## [1.71.1] - 2023-01-19
+
+### Changed
+- [`chef`] Rename service unit to `chef-client-oneshot.service` when configuring in systemd-timer mode
+
+## [1.71.0] - 2023-01-16
+
+### Added
+- [`resource::nftables_rule`] Handle unknown protocols
+
+## [1.70.1] - 2022-12-10
+
+### Changed
+- [`resource::nftables_rule`] handles arbitrary strings correctly
+
+## [1.70.0] - 2022-12-09
+
+### Added
+- [`sys::fail2ban`] New recipe to [install and configure fail2ban](documents/fail2ban.md)
+
+### Changed
 - [kitchen] Pin net-ssh gem in serverspec test suite installation for Ruby 2.5
   compatibility.
+
+## [1.69.7] - 2022-12-09
+
+### Changed
+- [`resource::nftables_rule`] allows arbitrary strings as source and
+  destination, so that named sets may be used
+
+## [1.69.6] - 2022-12-06
+
+### Changed
+- [`resource::nftables`] deploys default rules, if no rules are provided.
 
 ## [1.69.5] - 2022-10-12
 

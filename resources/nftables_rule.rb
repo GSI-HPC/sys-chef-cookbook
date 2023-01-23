@@ -42,11 +42,8 @@ if Gem::Requirement.new('>= 12.15').satisfied_by?(Gem::Version.new(Chef::VERSION
            String,
            default: 'default'
   property :command,
-           Symbol,
-           default: :allow,
-           equal_to: %i(
-           accept allow deny drop log masquerade redirect reject
-           )
+           [Symbol, String, Array],
+           default: :allow
   property :protocol,
            [Integer, Symbol],
            default: :tcp,
@@ -58,9 +55,10 @@ if Gem::Requirement.new('>= 12.15').satisfied_by?(Gem::Version.new(Chef::VERSION
            Symbol,
            equal_to: [:in, :out, :pre, :post, :forward],
            default: :in
-  property :logging,
-           Symbol,
-           equal_to: [:connections, :packets]
+  property :log_group,
+           Integer
+  property :log_prefix,
+           String
   # nftables handles ip6 and ip simultaneously.  Except for directions
   # :pre and :post, where where either :ip6 or :ip must be specified.
   # callback should prevent from mixing that up.
@@ -69,14 +67,7 @@ if Gem::Requirement.new('>= 12.15').satisfied_by?(Gem::Version.new(Chef::VERSION
            equal_to: [:ip6, :ip],
            default: :ip
   property :source,
-           [String, Array],
-           callbacks: {
-             'must be a valid ip address' => lambda do |ips|
-               Array(ips).inject(false) do |a, ip|
-                 a || !!IPAddr.new(ip)
-               end
-             end,
-           }
+           [String, Array]
   property :sport,
            [Integer, String, Array, Range]
   property :interface,
@@ -84,14 +75,7 @@ if Gem::Requirement.new('>= 12.15').satisfied_by?(Gem::Version.new(Chef::VERSION
   property :dport,
            [Integer, String, Array, Range]
   property :destination,
-           [String, Array],
-           callbacks: {
-             'must be a valid ip address' => lambda do |ips|
-               Array(ips).inject(false) do |a, ip|
-                 a || !!IPAddr.new(ip)
-               end
-             end,
-           }
+           [String, Array]
   property :outerface,
            String
   property :position,

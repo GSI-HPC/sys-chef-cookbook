@@ -40,6 +40,7 @@ kitchen:
         - autofs
         - banner
         - chef
+        - fail2ban
         - ferm
         - linuxlogo
         - mail

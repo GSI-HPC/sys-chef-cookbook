@@ -4,7 +4,7 @@
 #
 # set's up the chef-client
 #
-# Copyright 2011-2022 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+# Copyright 2011-2023 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
 #
 # Authors:
 #  Christopher Huhn    <c.huhn@gsi.de>
@@ -144,7 +144,6 @@ if node['sys']['chef']['init_style'] == 'systemd-timer'
       'SuccessExitStatus' => 3
     },
     'Install' => {
-      'Alias' => %w[chef.service],
       'WantedBy' => 'multi-user.target'
     }
   }
@@ -162,7 +161,8 @@ if node['sys']['chef']['init_style'] == 'systemd-timer'
       'OnUnitInactiveSec' => ( node['sys']['chef']['interval'].to_i -
                                node['sys']['chef']['splay'].to_i/2
                              ).to_s + 'sec',
-      'RandomizedDelaySec' => "#{node['sys']['chef']['splay']}sec"
+      'RandomizedDelaySec' => "#{node['sys']['chef']['splay']}sec",
+      'Unit' => "#{chef_client}-oneshot.service"
     }
   }
 
@@ -173,7 +173,7 @@ if node['sys']['chef']['init_style'] == 'systemd-timer'
   end
 
   # mimic the chef-client cookbook systemd unit:
-  systemd_unit "#{chef_client}.service" do
+  systemd_unit "#{chef_client}-oneshot.service" do
     content chef_service_unit
     # what effect has stop when this chef run was started by systemd timer?
     action %i[create stop]

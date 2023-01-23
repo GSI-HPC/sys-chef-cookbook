@@ -50,6 +50,9 @@ expected_rules = [
   /\s+ip protocol ah accept.*$/,
   /\s+ip6 nexthdr esp accept.*$/,
   /\s+ip6 nexthdr ah accept.*$/,
+  /\s+tcp dport 1 log prefix "input:".*$/,
+  /\s+tcp dport 1 log prefix "nflog by chef:" group 1.*$/,
+  /\s+tcp dport 2 log prefix "input:" counter packets 0 bytes 0 accept.*$/,
 ]
 
 cmd = 'nft list ruleset'
