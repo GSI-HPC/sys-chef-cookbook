@@ -21,7 +21,13 @@
 #
 
 require 'spec_helper'
-require 'chef_zero/server'
+
+begin
+  require 'chef_zero/server'
+rescue LoadError
+  STDERR.puts 'Cannot load chef_zero/server - TESTS HAVE BEEN SKIPPED'
+  return
+end
 
 context 'chef-client config' do
   before(:all) do
