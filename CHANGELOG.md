@@ -173,6 +173,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Shorter PGP key for `apt-key` test - goodbye fefe (!41)
 - Catch missing home dir write permissions in `sys_ssh_authorize`
 
+## [1.64.0] - 2022-02-25
+### Added
+- Use accumulator pattern to create `/etc/nsswitch.conf`, if the
+chef-version is 12.15 or higher.
+
 ## [1.63.0] - 2022-02-07
 
 ### Added

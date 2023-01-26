@@ -25,41 +25,42 @@
 # do nothing until requested
 return if node['sys']['nsswitch'].empty?
 
-if Gem::Requirement.new('>= 12.5')
+defaults = {
+  passwd:    'compat',
+  group:     'compat',
+  shadow:    'compat',
+  gshadow:   'files',
+  hosts:     ['files', 'dns'],
+  networks:  'files',
+  protocols: ['db', 'files'],
+  services:  ['db', 'files'],
+  ethers:    ['db', 'files'],
+  rpc:       ['db', 'files'],
+}
+
+# turn hash keys into Strings before merging to avoid dupes:
+config = defaults.map { |k,v| [k.to_s, v] }.to_h
+
+# merge defaults and node attributes
+config.merge!(node['sys']['nsswitch']) do |_k,v1,v2|
+  # make sure no empty values end up in the config:
+  v2 || v1
+end
+
+if Gem::Requirement.new('>= 12.15')
      .satisfied_by?(Gem::Version.new(Chef::VERSION))
 
+  sys_nsswitch_config 'default' do
+    action :nothing
+  end
+
   # Use the LWRP if the chef version is new enough
-  node['sys']['nsswitch'].each do |db, srcs|
+  config.each do |db, srcs|
     sys_nsswitch db do
       sources srcs
     end
   end
-
 else
-
-  defaults = {
-    passwd:    'compat',
-    group:     'compat',
-    shadow:    'compat',
-    gshadow:   'files',
-    hosts:     'files dns',
-    networks:  'files',
-    protocols: 'db files',
-    services:  'db files',
-    ethers:    'db files',
-    rpc:       'db files',
-    netgroup:  'nis'
-  }
-
-  # turn hash keys into Strings before merging to avoid dupes:
-  config = defaults.map { |k,v| [k.to_s, v] }.to_h
-
-  # merge defaults and node attributes
-  config.merge!(node['sys']['nsswitch']) do |_k,v1,v2|
-    # make sure no empty values end up in the config:
-    v2 || v1
-  end
-
   template "/etc/nsswitch.conf" do
     source "etc_nsswitch.conf.erb"
     mode '0644'

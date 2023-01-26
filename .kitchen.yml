@@ -269,7 +269,7 @@ suites:
             verbosity: 5
   - name: sys_nsswitch
     run_list:
-      - recipe[sys::nsswitch]
+      - recipe[nsswitch-test::default]
     attributes:
       sys:
         nsswitch:
