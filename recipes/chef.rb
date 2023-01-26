@@ -144,7 +144,8 @@ if node['sys']['chef']['init_style'] == 'systemd-timer'
       'SuccessExitStatus' => 3
     },
     'Install' => {
-      'WantedBy' => 'multi-user.target'
+      'WantedBy' => 'multi-user.target',
+      'Alias' => []
     }
   }
 
@@ -168,7 +169,7 @@ if node['sys']['chef']['init_style'] == 'systemd-timer'
 
   # add alias to chef-client.service if we configure cinc:
   if node['sys']['chef']['product_name'] != 'chef'
-    chef_service_unit['Install']['Alias'].push 'chef-client.service'
+    chef_service_unit['Install']['Alias'].push 'chef-client-oneshot.service'
     chef_timer_unit['Install']['Alias'] = 'chef-client.timer'
   end
 
