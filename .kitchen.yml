@@ -316,6 +316,19 @@ suites:
           sys_contact: Dorothy Gale
           sys_location: Somewhere over the rainbow
           log_level: alert
+  - name: sys_rsyslog
+    run_list:
+      - recipe[sys::rsyslog]
+    attributes:
+      rsyslog:
+        filter: '*.*'
+        protocol: 'tcp'
+      sys:
+        rsyslog:
+          loghosts:
+            - name: 10-test-gtls.conf
+              tls: true
+              target_ip: '192.2.0.1'
   - name: sys_ssh
     run_list:
       - recipe[sys::accounts]

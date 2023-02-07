@@ -57,7 +57,7 @@ if node.has_key?('rsyslog')
       end
     end
 
-    template cfg.fetch('name') do
+    template "/etc/rsyslog.d/#{cfg.fetch('name')}" do
       source 'etc_rsyslog.d_loghost-generic.conf.erb'
       owner 'root'
       group 'root'
