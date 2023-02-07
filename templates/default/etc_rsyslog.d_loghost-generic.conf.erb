@@ -7,9 +7,6 @@ $DefaultNetStreamDriverCAFile <%= @ca_file %>
 module(load="omrelp")
 <% end -%>
 
-
-action(type="omrelp" target="192.168.233.144" port="2514" tls="on")
-
 if prifilt("<%= @priority_filter %>") then {
     action(
         type="<%= @type %>"
