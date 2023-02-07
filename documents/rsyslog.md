@@ -7,15 +7,7 @@ Configure Domain Name Service (DNS) resolution.
 
 **Attributes**
 
-All attributes in `node.sys.resolv`:
-
-| Attribute | Type                    | mandatory | Descripton                                                                                         |
-|-----------+-------------------------+-----------+----------------------------------------------------------------------------------------------------|
-| `Servers` | Array                   | yes       | list a DNS server IPs                                                                              |
-| `domain`  | String                  | no        | local domain name                                                                                  |
-| `search`  | Array or String         | no        | list for host-name lookup                                                                          |
-| `options` | Array                   | no        | list of options                                                                                    |
-| `force`   | Boolean, default: false | no        | make sys::resolv overwrite `/etc/resolv.conf` even though it is a link (eg. managed by resolvconf) |
+TODO
 
 
 **Example**
@@ -32,7 +24,7 @@ sys: {
       { name: '51-tcp-loghost.conf',
         target_ip: '192.2.0.2' }
       # tls, all options
-      { name: 52-tls-all.conf,
+      { name: '52-tls-all.conf',
         target_ip: '192.2.0.3',
         port: '1234',
         type: 'omfwd',
