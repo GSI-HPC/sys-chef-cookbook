@@ -35,6 +35,48 @@ if node.has_key?('rsyslog')
     notifies :restart, "service[rsyslog]"
   end
 
+  node['sys']['rsyslog']['loghosts'].each do |cfg|
+    if node['platform_version'].to_i < 8
+      Chef::Log.warn 'OS version is not supported, skipping config'
+      next
+    end
+    priority_filter = cfg.fetch('priority_filter', '*.*')
+    port = cfg.fetch('port', '514')
+    protocol = cfg.fetch('protocol', 'tcp')
+    stream_driver = false
+    type = cfg.fetch('type', 'omfwd')
+    if cfg['tls']
+      port = cfg.fetch('port', '6514')
+      ca_file = cfg.fetch('ca_file', '/etc/ssl/certs/ca-certificates.crt')
+      if node['platform_version'].to_i < 11
+        package 'rsyslog-gnutls'
+        stream_driver = 'gtls'
+      else
+        package 'rsyslog-openssl'
+        stream_driver = 'ossl'
+      end
+    end
+
+    template cfg.fetch('name') do
+      source 'etc_rsyslog.d_loghost-generic.conf.erb'
+      owner 'root'
+      group 'root'
+      mode '0600'
+      variables(
+        priority_filter: priority_filter,
+        target_ip: cfg.fetch('target_ip'),
+        port: port,
+        protocol: protocol,
+        stream_driver: stream_driver,
+        ca_file: ca_file,
+        tls: cfg.fetch('tls', false),
+        type: type
+      )
+      only_if { cfg.has_key?('target_ip') }
+      notifies :restart, 'service[rsyslog]'
+    end
+  end
+
   service "rsyslog" do
     supports :restart => true, :status => true
     action   :enable
