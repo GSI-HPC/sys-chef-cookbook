@@ -34,10 +34,11 @@ if node.has_key?('rsyslog')
     only_if { node['rsyslog'].has_key?('server_ip') }
     notifies :restart, "service[rsyslog]"
   end
+  rsyslog_major_version = %x[/usr/sbin/rsyslogd -v].lines.first.strip.gsub(/\Arsyslogd\s+(\d+).*\z/, '\1').to_i
 
   node['sys']['rsyslog']['loghosts'].each do |name, cfg|
-    if node['platform_version'].to_i < 8
-      Chef::Log.warn 'OS version is not supported, skipping config'
+    if rsyslog_major_version < 8
+      Chef::Log.warn "rsyslog must be at least version 8, skipping config for loghost #{name}."
       next
     end
     priority_filter = cfg['priority_filter'] || '*.*'
