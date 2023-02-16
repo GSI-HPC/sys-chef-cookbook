@@ -59,7 +59,7 @@ if node.has_key?('rsyslog')
       end
     end
 
-    template "/etc/rsyslog.d/20-loghost-#{cfg['name']}.conf" do
+    template "/etc/rsyslog.d/20-loghost-#{name}.conf" do
       source 'etc_rsyslog.d_loghost-generic.conf.erb'
       owner 'root'
       group 'root'
