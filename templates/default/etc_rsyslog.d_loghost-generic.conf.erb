@@ -13,7 +13,7 @@ if prifilt("<%= @priority_filter %>") then {
         target="<%= @target %>"
         port="<%= @port %>"
         protocol="tcp"
-        queue.filename="forwarding"
+        queue.filename="forwarding-<%= @name %>"
         queue.maxfilesize="1g"
         queue.type="LinkedList"
 <% if @tls && @type != 'omrelp' -%>

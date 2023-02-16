@@ -65,6 +65,7 @@ if node.has_key?('rsyslog')
       group 'root'
       mode '0600'
       variables(
+        name: name,
         priority_filter: priority_filter,
         target: cfg['target'] || cfg['target_ip'],
         port: port,
