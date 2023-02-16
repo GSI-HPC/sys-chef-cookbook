@@ -49,7 +49,8 @@ if node.has_key?('rsyslog')
     if cfg['tls']
       port = cfg['port'] || '6514'
       ca_file = cfg['ca_file'] || '/etc/ssl/certs/ca-certificates.crt'
-      if node['platform_version'].to_i < 11
+      if node['platform'] == 'debian' && node['platform_version'].to_i < 11 ||
+          node['platform'] == 'ubuntu' && node['platform_version'].to_i < 20
         package 'rsyslog-gnutls'
         stream_driver = 'gtls'
       else
