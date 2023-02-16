@@ -2,7 +2,7 @@
 # Cookbook Name:: sys
 # Integration tests for recipe rsyslog
 #
-# Copyright 2022 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+# Copyright 2023 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
 #
 # Authors:
 #  Matthias Pausch (m.pausch@gsi.de)
