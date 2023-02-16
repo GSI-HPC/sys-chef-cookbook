@@ -326,14 +326,14 @@ suites:
       sys:
         rsyslog:
           loghosts:
-            - name: 10-test-gtls.conf
+            test-gtls:
               tls: true
               target_ip: '192.2.0.1'
-            - name: 20-test-relp.conf
+            test-relp:
               tls: true
               target_ip: '192.2.0.2'
               type: 'omrelp'
-            - name: 20-no-tls.conf
+            no-tls:
               target_ip: '192.2.0.3'
   - name: sys_ssh
     run_list:

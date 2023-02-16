@@ -35,7 +35,7 @@ if node.has_key?('rsyslog')
     notifies :restart, "service[rsyslog]"
   end
 
-  node['sys']['rsyslog']['loghosts'].each do |cfg|
+  node['sys']['rsyslog']['loghosts'].each do |name, cfg|
     if node['platform_version'].to_i < 8
       Chef::Log.warn 'OS version is not supported, skipping config'
       next
