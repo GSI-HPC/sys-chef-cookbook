@@ -40,14 +40,14 @@ if node.has_key?('rsyslog')
       Chef::Log.warn 'OS version is not supported, skipping config'
       next
     end
-    priority_filter = cfg.fetch('priority_filter', '*.*')
-    port = cfg.fetch('port', '514')
-    protocol = cfg.fetch('protocol', 'tcp')
+    priority_filter = cfg['priority_filter'] || '*.*'
+    port = cfg['port'] || '514'
+    protocol = cfg['protocol'] || 'tcp'
     stream_driver = false
-    type = cfg.fetch('type', 'omfwd')
+    type = cfg['type'] || 'omfwd'
     if cfg['tls']
-      port = cfg.fetch('port', '6514')
-      ca_file = cfg.fetch('ca_file', '/etc/ssl/certs/ca-certificates.crt')
+      port = cfg['port'] || '6514'
+      ca_file = cfg['ca_file'] || '/etc/ssl/certs/ca-certificates.crt'
       if node['platform_version'].to_i < 11
         package 'rsyslog-gnutls'
         stream_driver = 'gtls'
@@ -57,19 +57,19 @@ if node.has_key?('rsyslog')
       end
     end
 
-    template "/etc/rsyslog.d/#{cfg.fetch('name')}" do
+    template "/etc/rsyslog.d/20-loghost-#{cfg['name']}.conf" do
       source 'etc_rsyslog.d_loghost-generic.conf.erb'
       owner 'root'
       group 'root'
       mode '0600'
       variables(
         priority_filter: priority_filter,
-        target_ip: cfg.fetch('target_ip'),
+        target_ip: cfg['target'] || cfg['target_ip'],
         port: port,
         protocol: protocol,
         stream_driver: stream_driver,
         ca_file: ca_file,
-        tls: cfg.fetch('tls', false),
+        tls: cfg['tls'] || false,
         type: type
       )
       only_if { cfg.has_key?('target_ip') }
