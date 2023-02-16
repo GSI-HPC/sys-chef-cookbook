@@ -10,7 +10,7 @@ module(load="omrelp")
 if prifilt("<%= @priority_filter %>") then {
     action(
         type="<%= @type %>"
-        target="<%= @target_ip %>"
+        target="<%= @target %>"
         port="<%= @port %>"
         protocol="tcp"
         queue.filename="forwarding"
