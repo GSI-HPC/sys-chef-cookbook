@@ -27,8 +27,7 @@ describe service('rsyslog') do
   it { should be_running }
 end
 
-if os[:release].to_i >= 11
-
+context 'Bullseye or later', if: os[:platform] == 'debian' && os[:release].to_i >= 11 do
   describe package('rsyslog-openssl') do
     it { should be_installed }
   end
@@ -36,7 +35,9 @@ if os[:release].to_i >= 11
   describe file('/etc/rsyslog.d/10-test-ossl.conf') do
     its(:content) { should match 'StreamDriver="ossl"' }
   end
-else
+end
+
+context 'Jessie to Buster', if: os[:platform] == 'debian' && os[:release].to_i <= 10 && os[:release].to_i >= 8 do
   describe package('rsyslog-openssl') do
     it { should_not be_installed }
   end
