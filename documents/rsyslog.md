@@ -1,4 +1,6 @@
-Configure Domain Name Service (DNS) resolution.
+# `sys::rsyslog`
+
+Configure rsyslog ie. logging to one or more central loghosts.
 
 ↪ `attributes/rsyslog.rb`  
 ↪ `recipes/rsyslog.rb`  
@@ -8,7 +10,6 @@ Configure Domain Name Service (DNS) resolution.
 **Attributes**
 
 TODO
-
 
 **Example**
 
