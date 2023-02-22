@@ -34,7 +34,7 @@ if node.has_key?('rsyslog')
     only_if { node['rsyslog'].has_key?('server_ip') }
     notifies :restart, "service[rsyslog]"
   end
-  rsyslog_major_version = %x[/usr/sbin/rsyslogd -v].lines.first.strip.gsub(/\Arsyslogd\s+(\d+).*\z/, '\1').to_i
+  rsyslog_major_version = node['packages']['rsyslog']['version'].to_i
 
   node['sys']['rsyslog']['loghosts'].each do |name, cfg|
     if rsyslog_major_version < 8
