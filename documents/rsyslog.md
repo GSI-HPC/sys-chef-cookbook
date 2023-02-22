@@ -31,14 +31,14 @@ sys: {
   rsylog: {
     loghosts: {
       # minimal example, plain tcp
-      tcp-loghost: { target: 'loghost1.example.com' },
+      'tcp-loghost.example.com': { },
       # minimal example with tls:
-      tls-loghost: {
+      'tls-loghost.example.org': {
         tls: true,
         target_ip: 'loghost2.example.com'
-	  },
+      },
       # tls, all options
-	  tls-all: {
+      'tls-all.example.com': {
         ca_file: '/etc/ssl/certs/my_cert.pem',
         port: '1234',
         priority_filter: 'auth,authpriv.*',
@@ -46,7 +46,7 @@ sys: {
         target: 'loghost3.example.org',
         tls: 'on',
         type: 'omfwd'
-	  }
+      }
     }
   }
 }
