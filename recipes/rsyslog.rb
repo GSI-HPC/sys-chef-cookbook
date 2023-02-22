@@ -67,7 +67,7 @@ if node.has_key?('rsyslog')
       variables(
         name: name,
         priority_filter: priority_filter,
-        target: cfg['target'] || cfg['target_ip'],
+        target: cfg['target'] || name,
         port: port,
         protocol: protocol,
         stream_driver: stream_driver,
@@ -75,7 +75,6 @@ if node.has_key?('rsyslog')
         tls: cfg['tls'] || false,
         type: type
       )
-      only_if { cfg.has_key?('target_ip') || cfg.has_key?('target') }
       notifies :restart, 'service[rsyslog]'
     end
   end
