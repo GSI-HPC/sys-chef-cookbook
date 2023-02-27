@@ -2,7 +2,7 @@
 # extremly basic loghost setup
 #
 
-if node.has_key?('rsyslog')
+return if node['sys']['rsyslog'].empty?
 
   package "rsyslog"
 
