@@ -21,19 +21,6 @@ return if node['sys']['rsyslog'].empty?
     notifies :restart, "service[rsyslog]"
   end
 
-  # Configuration file for the remote loghost:
-  template '/etc/rsyslog.d/loghost.conf' do
-    source 'etc_rsyslog.d_loghost.conf.erb'
-    owner "root"
-    group "root"
-    mode "0600"
-    variables(
-      filter: node['rsyslog']['filter'],
-      tcp: node['rsyslog']['protocol'] == 'tcp'
-    )
-    only_if { node['rsyslog'].has_key?('server_ip') }
-    notifies :restart, "service[rsyslog]"
-  end
   rsyslog_major_version = node['packages']['rsyslog']['version'].to_i
 
   node['sys']['rsyslog']['loghosts'].each do |name, cfg|
