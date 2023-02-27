@@ -27,7 +27,7 @@ describe file('/etc/nsswitch.conf') do
 
   its(:content) { should match(/^foo:\s+bar$/) }
   its(:content) { should match(/^passwd:\s+files$/) }
-  its(:content) { should match(/^netgroup:\s+compat$/) }
+  its(:content) { should match(/^netgroup:\s+files$/) }
 
   # standard settings
   its(:content) { should match(/^group:\s+files$/) }
