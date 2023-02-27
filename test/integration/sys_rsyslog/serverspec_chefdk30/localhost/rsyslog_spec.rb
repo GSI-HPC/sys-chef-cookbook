@@ -35,6 +35,10 @@ context 'Bullseye or later', if: os[:platform] == 'debian' && os[:release].to_i 
   describe file('/etc/rsyslog.d/10-test-ossl.conf') do
     its(:content) { should match 'StreamDriver="ossl"' }
   end
+
+  describe file('/etc/rsyslog.d/loghost.conf') do
+    it { should_not exist }
+  end
 end
 
 context 'Jessie to Buster', if: os[:platform] == 'debian' && os[:release].to_i <= 10 && os[:release].to_i >= 8 do

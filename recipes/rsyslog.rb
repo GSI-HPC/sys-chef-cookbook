@@ -23,6 +23,12 @@ return if node['sys']['rsyslog'].empty?
 
   rsyslog_major_version = node['packages']['rsyslog']['version'].to_i
 
+  file `/etc/rsyslog.d/loghost.conf` do
+    action :delete
+    not_if { node['sys']['rsyslog']['loghosts'].empty?
+    only_if { rsyslog_major_version >= 8 }
+  end
+
   node['sys']['rsyslog']['loghosts'].each do |name, cfg|
     if rsyslog_major_version < 8
       Chef::Log.warn "rsyslog must be at least version 8, skipping config for loghost #{name}."
