@@ -15,8 +15,8 @@ if node.has_key?('rsyslog')
     group "root"
     mode "0644"
     variables(
-	      :ratelimit_burst => node['sys']['rsyslog']['ratelimit_burst'],
-	      :ratelimit_interval => node['sys']['rsyslog']['ratelimit_interval']
+      :ratelimit_burst => node['sys']['rsyslog']['ratelimit_burst'],
+      :ratelimit_interval => node['sys']['rsyslog']['ratelimit_interval']
     )
     notifies :restart, "service[rsyslog]"
   end
