@@ -26,16 +26,16 @@
 return if node['sys']['nsswitch'].empty?
 
 defaults = {
-  passwd:    'compat',
-  group:     'compat',
-  shadow:    'compat',
+  passwd:    'files',
+  group:     'files',
+  shadow:    'files',
   gshadow:   'files',
   hosts:     ['files', 'dns'],
   networks:  'files',
-  protocols: ['db', 'files'],
-  services:  ['db', 'files'],
-  ethers:    ['db', 'files'],
-  rpc:       ['db', 'files'],
+  protocols: 'files',
+  services:  'files',
+  ethers:    'files',
+  rpc:       'files',
 }
 
 # turn hash keys into Strings before merging to avoid dupes:
