@@ -35,6 +35,9 @@ Vagrant.configure(2) do |config|
      sudo mkdir /home/mchammer
      sudo chattr +i /home/mchammer   # can't touch this
      sudo gem install chef-vault --version '< 4'
+     # for testing recipe rsyslog
+     sudo mkdir /etc/rsyslog.d
+     sudo touch /etc/rsyslog.d/loghost.conf
   SHELL
 
   # configure proxy if required:
