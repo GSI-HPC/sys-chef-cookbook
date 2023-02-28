@@ -56,12 +56,8 @@ template "/etc/nslcd.conf" do
     :servers => node['sys']['ldap']['servers'],
     :searchbase => node['sys']['ldap']['searchbase'],
     :realm => node['sys']['ldap']['realm'].upcase,
-    :nss_initgroups_ignoreusers => begin
-                                     node['sys']['ldap']['nss_initgroups_ignoreusers']
-                                   rescue NoMethodError
-                                     nil
-                                   end,
-    :nslcd => begin node['sys']['ldap']['nslcd'] rescue NoMethodError nil end
+    :nss_initgroups_ignoreusers => node['sys']['ldap']['nss_initgroups_ignoreusers'],
+    :nslcd => node['sys']['ldap']['nslcd']
   )
 end
 
@@ -76,7 +72,7 @@ template "/etc/ldap/ldap.conf" do
     :servers => node['sys']['ldap']['servers'],
     :searchbase => node['sys']['ldap']['searchbase'],
     :realm => node['sys']['ldap']['realm'].upcase,
-    :cacert => begin node['sys']['ldap']['cacert'] rescue nil end
+    :cacert => node['sys']['ldap']['cacert']
   )
 end
 

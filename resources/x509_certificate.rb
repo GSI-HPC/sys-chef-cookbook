@@ -23,6 +23,7 @@
 #
 
 if Gem::Requirement.new('>= 12.15').satisfied_by?(Gem::Version.new(Chef::VERSION))
+  require 'chef-vault'
 
   action_class do
     def certificate_file_content

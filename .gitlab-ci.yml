@@ -25,6 +25,7 @@ kitchen:
   stage: kitchen
   resource_group: $CI_JOB_NAME-$CI_PROJECT_NAME
   script:
+    - sleep $((RANDOM%30))
     - kitchen test $SUITE-$PLATFORM
   after_script:
     # make sure failed runs are cleaned up too:
