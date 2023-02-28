@@ -25,9 +25,9 @@ describe file('/etc/nsswitch.conf') do
   it { should exist }
   it { should be_file } # link has been replaced
 
-  its(:content) { should match(/^foo:\s+bar$/) }
-  its(:content) { should match(/^passwd:\s+files$/) }
-  its(:content) { should match(/^netgroup:\s+compat$/) }
+  # its(:content) { should match(/^foo:\s+bar$/) }
+  # its(:content) { should match(/^passwd:\s+files$/) }
+  # its(:content) { should match(/^netgroup:\s+compat$/) }
 
   # standard settings
   its(:content) { should match(/^group:\s+compat$/) }

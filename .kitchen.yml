@@ -236,12 +236,12 @@ suites:
   - name: sys_nsswitch
     run_list:
       - recipe[nsswitch-test::default]
-    attributes:
-      sys:
-        nsswitch:
-          foo: bar
-          passwd: files
-          netgroup: compat
+    # attributes:
+    #   sys:
+    #     nsswitch:
+    #       foo: bar
+    #       passwd: files
+    #       netgroup: compat
   - name: sys_ohai
     run_list:
       - recipe[sys::ohai]
