@@ -1,6 +1,11 @@
 # Changelog
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
+## [1.72.2] - 2023-02-28
+
+### Added
+- [`resources/x509_certificate`] Add info where keys are coming from to loglevel info.
+
 ## [1.72.0] - 2023-01-19
 
 ### Added
