@@ -23,16 +23,16 @@
 #
 
 defaults = {
-  passwd:    'compat',
-  group:     'compat',
-  shadow:    'compat',
+  passwd:    'files',
+  group:     'files',
+  shadow:    'files',
   gshadow:   'files',
   hosts:     ['files', 'dns'],
   networks:  'files',
-  protocols: ['db', 'files'],
-  services:  ['db', 'files'],
-  ethers:    ['db', 'files'],
-  rpc:       ['db', 'files'],
+  protocols: 'files',
+  services:  'files',
+  ethers:    'files',
+  rpc:       'files',
 }
 
 # turn hash keys into Strings before merging to avoid dupes:
@@ -47,11 +47,7 @@ end
 if Gem::Requirement.new('>= 12.15')
      .satisfied_by?(Gem::Version.new(Chef::VERSION))
 
-  sys_nsswitch_config 'default' do
-    action :nothing
-  end
-
-  # Use the LWRP if the chef version is new enough
+  # Use the custom resource if the chef version is new enough
   config.each do |db, srcs|
     sys_nsswitch db do
       sources srcs

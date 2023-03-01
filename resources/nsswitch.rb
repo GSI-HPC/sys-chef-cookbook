@@ -21,7 +21,7 @@
 if Gem::Requirement.new('>= 12.15')
      .satisfied_by?(Gem::Version.new(Chef::VERSION))
 
-  provides :sys_nsswitch
+  provides :nsswitch
 
   property :database, String, name_property: true
   property :sources, [String, Array, Hash],
@@ -41,7 +41,7 @@ if Gem::Requirement.new('>= 12.15')
   action :create do
     return unless new_resource.notify_nsswitch_config
     with_run_context :root do
-      edit_resource!('sys_nsswitch_config', 'default') do |nss_resource|
+      edit_resource('nsswitch_config', 'default') do |nss_resource|
         old = config.dup
         old[nss_resource.database] ||= {}
         old[nss_resource.database].merge! nss_resource.sources
