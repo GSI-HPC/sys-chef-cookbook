@@ -25,20 +25,17 @@ describe file('/etc/nsswitch.conf') do
   it { should exist }
   it { should be_file } # link has been replaced
 
-  # its(:content) { should match(/^foo:\s+bar$/) }
-  # its(:content) { should match(/^passwd:\s+files$/) }
-  # its(:content) { should match(/^netgroup:\s+compat$/) }
-
   # standard settings
-  its(:content) { should match(/^group:\s+compat$/) }
-  its(:content) { should match(/^shadow:\s+compat$/) }
+  its(:content) { should match(/^passwd:\s+files ldap$/) }
+  its(:content) { should match(/^group:\s+ldap files$/) }
+  its(:content) { should match(/^shadow:\s+files$/) }
   its(:content) { should match(/^gshadow:\s+files$/) }
   its(:content) { should match(/^hosts:\s+files dns$/) }
   its(:content) { should match(/^networks:\s+files$/) }
-  its(:content) { should match(/^protocols:\s+db files$/) }
-  its(:content) { should match(/^services:\s+db files$/) }
-  its(:content) { should match(/^ethers:\s+db files$/) }
-  its(:content) { should match(/^rpc:\s+db files$/) }
+  its(:content) { should match(/^protocols:\s+files$/) }
+  its(:content) { should match(/^services:\s+files$/) }
+  its(:content) { should match(/^ethers:\s+files$/) }
+  its(:content) { should match(/^rpc:\s+files$/) }
   its(:content) { should_not match(/sources:\s+nis/) }
 end
 

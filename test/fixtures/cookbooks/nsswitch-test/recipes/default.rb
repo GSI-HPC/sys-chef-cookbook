@@ -96,4 +96,19 @@ if Gem::Requirement.new('>= 12.15')
       'merge50' => 50
     })
   end
+
+  # should yield `passwd: files ldap`
+  sys_nsswitch 'passwd' do
+    sources({
+      'ldap'  => 20
+    })
+  end
+
+  # should yield `passwd: ldap files`, because priority of files will be 30 insted of 10
+  sys_nsswitch 'group' do
+    sources({
+      'files' => 30,
+      'ldap'  => 20
+    })
+  end
 end
