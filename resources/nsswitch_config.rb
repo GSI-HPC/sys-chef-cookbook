@@ -61,7 +61,7 @@ if Gem::Requirement.new('>= 12.15')
       rpc:       { 'files' => 10 },
     }
 
-    default_config.merge!(new_resource.config) do |k,default_v,config_v|
+    default_config.merge!(new_resource.config) do |_k,default_v,config_v|
       default_v.merge(config_v)
     end
 
