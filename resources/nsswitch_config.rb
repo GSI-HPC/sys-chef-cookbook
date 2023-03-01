@@ -22,8 +22,6 @@
 if Gem::Requirement.new('>= 12.15')
      .satisfied_by?(Gem::Version.new(Chef::VERSION))
 
-  provides :nsswitch_config
-
   action_class do
     def sort_sources(config)
       sorted_sources = {}
