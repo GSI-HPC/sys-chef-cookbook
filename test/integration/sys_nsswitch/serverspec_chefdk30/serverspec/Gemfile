@@ -9,7 +9,7 @@ if ruby_version < Gem::Version.new('2.2.0')
   gems['net-ssh'] = '< 5'
 elsif ruby_version < Gem::Version.new('2.6.0')
   # net-ssh >= 7 requires ruby 2.6
-  gems['net-ssh'] = '< 7'
+  gems['net-ssh'] = '= 6.1.0'
 end
 
 gems.each do |name, constraint|
