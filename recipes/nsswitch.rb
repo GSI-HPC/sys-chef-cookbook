@@ -2,7 +2,7 @@
 # Cookbook Name:: sys
 # Recipe:: nsswitch
 #
-# Copyright 2013-2021 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+# Copyright 2013-2023 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
 #
 # Authors:
 #  Christopher Huhn   <c.huhn@gsi.de>
@@ -21,9 +21,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
-# do nothing until requested
-return if node['sys']['nsswitch'].empty?
 
 defaults = {
   passwd:    'compat',
@@ -60,7 +57,7 @@ if Gem::Requirement.new('>= 12.15')
       sources srcs
     end
   end
-else
+elsif ! node['sys']['nsswitch'].empty?
   template "/etc/nsswitch.conf" do
     source "etc_nsswitch.conf.erb"
     mode '0644'
