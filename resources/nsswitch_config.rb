@@ -48,6 +48,21 @@ if Gem::Requirement.new('>= 12.15')
   default_action :create
 
   action :create do
+    if new_resource.config.empty?
+      new_resource.config = {
+        passwd:    { 'files' => 10 },
+        group:     { 'files' => 10 },
+        shadow:    { 'files' => 10 },
+        gshadow:   { 'files' => 10 },
+        hosts:     { 'files' => 10, 'dns' => 20 },
+        networks:  { 'files' => 10 },
+        protocols: { 'files' => 10 },
+        services:  { 'files' => 10 },
+        ethers:    { 'files' => 10 },
+        rpc:       { 'files' => 10 },
+      }
+    end
+
     template new_resource.filename do
       source 'etc_nsswitch.conf.erb'
       variables(
