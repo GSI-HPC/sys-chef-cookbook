@@ -45,12 +45,15 @@ config.merge!(node['sys']['nsswitch']) do |_k,v1,v2|
 end
 
 if Gem::Requirement.new('>= 12.15')
-     .satisfied_by?(Gem::Version.new(Chef::VERSION))
+    .satisfied_by?(Gem::Version.new(Chef::VERSION))
 
   # Use the custom resource if the chef version is new enough
   config.each do |db, srcs|
-    sys_nsswitch db do
-      sources srcs
+    srcs.each_with_index do |src, i|
+      sys_nsswitch db do
+        source src
+        priority 10*i
+      end
     end
   end
 elsif ! node['sys']['nsswitch'].empty?

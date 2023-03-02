@@ -44,22 +44,26 @@ if Gem::Requirement.new('>= 12.15')
   property :group, String, default: 'root'
   property :config, Hash, default: {}
   property :nsswitch_name, String, name_property: true
+  property :use_defaults, [true, false], default: true
 
   default_action :create
 
   action :create do
-    default_config = {
-      passwd:    { 'files' => 10 },
-      group:     { 'files' => 10 },
-      shadow:    { 'files' => 10 },
-      gshadow:   { 'files' => 10 },
-      hosts:     { 'files' => 10, 'dns' => 20 },
-      networks:  { 'files' => 10 },
-      protocols: { 'files' => 10 },
-      services:  { 'files' => 10 },
-      ethers:    { 'files' => 10 },
-      rpc:       { 'files' => 10 },
-    }
+    default_config = {}
+    if new_resource.use_defaults
+      default_config = {
+        passwd:    { 'files' => 10 },
+        group:     { 'files' => 10 },
+        shadow:    { 'files' => 10 },
+        gshadow:   { 'files' => 10 },
+        hosts:     { 'files' => 10, 'dns' => 20 },
+        networks:  { 'files' => 10 },
+        protocols: { 'files' => 10 },
+        services:  { 'files' => 10 },
+        ethers:    { 'files' => 10 },
+        rpc:       { 'files' => 10 },
+      }
+    end
 
     default_config.merge!(new_resource.config) do |_k,default_v,config_v|
       default_v.merge(config_v)
