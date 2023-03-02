@@ -36,6 +36,7 @@ if Gem::Requirement.new('>= 12.15').satisfied_by?(Gem::Version.new(Chef::VERSION
     end
 
     def key_file_content
+      Chef::Log.info "Getting item #{key_vault_item} from vault #{new_resource.chef_vault}"
       key_item = chef_vault_item(new_resource.chef_vault, key_vault_item)
       key_item['file-content']
     end
