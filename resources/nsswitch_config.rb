@@ -22,8 +22,6 @@
 if Gem::Requirement.new('>= 12.15')
      .satisfied_by?(Gem::Version.new(Chef::VERSION))
 
-  provides :sys_nsswitch_config
-
   action_class do
     def sort_sources(config)
       sorted_sources = {}
@@ -46,14 +44,35 @@ if Gem::Requirement.new('>= 12.15')
   property :group, String, default: 'root'
   property :config, Hash, default: {}
   property :nsswitch_name, String, name_property: true
+  property :use_defaults, [true, false], default: true
 
   default_action :create
 
   action :create do
+    default_config = {}
+    if new_resource.use_defaults
+      default_config = {
+        passwd:    { 'files' => 10 },
+        group:     { 'files' => 10 },
+        shadow:    { 'files' => 10 },
+        gshadow:   { 'files' => 10 },
+        hosts:     { 'files' => 10, 'dns' => 20 },
+        networks:  { 'files' => 10 },
+        protocols: { 'files' => 10 },
+        services:  { 'files' => 10 },
+        ethers:    { 'files' => 10 },
+        rpc:       { 'files' => 10 },
+      }
+    end
+
+    default_config.merge!(new_resource.config) do |_k,default_v,config_v|
+      default_v.merge(config_v)
+    end
+
     template new_resource.filename do
       source 'etc_nsswitch.conf.erb'
       variables(
-        config: sort_sources(new_resource.config)
+        config: sort_sources(default_config)
       )
       mode new_resource.mode
       owner new_resource.owner

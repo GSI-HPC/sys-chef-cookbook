@@ -21,31 +21,20 @@
 if Gem::Requirement.new('>= 12.15')
      .satisfied_by?(Gem::Version.new(Chef::VERSION))
 
-  provides :sys_nsswitch
-
   property :database, String, name_property: true
-  property :sources, [String, Array, Hash],
-           coerce: proc { |sources|
-             if sources.instance_of?(Hash)
-               sources
-             else
-               sources_as_hash = {}
-               Array(sources).each_with_index do |s, i|
-                 sources_as_hash[s] = 10*(i + 1)
-               end
-               sources_as_hash
-             end
-           }
+  property :source, String
+  property :priority, Integer, default: 20
   property :notify_nsswitch_config, [true, false], default: true
 
   action :create do
     return unless new_resource.notify_nsswitch_config
     with_run_context :root do
-      edit_resource!('sys_nsswitch_config', 'default') do |nss_resource|
+      edit_resource('sys_nsswitch_config', 'default') do |nss_resource|
         old = config.dup
         old[nss_resource.database] ||= {}
-        old[nss_resource.database].merge! nss_resource.sources
+        old[nss_resource.database][nss_resource.source] = nss_resource.priority
         config(old)
+        action :nothing
         delayed_action :create
       end
     end

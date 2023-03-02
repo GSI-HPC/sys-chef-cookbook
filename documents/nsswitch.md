@@ -4,7 +4,15 @@
 ↪ `resources/nsswitch_config.rb`  
 ↪ `recipes/nsswitch.rb`  
 
-Configures the Name Service Switch (NSS) in the file `/etc/nsswitch.conf`.
+Configures the Name Service Switch (NSS) in the file `/etc/nsswitch.conf`
+using node attributes and/or the `sys_nsswitch` custom ressource.
+
+## Recipe
+
+With Chef versions > 12.15 and in contrast to the *modus operandi* of other `sys` recipes,
+adding `sys::nsswitch` to a node's *run list* without defining
+corresponding attributes will **not** result in a no-op
+but will enforce the vanilla nsswitch.conf settings normally shipped by Debian.
 
 ## Attributes
 
@@ -20,7 +28,9 @@ default['sys']['nsswitch'] = {
 
 ## Custom Resource
 
-Use the `sys_nsswitch`-resource to configure a database like so
+To avoid problems with attribute merging and recipe ivocation order
+the `sys_nsswitch` resource can be utilized to configure a database
+directly from another recipe:
 
 ```ruby
 sys_nsswitch 'automount' do
@@ -28,7 +38,8 @@ sys_nsswitch 'automount' do
 end
 ```
 
-In case of conflict with other recipes, provide a sources as hash with priority as value.
+In case of a conflict with other recipes, an order of the `sources` may be enforced by as a hash
+with priorities as values.
 If two or more sources have the same priority, they will be ordered lexically.
 
 ```ruby

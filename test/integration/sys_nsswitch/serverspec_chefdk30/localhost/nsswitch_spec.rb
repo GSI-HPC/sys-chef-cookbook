@@ -25,12 +25,9 @@ describe file('/etc/nsswitch.conf') do
   it { should exist }
   it { should be_file } # link has been replaced
 
-  its(:content) { should match(/^foo:\s+bar$/) }
-  its(:content) { should match(/^passwd:\s+files$/) }
-  its(:content) { should match(/^netgroup:\s+files$/) }
-
   # standard settings
-  its(:content) { should match(/^group:\s+files$/) }
+  its(:content) { should match(/^passwd:\s+files ldap$/) }
+  its(:content) { should match(/^group:\s+ldap files$/) }
   its(:content) { should match(/^shadow:\s+files$/) }
   its(:content) { should match(/^gshadow:\s+files$/) }
   its(:content) { should match(/^hosts:\s+files dns$/) }
@@ -43,8 +40,5 @@ describe file('/etc/nsswitch.conf') do
 end
 
 describe file('/etc/nsswitch.conf'), if:  os[:release].to_i >= 10 do
-  its(:content) { should match(/^hash:\s+prio10 prio20$/) }
-  its(:content) { should match(/^array:\s+array1 array2$/) }
-  its(:content) { should match(/^merge:\s+merge9 merge10a merge10b merge10c merge20a merge30a merge30b merge40 merge50 merge20b$/) }
-
+  its(:content) { should match(/^merge:\s+merge10a merge10b merge20a merge20b merge30 merge40$/) }
 end

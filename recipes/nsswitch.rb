@@ -2,7 +2,7 @@
 # Cookbook Name:: sys
 # Recipe:: nsswitch
 #
-# Copyright 2013-2021 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+# Copyright 2013-2023 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
 #
 # Authors:
 #  Christopher Huhn   <c.huhn@gsi.de>
@@ -21,9 +21,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
-# do nothing until requested
-return if node['sys']['nsswitch'].empty?
 
 defaults = {
   passwd:    'files',
@@ -48,19 +45,18 @@ config.merge!(node['sys']['nsswitch']) do |_k,v1,v2|
 end
 
 if Gem::Requirement.new('>= 12.15')
-     .satisfied_by?(Gem::Version.new(Chef::VERSION))
+    .satisfied_by?(Gem::Version.new(Chef::VERSION))
 
-  sys_nsswitch_config 'default' do
-    action :nothing
-  end
-
-  # Use the LWRP if the chef version is new enough
+  # Use the custom resource if the chef version is new enough
   config.each do |db, srcs|
-    sys_nsswitch db do
-      sources srcs
+    Array(srcs).each_with_index do |src, i|
+      sys_nsswitch db do
+        source src
+        priority 10*i
+      end
     end
   end
-else
+elsif ! node['sys']['nsswitch'].empty?
   template "/etc/nsswitch.conf" do
     source "etc_nsswitch.conf.erb"
     mode '0644'
