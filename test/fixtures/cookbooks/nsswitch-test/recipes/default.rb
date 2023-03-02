@@ -61,7 +61,7 @@ if Gem::Requirement.new('>= 12.15')
 
   # should yield `passwd: files ldap`
   sys_nsswitch 'passwd' do
-    sources 'ldap'
+    source 'ldap'
     priority 20
   end
 
