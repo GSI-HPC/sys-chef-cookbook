@@ -33,6 +33,7 @@ kitchen:
   parallel:
     matrix:
       - PLATFORM:
+        - stretch
         - buster
         - bullseye
         SUITE:
