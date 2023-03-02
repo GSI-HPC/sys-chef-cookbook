@@ -34,6 +34,7 @@ if Gem::Requirement.new('>= 12.15')
         old[nss_resource.database] ||= {}
         old[nss_resource.database][nss_resource.source] = nss_resource.priority
         config(old)
+        action :nothing
         delayed_action :create
       end
     end
