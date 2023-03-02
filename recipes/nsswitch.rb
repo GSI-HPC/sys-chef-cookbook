@@ -49,7 +49,7 @@ if Gem::Requirement.new('>= 12.15')
 
   # Use the custom resource if the chef version is new enough
   config.each do |db, srcs|
-    srcs.each_with_index do |src, i|
+    Array(srcs).each_with_index do |src, i|
       sys_nsswitch db do
         source src
         priority 10*i
