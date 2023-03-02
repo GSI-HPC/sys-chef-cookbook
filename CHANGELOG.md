@@ -1,6 +1,14 @@
-# Changelog
+# `sys` Cookbook Changelog
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
+
+## **[2.0.0]** - Unreleased
+
+- **Support for Debian Bullseye and cinc-client (omnibus)**
+- Drop dependency on `line` cookbook
+- [`chef`] Detect `ChefUtils::Dist::Infra::SHORT` and install to `/etc/cinc` if appropriate
+- [`nsswitch`] Use new custom resource following accumulator pattern (cf. !32)
+- [`resource::sys_mail_alias`] Replace `line` resources with `Chef::Util::FileEdit`
 
 ## [1.72.2] - 2023-02-28
 
@@ -10,7 +18,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [1.72.1] - 2023-01-20
 
 ### Changed
-- [`libraries/sys_helpers_nftables`] Debugging output removed
+- [`libraries/sys_helpers_nftables`] Debugging output removed.
 
 ## [1.72.0] - 2023-01-19
 
@@ -183,11 +191,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Send chef-client output to logfile in systemd-timer mode (!39)
 - Shorter PGP key for `apt-key` test - goodbye fefe (!41)
 - Catch missing home dir write permissions in `sys_ssh_authorize`
-
-## [1.64.0] - 2022-02-25
-### Added
-- Use accumulator pattern to create `/etc/nsswitch.conf`, if the
-chef-version is 12.15 or higher.
 
 ## [1.63.0] - 2022-02-07
 

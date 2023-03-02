@@ -15,4 +15,4 @@ supports         'debian'
 
 depends          'chef-vault'
 
-version          '1.72.2'
+version          '2.0.0'
