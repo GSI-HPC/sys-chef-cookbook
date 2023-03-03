@@ -21,7 +21,7 @@ chefspec:
     - rake chefspec
   allow_failure: true
 
-kitchen:
+.kitchen:
   stage: kitchen
   resource_group: $CI_JOB_NAME-$CI_PROJECT_NAME
   script:
@@ -32,10 +32,6 @@ kitchen:
     - kitchen destroy $SUITE-$PLATFORM
   parallel:
     matrix:
-      - PLATFORM:
-        - stretch
-        - buster
-        - bullseye
         SUITE:
         - accounts
         - apt
@@ -58,6 +54,22 @@ kitchen:
         - systemd
         - time
         - x509
+
+# circumvent limit of 50 parallel jobs:
+stretch:
+  extends: .kitchen
+  variables:
+    PLATFORM: stretch
+
+buster:
+  extends: .kitchen
+  variables:
+    PLATFORM: buster
+
+bullseye:
+  extends: .kitchen
+  variables:
+    PLATFORM: bullseye
 
 .post:
    script:
