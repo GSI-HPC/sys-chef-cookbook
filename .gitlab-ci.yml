@@ -32,7 +32,7 @@ chefspec:
     - kitchen destroy $SUITE-$PLATFORM
   parallel:
     matrix:
-        SUITE:
+      - SUITE:
         - accounts
         - apt
         - autofs
