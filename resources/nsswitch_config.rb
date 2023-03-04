@@ -71,6 +71,7 @@ if Gem::Requirement.new('>= 12.15')
 
     template new_resource.filename do
       source 'etc_nsswitch.conf.erb'
+      cookbook 'sys'
       variables(
         config: sort_sources(default_config)
       )
