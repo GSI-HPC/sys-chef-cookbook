@@ -62,7 +62,7 @@ if Gem::Requirement.new('>= 12.15')
         services:  { 'files' => 10 },
         ethers:    { 'files' => 10 },
         rpc:       { 'files' => 10 },
-      }
+      }.map { |k,v| [k.to_s, v] }.to_h
     end
 
     default_config.merge!(new_resource.config) do |_k,default_v,config_v|
