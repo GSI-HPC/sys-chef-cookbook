@@ -20,8 +20,6 @@
 # limitations under the License.
 #
 
-include_recipe 'sys::nsswitch'
-
 if Gem::Requirement.new('>= 12.15')
     .satisfied_by?(Gem::Version.new(Chef::VERSION))
 
@@ -75,4 +73,6 @@ if Gem::Requirement.new('>= 12.15')
     source 'files'
     priority 30
   end
+else
+  include_recipe 'sys::nsswitch'
 end
