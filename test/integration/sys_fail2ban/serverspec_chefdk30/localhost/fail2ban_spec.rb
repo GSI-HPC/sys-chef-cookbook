@@ -44,19 +44,14 @@ describe command 'fail2ban-client get sshd bantime' do
   its(:stdout) { should eq "1234\n" }
 end
 
-@my_ip = begin
-           host_inventory['ohai']['ipaddress']
-         rescue NoMethodError
-           nil
-         end
-
-context 'test the banning', if: @my_ip && !@my_ip.empty? do
+context 'test the banning'
 
   before :all do
     # unsuccessfully connect to localhost via its public IP multiple times:
     cmd = "ssh -o StrictHostKeyChecking=no -o BatchMode=yes"\
           " -o ConnectTimeout=10"\
-          " hackerman@#{@my_ip}"
+          " hackerman@#{host_inventory['ohai']['ipaddress']}"
+    pp cmd
     5.times do
       `#{cmd}`
       sleep 1
@@ -74,7 +69,7 @@ context 'test the banning', if: @my_ip && !@my_ip.empty? do
     its(:content) do
       should(
         match(
-          %r{fail2ban.actions *\[\d+\]: NOTICE +\[sshd\] Ban #{@my_ip}$}
+          %r{fail2ban.actions *\[\d+\]: NOTICE +\[sshd\] Ban #{host_inventory['ohai']['ipaddress']}$}
         )
       )
     end
@@ -83,7 +78,7 @@ context 'test the banning', if: @my_ip && !@my_ip.empty? do
   describe command 'fail2ban-client status sshd' do
     its(:exit_status) { should be_zero }
     its(:stdout) do
-      should match %r{`- Banned IP list:\s*#{@my_ip}}
+      should match %r{`- Banned IP list:\s*#{host_inventory['ohai']['ipaddress']}}
     end
     its(:stderr) { should be_empty }
   end
