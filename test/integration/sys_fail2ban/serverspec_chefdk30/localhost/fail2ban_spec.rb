@@ -44,7 +44,7 @@ describe command 'fail2ban-client get sshd bantime' do
   its(:stdout) { should eq "1234\n" }
 end
 
-context 'test the banning'
+context 'test the banning' do
 
   before :all do
     # unsuccessfully connect to localhost via its public IP multiple times:
