@@ -50,7 +50,7 @@ end
            nil
          end
 
-context 'test the banning', if: @my_ip do
+context 'test the banning', if: @my_ip && !@my_ip.empty? do
 
   before :all do
     # unsuccessfully connect to localhost via its public IP multiple times:
