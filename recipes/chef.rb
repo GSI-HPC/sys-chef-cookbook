@@ -122,7 +122,18 @@ file node['sys']['chef']['client_key'] do
   only_if { ::File.exist?(node['sys']['chef']['client_key']) }
 end
 
-if node['sys']['chef']['init_style'] == 'systemd-timer'
+# systemd-timer setup required systemd_unit resource which only became available in
+#  Chef 12.11
+if node['sys']['chef']['init_style'] == 'systemd-timer' &&
+   Gem::Requirement.new('< 12.11')
+     .satisfied_by?(Gem::Version.new(Chef::VERSION))
+  Chef::Log.warn "Chef #{Chef::VERSION} too old for systemd-timer config of chef-client. Falling back to daemon mode"
+  init_style = 'daemon'
+else
+  init_style = node['sys']['chef']['init_style']
+end
+
+if init_style == 'systemd-timer'
 
   # creates a one shot service and a systemd.timer to trigger it
 

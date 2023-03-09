@@ -2,7 +2,7 @@
 # Cookbook Name:: sys
 # Recipe:: ldap
 #
-# Copyright 2013-2022 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+# Copyright 2013-2023 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
 #
 # Authors:
 #  Christopher Huhn    <c.huhn@gsi.de>
@@ -26,7 +26,7 @@
 
 return if node['sys']['ldap'].empty?
 
-%w[ldap-utils libldap-common libnss-ldapd nslcd].each do |p|
+%w[ldap-utils libnss-ldapd nslcd].each do |p|
   package p
 end
 

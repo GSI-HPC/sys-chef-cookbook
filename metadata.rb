@@ -1,6 +1,6 @@
 name             'sys'
-maintainer       'GSI HPC department'
-maintainer_email 'hpc@gsi.de'
+maintainer       'GSI IT department'
+maintainer_email 'linuxgroup@gsi.de'
 license          'Apache-2.0'
 description      'System Software configuration and maintenance'
 long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
@@ -15,4 +15,4 @@ supports         'debian'
 
 depends          'chef-vault'
 
-version          '2.0.0'
+version          '2.0.1'

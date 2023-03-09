@@ -2,7 +2,13 @@
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-## **[2.0.0]** - Unreleased
+## [2.0.1] - 2023-03-09
+
+### Fixed
+- [`chef`] systemd-timer mode requires chef-client >= 12.11
+- [`ldap`] Don't explicitly install `libldap-common`: Does not exist on Jessie, implicitly installed elsewhere
+
+## **[2.0.0]** - 2023-03-09
 
 - **Support for Debian Bullseye and cinc-client (omnibus)**
 - Drop dependency on `line` cookbook
