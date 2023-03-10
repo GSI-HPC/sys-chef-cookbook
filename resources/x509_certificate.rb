@@ -2,7 +2,7 @@
 # Cookbook:: sys
 # Resource:: x509_certificate
 #
-# Copyright:: 2022 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+# Copyright:: 2022-2023 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
 #
 # Authors:
 #  Matthias Pausch (m.pausch@gsi.de)
@@ -23,7 +23,11 @@
 #
 
 if Gem::Requirement.new('>= 12.15').satisfied_by?(Gem::Version.new(Chef::VERSION))
-  require 'chef-vault'
+  begin
+    require 'chef-vault'
+  rescue LoadError
+    Chef::Log.warn "chef-vault gem not found. sys_x509_certificate cannot be used"
+  end
 
   action_class do
     def certificate_file_content
