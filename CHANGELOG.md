@@ -5,6 +5,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [2.0.1] - 2023-03-09
 
 ### Fixed
+- [`autofs`] Invoke `sys_nsswitch` the proper way
 - [`chef`] systemd-timer mode requires chef-client >= 12.11
 - [`ldap`] Don't explicitly install `libldap-common`: Does not exist on Jessie, implicitly installed elsewhere
 

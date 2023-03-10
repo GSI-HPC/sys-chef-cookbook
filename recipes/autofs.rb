@@ -133,7 +133,13 @@ if node['sys']['autofs']['ldap']
        .satisfied_by?(Gem::Version.new(Chef::VERSION))
     # 'automount: files' is the implicit default for /etc/nsswitch.conf
     sys_nsswitch 'automount' do
-      source 'files ldap'
+      source 'files'
+      priority 10
+    end
+
+    sys_nsswitch 'automount' do
+      source 'ldap'
+      priority 20
     end
   end
 end
