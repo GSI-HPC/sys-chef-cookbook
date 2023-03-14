@@ -71,12 +71,6 @@ bullseye:
   variables:
     PLATFORM: bullseye
 
-bookworm:
-  allow_failure: true
-  extends: .kitchen
-  variables:
-    PLATFORM: bookworm
-
 .post:
    script:
     - kitchen destroy
