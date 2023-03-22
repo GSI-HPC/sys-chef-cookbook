@@ -1,5 +1,5 @@
 #
-# Copyright 2014-2022 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+# Copyright 2014-2023 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
 #
 # Authors:
 #  Christopher Huhn   <c.huhn@gsi.de>
@@ -63,11 +63,16 @@ if Gem::Requirement.new('>= 12.5')
   end
 
   action :remove do
-    aliases_file = Chef::Util::FileEdit.new(new_resource.aliases_file)
-    aliases_file.search_file_delete_line(/^#{new_resource.name}:/)
-    aliases_file.write_file
+    if ::File.exist?(new_resource.aliases_file)
+      aliases_file = Chef::Util::FileEdit.new(new_resource.aliases_file)
+      aliases_file.search_file_delete_line(/^#{new_resource.name}:/)
+      aliases_file.write_file
 
-    execute "postalias #{new_resource.aliases_file}"
+      execute "postalias #{new_resource.aliases_file}"
+    else
+      # can't remove stuff from a non-existent file
+      Chef::Log.warn "#{new_resource.aliases_file} does not exist"
+    end
   end
 
 else
