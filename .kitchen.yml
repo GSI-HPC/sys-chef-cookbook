@@ -246,6 +246,7 @@ suites:
   - name: sys_mail
     run_list:
       - recipe[sys::mail]
+      - recipe[mail-test::default]
     attributes:
       sys:
         mail:
