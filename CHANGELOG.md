@@ -2,6 +2,13 @@
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [2.0.2] - 2023-03-22
+
+### Fixed
+- [`resource::sys_mail_alias`]
+  * Only converge if the resource actually changed (fixes #40)
+  * Don't fail on `:remove` action if the aliases file does not exist (fixes #39)
+
 ## [2.0.1] - 2023-03-10
 
 ### Fixed
