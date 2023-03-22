@@ -32,8 +32,13 @@ if Gem::Requirement.new('>= 12.5')
   load_current_value do |new_resource|
     if ::File.exist?(new_resource.aliases_file)
       ::File.readlines(new_resource.aliases_file).each do |line|
-        if line =~ /^#{new_resource.name}:(.*)/
-          to $1.split(/,\s*/)
+        if line =~ /^#{new_resource.name}:\s*(.*)/
+          # split into elements::
+          recipients = $1.split(/,\s+/).map do |e|
+            # remove surrounding quotes from quoted strings:
+            e.gsub(/\A"|"\Z/, '')
+          end
+          to recipients
           break
         end
       end
@@ -43,23 +48,25 @@ if Gem::Requirement.new('>= 12.5')
   end
 
   action :add do
-    new_line = "#{new_resource.name}: "
-    # man aliases:
-    # > Use double quotes when the **name** contains any special characters
-    # > such  as whitespace, `#', `:', or `@'
-    new_line += new_resource.to.map do |e|
-      e =~ /[:@#|\s]/ ? "\"#{e}\"" : e
-    end.join(', ')
+    converge_if_changed do
+      new_line = "#{new_resource.name}: "
+      # man aliases:
+      # > Use double quotes when the **name** contains any special characters
+      # > such  as whitespace, `#', `:', or `@'
+      new_line += new_resource.to.map do |e|
+        e =~ /[:@#|\s]/ ? "\"#{e}\"" : e
+      end.join(', ')
 
-    aliases_file = Chef::Util::FileEdit.new(new_resource.aliases_file)
-    if current_resource.to
-      aliases_file.search_file_replace_line(/^#{new_resource.name}:/, new_line)
-    else
-      aliases_file.insert_line_if_no_match(/^#{new_resource.name}:/, new_line)
+      aliases_file = Chef::Util::FileEdit.new(new_resource.aliases_file)
+      if current_resource.to
+        aliases_file.search_file_replace_line(/^#{new_resource.name}:/, new_line)
+      else
+        aliases_file.insert_line_if_no_match(/^#{new_resource.name}:/, new_line)
+      end
+      aliases_file.write_file
+
+      execute "postalias #{new_resource.aliases_file}"
     end
-    aliases_file.write_file
-
-    execute "postalias #{new_resource.aliases_file}"
   end
 
   action :remove do
