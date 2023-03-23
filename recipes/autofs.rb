@@ -129,11 +129,17 @@ if node['sys']['autofs']['ldap']
     only_if { node['platform_version'].to_i < 9 }
   end
 
-  if Gem::Requirement.new('>= 12.5')
+  if Gem::Requirement.new('>= 12.15')
        .satisfied_by?(Gem::Version.new(Chef::VERSION))
     # 'automount: files' is the implicit default for /etc/nsswitch.conf
     sys_nsswitch 'automount' do
-      sources 'files ldap'
+      source 'files'
+      priority 10
+    end
+
+    sys_nsswitch 'automount' do
+      source 'ldap'
+      priority 20
     end
   end
 end

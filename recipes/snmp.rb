@@ -22,6 +22,8 @@
 
 return unless node['sys']['snmp']
 
+Chef::Recipe.include(Sys::Helper)
+
 # some defaults:
 
 snmpd_package = 'snmpd'
@@ -65,7 +67,7 @@ package snmpd_package
 # the systemd unit shipped by Debian does not take
 #  `/etc/default/snmpd` into account
 #  (and the latter is no EnvironmentFile but a shell script)
-if node['platform_family'] == 'debian' && node['platform_version'].to_i >= 9
+if systemd_installed?
 
   directory '/etc/systemd/system/snmpd.service.d/'
 
@@ -77,6 +79,7 @@ if node['platform_family'] == 'debian' && node['platform_version'].to_i >= 9
 # Created by sys::snmp
 
 [Service]
+Type=simple
 ExecStart=
 ExecStart=/usr/sbin/snmpd -LS#{log_level_num}d -Lf /dev/null \\
     -u #{snmpd_user} -g #{snmpd_user} -I -smux,mteTrigger,mteTriggerConf \\

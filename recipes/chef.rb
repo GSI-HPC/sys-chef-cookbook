@@ -1,11 +1,10 @@
-# -*- coding: utf-8 -*-
 #
 # Cookbook Name:: sys
 # Recipe:: chef
 #
 # set's up the chef-client
 #
-# Copyright 2011-2022 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+# Copyright 2011-2023 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
 #
 # Authors:
 #  Christopher Huhn    <c.huhn@gsi.de>
@@ -29,6 +28,8 @@
 #
 
 server_url = node['sys']['chef']['server_url']
+
+chef_client = "#{node['sys']['chef']['product_name']}-client"
 
 # fallback for figuring out the chef server url following the "old" conventions
 #  introduced by the chef cookbook
@@ -56,7 +57,7 @@ end
 # actually we don't neccessarily need the Ohai recipe
 include_recipe 'sys::ohai'
 
-template '/etc/default/chef-client' do
+template "/etc/default/#{chef_client}" do
   source 'etc_default_chef_client.erb'
   owner 'root'
   group 'root'
@@ -69,10 +70,15 @@ end
 
 package 'ruby-sysloglogger' if node['sys']['chef']['use_syslog']
 
-directory '/etc/chef' do
+directory node['sys']['chef']['config_dir'] do
   owner 'root'
   group node['sys']['chef']['group']
   mode  0o0750
+end
+
+link '/etc/chef' do
+  to node['sys']['chef']['config_dir']
+  not_if { node['sys']['chef']['product_name'] == 'chef' }
 end
 
 # compile attributes for the client.rb template:
@@ -81,7 +87,7 @@ v[:server_url] = server_url
 v[:opath]      = node['ohai']['plugin_path']
 v[:odisable]   = node['ohai']['disabled_plugins']
 
-template '/etc/chef/client.rb' do
+template "#{node['sys']['chef']['config_dir']}/client.rb" do
   source 'etc_chef_client.rb.erb'
   owner 'root'
   group node['sys']['chef']['group']
@@ -116,63 +122,81 @@ file node['sys']['chef']['client_key'] do
   only_if { ::File.exist?(node['sys']['chef']['client_key']) }
 end
 
-# Create a script in cron.hourly to make sure chef-client keeps running
-if node['sys']['chef']['restart_via_cron'] # ~FC023
-  template '/etc/cron.hourly/chef-client' do
-    source 'etc_cron.hourly_chef-client.erb'
-    mode   '0755'
-    helpers(Sys::Helper)
-  end
+# systemd-timer setup required systemd_unit resource which only became available in
+#  Chef 12.11
+if node['sys']['chef']['init_style'] == 'systemd-timer' &&
+   Gem::Requirement.new('< 12.11')
+     .satisfied_by?(Gem::Version.new(Chef::VERSION))
+  Chef::Log.warn "Chef #{Chef::VERSION} too old for systemd-timer config of chef-client. Falling back to daemon mode"
+  init_style = 'daemon'
+else
+  init_style = node['sys']['chef']['init_style']
 end
 
-if node['sys']['chef']['init_style'] == 'systemd-timer'
+if init_style == 'systemd-timer'
 
   # creates a one shot service and a systemd.timer to trigger it
 
   include_recipe 'sys::systemd'
 
-  # mimic the chef-client cookbook systemd unit:
-  systemd_unit 'chef-client.timer' do
-    content(
-      'Unit' => { 'Description' => 'chef-client periodic run' },
-      'Install' => { 'WantedBy' => 'timers.target' },
-      'Timer' => {
-        'OnBootSec' => '30sec',
-        # restart timer should be set to interval - splay - chef_run duration
-        #  randomized delay is evenly distributed between 0 and splay
-        #  median should be at splay/2, duration of chef_run is left out
-        'OnUnitInactiveSec' => ( node['sys']['chef']['interval'].to_i -
-                                 node['sys']['chef']['splay'].to_i/2
-                               ).to_s + 'sec',
-        'RandomizedDelaySec' => "#{node['sys']['chef']['splay']}sec"
-      }
-    )
-    action [:create, :enable, :start]
-    notifies :run, 'execute[sys-systemd-reload]'
+  chef_service_unit = {
+    'Unit' => {
+      'Description' => 'Chef Infra Client',
+      'After' => 'network.target auditd.service'
+    },
+    'Service' => {
+      'Type' => 'oneshot',
+      'EnvironmentFile' => "/etc/default/#{chef_client}",
+      # TODO: do not start while dpkg is running
+      # ExecCondition requires systemd >= 243 ie. Bullseye ...
+      # 'ExecCondition' => "bash -c '/usr/bin/lockfile-check -l /var/lib/dpkg/lock && exit 255 || exit 0'",
+      'ExecStart' => "/usr/bin/#{chef_client} -c $CONFIG -L $LOGFILE $OPTIONS",
+      'ExecReload' => '/bin/kill -HUP $MAINPID',
+      'SuccessExitStatus' => 3
+    },
+    'Install' => {
+      'WantedBy' => 'multi-user.target',
+      'Alias' => []
+    }
+  }
+
+  chef_timer_unit = {
+    'Unit' => { 'Description' => "#{chef_client} periodic run" },
+    'Install' => {
+      'WantedBy' => 'timers.target'
+    },
+    'Timer' => {
+      'OnBootSec' => '30sec',
+      # restart timer should be set to interval - splay - chef_run duration
+      #  randomized delay is evenly distributed between 0 and splay
+      #  median should be at splay/2, duration of chef_run is left out
+      'OnUnitInactiveSec' => ( node['sys']['chef']['interval'].to_i -
+                               node['sys']['chef']['splay'].to_i/2
+                             ).to_s + 'sec',
+      'RandomizedDelaySec' => "#{node['sys']['chef']['splay']}sec",
+      'Unit' => "#{chef_client}-oneshot.service"
+    }
+  }
+
+  # add alias to chef-client.service if we configure cinc:
+  if node['sys']['chef']['product_name'] != 'chef'
+    chef_service_unit['Install']['Alias'].push 'chef-client-oneshot.service'
+    chef_timer_unit['Install']['Alias'] = 'chef-client.timer'
   end
 
   # mimic the chef-client cookbook systemd unit:
-  systemd_unit 'chef-client.service' do
-    content(
-      'Unit' => {
-        'Description' => 'Chef Infra Client',
-        'After' => 'network.target auditd.service'
-      },
-      'Service' => {
-        'Type' => 'oneshot',
-        'EnvironmentFile' => '/etc/default/chef-client',
-        'ExecStart' => '/usr/bin/chef-client -c $CONFIG -L $LOGFILE $OPTIONS',
-        'ExecReload' => '/bin/kill -HUP $MAINPID',
-        'SuccessExitStatus' => 3,
-      },
-      'Install' => {
-        'Alias' => 'chef.service',
-        'WantedBy' => 'multi-user.target'
-      }
-    )
+  systemd_unit "#{chef_client}-oneshot.service" do
+    content chef_service_unit
     # what effect has stop when this chef run was started by systemd timer?
     action %i[create stop]
     notifies :run, 'execute[sys-systemd-reload]', :immediately
+  end
+
+  # mimic the chef-client cookbook systemd unit:
+  systemd_unit "#{chef_client}.timer" do
+    content chef_timer_unit
+    action [:create, :enable, :start]
+    notifies :run, 'execute[sys-systemd-reload]'
   end
 
 else
@@ -183,15 +207,23 @@ else
   # information wheter a service is enabled or not and always returns
   # false.  Work around that.
   actions = [:start]
-  actions << :enable if Dir.glob('/etc/rc2.d/*chef-client*').empty?
-  actions << :enable if Dir.glob('/etc/rc2.d/*chef-client*').empty?
+  actions << :enable if Dir.glob("/etc/rc2.d/*#{chef_client}*").empty?
 
-  service 'chef-client' do
+  service chef_client do
     supports :restart => true, :status => true
     action actions
     ignore_failure true
-    subscribes :restart, 'template[/etc/default/chef-client]'
-    subscribes :restart, 'template[/etc/chef/client.rb]'
+    subscribes :restart, "template[/etc/default/#{chef_client}]"
+    subscribes :restart, "template[#{node['sys']['chef']['config_dir']}/client.rb]"
+  end
+
+  # Create a script in cron.hourly to make sure chef-client keeps running
+  if node['sys']['chef']['restart_via_cron'] # ~FC023
+    template "/etc/cron.hourly/#{chef_client}" do
+      source 'etc_cron.hourly_chef-client.erb'
+      mode   '0755'
+      helpers(Sys::Helper)
+    end
   end
 
 end

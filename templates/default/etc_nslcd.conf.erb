@@ -22,3 +22,5 @@ sasl_realm <%= @realm %>
 sasl_authcid nslcd/<%= node['fqdn'] %>@<%= @realm %>
 sasl_authzid u:nslcd/<%= node['fqdn'] %>
 krb5_ccname /tmp/krb5cc_nslcd
+
+reconnect_invalidate passwd,group

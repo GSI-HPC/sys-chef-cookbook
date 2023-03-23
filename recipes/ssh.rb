@@ -2,7 +2,14 @@
 # Cookbook Name:: sys
 # Recipe:: ssh
 #
-# Copyright 2012, Victor Penso
+# Copyright 2012-2022 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+#
+# Authors:
+#  Christopher Huhn  <c.huhn@gsi.de>
+#  Dennis Klein      <d.klein@gsi.de>
+#  Matthias Pausch   <m.pausch@gsi.de>
+#  Victor Penso      <v.penso@gsi.de>
+#  Thomas Roth       <t.roth@gsi.de>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -79,5 +86,15 @@ unless node['sys']['ssh']['config'].empty?
     sys_ssh_config account do
       config params
     end
+  end
+end
+
+if node['sys']['ssh']['known_hosts']
+  template '/etc/ssh/ssh_known_hosts' do
+    source 'etc_ssh_known_hosts.erb'
+    mode 0o0644
+    variables(
+      hosts: node['sys']['ssh']['known_hosts']
+    )
   end
 end

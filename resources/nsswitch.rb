@@ -1,8 +1,7 @@
 #
-# Copyright 2021 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
-#
-# Authors:
-#  Christopher Huhn   <c.huhn@gsi.de>
+# Author:: Matthias Pausch (<m.pausch@gsi.de>)
+# Cookbook:: sys
+# Provider:: nsswitch
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,36 +16,27 @@
 # limitations under the License.
 #
 
-if Gem::Requirement.new('>= 12.5')
+#unified_mode true
+
+if Gem::Requirement.new('>= 12.15')
      .satisfied_by?(Gem::Version.new(Chef::VERSION))
 
-  property :sources, [Array, String],
-           # turn Strings into Arrays for simplicity:
-           coerce: proc { |t| Array(t) }
-  # property :aliases_file, String,  default: '/etc/aliases'
+  property :database, String, name_property: true
+  property :source, String
+  property :priority, Integer, default: 20
+  property :notify_nsswitch_config, [true, false], default: true
 
-  default_action :add
-
-  action :add do
-    new_line = format('%-15s %s',
-                      new_resource.name + ':',
-                      new_resource.sources.join(' ')
-                     )
-
-    replace_or_add "sources for #{new_resource.name}" do
-      path    '/etc/nsswitch.conf'
-      pattern "^#{new_resource.name}:.*"
-      line    new_line
-      backup  true        if respond_to?(:backup)
-      ignore_missing true if respond_to?(:ignore_missing)
-    end
-  end
-
-  action :remove do
-    delete_lines "sources for #{new_resource.name}" do
-      path    '/etc/nsswitch.conf'
-      pattern "^#{new_resource.name}:.*"
-      only_if { ::File.exist?('/etc/nsswitch.conf') }
+  action :create do
+    return unless new_resource.notify_nsswitch_config
+    with_run_context :root do
+      edit_resource('sys_nsswitch_config', 'default') do |nss_resource|
+        old = config.dup
+        old[nss_resource.database] ||= {}
+        old[nss_resource.database][nss_resource.source] = nss_resource.priority
+        config(old)
+        action :nothing
+        delayed_action :create
+      end
     end
   end
 end

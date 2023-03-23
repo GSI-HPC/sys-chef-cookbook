@@ -36,6 +36,8 @@ provisioner:
   name: chef_zero
   chef_client_path: /usr/bin/chef-client
   data_bags_path: test/integration/data_bags
+  # product_name: cinc
+  chef_omnibus_url: https://omnitruck.cinc.sh/install.sh
 
 verifier:
   name: busser
@@ -59,18 +61,62 @@ platforms:
       provision: true
       require_chef_omnibus: 14
       vagrantfiles:
-        - vagrant_centos.rb
-    # system ruby is too old to allow installation
-    #  of busser-serverspec:
-    verifier:
-      ruby_bindir: /opt/chef/embedded/bin
-  - name: stretch
+        - vagrant.rb
+  - name: buster
     driver:
-      box: debian/stretch64
+      box: debian/buster64
       provider: libvirt
       provision: true
       vagrantfiles:
         - vagrant.rb
+  - name: bullseye
+    driver:
+      box: debian/bullseye64
+      provider: libvirt
+      provision: true
+      require_chef_omnibus: true
+      vagrantfiles:
+        - vagrant.rb
+    provisioner:
+      client_rb:
+        # Chef 15 no longer collects passwd information by default
+        # cf. https://stackoverflow.com/a/70749387/9793012
+        'ohai.optional_plugins = ':
+          - :Passwd
+  - name: bookworm
+    driver:
+      box: debian/testing64
+      provider: libvirt
+      provision: true
+      require_chef_omnibus: true
+      vagrantfiles:
+        - vagrant.rb
+    provisioner:
+      client_rb:
+        # Chef 15 no longer collects passwd information by default
+        # cf. https://stackoverflow.com/a/70749387/9793012
+        'ohai.optional_plugins = ':
+          - :Passwd
+  - name: focal
+    driver:
+      box: generic/ubuntu2004
+      provider: libvirt
+      provision: true
+      vagrantfiles:
+        - vagrant.rb
+  - name: focal
+    driver:
+      box: generic/ubuntu2004
+      provider: libvirt
+      provision: true
+      vagrantfiles:
+        - vagrant.rb
+    provisioner:
+      client_rb:
+        # Chef 15 no longer collects passwd information by default
+        # cf. https://stackoverflow.com/a/70749387/9793012
+        'ohai.optional_plugins = ':
+          - :Passwd
 
 suites:
   - name: sys_accounts
@@ -152,9 +198,27 @@ suites:
       - recipe[sys::chef]
     attributes:
       sys:
+        admin_group: adm
         chef:
           server_url: http://localhost:4000
           init_style: systemd-timer
+    driver:
+      customize:
+        memory: 1024 # increase memory for chef-zero install
+      vagrantfiles:
+        - vagrant.rb
+        - vagrant_buildenv.rb # required to install chef-zero gem
+  - name: sys_fail2ban
+    run_list:
+      - recipe[sys::fail2ban]
+    attributes:
+      sys:
+        fail2ban:
+          jail.local:
+            DEFAULT:
+              bantime: 1234
+              maxretry: '4'
+              findtime: 2468
   - name: sys_ferm
     run_list:
       - recipe[sys::ferm]
@@ -170,26 +234,22 @@ suites:
                   - 'policy ACCEPT;'
                 FORWARD:
                   - 'policy DROP;'
-  - name: sys_firewall
+  - name: sys_nftables
     run_list:
-      - recipe[firewall-test::default]
-    attributes:
-      sys:
-        firewall:
-          manage: true
-          disable: false
+      - recipe[nftables-test::default]
+  - name: sys_nftablesempty
+    run_list:
+      - recipe[nftables-test::empty]
   - name: sys_linuxlogo
     run_list:
       - recipe[sys::linuxlogo]
     attributes:
       sys:
         linuxlogo: absolutely!
-  - name: sys_ohai
-    run_list:
-      - recipe[sys::ohai]
   - name: sys_mail
     run_list:
       - recipe[sys::mail]
+      - recipe[mail-test::default]
     attributes:
       sys:
         mail:
@@ -199,16 +259,34 @@ suites:
             array:
               - '| /bin/true'
               - /tmp/mail.test
+            nobody: knowsthetroubleiveseen@example.org
           message_size_limit: 1234567890
-  - name: sys_nsswitch
+  - name: sys_multipath
     run_list:
-      - recipe[sys::nsswitch]
+      - recipe[sys::multipath]
     attributes:
       sys:
-        nsswitch:
-          foo: bar
-          passwd: files
-          netgroup: compat
+        multipath:
+          disable: false
+          regenerate_initramdisk: true
+          defaults:
+            verbosity: 5
+  - name: sys_nsswitch
+    run_list:
+      - recipe[nsswitch-test::default]
+    # attributes:
+    #   sys:
+    #     nsswitch:
+    #       foo: bar
+    #       passwd: files
+    #       netgroup: compat
+  - name: sys_ohai
+    run_list:
+      - recipe[sys::ohai]
+    driver:
+      vagrantfiles:
+        - vagrant.rb
+        - vagrant_buildenv.rb  # required to install ohai gem
   - name: sys_resolv
     run_list:
       - recipe[sys::resolv]
@@ -262,6 +340,15 @@ suites:
             root:
               '*':
                 AddKeysToAgent: ask
+          known_hosts:
+            git.gsi.de:
+              ssh-rsa: AAAAB3NzaC1yc2EAAAADAQABAAABAQCeDOfPabxvYr+HNlBfE4plYktECkYIDRE3ggxjPOSGIH1SEMp+eMvbm46/aGXRBtEcHDXNju+CS2P+RjiNVV7UWzbkrsi3uyjDoDwMRlJyhvPR79fS4nsxI04ztk0GrYYZRGoDj9LcVdXWHYN/Ru70K2U+G2bQ8l2otMYVKdnsIssd1MOBpISy7fursYmC31U/Bpn19nfn0sRpdL8WNrjmJukFTzaSAJQIzciF/uTkAw5qmmJXRsl7aXyk5S690SQx8Wj1Jk8+AM508zdeD/M6vnWXDQQWZPYi1IcB+GA+7mQr9ijo3qJ9dIT54iZUAWmZU1KGYh5PBD93OnuiFh3P
+              ecdsa-sha2-nistp256: AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBHXJoiDuGO3tveTCbbQONo9mBCXohPlziqGJAMvW8BY/WRMTW+C4Thoc2L69JZtV/FHF7fGpJ/g81Ljrxm4Huk8=
+              ssh-ed25519: AAAAC3NzaC1lZDI1NTE5AAAAINftkQCmVICGs0rdcZ13OQhdaQMjrYhsFF1ACtNwMseR
+            github.com:
+              ecdsa-sha2-nistp256: AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBEmKSENjQEezOmxkZMy7opKgwFB9nkt5YRrYMjNuG5N87uRgg6CLrbo5wAdT/y6v0mKV0U2w0WZ2YB/++Tpockg=
+              ssh-ed25519: AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2l9GKJl
+              ssh-rsa: AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ==
           ssh_config:
             - '*.example.org':
                 SendEnv: TGIF
@@ -269,6 +356,9 @@ suites:
           config:
             ClientAliveInterval: 4711
             X11Forwarding: 'no'
+  - name: sys_x509
+    run_list:
+      - recipe[x509-test::default]
   - name: sys_ssl
     run_list:
       - recipe[sys::ssl]
@@ -320,6 +410,9 @@ suites:
           unit:
             unknown_method:
               whatever: "Should throw an error but converge"
+          journald:
+            Storage: volatile
+            RuntimeMaxUse: 128M
   - name: sys_time
     run_list:
       - recipe[sys::time]

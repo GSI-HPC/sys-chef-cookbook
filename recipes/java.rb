@@ -2,9 +2,10 @@
 # Cookbook Name:: sys
 # Recipe:: java
 #
-# Copyright 2015 - 2019 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+# Copyright 2015-2021 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
 #
-# Author: Christopher Huhn
+# Authors:
+#  Christopher Huhn   <C.Huhn@gsi.de>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -43,8 +44,11 @@ arch = node['debian']['architecture'] ||
          'amd64'
        end
 
-default_version = node['sys']['java']['default_version'] ||
-                  node['sys']['java']['versions'].first
+default_version = node['sys']['java']['default_version']
+
+if node['sys']['java']['versions']
+  default_version ||= node['sys']['java']['versions'].first
+end
 
 execute 'update-java-alternatives' do
   command "update-java-alternatives --set "\

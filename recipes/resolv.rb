@@ -1,8 +1,8 @@
 #
-# Cookbook Name:: sys
+# Cookbook:: sys
 # Recipe:: resolv
 #
-# Copyright 2012-2020 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+# Copyright 2012-2023 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
 #
 # Authors:
 #  Christopher Huhn   <c.huhn@gsi.de>
@@ -22,7 +22,7 @@
 # limitations under the License.
 #
 
-return if node['sys']['resolv']['servers'].empty?
+return unless node['sys']['resolv'].key?('servers')
 
 if node['sys']['resolv']['search']
   # From resolv.conf's man page:

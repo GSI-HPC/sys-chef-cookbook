@@ -1,10 +1,23 @@
+# read product name from ChefUtils::Dist::Infra::SHORT ('chef' or 'cinc')
+default_unless['sys']['chef']['product_name'] = begin
+                                                  ChefUtils::Dist::Infra::SHORT
+                                                rescue NameError
+                                                  'chef' # fallback if chef too old
+                                                end
+
+default_unless['sys']['chef']['config_dir'] =
+  "/etc/#{node['sys']['chef']['product_name']}"
+
 # invocation interval in seconds
 default_unless['sys']['chef']['interval']       = 1800
 # invocation will be postponed by a random value up to this number of seconds:
 default_unless['sys']['chef']['splay']          = 300
-default_unless['sys']['chef']['client_key']     = '/etc/chef/client.pem'
-default_unless['sys']['chef']['validation_key'] = '/etc/chef/validation.pem'
-default_unless['sys']['chef']['validation_client_name'] = 'chef-validator'
+default_unless['sys']['chef']['client_key'] =
+  "#{node['sys']['chef']['config_dir']}/client.pem"
+default_unless['sys']['chef']['validation_key'] =
+  "#{node['sys']['chef']['config_dir']}/validation.pem"
+default_unless['sys']['chef']['validation_client_name'] =
+  "#{node['sys']['chef']['product_name']}-validator"
 # legacy server attribute
 default_unless['chef']['server']                = {}
 

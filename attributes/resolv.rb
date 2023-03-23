@@ -1,1 +1,1 @@
-default_unless['sys']['resolv']['servers'] = Array.new
+default_unless['sys']['resolv'] = {}

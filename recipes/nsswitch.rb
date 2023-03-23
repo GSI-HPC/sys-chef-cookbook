@@ -2,7 +2,7 @@
 # Cookbook Name:: sys
 # Recipe:: nsswitch
 #
-# Copyright 2013-2021 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+# Copyright 2013-2023 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
 #
 # Authors:
 #  Christopher Huhn   <c.huhn@gsi.de>
@@ -22,44 +22,41 @@
 # limitations under the License.
 #
 
-# do nothing until requested
-return if node['sys']['nsswitch'].empty?
+defaults = {
+  passwd:    'files',
+  group:     'files',
+  shadow:    'files',
+  gshadow:   'files',
+  hosts:     ['files', 'dns'],
+  networks:  'files',
+  protocols: 'files',
+  services:  'files',
+  ethers:    'files',
+  rpc:       'files',
+}
 
-if Gem::Requirement.new('>= 12.5')
-     .satisfied_by?(Gem::Version.new(Chef::VERSION))
+# turn hash keys into Strings before merging to avoid dupes:
+config = defaults.map { |k,v| [k.to_s, v] }.to_h
 
-  # Use the LWRP if the chef version is new enough
-  node['sys']['nsswitch'].each do |db, srcs|
-    sys_nsswitch db do
-      sources srcs
+# merge defaults and node attributes
+config.merge!(node['sys']['nsswitch']) do |_k,v1,v2|
+  # make sure no empty values end up in the config:
+  v2 || v1
+end
+
+if Gem::Requirement.new('>= 12.15')
+    .satisfied_by?(Gem::Version.new(Chef::VERSION))
+
+  # Use the custom resource if the chef version is new enough
+  config.each do |db, srcs|
+    Array(srcs).each_with_index do |src, i|
+      sys_nsswitch db do
+        source src
+        priority 10*i
+      end
     end
   end
-
-else
-
-  defaults = {
-    passwd:    'compat',
-    group:     'compat',
-    shadow:    'compat',
-    gshadow:   'files',
-    hosts:     'files dns',
-    networks:  'files',
-    protocols: 'db files',
-    services:  'db files',
-    ethers:    'db files',
-    rpc:       'db files',
-    netgroup:  'nis'
-  }
-
-  # turn hash keys into Strings before merging to avoid dupes:
-  config = defaults.map { |k,v| [k.to_s, v] }.to_h
-
-  # merge defaults and node attributes
-  config.merge!(node['sys']['nsswitch']) do |_k,v1,v2|
-    # make sure no empty values end up in the config:
-    v2 || v1
-  end
-
+elsif ! node['sys']['nsswitch'].empty?
   template "/etc/nsswitch.conf" do
     source "etc_nsswitch.conf.erb"
     mode '0644'
