@@ -2,6 +2,11 @@
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [2.0.3] - 2023-03-23
+
+### Fixed
+- [`chef`] Don't link /etc/chef to /etc/chef
+
 ## [2.0.2] - 2023-03-22
 
 ### Fixed
