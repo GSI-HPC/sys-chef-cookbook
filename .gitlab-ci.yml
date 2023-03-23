@@ -56,20 +56,20 @@ chefspec:
         - x509
 
 # circumvent limit of 50 parallel jobs:
-stretch:
-  extends: .kitchen
-  variables:
-    PLATFORM: stretch
-
 buster:
   extends: .kitchen
   variables:
     PLATFORM: buster
 
-bullseye:
+centos7:
   extends: .kitchen
   variables:
-    PLATFORM: bullseye
+    PLATFORM: centos7
+
+centos8:
+  extends: .kitchen
+  variables:
+    PLATFORM: centos8
 
 .post:
    script:
