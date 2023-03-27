@@ -2,8 +2,6 @@
 # extremly basic loghost setup
 #
 
-return if node['sys']['rsyslog'].empty?
-
 package "rsyslog"
 
 # Include a complete rsyslog config file:
