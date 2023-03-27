@@ -32,7 +32,7 @@ node['sys']['rsyslog']['loghosts'].each do |name, cfg|
     Chef::Log.warn "rsyslog must be at least version 8, skipping config for loghost #{name}."
     next
   end
-  priority_filter = cfg['priority_filter'] || '*.*'
+  priority_filter = cfg['priority_filter'] || '*.*,*.!=debug'
   port = cfg['port'] || '514'
   protocol = cfg['protocol'] || 'tcp'
   stream_driver = false
