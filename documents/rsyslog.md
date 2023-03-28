@@ -28,7 +28,7 @@ The following options may be specified in cfg:
 
 ```ruby
 sys: {
-  rsylog: {
+  rsyslog: {
     loghosts: {
       # minimal example, plain tcp
       'tcp-loghost.example.com': { },
