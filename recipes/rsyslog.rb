@@ -2,7 +2,11 @@
 # extremly basic loghost setup
 #
 
-package "rsyslog"
+package 'rsyslog' do
+  # install at compile time, so that its ohai-version may be queried
+  compile_time true
+  notifies :reload, 'ohai[reload]', :immediately
+end
 
 # Include a complete rsyslog config file:
 # 1) set log msgs rate limiting
