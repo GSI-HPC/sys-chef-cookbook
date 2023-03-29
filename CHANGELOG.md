@@ -2,6 +2,12 @@
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [2.1.0] - 2023-03-29
+
+### Changed
+- [`rsyslog`] Refactor loghost configuration to allow configuration of multiple loghosts
+  with different filters and/or log protocols
+
 ## [2.0.3] - 2023-03-23
 
 ### Fixed
