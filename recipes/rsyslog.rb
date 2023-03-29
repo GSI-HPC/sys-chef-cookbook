@@ -22,7 +22,7 @@ end
 rsyslog_major_version = 0
 begin
   rsyslog_major_version = node['packages']['rsyslog']['version'].to_i
-rescue NoMethodError => e
+rescue NoMethodError
   Chef::Log.error('Rsyslog was not installed, run chef-client again')
 end
 
