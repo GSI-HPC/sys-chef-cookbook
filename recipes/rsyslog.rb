@@ -63,7 +63,7 @@ node['sys']['rsyslog']['loghosts'].each do |name, cfg|
       protocol: protocol,
       stream_driver: stream_driver,
       ca_file: ca_file,
-      tls: cfg['tls'] || false,
+      tls: cfg['tls'],
       type: type
     )
     notifies :restart, 'service[rsyslog]'

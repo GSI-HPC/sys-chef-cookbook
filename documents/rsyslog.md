@@ -44,7 +44,7 @@ sys: {
         priority_filter: 'auth,authpriv.*',
         protocol: 'tcp',
         target: 'loghost3.example.org',
-        tls: 'on',
+        tls: true,
         type: 'omfwd'
       }
     }
