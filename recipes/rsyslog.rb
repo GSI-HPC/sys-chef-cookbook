@@ -2,11 +2,7 @@
 # extremly basic loghost setup
 #
 
-package 'rsyslog' do
-  # install at compile time, so that its ohai-version may be queried
-  compile_time true
-  notifies :reload, 'ohai[reload]', :immediately
-end
+package 'rsyslog'
 
 # Include a complete rsyslog config file:
 # 1) set log msgs rate limiting
@@ -23,7 +19,12 @@ template '/etc/rsyslog.conf' do
   notifies :restart, "service[rsyslog]"
 end
 
-rsyslog_major_version = node['packages']['rsyslog']['version'].to_i
+rsyslog_major_version = 0
+begin
+  rsyslog_major_version = node['packages']['rsyslog']['version'].to_i
+rescue NoMethodError => e
+  Chef::Log.error('Rsyslog was not installed, run chef-client again')
+end
 
 file '/etc/rsyslog.d/loghost.conf' do
   action :delete
