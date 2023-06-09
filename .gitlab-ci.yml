@@ -61,6 +61,7 @@ stretch:
   extends: .kitchen
   variables:
     PLATFORM: stretch
+  allow_failure: true # Stretch vagrant images are currently broken
 
 buster:
   extends: .kitchen
