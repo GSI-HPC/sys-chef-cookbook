@@ -37,9 +37,7 @@ action :deploy do
           TMPFILE=$(mktemp --dry-run)
 
           kinit -t /etc/krb5.keytab host/#{node['fqdn']}
-          wallet get keytab \
-              "#{new_resource.principal}@#{node['sys']['krb5']['realm'].upcase}" \
-              -f "$TMPFILE"
+          wallet get keytab #{new_resource.principal} -f "$TMPFILE"
           ret=$?
           if [ $ret = 0 ]; then
               # in contrast to mv cat follows symlinks:
