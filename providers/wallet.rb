@@ -32,20 +32,20 @@ action :deploy do
     if check_krb5
       bash "deploy #{new_resource.principal}" do
         cwd "/"
-        code <<-EOH
+        code <<-CODE
           # TMPFILE must not exist yet, therefore --dry-run
           TMPFILE=$(mktemp --dry-run)
-
-          kinit -t /etc/krb5.keytab host/#{node['fqdn']}
-          wallet get keytab #{new_resource.principal} -f "$TMPFILE"
-          ret=$?
-          if [ $ret = 0 ]; then
-              # in contrast to mv cat follows symlinks:
-              cat "$TMPFILE" > "#{new_resource.place}"
+          retval=1
+          kinit -t /etc/krb5.keytab host/#{node['fqdn']} || exit 1
+          if wallet get keytab '#{new_resource.principal}' -f "$TMPFILE"; then
+            retval=0
+            # in contrast to mv cat follows symlinks
+            cat "$TMPFILE" > '#{new_resource.place}'
           fi
           rm "$TMPFILE"
           kdestroy
-        EOH
+          exit $retval
+        CODE
       end
       new_resource.updated_by_last_action(true)
     else
