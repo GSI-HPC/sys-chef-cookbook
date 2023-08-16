@@ -94,7 +94,7 @@ if Gem::Requirement.new('>= 12.15').satisfied_by?(Gem::Version.new(Chef::VERSION
            String,
            default: lazy { bag_item }
   property :include_chain,
-           TrueFalse,
+           [true, false],
            default: false
 
   action :install do
