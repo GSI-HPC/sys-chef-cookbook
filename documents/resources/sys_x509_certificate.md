@@ -14,6 +14,16 @@ name) in the data bag `ssl_certs`. This can be configured by the
 object `vault_item` (which defaults to `bag_item` in the chef vault
 `ssl_keys`. This can be configured by the `chef_vault` and
 `vault_item` properties.
+- Certificate chains are not included by default.  Certificate chains
+  can be include by setting `include_chain` to `true`.  The resource
+  expects all certificates, that are part of the chain, in the data
+  bag specified by the `data_bag`-property.  The data bag items must
+  be named aufter their subject key identifiers.  The resource will
+  include all certificates in the chain, that have an authority key
+  identifier which is different from the subject key identifier.  That
+  means, that the root-certificate will not be included in the chain.
+  The certificate will appear first in the certificate file, followed
+  by the signing intermediate ca, and so on.
 
 The structure of the private key can be obtained on the command line by running, e.g.
 ```
@@ -38,7 +48,8 @@ which by default will store the contents of `/tmp/privkey.pem` as `file-content`
 | `data_bag`         |       | String | `ssl_certs`                                     |
 | `bag_item`         | ✓     | String |                                                 |
 | `chef_vault`       |       | String | `ssl_keys`                                      |
-| `vault_item`  |       | String | `new_resource.bag_item`                         |
+| `vault_item`       |       | String | `new_resource.bag_item`                         |
+| `include_chain`     |       | TrueFalse | `false`                                      |
 
 
 ## Examples
