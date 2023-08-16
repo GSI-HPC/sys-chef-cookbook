@@ -4,6 +4,7 @@ sys_x509_certificate 'www-linux.gsi.de' do
   bag_item 'www-linux.gsi.de'
   certificate_path '/etc/ssl/certs/www-linux.gsi.de.pem'
   key_path '/etc/ssl/private/www-linux.gsi.de.key'
+  include_chain true
 end
 
 sys_x509_certificate 'alternativlos' do
