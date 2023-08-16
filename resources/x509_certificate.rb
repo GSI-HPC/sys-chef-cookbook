@@ -32,7 +32,11 @@ if Gem::Requirement.new('>= 12.15').satisfied_by?(Gem::Version.new(Chef::VERSION
   action_class do
     def certificate_file_content
       cert_item = data_bag_item(new_resource.data_bag, new_resource.bag_item)
-      cert_item['file-content']
+      if new_resource.include_chain
+        create_chain(cert_item['file-content']).join("\n")
+      else
+        cert_item['file-content']
+      end
     end
 
     def key_vault_item
@@ -43,6 +47,29 @@ if Gem::Requirement.new('>= 12.15').satisfied_by?(Gem::Version.new(Chef::VERSION
       Chef::Log.info "Getting item #{key_vault_item} from vault #{new_resource.chef_vault}"
       key_item = chef_vault_item(new_resource.chef_vault, key_vault_item)
       key_item['file-content']
+    end
+
+    def recurse_create_chain(chain, cert)
+      # Older openssl-version don't have the methods for getting the key-identifieres.
+      # ski = cert.subject_key_identifier
+      # aki = cert.authority_key_identifier
+      ski = cert.extensions.select {|e| e.oid == "subjectKeyIdentifier" }.first.value.strip.gsub(/\Akeyid:/, '').tr(':', '').downcase
+      aki_oid = cert.extensions.select {|e| e.oid == "authorityKeyIdentifier" }.first
+      aki = aki_oid ? aki_oid.value.strip.gsub(/\Akeyid:/, '').tr(':', '').downcase : nil
+
+      if ! (aki.nil? || aki == ski)
+        chain << cert.to_s.strip
+        ca_item = data_bag_item(new_resource.data_bag, aki)
+        ca_file = ca_item['file-content']
+        recurse_create_chain(chain, OpenSSL::X509::Certificate.new(ca_file))
+      end
+    end
+
+    def create_chain(cert_file)
+      chain = []
+      cert = OpenSSL::X509::Certificate.new(cert_file)
+      recurse_create_chain(chain, cert)
+      return chain
     end
   end
 
@@ -66,6 +93,9 @@ if Gem::Requirement.new('>= 12.15').satisfied_by?(Gem::Version.new(Chef::VERSION
   property :vault_item,
            String,
            default: lazy { bag_item }
+  property :include_chain,
+           TrueFalse,
+           default: false
 
   action :install do
     package 'ssl-cert'
