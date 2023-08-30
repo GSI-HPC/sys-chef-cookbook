@@ -50,11 +50,11 @@ chefspec:
         # - rsyslog
         # - snmp
         # - ssh
-        - ssl
+        # - ssl
         # - sudo
         # - systemd
         # - time
-        # - x509
+        - x509
 
 # circumvent limit of 50 parallel jobs:
 stretch:
