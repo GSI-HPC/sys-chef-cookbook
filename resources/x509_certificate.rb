@@ -58,8 +58,8 @@ if Gem::Requirement.new('>= 12.15').satisfied_by?(Gem::Version.new(Chef::VERSION
       ski = ski_value.strip.gsub(/\Akeyid:/, '').tr(':', '').downcase
       aki_oid = cert.extensions.select {|e| e.oid == "authorityKeyIdentifier" }.first
       aki = aki_oid ? aki_oid.value.strip.gsub(/\Akeyid:/, '').tr(':', '').downcase : nil
-      Chef::Log.warn "ski: #{ski}"
-      Chef::Log.warn "aki: #{aki}"
+      Chef::Log.debug { "ski: #{ski}" }
+      Chef::Log.debug { "aki: #{aki}" }
 
       if ! (aki.nil? || aki == ski)
         chain << cert.to_s.strip
