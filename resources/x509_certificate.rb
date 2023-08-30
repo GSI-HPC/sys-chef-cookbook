@@ -50,10 +50,11 @@ if Gem::Requirement.new('>= 12.15').satisfied_by?(Gem::Version.new(Chef::VERSION
     end
 
     def recurse_create_chain(chain, cert)
-      # Older openssl-version don't have the methods for getting the key-identifieres.
+      # Older openssl-versions don't have the methods for getting the key-identifiers.
       # ski = cert.subject_key_identifier
       # aki = cert.authority_key_identifier
-      ski = cert.extensions.select {|e| e.oid == "subjectKeyIdentifier" }.first.value.strip.gsub(/\Akeyid:/, '').tr(':', '').downcase
+      ski_value = cert.extensions.select {|e| e.oid == "subjectKeyIdentifier" }.first.value
+      ski = ski_value.strip.gsub(/\Akeyid:/, '').tr(':', '').downcase
       aki_oid = cert.extensions.select {|e| e.oid == "authorityKeyIdentifier" }.first
       aki = aki_oid ? aki_oid.value.strip.gsub(/\Akeyid:/, '').tr(':', '').downcase : nil
 
