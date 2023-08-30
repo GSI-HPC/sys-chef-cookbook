@@ -33,6 +33,7 @@ if Gem::Requirement.new('>= 12.15').satisfied_by?(Gem::Version.new(Chef::VERSION
     def certificate_file_content
       cert_item = data_bag_item(new_resource.data_bag, new_resource.bag_item)
       if new_resource.include_chain
+        Chef::Log.info 'Include certificate-chain'
         create_chain(cert_item['file-content']).join("\n")
       else
         cert_item['file-content']
