@@ -387,6 +387,13 @@ suites:
           certs:
             - {}    # will not find data bag item
             - data_bag_item: www-linux.gsi.de
+            - data_bag_item: www-linux.gsi.de
+              file: '/etc/ssl/certs/www-linux.gsi.de-chain.pem'
+              include_chain: true
+              key_file: '/etc/ssl/private/www-linux.gsi.de-chain.key'
+            - data_bag_item: www-linux.gsi.de
+              file: '/etc/ssl/certs/www-linux.gsi.de-no-chain.pem'
+              key_file: '/etc/ssl/private/www-linux.gsi.de-no-chain.key'
             - data_bag: other_certs
               data_bag_item: alternativlos.org
               file: /tmp/covfefe.pem

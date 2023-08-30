@@ -50,7 +50,7 @@ chefspec:
         # - rsyslog
         # - snmp
         # - ssh
-        # - ssl
+        - ssl
         # - sudo
         # - systemd
         # - time
