@@ -6,7 +6,7 @@ if os[:release].to_i >= 10
     its(:content) do
       should match(/^lnwgvLxGmf4\+6iWA\+dvG3PHirgCHyWmVTOwy7\+ikhEdtd9q4\n-----END CERTIFICATE-----\n-----BEGIN CERTIFICATE-----\nMIIFrDCCBJSgAwIBAgIHG2O60B4sPTANBgkqhkiG9w0BAQsFADCBlTELMAkGA1UE$/m)
       should match(/^LXUV2EoY6hbvVTQiGhONBg==\n-----END CERTIFICATE-----\n-----BEGIN CERTIFICATE-----\nMIIFEjCCA\/qgAwIBAgIJAOML1fivJdmBMA0GCSqGSIb3DQEBCwUAMIGCMQswCQYD$/m)
-      should match(/^qK1chk5\n-----END CERTIFICATE-----\z/m)
+      should match(/^GqK1chk5\n-----END CERTIFICATE-----\z/m)
     end
   end
 
@@ -21,7 +21,7 @@ if os[:release].to_i >= 10
   describe file('/etc/ssl/private/www-linux.gsi.de.key') do
     it { should exist }
     its(:content) do
-      should match(/^-----BEGIN RSA PRIVATE KEY-----\nMIIEcgIBAAK.*/)
+      should match(/^-----BEGIN RSA PRIVATE KEY-----\nMIIEcgIBAAK.*/m)
     end
   end
 
