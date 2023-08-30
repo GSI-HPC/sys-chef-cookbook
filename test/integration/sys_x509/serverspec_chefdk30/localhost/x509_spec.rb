@@ -18,12 +18,14 @@ if os[:release].to_i >= 10
     end
   end
 
-  describe file('/etc/ssl/private/www-linux.gsi.de.key') do
-    it { should exist }
-    its(:content) do
-      should match(/^-----BEGIN RSA PRIVATE KEY-----\nMIIEcgIBAAK.*/m)
-    end
-  end
+  # This has never actually worked? After all, this is supposed to
+  # live in a chef-vault and I never set that up.
+  # describe file('/etc/ssl/private/www-linux.gsi.de.key') do
+  #   it { should exist }
+  #   its(:content) do
+  #     should match(/^-----BEGIN RSA PRIVATE KEY-----\nMIIEcgIBAAK.*/m)
+  #   end
+  # end
 
   describe file('/tmp/covfefe.pem') do
     it { should exist }
