@@ -13,7 +13,7 @@ if os[:release].to_i >= 10
   describe file('/etc/ssl/certs/www-linux.gsi.de_no_chain.pem') do
     it { should exist }
     its(:content) do
-      should not match(/^GqK1chk5$/)
+      should_not match(/^GqK1chk5$/)
       should match(/^lnwgvLxGmf4+6iWA+dvG3PHirgCHyWmVTOwy7+ikhEdtd9q4\n-----END CERTIFICATE-----\z/)
     end
   end
