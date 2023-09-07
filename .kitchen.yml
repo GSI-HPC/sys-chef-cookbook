@@ -27,7 +27,7 @@ driver:
   name: vagrant
   box_auto_update: true
   customize:
-    memory: 768
+    memory: 1024
     cpus: 2
 
 provisioner:
