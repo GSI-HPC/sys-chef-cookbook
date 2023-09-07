@@ -26,7 +26,7 @@
 
 return if node['sys']['ldap'].empty?
 
-%w[ldap-utils libnss-ldapd nslcd].each do |p|
+%w[ldap-utils libldap-common libnss-ldapd nslcd].each do |p|
   package p
 end
 
