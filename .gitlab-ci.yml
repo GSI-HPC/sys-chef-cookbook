@@ -1,4 +1,9 @@
 ---
+default:
+  tags:
+    - chef-dk
+    - cinc-workstation
+
 stages:
   - rubocop
   - foodcritic
