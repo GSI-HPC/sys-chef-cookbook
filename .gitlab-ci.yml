@@ -73,6 +73,14 @@ bullseye:
   variables:
     PLATFORM: bullseye
 
+bookworm:
+  extends: .kitchen
+  variables:
+    PLATFORM: bookworm
+  tags:
+    - kitchen
+    - bookworm
+
 .post:
    script:
     - kitchen destroy
