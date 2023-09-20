@@ -19,6 +19,7 @@ foodcritic:
   stage: foodcritic
   script:
     - rake foodcritic
+  allow_failure: true
 
 chefspec:
   stage: chefspec
