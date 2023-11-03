@@ -1,16 +1,15 @@
 <%= template_header %>
-driftfile /var/lib/ntp/ntp.drift
+driftfile /var/lib/<%= @ntp_package %>/ntp.drift
 
 # Leap seconds definition provided by tzdata
 leapfile /usr/share/zoneinfo/leap-seconds.list
 
 # Enable this if you want statistics to be logged.
 #statsdir /var/log/ntpstats/
-
-statistics loopstats peerstats clockstats
-filegen loopstats file loopstats type day enable
-filegen peerstats file peerstats type day enable
-filegen clockstats file clockstats type day enable
+#statistics loopstats peerstats clockstats
+#filegen loopstats file loopstats type day enable
+#filegen peerstats file peerstats type day enable
+#filegen clockstats file clockstats type day enable
 
 
 # You do need to talk to an NTP server or two (or three).

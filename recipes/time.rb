@@ -2,7 +2,7 @@
 # Cookbook Name:: sys
 # Recipe:: time
 #
-# Copyright 2012-2021 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+# Copyright 2012-2023 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
 #
 # Authors:
 #  Christopher Huhn  <c.huhn@gsi.de>
@@ -62,15 +62,26 @@ time_servers = node['sys']['time']['servers']
 
 unless time_servers.empty?
 
-  package 'ntp'
+  if node['platform'] == 'debian' && node['platform_version'].to_i >= 12
+    ntp_package = 'ntpsec'
+    ntp_conf = '/etc/ntpsec/ntp.conf'
+  else
+    ntp_package = 'ntp'
+    ntp_conf = '/etc/ntp.conf'
+  end
+
+  package ntp_package
   package 'ntpdate'
   package 'ntpstat' do
     not_if { node['lsb']['codename'] == 'wheezy' }
   end
 
-  template '/etc/ntp.conf' do
+  template ntp_conf do
     source 'etc_ntp.conf.erb'
-    variables :servers => time_servers
+    variables(
+      servers: time_servers,
+      package: ntp_package
+    )
     notifies :restart, "service[ntp]"
   end
 
