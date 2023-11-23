@@ -248,12 +248,6 @@ suites:
                   - 'policy ACCEPT;'
                 FORWARD:
                   - 'policy DROP;'
-  - name: sys_nftables
-    run_list:
-      - recipe[nftables-test::default]
-  - name: sys_nftablesempty
-    run_list:
-      - recipe[nftables-test::empty]
   - name: sys_linuxlogo
     run_list:
       - recipe[sys::linuxlogo]
@@ -285,6 +279,12 @@ suites:
           regenerate_initramdisk: true
           defaults:
             verbosity: 5
+  - name: sys_nftables
+    run_list:
+      - recipe[nftables-test::default]
+  - name: sys_nftablesempty
+    run_list:
+      - recipe[nftables-test::empty]
   - name: sys_nsswitch
     run_list:
       - recipe[nsswitch-test::default]
@@ -319,20 +319,6 @@ suites:
             - rotate
             - timeout:3
           force: true
-  - name: sys_snmp
-    run_list:
-      - recipe[sys::hosts]
-      - recipe[sys::snmp]
-    attributes:
-      sys:
-        hosts:
-          allow:
-            - "snmpd: 127.0.0.1"
-        snmp:
-          community: oz
-          sys_contact: Dorothy Gale
-          sys_location: Somewhere over the rainbow
-          log_level: alert
   - name: sys_rsyslog
     run_list:
       - recipe[sys::rsyslog]
@@ -352,6 +338,20 @@ suites:
               type: 'omrelp'
             no-tls:
               target_ip: '192.2.0.3'
+  - name: sys_snmp
+    run_list:
+      - recipe[sys::hosts]
+      - recipe[sys::snmp]
+    attributes:
+      sys:
+        hosts:
+          allow:
+            - "snmpd: 127.0.0.1"
+        snmp:
+          community: oz
+          sys_contact: Dorothy Gale
+          sys_location: Somewhere over the rainbow
+          log_level: alert
   - name: sys_ssh
     run_list:
       - recipe[sys::accounts]
@@ -389,9 +389,6 @@ suites:
           config:
             ClientAliveInterval: 4711
             X11Forwarding: 'no'
-  - name: sys_x509
-    run_list:
-      - recipe[x509-test::default]
   - name: sys_ssl
     run_list:
       - recipe[sys::ssl]
@@ -457,3 +454,6 @@ suites:
             - ntp1.net.berkeley.edu
             - time1.esa.int
             - zeit.fu-berlin.de
+  - name: sys_x509
+    run_list:
+      - recipe[x509-test::default]
