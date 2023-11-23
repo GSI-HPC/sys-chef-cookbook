@@ -53,9 +53,9 @@ context 'ntp' do
 
   ntp_servers = %w[ntp1.net.berkeley.edu time1.esa.int zeit.fu-berlin.de]
   ntp_conf = if os[:platform] == 'debian' && os[:release].to_i >= 12
-               '/etc/ntp.conf'
-             else
                '/etc/ntpsec/ntp.conf'
+             else
+               '/etc/ntp.conf'
              end
 
   describe file(ntp_conf) do
