@@ -44,23 +44,19 @@ describe command 'fail2ban-client get sshd bantime' do
   its(:stdout) { should eq "1234\n" }
 end
 
-# figure out the public IP of the test VM:
-#  ssh 127.0.0.1 will probably be whitelisted
-@@my_ip = begin
-           host_inventory['ohai']['ipaddress']
-         rescue NoMethodError
-           nil
-         end
-
 # perform a real life test of unsuccessful login attempts and
 #  check whether fail2ban reacts as expected:
-context 'test the banning', if: @@my_ip do
+context 'test the banning', if: host_inventory['ohai']['ipaddress'] do
 
   before :all do
+    # figure out the public IP of the test VM:
+    #  ssh 127.0.0.1 will probably be whitelisted
+    @my_ip = host_inventory['ohai']['ipaddress']
+
     # unsuccessfully connect to localhost via its public IP multiple times:
     cmd = "ssh -o StrictHostKeyChecking=no -o BatchMode=yes"\
           " -o ConnectTimeout=10"\
-          " hackerman@#{@@my_ip}"
+          " hackerman@#{@my_ip}"
     pp cmd
     5.times do
       `#{cmd}`
@@ -79,7 +75,7 @@ context 'test the banning', if: @@my_ip do
     its(:content) do
       should(
         match(
-          %r{fail2ban.actions *\[\d+\]: NOTICE +\[sshd\] Ban #{@@my_ip}$}
+          %r{fail2ban.actions *\[\d+\]: NOTICE +\[sshd\] Ban #{@my_ip}$}
         )
       )
     end
@@ -88,7 +84,7 @@ context 'test the banning', if: @@my_ip do
   describe command 'fail2ban-client status sshd' do
     its(:exit_status) { should be_zero }
     its(:stdout) do
-      should match %r{`- Banned IP list:\s*#{@@my_ip}}
+      should match %r{`- Banned IP list:\s*#{@my_ip}}
     end
     its(:stderr) { should be_empty }
   end
