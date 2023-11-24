@@ -310,6 +310,7 @@ suites:
           servers:
             - 8.8.8.8
             - 9.9.9.9
+            - 140.181.61.61  # in case the cloud DNS servers are not accessible
           search:
             - gsi.de
             - fair-center.eu
