@@ -64,14 +64,16 @@ unless time_servers.empty?
 
   if node['platform'] == 'debian' && node['platform_version'].to_i >= 12
     ntp_package = 'ntpsec'
+    package 'ntpsec-ntpdate'
     ntp_conf = '/etc/ntpsec/ntp.conf'
   else
     ntp_package = 'ntp'
+    package 'ntpdate'
     ntp_conf = '/etc/ntp.conf'
   end
 
   package ntp_package
-  package 'ntpdate'
+
   package 'ntpstat' do
     not_if { node['lsb']['codename'] == 'wheezy' }
   end
