@@ -32,9 +32,9 @@ chefspec:
   resource_group: $CI_JOB_NAME-$CI_PROJECT_NAME
   script:
     - sleep $((RANDOM%30))
-    - kitchen test $SUITE-$PLATFORM
-  after_script:
-    # make sure failed runs are cleaned up too:
+    - kitchen create $SUITE-$PLATFORM
+    - kitchen converge $SUITE-$PLATFORM
+    - kitchen verify $SUITE-$PLATFORM
     - kitchen destroy $SUITE-$PLATFORM
   parallel:
     matrix:
