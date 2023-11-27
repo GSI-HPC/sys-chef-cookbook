@@ -35,6 +35,8 @@ chefspec:
     - kitchen create $SUITE-$PLATFORM
     - kitchen converge $SUITE-$PLATFORM
     - kitchen verify $SUITE-$PLATFORM
+  after_script:
+    # make sure failed runs are always cleaned up too:
     - kitchen destroy $SUITE-$PLATFORM
   parallel:
     matrix:
@@ -86,6 +88,15 @@ bookworm:
   tags:
     - kitchen
     - bookworm
+
+trixie:
+  extends: .kitchen
+  variables:
+    PLATFORM: trixie
+  tags:
+    - kitchen
+    - trixie
+  allow_failure: true
 
 .post:
    script:
