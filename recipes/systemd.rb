@@ -54,8 +54,11 @@ if node['sys']['systemd']['networkd']['clean_legacy']
   # in other scenarios
 
   interfacesd = '/etc/network/interfaces.d/*'
-  execute "rm -rf #{interfacesd}" do
-    not_if { Dir[interfacesd].empty? }
+
+  Dir.glob(interfacesd).each do |f|
+    file f do
+      action :delete
+    end
   end
 
   file '/etc/network/interfaces' do

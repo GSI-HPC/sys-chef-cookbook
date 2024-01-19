@@ -26,8 +26,12 @@
 
 return if node['sys']['ldap'].empty?
 
-%w[ldap-utils libldap-common libnss-ldapd nslcd].each do |p|
+%w[ldap-utils libnss-ldapd nslcd].each do |p|
   package p
+end
+
+package 'libldap-common' do
+  not_if { node['platform'] == 'debian' && node['platform_version'].to_i < 9 }
 end
 
 sys_wallet "nslcd/#{node['fqdn']}" do
