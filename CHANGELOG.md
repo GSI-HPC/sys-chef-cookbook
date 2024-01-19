@@ -5,7 +5,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## Unreleased
 
 ### Fixed
-- [ldap] Explicitly install `libldap-common` (cf. #43)
+- [ldap] Explicitly install `libldap-common` (where it is available, cf. #43)
 
 ## [2.2.0] - 2023-06-26
 
