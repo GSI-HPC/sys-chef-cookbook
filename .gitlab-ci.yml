@@ -1,9 +1,4 @@
 ---
-default:
-  tags:
-    - chef-dk
-    - cinc-workstation
-
 stages:
   - rubocop
   - foodcritic
@@ -12,11 +7,15 @@ stages:
 
 rubocop:
   stage: rubocop
+  tags:
+    - robocop
   script:
     - rake rubocop
 
 foodcritic:
   stage: foodcritic
+  tags:
+    - foodcritic
   script:
     - rake foodcritic
   allow_failure: true
@@ -75,11 +74,17 @@ buster:
   extends: .kitchen
   variables:
     PLATFORM: buster
+  tags:
+    - kitchen
+    - buster
 
 bullseye:
   extends: .kitchen
   variables:
     PLATFORM: bullseye
+  tags:
+    - kitchen
+    - bullseye
 
 bookworm:
   extends: .kitchen
