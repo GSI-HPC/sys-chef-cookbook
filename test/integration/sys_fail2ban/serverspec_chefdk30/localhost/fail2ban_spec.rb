@@ -65,7 +65,7 @@ context 'test the banning', if: host_inventory['ohai']['ipaddress'] do
   end
 
   describe file '/var/log/syslog' do
-    if os[:release].to_i <= 9
+    if os[:release].to_i <= 9 && os[:release] =! 'testing/unstable'
       its(:content) { should match(/Started Fail2Ban Service/) }
     else
       its(:content) { should match(/fail2ban-server\[\d+\]: Server ready$/) }
