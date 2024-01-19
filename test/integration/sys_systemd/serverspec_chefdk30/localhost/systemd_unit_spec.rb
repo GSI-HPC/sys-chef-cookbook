@@ -1,7 +1,7 @@
 # Cookbook Name:: sys
 # Integration tests for recipe sys::systemd systemd unit config
 #
-# Copyright 2022 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+# Copyright 2022-2024 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
 #
 # Authors:
 #  Christopher Huhn   <c.huhn@gsi.de>
@@ -23,5 +23,5 @@ require 'spec_helper'
 
 describe file('/etc/systemd/system/unknown_method.service') do
   it { should exist }
-  its(:content) { should contain '# This file is managed by chef' }
+  its(:content) { should match %r{^# This file is managed by (chef|cinc)} }
 end
