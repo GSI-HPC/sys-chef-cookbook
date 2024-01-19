@@ -8,7 +8,7 @@ stages:
 rubocop:
   stage: rubocop
   tags:
-    - robocop
+    - rubocop
   script:
     - rake rubocop
 
