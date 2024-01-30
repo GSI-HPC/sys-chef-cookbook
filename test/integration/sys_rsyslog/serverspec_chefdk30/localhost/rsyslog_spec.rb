@@ -2,10 +2,11 @@
 # Cookbook Name:: sys
 # Integration tests for recipe rsyslog
 #
-# Copyright 2023 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+# Copyright 2023-2024 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
 #
 # Authors:
-#  Matthias Pausch (m.pausch@gsi.de)
+#  Matthias Pausch   <m.pausch@gsi.de>
+#  Christopher Huhn  <c.huhn@gsi.de>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -23,17 +24,33 @@
 require 'spec_helper'
 
 describe service('rsyslog') do
-  it { should be_enabled }
+  # serverspec's be_enabled is broken on Debian Testing:
+  it { should be_enabled } if os[:release] =~ /^\d+(\.\d+)?$/
   it { should be_running }
 end
 
-context 'Bullseye or later', if: os[:platform] == 'debian' && os[:release].to_i >= 11 do
+describe file('/etc/rsyslog.d/20-loghost-test-tls.conf') do
+  # brackets must be escaped in strings for test to work:
+  its(:content) { should contain 'if prifilt\("authpriv.*"\) then {' }
+  its(:content) { should contain 'target="192.168.144.120"' }
+  its(:content) { should contain 'port="55514"' }
+end
+
+describe file('/etc/rsyslog.d/20-loghost-test-relp.conf') do
+  it { should exist }
+end
+
+describe file('/etc/rsyslog.d/20-loghost-no-tls.conf') do
+  it { should exist }
+end
+
+context 'Bullseye or later', if: debian_version >= 11 do
   describe package('rsyslog-openssl') do
     it { should be_installed }
   end
 
-  describe file('/etc/rsyslog.d/10-test-ossl.conf') do
-    its(:content) { should match 'StreamDriver="ossl"' }
+  describe file('/etc/rsyslog.d/20-loghost-test-tls.conf') do
+    its(:content) { should contain 'StreamDriver="ossl"' }
   end
 
   describe file('/etc/rsyslog.d/loghost.conf') do
@@ -41,7 +58,7 @@ context 'Bullseye or later', if: os[:platform] == 'debian' && os[:release].to_i 
   end
 end
 
-context 'Jessie to Buster', if: os[:platform] == 'debian' && os[:release].to_i <= 10 && os[:release].to_i >= 8 do
+context 'Jessie to Buster', if: debian_version <= 10 && debian_version >= 8 do
   describe package('rsyslog-openssl') do
     it { should_not be_installed }
   end
@@ -50,7 +67,7 @@ context 'Jessie to Buster', if: os[:platform] == 'debian' && os[:release].to_i <
     it { should be_installed }
   end
 
-  describe file('/etc/rsyslog.d/10-test-gtls.conf') do
+  describe file('/etc/rsyslog.d/20-loghost-test-tls.conf') do
     its(:content) { should match 'StreamDriver="gtls"' }
   end
 end

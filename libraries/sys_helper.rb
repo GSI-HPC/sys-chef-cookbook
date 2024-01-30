@@ -27,7 +27,7 @@ module Sys
     #  the value for Testing or Unstable is 1) numeric and
     #  2) larger than any sensible Debian version number
     def debian_version
-      return -1 unless node[:platform] == 'debian'
+      return -1 unless on_debian?
 
       if node[:platform_version] =~ /^\d+(\.\d+)?$/
         node[:platform_version].to_f
@@ -36,6 +36,10 @@ module Sys
       else
         raise "Debian version could not be determined"
       end
+    end
+
+    def on_debian?
+      node[:platform] == 'debian'
     end
 
     # Detect installed systemd
