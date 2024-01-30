@@ -2,7 +2,7 @@
 # Cookbook Name:: sys
 # Serverspec integration tests for sys::fail2ban
 #
-# Copyright 2022-2023 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+# Copyright 2022-2024 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
 #
 # Authors:
 #  Christopher Huhn   <C.Huhn@gsi.de>
@@ -65,7 +65,10 @@ context 'test the banning', if: host_inventory['ohai']['ipaddress'] do
   end
 
   describe file '/var/log/syslog' do
-    if os[:release].to_i <= 9 && os[:release] != 'testing/unstable'
+    # the ways of serverspec of guessing the value
+    #  of os[:release] for Debian testing are manyfold
+    #  as of 2024-01-30 trixie has 'n/a'
+    if os[:release].to_i <= 9 && os[:release] !~ %r{^(testing/unstable|n/a)$}
       its(:content) { should match(/Started Fail2Ban Service/) }
     else
       its(:content) { should match(/fail2ban-server\[\d+\]: Server ready$/) }
