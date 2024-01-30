@@ -2,7 +2,7 @@
 # Cookbook:: sys
 # Recipe:: rsyslog
 #
-# Copyright:: 2014-2023 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+# Copyright:: 2014-2024 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
 #
 # Authors:
 #  Matteo Dessalvi    <m.dessalvi@gsi.de>
@@ -70,7 +70,7 @@ node['sys']['rsyslog']['loghosts'].each do |name, cfg|
   if cfg['tls']
     port = cfg['port'] || '6514'
     ca_file = cfg['ca_file'] || '/etc/ssl/certs/ca-certificates.crt'
-    if debian_version > 0 && debian_version < 11 ||
+    if on_debian? && debian_version < 11 ||
        node['platform'] == 'ubuntu' && node['platform_version'].to_i < 20
       package 'rsyslog-gnutls'
       stream_driver = 'gtls'

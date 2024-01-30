@@ -336,15 +336,17 @@ suites:
       sys:
         rsyslog:
           loghosts:
-            test-gtls:
+            test-tls:
               tls: true
-              target_ip: '192.2.0.1'
+              target: '192.168.144.120'
+              port: 55514
+              priority_filter: 'authpriv.*'
             test-relp:
               tls: true
-              target_ip: '192.2.0.2'
+              target: '192.168.144.96'
               type: 'omrelp'
             no-tls:
-              target_ip: '192.2.0.3'
+              target: '192.168.144.72'
   - name: sys_snmp
     run_list:
       - recipe[sys::hosts]
