@@ -1,6 +1,31 @@
 #
-# extremly basic loghost setup
+# Cookbook:: sys
+# Recipe:: rsyslog
 #
+# Copyright:: 2014-2023 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+#
+# Authors:
+#  Matteo Dessalvi    <m.dessalvi@gsi.de>
+#  Christopher Huhn   <c.huhn@gsi.de>
+#  Dennis Klein       <d.klein@gsi.de>
+#  Matthias Pausch    <m.pausch@gsi.de>
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+# basic syslog setup with loghost forwarding optionally over TLS
+#
+
+Chef::Recipe.include(Sys::Helper)
 
 package 'rsyslog'
 
@@ -45,7 +70,7 @@ node['sys']['rsyslog']['loghosts'].each do |name, cfg|
   if cfg['tls']
     port = cfg['port'] || '6514'
     ca_file = cfg['ca_file'] || '/etc/ssl/certs/ca-certificates.crt'
-    if node['platform'] == 'debian' && node['platform_version'].to_i < 11 ||
+    if debian_version > 0 && debian_version < 11 ||
        node['platform'] == 'ubuntu' && node['platform_version'].to_i < 20
       package 'rsyslog-gnutls'
       stream_driver = 'gtls'
