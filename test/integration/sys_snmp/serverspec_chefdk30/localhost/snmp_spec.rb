@@ -2,7 +2,7 @@
 # Cookbook Name:: sys
 # Integration tests for snmpd setup
 #
-# Copyright 2019-2022 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+# Copyright 2019-2024 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
 #
 # Authors:
 #  Christopher Huhn   <C.Huhn@gsi.de>
@@ -30,8 +30,7 @@ when 'redhat'
 when 'debian', 'ubuntu'
   snmpd_package = 'snmpd'
   snmpwalk_package = 'snmp'
-  if os[:release].to_i >= 9 ||
-     os[:release] == 'testing'
+  if debian_version >= 9
     snmp_user = 'Debian-snmp'
   else
     snmp_user = 'snmp'
