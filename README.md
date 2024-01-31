@@ -17,8 +17,8 @@ automount, NTP, IPMI BMCs, postfix, SNMP, aso.
 
 **Platforms**
 
-The "sys" cookbook development is focussed on Debian GNU/Linux.kitch
-Debian derivatives as Ubuntu usually work (with minor tweaks).
+The "sys" cookbook development is focussed on Debian GNU/Linux.
+Debian derivatives like Ubuntu usually work (with minor tweaks).
 
 * Supported flavors:
   - Debian
@@ -26,10 +26,14 @@ Debian derivatives as Ubuntu usually work (with minor tweaks).
     - 8 (_Jessie_) (with Chef client > 12.0) [**deprecated**]
     - 9 (_Stretch_) (with Debian-packaged Chef client 12.14)
     - 10 (_Buster_) (with Debian-packaged Chef client 13.8)
-    - 11 (_Bullseye_) (with Cinc client <= 18)
+    - 11 (_Bullseye_) (with latest Cinc client)
+    - 12 (_Bookworm_) (with latest Cinc client)
+    - Testing (_Trixie_) (with latest Cinc client)
+
   - Ubuntu
     - 18.04 (_Bionic_) (with Ubuntu-packaged Chef client 12.14)
     - 20.04 (_Focal_) (with Ubuntu-packaged Chef client 15.8)
+    - 22.04 (_Jammy_) [*work in progress*]
 
 The sys cookbook is partially operable and occassionally tested with
 Debian Testing as well as
