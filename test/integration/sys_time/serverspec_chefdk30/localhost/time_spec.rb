@@ -1,7 +1,7 @@
 # Cookbook Name:: sys
 # Integration tests for recipe sys::time
 #
-# Copyright 2020-2021 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+# Copyright 2020-2024 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
 #
 # Authors:
 #  Christopher Huhn   <c.huhn@gsi.de>
@@ -52,11 +52,7 @@ end
 context 'ntp' do
 
   ntp_servers = %w[ntp1.net.berkeley.edu time1.esa.int zeit.fu-berlin.de]
-  ntp_conf = if os[:family] == 'debian' && os[:release].to_i >= 12
-               '/etc/ntpsec/ntp.conf'
-             else
-               '/etc/ntp.conf'
-             end
+  ntp_conf = debian_version >= 12 ? '/etc/ntpsec/ntp.conf' : '/etc/ntp.conf'
 
   describe file(ntp_conf) do
     its(:mode) { should eq "644" }
