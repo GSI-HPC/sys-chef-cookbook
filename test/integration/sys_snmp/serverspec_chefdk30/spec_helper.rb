@@ -6,12 +6,11 @@ set :backend, :exec
 #  the value for Testing or Unstable is 1) numeric and
 #  2) larger than any sensible Debian version number
 def debian_version
-  if os[:platform] == 'debian' && os[:release] =~ /^\d+(\.\d+)?$/
+  return -1 unless os[:family] == 'debian'
+  if os[:release] =~ /^\d+(\.\d+)?$/
     os[:release].to_f
-  elsif os[:platform].nil? && os[:release] == 'n/a' &&
+  elsif os[:release] == 'n/a' &&
         ::File.exist?('/etc/debian_version')
     2**32 - 1.0
-  else
-    -1.0
   end
 end
