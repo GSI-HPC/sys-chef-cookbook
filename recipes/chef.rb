@@ -187,7 +187,6 @@ if init_style == 'systemd-timer'
   # mimic the chef-client cookbook systemd unit:
   systemd_unit "#{chef_client}-oneshot.service" do
     content chef_service_unit
-    verify false
     # what effect has stop when this chef run was started by systemd timer?
     action %i[create stop]
     notifies :run, 'execute[sys-systemd-reload]', :immediately
@@ -196,7 +195,6 @@ if init_style == 'systemd-timer'
   # mimic the chef-client cookbook systemd unit:
   systemd_unit "#{chef_client}.timer" do
     content chef_timer_unit
-    verify false
     action [:create, :enable, :start]
     notifies :run, 'execute[sys-systemd-reload]'
   end
