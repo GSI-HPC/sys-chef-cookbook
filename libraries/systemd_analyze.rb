@@ -43,10 +43,16 @@ class Chef
             true
           end
 
-          original_systemd_analyze_path = instance_method :systemd_analyze_path
+          begin
+            original_systemd_analyze_path =
+              instance_method :systemd_analyze_path
+          rescue NameError
+            original_systemd_analyze_path = nil
+          end
 
           define_method(:systemd_analyze_path) do
             return if inside_chroot?
+            return unless original_systemd_analyze_path
 
             original_systemd_analyze_path.bind(self).call
           end
