@@ -4,8 +4,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## Unreleased
 
-### Changed
-- [`time`] NTP removed in favor of NTPSEC in Debian Bookworm
+### Added
+- [helpers] Fix verification of systemd units in `chroot`s (by skipping verification)
 
 ### Fixed
 - [`ldap`] Explicitly install `libldap-common` (where it is available, cf. #43)
@@ -14,6 +14,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - [helpers] Give credit to cinc in `template_header()` where it is due
 - [`systemd`] Delete `ifupdown` interface definitions in a more Cheffy way
               (that should create backups)
+- [`time`] NTP removed in favor of NTPSEC in Debian Bookworm
 
 ## [2.2.0] - 2023-06-26
 
