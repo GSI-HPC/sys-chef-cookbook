@@ -4,6 +4,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## Unreleased
 
+### Added
+- [helpers] Fix verification of systemd units in `chroot`s (by skipping verification)
+
 ### Fixed
 - [`ldap`] Explicitly install `libldap-common` (where it is available, cf. #43)
 
