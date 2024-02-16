@@ -29,9 +29,9 @@ module Sys
     def debian_version
       return -1 unless on_debian?
 
-      if node[:platform_version] =~ /^\d+(\.\d+)?$/
-        node[:platform_version].to_f
-      elsif node[:platform_version] =~ %r{^\w+/sid$}
+      if node['platform_version'] =~ /^\d+(\.\d+)?$/
+        node['platform_version'].to_f
+      elsif node['platform_version'] =~ %r{^\w+/sid$}
         2**32 - 1.0
       else
         raise "Debian version could not be determined"
@@ -39,7 +39,7 @@ module Sys
     end
 
     def on_debian?
-      node[:platform] == 'debian'
+      node['platform'] == 'debian'
     end
 
     # Detect installed systemd
