@@ -8,7 +8,7 @@ Use the nftables resource to configure nftables.
 ↪ `documents/nftables.rb`  
 ↪ `documents/resources/nftables.rb`  
 ↪ `documents/resources/nftables_rule.rb`  
-↪ `test/unit/recipies/nftables_spec.rb`  
+↪ `test/unit/recipes/nftables_spec.rb`  
 
 ## Basic Usage
 
