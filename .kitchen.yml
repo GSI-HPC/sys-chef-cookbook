@@ -49,7 +49,8 @@ verifier:
 platforms:
   - name: stretch
     driver:
-      box: debian/stretch64
+      box: gsi/stretch
+      box_url: https://web-docs.gsi.de/~christo/vagrant-boxes/gsi-stretch.json
       provider: libvirt
       provision: true
       vagrantfiles:
