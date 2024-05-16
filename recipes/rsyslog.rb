@@ -67,7 +67,7 @@ node['sys']['rsyslog']['loghosts'].each do |name, cfg|
   protocol = cfg['protocol'] || 'tcp'
   stream_driver = false
   type = cfg['type'] || 'omfwd'
-  if cfg['tls']
+  if cfg['tls'] && debian_version >= 10
     port = cfg['port'] || '6514'
     ca_file = cfg['ca_file'] || '/etc/ssl/certs/ca-certificates.crt'
     if on_debian? && debian_version < 11 ||
