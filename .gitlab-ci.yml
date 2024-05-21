@@ -1,24 +1,36 @@
 ---
 stages:
-  - rubocop
-  - foodcritic
+  - lint
   - chefspec
   - kitchen
 
 rubocop:
-  stage: rubocop
+  stage: lint
   tags:
     - rubocop
   script:
     - rake rubocop
 
 foodcritic:
-  stage: foodcritic
+  stage: lint
   tags:
     - foodcritic
   script:
     - rake foodcritic
   allow_failure: true
+
+cookstyle:
+  stage: lint
+  tags:
+    - cookstyle
+  script:
+    - cookstyle --fail-level E -f junit --out cookstyle.xml
+  artifacts:
+    when: always
+    paths:
+      - cookstyle.xml
+    reports:
+      junit: cookstyle.xml
 
 chefspec:
   stage: chefspec
