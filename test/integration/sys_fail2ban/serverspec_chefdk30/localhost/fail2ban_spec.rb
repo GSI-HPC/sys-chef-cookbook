@@ -65,13 +65,12 @@ context 'test the banning', if: host_inventory['ohai']['ipaddress'] do
   end
 
   describe file '/var/log/syslog' do
-    # the ways of serverspec of guessing the value
-    #  of os[:release] for Debian testing are manyfold
-    #  as of 2024-01-30 trixie has 'n/a'
-    if os[:release].to_i <= 9 && os[:release] !~ %r{^(testing/unstable|n/a)$}
-      its(:content) { should match(/Started Fail2Ban Service/) }
-    else
-      its(:content) { should match(/fail2ban-server\[\d+\]: Server ready$/) }
+    its(:content) do
+      if debian_version < 10
+        should match(/Started Fail2Ban Service/)
+      else
+        should match(/fail2ban-server\[\d+\]: Server ready$/)
+      end
     end
 
     # banning has been logged:
