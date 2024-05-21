@@ -58,14 +58,14 @@ expected_rules = [
 
 cmd = 'nft list ruleset'
 
-if os[:release].to_i >= 11 || os[:release] == 'n/a'
+if debian_version >= 11
   expected_rules << /\s+type filter hook input priority filter; policy drop;/
 else
   expected_rules << /\s+type filter hook input priority 0; policy drop;/
   cmd = 'nft -nn list ruleset'
 end
 
-if os[:release].to_i >= 10 || os[:release] == 'n/a'
+if debian_version >= 10
 
   describe command(cmd) do
     expected_rules.each do |r|
@@ -78,7 +78,9 @@ if os[:release].to_i >= 10 || os[:release] == 'n/a'
   end
 
   describe service('nftables') do
-    xit { should be_enabled } # fails on Debian Testing
+    if debian_version < 13
+      it { should be_enabled } # fails on Debian Testing
+    end
     it { should be_running }
   end
 

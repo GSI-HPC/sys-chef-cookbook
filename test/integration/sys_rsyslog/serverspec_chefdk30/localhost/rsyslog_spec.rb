@@ -25,7 +25,7 @@ require 'spec_helper'
 
 describe service('rsyslog') do
   # serverspec's be_enabled is broken on Debian Testing:
-  it { should be_enabled } if os[:release] =~ /^\d+(\.\d+)?$/
+  it { should be_enabled } if debian_version < 999
   it { should be_running }
 end
 
@@ -58,7 +58,7 @@ context 'Bullseye or later', if: debian_version >= 11 do
   end
 end
 
-context 'Jessie to Buster', if: debian_version <= 10 && debian_version >= 8 do
+context 'On Buster', if: debian_version.to_i== 10 do
   describe package('rsyslog-openssl') do
     it { should_not be_installed }
   end
