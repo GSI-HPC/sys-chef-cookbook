@@ -2,7 +2,10 @@
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-## Unreleased
+## [2.4.0] - 2024-05-22
+
+### Added
+- Support for Debian Bookworm and preliminary support for Debian Trixie
 
 ### Changed
 - [`time`] NTP removed in favor of NTPSEC in Debian Bookworm
