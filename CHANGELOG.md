@@ -2,6 +2,14 @@
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [2.4.2] - 2024-07-12
+
+### Changed
+- Remove version constraint on chef-vault cookbook dependency
+- [`rsyslog`] Don't limit TLS loghost forwarding to Debian >= Buster
+  The resulting setup will not disable TLS on Debian < Buster but
+  braeak the setup :(
+
 ## [2.4.1] - 2024-05-24
 
 ### Fixed
