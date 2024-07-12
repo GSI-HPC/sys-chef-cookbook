@@ -13,6 +13,6 @@ end
 chef_version     '>= 12.0' if respond_to?(:chef_version)
 supports         'debian'
 
-depends          'chef-vault', '< 4.0'
+depends          'chef-vault'
 
 version          '2.4.1'
