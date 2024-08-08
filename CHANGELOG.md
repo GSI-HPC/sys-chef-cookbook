@@ -2,6 +2,13 @@
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## Unreleased
+
+### Added
+- [`ssh`] Add statement to include config snippets from `/etc/ssh/sshd_config.d`
+  into `/etc/ssh/sshd_config`.
+  This is part of the default `sshd_config` starting with Debian Bullseye.
+
 ## [2.4.2] - 2024-07-12
 
 ### Changed

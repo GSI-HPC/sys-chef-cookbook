@@ -1,8 +1,8 @@
 #
-# Cookbook Name:: sys
+# Cookbook:: sys
 # Recipe:: ssh
 #
-# Copyright 2012-2022 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+# Copyright 2012-2024 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
 #
 # Authors:
 #  Christopher Huhn  <c.huhn@gsi.de>
