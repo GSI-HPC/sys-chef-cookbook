@@ -57,3 +57,6 @@ module Sys
     end
   end
 end
+
+Chef::Recipe.include(Sys::Helper)
+Chef::Mixin::Template::TemplateContext.include(Sys::Helper)
