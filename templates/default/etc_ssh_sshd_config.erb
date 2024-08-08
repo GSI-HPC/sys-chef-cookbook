@@ -1,5 +1,9 @@
 <%= template_header %>
 
+<%- if debian_version >= 11 -%>
+Include /etc/ssh/sshd_config.d/*.conf
+
+<%- end -%>
 <% @config.each do |key,value| %>
 <% if value.kind_of?(Array) %>
 <% value.each do |v| %>
