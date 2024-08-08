@@ -124,19 +124,20 @@ platforms:
         # cf. https://stackoverflow.com/a/70749387/9793012
         'ohai.optional_plugins = ':
           - :Passwd
-  - name: jammy
-    driver:
-      box: generic/ubuntu2204
-      provider: libvirt
-      provision: true
-      vagrantfiles:
-        - vagrant.rb
-    provisioner:
-      client_rb:
-        # Chef 15 no longer collects passwd information by default
-        # cf. https://stackoverflow.com/a/70749387/9793012
-        'ohai.optional_plugins = ':
-          - :Passwd
+  # the Jammy libvirt image is broken - at least on my box
+  # - name: jammy
+  #   driver:
+  #     box: generic/ubuntu2204
+  #     provider: libvirt
+  #     provision: true
+  #     vagrantfiles:
+  #       - vagrant.rb
+  #   provisioner:
+  #     client_rb:
+  #       # Chef 15 no longer collects passwd information by default
+  #       # cf. https://stackoverflow.com/a/70749387/9793012
+  #       'ohai.optional_plugins = ':
+  #         - :Passwd
 
 suites:
   - name: sys_accounts
