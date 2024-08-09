@@ -43,7 +43,7 @@ describe file('/etc/ssl/certs/www-linux.gsi.de_chain.pem') do
     should match(/^LXUV2EoY6hbvVTQiGhONBg==\n-----END CERTIFICATE-----\n-----BEGIN CERTIFICATE-----\nMIIFEjCCA\/qgAwIBAgIJAOML1fivJdmBMA0GCSqGSIb3DQEBCwUAMIGCMQswCQYD$/m)
   end
   its(:content) do
-    should match(/^GqK1chk5\n-----END CERTIFICATE-----\n\z/m)
+    should match(/^GqK1chk5\n-----END CERTIFICATE-----\Z/m)
   end
 end
 
