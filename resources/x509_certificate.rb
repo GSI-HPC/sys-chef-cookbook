@@ -70,6 +70,7 @@ if Gem::Requirement.new('>= 12.15').satisfied_by?(Gem::Version.new(Chef::VERSION
       aki_oid.value.strip.gsub(/\Akeyid:/, '').tr(':', '').downcase if aki_oid
     end
 
+    # return the given cert concatenated with its intermediates
     def create_chain(cert_string)
       cert = OpenSSL::X509::Certificate.new(cert_string)
 
@@ -80,11 +81,11 @@ if Gem::Requirement.new('>= 12.15').satisfied_by?(Gem::Version.new(Chef::VERSION
       Chef::Log.debug { "aki: #{aki}" }
 
       # recursion anchor, self-signed cert, return nil
-      return if aki.nil? || aki == ski
+      return '' if aki.nil? || aki == ski
 
       ca_item = data_bag_item(new_resource.data_bag, aki)
       # prepend the current certificate and recurse to the next level:
-      cert.to_s.strip + create_chain(ca_item['file-content'])
+      cert.to_s + create_chain(ca_item['file-content'])
     end
   end
 
