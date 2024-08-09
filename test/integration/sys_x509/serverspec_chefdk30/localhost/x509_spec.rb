@@ -1,12 +1,16 @@
 require 'spec_helper'
 
-if os[:release].to_i >= 10
+context 'Debian Buster or later', if: debian_version >= 10 do
   describe file('/etc/ssl/certs/www-linux.gsi.de_chain.pem') do
     it { should exist }
     its(:content) do
       should match(/^lnwgvLxGmf4\+6iWA\+dvG3PHirgCHyWmVTOwy7\+ikhEdtd9q4\n-----END CERTIFICATE-----\n-----BEGIN CERTIFICATE-----\nMIIFrDCCBJSgAwIBAgIHG2O60B4sPTANBgkqhkiG9w0BAQsFADCBlTELMAkGA1UE$/m)
+    end
+    its(:content) do
       should match(/^LXUV2EoY6hbvVTQiGhONBg==\n-----END CERTIFICATE-----\n-----BEGIN CERTIFICATE-----\nMIIFEjCCA\/qgAwIBAgIJAOML1fivJdmBMA0GCSqGSIb3DQEBCwUAMIGCMQswCQYD$/m)
-      should match(/^GqK1chk5\n-----END CERTIFICATE-----\z/m)
+    end
+    its(:content) do
+      should match(/^GqK1chk5\n-----END CERTIFICATE-----\Z/m)
     end
   end
 
@@ -14,6 +18,8 @@ if os[:release].to_i >= 10
     it { should exist }
     its(:content) do
       should_not match(/^GqK1chk5$/)
+    end
+    its(:content) do
       should match(/^lnwgvLxGmf4\+6iWA\+dvG3PHirgCHyWmVTOwy7\+ikhEdtd9q4\n-----END CERTIFICATE-----\Z/m)
     end
   end
