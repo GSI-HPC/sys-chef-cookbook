@@ -2,10 +2,11 @@
 # Cookbook:: sys
 # Resource:: x509_certificate
 #
-# Copyright:: 2022-2023 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+# Copyright:: 2022-2024 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
 #
 # Authors:
-#  Matthias Pausch (m.pausch@gsi.de)
+#  Matthias Pausch  <m.pausch@gsi.de>
+#  Christopher Huhn <c.huhn@gsi.de>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -33,8 +34,9 @@ if Gem::Requirement.new('>= 12.15').satisfied_by?(Gem::Version.new(Chef::VERSION
     def certificate_file_content
       cert_item = data_bag_item(new_resource.data_bag, new_resource.bag_item)
       if new_resource.include_chain
-        Chef::Log.warn 'Include certificate-chain'
-        create_chain(cert_item['file-content']).join("\n")
+        Chef::Log.info 'Including the certificate chain for ' +
+                       new_resource.bag_item
+        create_chain(cert_item['file-content'])
       else
         cert_item['file-content']
       end
@@ -50,30 +52,39 @@ if Gem::Requirement.new('>= 12.15').satisfied_by?(Gem::Version.new(Chef::VERSION
       key_item['file-content']
     end
 
-    def recurse_create_chain(chain, cert)
-      # Older openssl-versions don't have the methods for getting the key-identifiers.
-      # ski = cert.subject_key_identifier
-      # aki = cert.authority_key_identifier
-      ski_value = cert.extensions.select {|e| e.oid == "subjectKeyIdentifier" }.first.value
-      ski = ski_value.strip.gsub(/\Akeyid:/, '').tr(':', '').downcase
-      aki_oid = cert.extensions.select {|e| e.oid == "authorityKeyIdentifier" }.first
-      aki = aki_oid ? aki_oid.value.strip.gsub(/\Akeyid:/, '').tr(':', '').downcase : nil
-      Chef::Log.debug { "ski: #{ski}" }
-      Chef::Log.debug { "aki: #{aki}" }
-
-      if ! (aki.nil? || aki == ski)
-        chain << cert.to_s.strip
-        ca_item = data_bag_item(new_resource.data_bag, aki)
-        ca_file = ca_item['file-content']
-        recurse_create_chain(chain, OpenSSL::X509::Certificate.new(ca_file))
-      end
+    # Older openssl versions don't have methods for getting the key identifiers
+    # ski = cert.subject_key_identifier
+    def subject_key_identifier(cert)
+      ski_value = cert.extensions.select do |e|
+        e.oid == "subjectKeyIdentifier"
+      end.first.value
+      ski_value.strip.gsub(/\Akeyid:/, '').tr(':', '').downcase
     end
 
-    def create_chain(cert_file)
-      chain = []
-      cert = OpenSSL::X509::Certificate.new(cert_file)
-      recurse_create_chain(chain, cert)
-      return chain
+    # Older openssl versions don't have methods for getting the key identifiers
+    # aki = cert.authority_key_identifier
+    def authority_key_identifier(cert)
+      aki_oid = cert.extensions.select do |e|
+        e.oid == "authorityKeyIdentifier"
+      end.first
+      aki_oid.value.strip.gsub(/\Akeyid:/, '').tr(':', '').downcase if aki_oid
+    end
+
+    def create_chain(cert_string)
+      cert = OpenSSL::X509::Certificate.new(cert_string)
+
+      ski = subject_key_identifier(cert)
+      Chef::Log.debug { "ski: #{ski}" }
+
+      aki = authority_key_identifier(cert)
+      Chef::Log.debug { "aki: #{aki}" }
+
+      # recursion anchor, self-signed cert, return nil
+      return if aki.nil? || aki == ski
+
+      ca_item = data_bag_item(new_resource.data_bag, aki)
+      # prepend the current certificate and recurse to the next level:
+      cert.to_s.strip + create_chain(ca_item['file-content'])
     end
   end
 
