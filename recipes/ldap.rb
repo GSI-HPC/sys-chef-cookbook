@@ -1,8 +1,8 @@
 #
-# Cookbook Name:: sys
+# Cookbook:: sys
 # Recipe:: ldap
 #
-# Copyright 2013-2023 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+# Copyright 2013-2024 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
 #
 # Authors:
 #  Christopher Huhn    <c.huhn@gsi.de>
@@ -31,7 +31,7 @@ return if node['sys']['ldap'].empty?
 end
 
 package 'libldap-common' do
-  not_if { node['platform'] == 'debian' && node['platform_version'].to_i < 9 }
+  not_if { on_debian? && debian_version < 9 }
 end
 
 sys_wallet "nslcd/#{node['fqdn']}" do
@@ -61,7 +61,7 @@ template "/etc/nslcd.conf" do
     :searchbase => node['sys']['ldap']['searchbase'],
     :realm => node['sys']['ldap']['realm'].upcase,
     :nss_initgroups_ignoreusers => node['sys']['ldap']['nss_initgroups_ignoreusers'],
-    :nslcd => node['sys']['ldap']['nslcd']
+    :nslcd => node['sys']['ldap']['nslcd'] || {}
   )
 end
 
@@ -80,7 +80,7 @@ template "/etc/ldap/ldap.conf" do
   )
 end
 
-if node['platform_version'].to_i >= 9
+if debian_version >= 9
 
   sys_systemd_unit 'nslcd.service' do
     config(
@@ -156,7 +156,7 @@ end
 # false.  Work around that.
 actions = [:start]
 actions << :enable if Dir.glob('/etc/rc2.d/*nslcd*').empty?
-actions << :enable if node['platform_version'].to_i >= 9
+actions << :enable if debian_version >= 9
 
 service "nslcd" do
   supports :restart => true
