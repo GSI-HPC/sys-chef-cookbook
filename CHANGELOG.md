@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - [`ssh`] Add statement to include config snippets from `/etc/ssh/sshd_config.d`
   into `/etc/ssh/sshd_config`.
   This is part of the default `sshd_config` starting with Debian Bullseye.
+- [`x509_certificate`] Add new `include_chain` option to resource.
+  See [the documentation](documents/resources/sys_x509_certificate.md) and !67
 
 ## [2.4.2] - 2024-07-12
 
