@@ -65,7 +65,8 @@ platforms:
         - vagrant.rb
   - name: buster
     driver:
-      box: debian/buster64
+      box: gsi/buster
+      box_url: https://web-docs.gsi.de/~christo/vagrant-boxes/gsi-buster.json
       provider: libvirt
       provision: true
       vagrantfiles:
