@@ -52,27 +52,27 @@ chefspec:
   parallel:
     matrix:
       - SUITE:
-        # - accounts
-        # - apt
-        # - autofs
-        # - banner
-        # - chef
-        # - fail2ban
-        # - ferm
-        # - linuxlogo
-        # - mail
-        # - multipath
-        # - nftables
-        # - nsswitch
-        # - ohai
-        # - resolv
-        # - rsyslog
-        # - snmp
-        # - ssh
+        - accounts
+        - apt
+        - autofs
+        - banner
+        - chef
+        - fail2ban
+        - ferm
+        - linuxlogo
+        - mail
+        - multipath
+        - nftables
+        - nsswitch
+        - ohai
+        - resolv
+        - rsyslog
+        - snmp
+        - ssh
         - ssl
-        # - sudo
-        # - systemd
-        # - time
+        - sudo
+        - systemd
+        - time
         - x509
 
 # circumvent limit of 50 parallel jobs:
