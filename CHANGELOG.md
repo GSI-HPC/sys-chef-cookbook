@@ -2,7 +2,7 @@
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-## Unreleased
+## [2.5.0] - 2024-08-12
 
 ### Added
 - [`ssh`] Add statement to include config snippets from `/etc/ssh/sshd_config.d`
@@ -10,6 +10,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
   This is part of the default `sshd_config` starting with Debian Bullseye.
 - [`x509_certificate`] Add new `include_chain` option to resource.
   See [the documentation](documents/resources/sys_x509_certificate.md) and !67
+- [`ldap`] Skip config hash elements with `nil` values in `/etc/nslcd.conf`.
+  See 3c1e7de1 for the reasoning behind this option.
 
 ## [2.4.2] - 2024-07-12
 
