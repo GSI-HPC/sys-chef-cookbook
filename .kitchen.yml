@@ -257,12 +257,22 @@ suites:
                   - 'policy ACCEPT;'
                 FORWARD:
                   - 'policy DROP;'
+  - name: sys_ldap
+    run_list:
+      - recipe[sys::ldap]
   - name: sys_linuxlogo
     run_list:
       - recipe[sys::linuxlogo]
     attributes:
       sys:
         linuxlogo: absolutely!
+  - name: sys_krb5
+    run_list:
+      - recipe[sys::krb5]
+    attributes:
+      sys:
+        krb5:
+           foo: bar
   - name: sys_mail
     run_list:
       - recipe[sys::mail]
