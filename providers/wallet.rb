@@ -2,7 +2,7 @@
 # Cookbook Name:: sys
 # File:: providers/wallet.rb
 #
-# Copyright 2015-2019 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+# Copyright 2015-2024 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
 #
 # Authors:
 #  Christopher Huhn   <C.Huhn@gsi.de>
@@ -62,6 +62,8 @@ action :deploy do
       mode new_resource.mode
       owner new_resource.owner
       group new_resource.group
+      # do not create keytabs, only update ownership and permissions
+      only_if { File.exist?(new_resource.place) }
     end
     new_resource.updated_by_last_action(true)
   end
