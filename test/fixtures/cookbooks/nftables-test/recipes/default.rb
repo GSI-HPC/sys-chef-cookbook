@@ -198,3 +198,8 @@ nftables_rule 'multiple commands' do
   dport 2
   command [:counter, :log, :accept]
 end
+
+nftables_rule 'interface_name and outerface_name' do
+  interface_name "ifname"
+  outerface_name "ofname"
+end

@@ -2,6 +2,11 @@
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## UNRELEASED - 2024-09-02
+
+### Added
+- [`nftables`] `nftables_rule` supports new properties `interface_name` and `outerface_name`.
+
 ## [2.5.0] - 2024-08-12
 
 ### Added

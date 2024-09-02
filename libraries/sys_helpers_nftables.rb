@@ -174,7 +174,9 @@ module Sys
         nftables_rule << CHAIN.fetch(rule_resource.direction.to_sym)
         nftables_rule << ' '
         nftables_rule << "iif #{rule_resource.interface} " if rule_resource.interface
+        nftables_rule << "iifname #{rule_resource.interface_name} " if rule_resource.interface_name
         nftables_rule << "oif #{rule_resource.outerface} " if rule_resource.outerface
+        nftables_rule << "oifname #{rule_resource.outerface_name} " if rule_resource.outerface_name
 
         if rule_resource.source
           source_set = build_set_of_ips(rule_resource.source)
