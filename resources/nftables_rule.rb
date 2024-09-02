@@ -72,11 +72,15 @@ if Gem::Requirement.new('>= 12.15').satisfied_by?(Gem::Version.new(Chef::VERSION
            [Integer, String, Array, Range]
   property :interface,
            String
+  property :interface_name,
+           String
   property :dport,
            [Integer, String, Array, Range]
   property :destination,
            [String, Array]
   property :outerface,
+           String
+  property :outerface_name,
            String
   property :position,
            Integer,
