@@ -1,19 +1,36 @@
 ---
 stages:
-  - rubocop
-  - foodcritic
+  - lint
   - chefspec
   - kitchen
 
 rubocop:
-  stage: rubocop
+  stage: lint
+  tags:
+    - rubocop
   script:
     - rake rubocop
 
 foodcritic:
-  stage: foodcritic
+  stage: lint
+  tags:
+    - foodcritic
   script:
     - rake foodcritic
+  allow_failure: true
+
+cookstyle:
+  stage: lint
+  tags:
+    - cookstyle
+  script:
+    - cookstyle --fail-level E -f junit --out cookstyle.xml
+  artifacts:
+    when: always
+    paths:
+      - cookstyle.xml
+    reports:
+      junit: cookstyle.xml
 
 chefspec:
   stage: chefspec
@@ -26,9 +43,11 @@ chefspec:
   resource_group: $CI_JOB_NAME-$CI_PROJECT_NAME
   script:
     - sleep $((RANDOM%30))
-    - kitchen test $SUITE-$PLATFORM
+    - kitchen create $SUITE-$PLATFORM
+    - kitchen converge $SUITE-$PLATFORM
+    - kitchen verify $SUITE-$PLATFORM
   after_script:
-    # make sure failed runs are cleaned up too:
+    # make sure failed runs are always cleaned up too:
     - kitchen destroy $SUITE-$PLATFORM
   parallel:
     matrix:
@@ -47,6 +66,7 @@ chefspec:
         - nsswitch
         - ohai
         - resolv
+        - rsyslog
         - snmp
         - ssh
         - ssl
@@ -60,6 +80,9 @@ buster:
   extends: .kitchen
   variables:
     PLATFORM: buster
+  tags:
+    - kitchen
+    - buster
 
 centos7:
   extends: .kitchen

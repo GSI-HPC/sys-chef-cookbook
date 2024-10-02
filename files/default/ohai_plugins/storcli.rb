@@ -29,8 +29,7 @@ Ohai.plugin(:Storcli) do
     ENV['PATH'] += ":/opt/MegaRAID/storcli"
 
     # collect all available info in JSON format:
-    so = shell_out('storcli64 show all J')
-    #so = shell_out('storcli64 /call show all J')
+    so = shell_out('storcli64 /call show all J nolog')
 
     # restore PATH
     ENV['PATH'] = old_path

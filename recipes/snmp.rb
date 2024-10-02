@@ -2,7 +2,7 @@
 # Cookbook Name:: sys
 # Recipe:: snmp
 #
-# Copyright 2011-2022 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+# Copyright 2011-2024 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
 #
 # Authors:
 #  Christopher Huhn   <C.Huhn@gsi.de>
@@ -21,8 +21,6 @@
 #
 
 return unless node['sys']['snmp']
-
-Chef::Recipe.include(Sys::Helper)
 
 # some defaults:
 
@@ -56,7 +54,7 @@ when 'rhel'
   end
 when 'debian'
   # different user name on Stretch and beyond:
-  unless node['platform_version'].to_i < 9
+  unless debian_version < 9
     snmpd_user = 'Debian-snmp'
     snmpd_group = 'Debian-snmp'
   end
@@ -135,7 +133,7 @@ if node['sys']['snmp']['snmpv3_users']
 
   package 'libsnmp-dev' do
     # In Jessie net-snmp-config moved to this package:
-    only_if { node['platform_version'].to_f >= 8.0 }
+    only_if { debian_version >= 8.0 }
   end
 
   # snmpd must not run during net-snmp-config

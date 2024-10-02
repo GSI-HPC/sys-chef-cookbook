@@ -2,7 +2,7 @@
 # Cookbook Name:: sys
 # File:: providers/wallet.rb
 #
-# Copyright 2015-2019 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+# Copyright 2015-2024 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
 #
 # Authors:
 #  Christopher Huhn   <C.Huhn@gsi.de>
@@ -29,34 +29,30 @@ use_inline_resources
 
 action :deploy do
   if ! ::File.exist?(new_resource.place) || ! check_keytab()
-    if check_krb5
-      bash "deploy #{new_resource.principal}" do
-        cwd "/"
-        code <<-EOH
-          # TMPFILE must not exist yet, therefore --dry-run
-          TMPFILE=$(mktemp --dry-run)
-
-          kinit -t /etc/krb5.keytab host/#{node['fqdn']}
-          wallet get keytab \
-              "#{new_resource.principal}@#{node['sys']['krb5']['realm'].upcase}" \
-              -f "$TMPFILE"
-          ret=$?
-          if [ $ret = 0 ]; then
-              # in contrast to mv cat follows symlinks:
-              cat "$TMPFILE" > "#{new_resource.place}"
-          fi
-          rm "$TMPFILE"
-          kdestroy
-        EOH
-      end
-      new_resource.updated_by_last_action(true)
-    else
-      log 'no-keytab' do
-        level :warn
-        message "Unable to deploy #{new_resource.principal}: "\
-                'Kerberos not installed or /etc/krb5.keytab missing.'
-      end
+    unless check_krb5
+      Chef::Log.warn "Unable to deploy #{new_resource.principal}: "\
+                     'Kerberos not installed or /etc/krb5.keytab missing.'
+        return
     end
+
+    bash "deploy #{new_resource.principal}" do
+      cwd "/"
+      code <<-CODE
+        # TMPFILE must not exist yet, therefore --dry-run
+        TMPFILE=$(mktemp --dry-run)
+        retval=1
+        kinit -t /etc/krb5.keytab host/#{node['fqdn']} || exit 1
+        if wallet get keytab '#{new_resource.principal}' -f "$TMPFILE"; then
+          retval=0
+          # in contrast to mv cat follows symlinks
+          cat "$TMPFILE" > '#{new_resource.place}'
+        fi
+        rm "$TMPFILE"
+        kdestroy
+        exit $retval
+      CODE
+    end
+    new_resource.updated_by_last_action(true)
   end
 
   unless check_stat()
@@ -64,6 +60,8 @@ action :deploy do
       mode new_resource.mode
       owner new_resource.owner
       group new_resource.group
+      # do not create keytabs, only update ownership and permissions
+      only_if { File.exist?(new_resource.place) }
     end
     new_resource.updated_by_last_action(true)
   end

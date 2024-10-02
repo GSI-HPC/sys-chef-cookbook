@@ -31,6 +31,7 @@ defaults = {
   cert: {
     'data_bag'      => 'ssl_certs',
     'data_bag_item' => node['fqdn'],
+    'include_chain' => false,
     'key_vault'     => 'ssl_keys'
   }
 }
@@ -47,6 +48,7 @@ node['sys']['ssl']['certs'].each do |attrs|
       certificate_path cert['file']
       key_path cert['key_file']
       data_bag cert['data_bag']
+      include_chain cert['include_chain']
       chef_vault cert['key_vault']
     end
 

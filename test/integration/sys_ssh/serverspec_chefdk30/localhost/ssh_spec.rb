@@ -1,7 +1,7 @@
 # Cookbook Name:: sys
 # Integration tests for recipe sys::ssh
 #
-# Copyright 2020-2022 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+# Copyright 2020-2024 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
 #
 # Authors:
 #  Christopher Huhn   <c.huhn@gsi.de>
@@ -45,6 +45,10 @@ describe file('/etc/ssh/sshd_config') do
   its(:content) { should_not match(/^X11Forwarding yes$/) }
   # custom setting:
   its(:content) { should match(/^ClientAliveInterval 4711/) }
+
+  context 'bullseye or newer', if: debian_version >= 11 do
+    its(:content) { should match %r{^Include /etc/ssh/sshd_config.d/\*\.conf$} }
+  end
 end
 
 ### node['sys']['ssh']['ssh_config']:
@@ -101,6 +105,6 @@ end
 describe command 'ssh -o BatchMode=yes -v git@git.gsi.de' do
   its(:exit_status) { should eq 255 } # permission denied
   its(:stdout) { should be_empty }
-  its(:stderr) { should include "debug1: Host 'git.gsi.de' is known and matches the ECDSA host key." }
+  its(:stderr) { should match %r{^debug1: Host 'git\.gsi\.de' is known and matches the (ECDSA|ED25519) host key\.} }
   its(:stderr) { should match %r{^debug1: Found key in /etc/ssh/ssh_known_hosts:\d+} }
 end

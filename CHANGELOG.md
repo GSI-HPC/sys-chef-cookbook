@@ -2,6 +2,72 @@
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [2.6.0] - 2024-09-02
+
+### Added
+- [`nftables`] `nftables_rule` supports new properties `interface_name` and `outerface_name`.
+
+## [2.5.0] - 2024-08-12
+
+### Added
+- [`ssh`] Add statement to include config snippets from `/etc/ssh/sshd_config.d`
+  into `/etc/ssh/sshd_config`.
+  This is part of the default `sshd_config` starting with Debian Bullseye.
+- [`x509_certificate`] Add new `include_chain` option to resource.
+  See [the documentation](documents/resources/sys_x509_certificate.md) and !67
+- [`ldap`] Skip config hash elements with `nil` values in `/etc/nslcd.conf`.
+  See 3c1e7de1 for the reasoning behind this option.
+
+## [2.4.2] - 2024-07-12
+
+### Changed
+- Remove version constraint on chef-vault cookbook dependency
+- [`rsyslog`] Don't limit TLS loghost forwarding to Debian >= Buster
+  The resulting setup will not disable TLS on Debian < Buster but
+  braeak the setup :(
+
+## [2.4.1] - 2024-05-24
+
+### Fixed
+- [`time`] Correct path for ntp drift file
+
+## [2.4.0] - 2024-05-22
+
+### Added
+- Support for Debian Bookworm and preliminary support for Debian Trixie
+
+### Changed
+- [`time`] NTP removed in favor of NTPSEC in Debian Bookworm
+
+## [2.3.0] - 2024-02-07
+
+### Added
+- [helpers] Fix verification of systemd units in `chroot`s (by skipping verification) cf. !47
+
+### Fixed
+- [`ldap`] Explicitly install `libldap-common` (where it is available, cf. #43)
+
+### Changed
+- [helpers] Give credit to cinc in `template_header()` where it is due
+- [`systemd`] Delete `ifupdown` interface definitions in a more Cheffy way
+              (that should create backups)
+
+## [2.2.0] - 2023-06-26
+
+### Changed
+- [`krb5`] Do not use realm when asking for keytabs from wallet server
+
+## [2.1.0] - 2023-03-29
+
+### Changed
+- [`rsyslog`] Refactor loghost configuration to allow configuration of multiple loghosts
+  with different filters and/or log protocols
+
+## [2.0.3] - 2023-03-23
+
+### Fixed
+- [`chef`] Don't link /etc/chef to /etc/chef
+
 ## [2.0.2] - 2023-03-22
 
 ### Fixed

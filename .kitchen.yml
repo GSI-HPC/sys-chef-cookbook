@@ -2,7 +2,7 @@
 # Cookbook Name:: sys
 # Config file for test-kitchen
 #
-# Copyright 2015-2022 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+# Copyright 2015-2024 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
 #
 # Authors:
 #  Christopher Huhn   <c.huhn@gsi.de>
@@ -26,6 +26,9 @@
 driver:
   name: vagrant
   box_auto_update: true
+  customize:
+    memory: 1024
+    cpus: 2
 
 provisioner:
   require_chef_omnibus: false
@@ -62,9 +65,18 @@ platforms:
       require_chef_omnibus: 14
       vagrantfiles:
         - vagrant.rb
+  - name: stretch
+    driver:
+      box: gsi/stretch
+      box_url: https://web-docs.gsi.de/~christo/vagrant-boxes/gsi-stretch.json
+      provider: libvirt
+      provision: true
+      vagrantfiles:
+        - vagrant.rb
   - name: buster
     driver:
-      box: debian/buster64
+      box: gsi/buster
+      box_url: https://web-docs.gsi.de/~christo/vagrant-boxes/gsi-buster.json
       provider: libvirt
       provision: true
       vagrantfiles:
@@ -85,6 +97,20 @@ platforms:
           - :Passwd
   - name: bookworm
     driver:
+      box: debian/bookworm64
+      provider: libvirt
+      provision: true
+      require_chef_omnibus: true
+      vagrantfiles:
+        - vagrant.rb
+    provisioner:
+      client_rb:
+        # Chef 15 no longer collects passwd information by default
+        # cf. https://stackoverflow.com/a/70749387/9793012
+        'ohai.optional_plugins = ':
+          - :Passwd
+  - name: trixie
+    driver:
       box: debian/testing64
       provider: libvirt
       provision: true
@@ -104,19 +130,26 @@ platforms:
       provision: true
       vagrantfiles:
         - vagrant.rb
-  - name: focal
-    driver:
-      box: generic/ubuntu2004
-      provider: libvirt
-      provision: true
-      vagrantfiles:
-        - vagrant.rb
     provisioner:
       client_rb:
         # Chef 15 no longer collects passwd information by default
         # cf. https://stackoverflow.com/a/70749387/9793012
         'ohai.optional_plugins = ':
           - :Passwd
+  # the Jammy libvirt image is broken - at least on my box
+  # - name: jammy
+  #   driver:
+  #     box: generic/ubuntu2204
+  #     provider: libvirt
+  #     provision: true
+  #     vagrantfiles:
+  #       - vagrant.rb
+  #   provisioner:
+  #     client_rb:
+  #       # Chef 15 no longer collects passwd information by default
+  #       # cf. https://stackoverflow.com/a/70749387/9793012
+  #       'ohai.optional_plugins = ':
+  #         - :Passwd
 
 suites:
   - name: sys_accounts
@@ -234,18 +267,22 @@ suites:
                   - 'policy ACCEPT;'
                 FORWARD:
                   - 'policy DROP;'
-  - name: sys_nftables
+  - name: sys_ldap
     run_list:
-      - recipe[nftables-test::default]
-  - name: sys_nftablesempty
-    run_list:
-      - recipe[nftables-test::empty]
+      - recipe[sys::ldap]
   - name: sys_linuxlogo
     run_list:
       - recipe[sys::linuxlogo]
     attributes:
       sys:
         linuxlogo: absolutely!
+  - name: sys_krb5
+    run_list:
+      - recipe[sys::krb5]
+    attributes:
+      sys:
+        krb5:
+           foo: bar
   - name: sys_mail
     run_list:
       - recipe[sys::mail]
@@ -271,6 +308,12 @@ suites:
           regenerate_initramdisk: true
           defaults:
             verbosity: 5
+  - name: sys_nftables
+    run_list:
+      - recipe[nftables-test::default]
+  - name: sys_nftablesempty
+    run_list:
+      - recipe[nftables-test::empty]
   - name: sys_nsswitch
     run_list:
       - recipe[nsswitch-test::default]
@@ -296,6 +339,7 @@ suites:
           servers:
             - 8.8.8.8
             - 9.9.9.9
+            - 140.181.61.61  # in case the cloud DNS servers are not accessible
           search:
             - gsi.de
             - fair-center.eu
@@ -305,6 +349,27 @@ suites:
             - rotate
             - timeout:3
           force: true
+  - name: sys_rsyslog
+    run_list:
+      - recipe[sys::rsyslog]
+    attributes:
+      rsyslog:
+        filter: '*.*'
+        protocol: 'tcp'
+      sys:
+        rsyslog:
+          loghosts:
+            test-tls:
+              tls: true
+              target: '192.168.144.120'
+              port: 55514
+              priority_filter: 'authpriv.*'
+            test-relp:
+              tls: true
+              target: '192.168.144.96'
+              type: 'omrelp'
+            no-tls:
+              target: '192.168.144.72'
   - name: sys_snmp
     run_list:
       - recipe[sys::hosts]
@@ -356,9 +421,6 @@ suites:
           config:
             ClientAliveInterval: 4711
             X11Forwarding: 'no'
-  - name: sys_x509
-    run_list:
-      - recipe[x509-test::default]
   - name: sys_ssl
     run_list:
       - recipe[sys::ssl]
@@ -368,6 +430,13 @@ suites:
           certs:
             - {}    # will not find data bag item
             - data_bag_item: www-linux.gsi.de
+            - data_bag_item: www-linux.gsi.de
+              file: '/etc/ssl/certs/www-linux.gsi.de_chain.pem'
+              include_chain: true
+              key_file: '/etc/ssl/private/www-linux.gsi.de_chain.key'
+            - data_bag_item: www-linux.gsi.de
+              file: '/etc/ssl/certs/www-linux.gsi.de_no_chain.pem'
+              key_file: '/etc/ssl/private/www-linux.gsi.de_no_chain.key'
             - data_bag: other_certs
               data_bag_item: alternativlos.org
               file: /tmp/covfefe.pem
@@ -424,3 +493,6 @@ suites:
             - ntp1.net.berkeley.edu
             - time1.esa.int
             - zeit.fu-berlin.de
+  - name: sys_x509
+    run_list:
+      - recipe[x509-test::default]

@@ -1,0 +1,27 @@
+<%= template_header %>
+<% if @tls -%>
+$DefaultNetStreamDriverCAFile <%= @ca_file %>
+<% end -%>
+
+<% if @type == 'omrelp' -%>
+module(load="omrelp")
+<% end -%>
+
+if prifilt("<%= @priority_filter %>") then {
+    action(
+        type="<%= @type %>"
+        target="<%= @target %>"
+        port="<%= @port %>"
+        protocol="tcp"
+        queue.filename="forwarding-<%= @name %>"
+        queue.maxfilesize="1g"
+        queue.type="LinkedList"
+<% if @tls && @type != 'omrelp' -%>
+        StreamDriver="<%= @stream_driver %>"
+        StreamDriverMode="1"
+        StreamDriverAuthMode="anon"
+<% elsif @tls && @type == 'omrelp' -%>
+        tls="on"
+<% end -%>
+    )
+}

@@ -2,10 +2,11 @@
 # Cookbook Name:: sys
 # Integration tests for resource nftables
 #
-# Copyright 2022 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+# Copyright 2022-2024 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
 #
 # Authors:
-#  Matthias Pausch (m.pausch@gsi.de)
+#  Matthias Pausch   <m.pausch@gsi.de>
+#  Christopher Huhn  <c.huhn@gsi.de>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -53,18 +54,19 @@ expected_rules = [
   /\s+tcp dport 1 log prefix "input:".*$/,
   /\s+tcp dport 1 log prefix "nflog by chef:" group 1.*$/,
   /\s+tcp dport 2 log prefix "input:" counter packets 0 bytes 0 accept.*$/,
+  /\s+iifname "ifname" oifname "ofname" accept.*$/,
 ]
 
 cmd = 'nft list ruleset'
 
-if os[:release].to_i >= 11
+if debian_version >= 11
   expected_rules << /\s+type filter hook input priority filter; policy drop;/
 else
   expected_rules << /\s+type filter hook input priority 0; policy drop;/
   cmd = 'nft -nn list ruleset'
 end
 
-if os[:release].to_i >= 10
+if debian_version >= 10
 
   describe command(cmd) do
     expected_rules.each do |r|
@@ -77,7 +79,9 @@ if os[:release].to_i >= 10
   end
 
   describe service('nftables') do
-    it { should be_enabled }
+    if debian_version < 13
+      it { should be_enabled } # fails on Debian Testing
+    end
     it { should be_running }
   end
 

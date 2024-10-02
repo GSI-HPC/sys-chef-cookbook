@@ -14,6 +14,16 @@ name) in the data bag `ssl_certs`. This can be configured by the
 object `vault_item` (which defaults to `bag_item` in the chef vault
 `ssl_keys`. This can be configured by the `chef_vault` and
 `vault_item` properties.
+- *Certificate chains* are not included in the certificate file by default
+  but they can be included by setting `include_chain` to `true`.  
+  *All certificates* that are part of the chain have to exist in the data
+  bag specified by the `data_bag`-property. The data bag items for the
+  intermediate certificates must be named after their subject key identifiers.  
+  Certificates are only included in the chain if their authority key
+  identifier is different from their subject key identifier.
+  Therefore the (self-signed) root certificates are not included in the chain.
+  The actual certificate will appear first in the certificate file, followed
+  by its signing intermediate CA certificate and so on.
 
 The structure of the private key can be obtained on the command line by running, e.g.
 ```
@@ -38,7 +48,8 @@ which by default will store the contents of `/tmp/privkey.pem` as `file-content`
 | `data_bag`         |       | String | `ssl_certs`                                     |
 | `bag_item`         | ✓     | String |                                                 |
 | `chef_vault`       |       | String | `ssl_keys`                                      |
-| `vault_item`  |       | String | `new_resource.bag_item`                         |
+| `vault_item`       |       | String | `new_resource.bag_item`                         |
+| `include_chain`    |       | Boolean | `false`                                        |
 
 
 ## Examples
@@ -47,6 +58,7 @@ which by default will store the contents of `/tmp/privkey.pem` as `file-content`
 sys_x509_certificate 'some_certificate' do
   certificate_path '/alternate/path.pem'
   key_path '/super/secret/path.pem'
+  include_chain true
 end
 ```
 

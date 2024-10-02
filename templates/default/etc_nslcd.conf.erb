@@ -1,10 +1,9 @@
 <%= template_header %>
 
-<% if @nslcd %>
-<% @nslcd.each do |k,v| %>
-<%= "#{k} #{v}" %>
-<% end %>
-<% end %>
+<%- @nslcd.each do |k, v| -%>
+<%-   next if v.nil? -%>
+<%=   "#{k} #{v}" %>
+<%- end -%>
 
 <% @servers.each do |server| -%>
 URI ldap://<%= server %>

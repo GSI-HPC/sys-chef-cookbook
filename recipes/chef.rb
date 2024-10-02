@@ -78,7 +78,7 @@ end
 
 link '/etc/chef' do
   to node['sys']['chef']['config_dir']
-  not_if { node['sys']['chef']['product_name'] == 'chef' }
+  not_if { node['sys']['chef']['config_dir'] == '/etc/chef' }
 end
 
 # compile attributes for the client.rb template:

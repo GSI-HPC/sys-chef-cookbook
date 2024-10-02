@@ -89,7 +89,6 @@ describe file('/tmp/mail.test') do
   it { should exist }
   its(:content) { should include 'Subject: test-kitchen mail test' }
   its(:content) { should include "test mail #{@now}" }
-
-  # 'To: <mail@bla>' on Debian, 'To: mail@bla' on CentOS
-  its(:content) { should match(/^To: <?array@/) }
+  # mail address may or may not be enclosed in angle brackets
+  its(:content) { should match %r{^To: <?array@} }
 end

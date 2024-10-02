@@ -1,8 +1,8 @@
 #
-# Cookbook Name:: sys
+# Cookbook:: sys
 # Recipe:: ssh
 #
-# Copyright 2012-2022 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+# Copyright 2012-2024 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
 #
 # Authors:
 #  Christopher Huhn  <c.huhn@gsi.de>
@@ -33,9 +33,9 @@ sshd_config['PrintMotd'] = 'no'
 sshd_config['AcceptEnv'] = 'LANG LC_*'
 sshd_config['Subsystem'] = 'sftp /usr/lib/openssh/sftp-server'
 sshd_config['HostKey'] = ['/etc/ssh/ssh_host_rsa_key', '/etc/ssh/ssh_host_ecdsa_key']
-sshd_config['UseDNS'] = 'yes'                             if node['platform_version'].to_i >= 9
-sshd_config['HostKey'] << '/etc/ssh/ssh_host_ed25519_key' if node['platform_version'].to_i >= 8
-sshd_config['PermitRootLogin'] = 'without-password'      if node['platform_version'].to_i < 9
+sshd_config['UseDNS'] = 'yes'                             if debian_version >= 9
+sshd_config['HostKey'] << '/etc/ssh/ssh_host_ed25519_key' if debian_version >= 8
+sshd_config['PermitRootLogin'] = 'without-password'       if debian_version < 9
 sshd_config['AddressFamily'] = 'inet'
 
 # only if SSH daemon configuration is defined
