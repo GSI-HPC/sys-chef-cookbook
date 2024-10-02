@@ -2,7 +2,7 @@
 # Cookbook Name:: sys
 # Recipe:: fail2ban
 #
-# Copyright 2017-2022 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+# Copyright 2017-2024 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
 #
 # Authors:
 #  Christopher Huhn   <c.huhn@gsi.de>
@@ -42,9 +42,16 @@ template '/etc/fail2ban/jail.local' do
 end
 
 file '/etc/fail2ban/fail2ban.local' do
-  content "[Definition]\nlogtarget = SYSLOG\n"
+  content "[DEFAULT]\nlogtarget = SYSLOG\n"
   mode '0644'
   owner 'root'
   group 'root'
   notifies :restart, 'service[fail2ban]'
 end
+
+# if you use an alternative logtarget (e.g. SYSLOG) thus not using
+# /var/log/fail2ban.log you should divert logrotate configuration into
+# a disabled state, e.g.
+
+# sudo dpkg-divert --rename --divert \
+# 	 /etc/logrotate.d/fail2ban.disabled /etc/logrotate.d/fail2ban
