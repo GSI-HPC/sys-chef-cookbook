@@ -79,10 +79,10 @@ chefspec:
 buster:
   extends: .kitchen
   variables:
-    PLATFORM: buster
+    PLATFORM: bookworm
   tags:
     - kitchen
-    - buster
+    - bookworm
 
 rh7:
   extends: .kitchen
