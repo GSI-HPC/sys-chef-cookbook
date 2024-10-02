@@ -71,7 +71,8 @@ node['sys']['rsyslog']['loghosts'].each do |name, cfg|
     port = cfg['port'] || '6514'
     ca_file = cfg['ca_file'] || '/etc/ssl/certs/ca-certificates.crt'
     if on_debian? && debian_version < 11 ||
-       node['platform'] == 'ubuntu' && node['platform_version'].to_i < 20
+       node['platform'] == 'ubuntu' && node['platform_version'].to_i < 20 ||
+       node['platform_family'] == 'rhel'
       package 'rsyslog-gnutls'
       stream_driver = 'gtls'
     else
