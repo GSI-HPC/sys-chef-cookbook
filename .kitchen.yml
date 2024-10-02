@@ -47,22 +47,32 @@ verifier:
   ruby_bindir: /usr/bin
 
 platforms:
-  - name: centos8
+  - name: rh9
     driver:
-      box: centos/stream8
+      # box: rockylinux/9 # apparently broken?
+      box: almalinux/9
       provider: libvirt
       provision: true
-      require_chef_omnibus: 14
       vagrantfiles:
         - vagrant_centos.rb
     verifier:
-      ruby_bindir: /opt/chef/embedded/bin
-  - name: centos7
+      ruby_bindir: /opt/cinc/embedded/bin
+  - name: rh8
+    driver:
+      box: almalinux/8 # rockylinux/8 apparently broken
+      provider: libvirt
+      provision: true
+      require_chef_omnibus: true
+      vagrantfiles:
+        - vagrant_centos.rb
+    verifier:
+      ruby_bindir: /opt/cinc/embedded/bin
+  - name: rh7
     driver:
       box: centos/7
       provider: libvirt
       provision: true
-      require_chef_omnibus: 14
+      require_chef_omnibus: 15
       vagrantfiles:
         - vagrant.rb
   - name: stretch

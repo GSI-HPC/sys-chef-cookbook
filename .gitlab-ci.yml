@@ -84,15 +84,20 @@ buster:
     - kitchen
     - buster
 
-centos7:
+rh7:
   extends: .kitchen
   variables:
-    PLATFORM: centos7
+    PLATFORM: rh7
 
-centos8:
+rh8:
   extends: .kitchen
   variables:
-    PLATFORM: centos8
+    PLATFORM: rh8
+
+rh9:
+  extends: .kitchen
+  variables:
+    PLATFORM: rh9
 
 .post:
    script:
