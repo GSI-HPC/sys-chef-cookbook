@@ -1,8 +1,12 @@
 #
-# Cookbook Name:: sys
+# Cookbook:: sys
 # Recipe:: nfs
 #
-# Copyright 2016, Matthias Pausch
+# Copyright:: 2016-2024 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+#
+# Authors:
+#  Matthias Pausch    <m.pausch@gsi.de>
+#  Christopher Huhn   <c.huhn@gsi.de>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,7 +21,26 @@
 # limitations under the License.
 #
 
-unless node['sys']['nfs'].empty?
+return if node['sys']['nfs'].empty?
+
+package 'nfs-common'
+
+if debian_version >= 12
+  # Bookworm switched to /etc/nfs.conf(.d/)
+
+  template '/etc/nfs.conf.d/gssd.conf' do
+    helpers(Sys::Harry)
+    source 'harry.erb'
+    variables(
+      config: {
+        gssd: {
+          verbosity: 1,
+          'rpc-verbosity' => 1
+        }
+      }
+    )
+  end
+else
 
   # this ressource has a different name to allow
   #   co-existance with the nfs cookbook
@@ -27,20 +50,20 @@ unless node['sys']['nfs'].empty?
     user     'root'
     owner    'root'
     mode     '0644'
-    notifies :restart, 'service[nfs-common]', :delayed
   end
 
-  # Comments in systemctl-src say that update-rc.d does not provide
-  # information wheter a service is enabled or not and always returns
-  # false.  Work around that.
-  actions = [:start]
-  actions << :enable if Dir.glob('/etc/rcS.d/*nfs-common*').empty?
+  # nfs-common unit is masked on Stretch
+  if debian_version < 9
+    # Comments in systemctl-src say that update-rc.d does not provide
+    # information wheter a service is enabled or not and always returns
+    # false.  Work around that.
+    actions = [:start]
+    actions << :enable if Dir.glob('/etc/rcS.d/*nfs-common*').empty?
 
-  service 'nfs-common' do
-    action actions
-    supports :restart => true
-    # nfs-common unit is masked on Stretch
-    only_if { node['platform_version'].to_i < 9}
+    service 'nfs-common' do
+      action actions
+      supports :restart => true
+      subscribes :restart, 'template[[sys] /etc/default/nfs-common]'
+    end
   end
-
 end

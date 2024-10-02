@@ -298,6 +298,13 @@ suites:
           regenerate_initramdisk: true
           defaults:
             verbosity: 5
+  - name: sys_nfs
+    run_list:
+      - recipe[sys::nfs]
+    attributes:
+      sys:
+        nfs:
+          yes, please!
   - name: sys_nftables
     run_list:
       - recipe[nftables-test::default]
