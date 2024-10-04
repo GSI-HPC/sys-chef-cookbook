@@ -76,7 +76,7 @@ chefspec:
         - x509
 
 # circumvent limit of 50 parallel jobs:
-buster:
+debian:
   extends: .kitchen
   variables:
     PLATFORM: bookworm
@@ -88,16 +88,28 @@ rh7:
   extends: .kitchen
   variables:
     PLATFORM: rh7
+  tags:
+    - kitchen
+    - rhel
+    - rhel7
 
 rh8:
   extends: .kitchen
   variables:
     PLATFORM: rh8
+  tags:
+    - kitchen
+    - rhel
+    - rhel8
 
 rh9:
   extends: .kitchen
   variables:
     PLATFORM: rh9
+  tags:
+    - kitchen
+    - rhel
+    - rhel9
 
 .post:
    script:
