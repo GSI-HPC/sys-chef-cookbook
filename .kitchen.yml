@@ -55,6 +55,7 @@ platforms:
       provision: true
       vagrantfiles:
         - vagrant_centos.rb
+        - vagrant_proxy.rb
     verifier:
       ruby_bindir: /opt/cinc/embedded/bin
   - name: rh8
@@ -65,6 +66,7 @@ platforms:
       require_chef_omnibus: true
       vagrantfiles:
         - vagrant_centos.rb
+        - vagrant_proxy.rb
     verifier:
       ruby_bindir: /opt/cinc/embedded/bin
   - name: rh7
@@ -75,6 +77,7 @@ platforms:
       require_chef_omnibus: 15
       vagrantfiles:
         - vagrant.rb
+        - vagrant_proxy.rb
   - name: stretch
     driver:
       box: gsi/stretch
@@ -83,6 +86,7 @@ platforms:
       provision: true
       vagrantfiles:
         - vagrant.rb
+        - vagrant_proxy.rb
   - name: buster
     driver:
       box: gsi/buster
@@ -91,6 +95,7 @@ platforms:
       provision: true
       vagrantfiles:
         - vagrant.rb
+        - vagrant_proxy.rb
   - name: bullseye
     driver:
       box: debian/bullseye64
@@ -99,6 +104,7 @@ platforms:
       require_chef_omnibus: true
       vagrantfiles:
         - vagrant.rb
+        - vagrant_proxy.rb
     provisioner:
       client_rb:
         # Chef 15 no longer collects passwd information by default
@@ -113,6 +119,7 @@ platforms:
       require_chef_omnibus: true
       vagrantfiles:
         - vagrant.rb
+        - vagrant_proxy.rb
     provisioner:
       client_rb:
         # Chef 15 no longer collects passwd information by default
@@ -127,6 +134,7 @@ platforms:
       require_chef_omnibus: true
       vagrantfiles:
         - vagrant.rb
+        - vagrant_proxy.rb
     provisioner:
       client_rb:
         # Chef 15 no longer collects passwd information by default
@@ -140,6 +148,7 @@ platforms:
       provision: true
       vagrantfiles:
         - vagrant.rb
+        - vagrant_proxy.rb
     provisioner:
       client_rb:
         # Chef 15 no longer collects passwd information by default
