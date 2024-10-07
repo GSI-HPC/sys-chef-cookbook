@@ -53,6 +53,7 @@ platforms:
       box: almalinux/9
       provider: libvirt
       provision: true
+      require_chef_omnibus: true
       vagrantfiles:
         - vagrant_centos.rb
         - vagrant_proxy.rb
