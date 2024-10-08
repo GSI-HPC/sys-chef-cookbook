@@ -2,6 +2,22 @@
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## Unreleased
+
+### Added
+- [`krb5`] Wallet client finally enteres official Debian repos as `krb5-wallet-client` in Trixie
+- [`fail2ban`] Add attribute `node['sys']['fail2ban']['logtarget']` to switch syslog logging on and off
+- [`fail2ban`] Divert logrotate config for fail2ban when logging to syslog
+
+### Fixed
+- [`rsyslog`] Small tweak for RHEL platform
+- [`sys_wallet`] Code cleanup
+
+## [2.6.0] - 2024-09-02
+
+### Added
+- [`nftables`] `nftables_rule` supports new properties `interface_name` and `outerface_name`.
+
 ## [2.5.0] - 2024-08-12
 
 ### Added

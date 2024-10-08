@@ -242,6 +242,7 @@ suites:
               bantime: 1234
               maxretry: '4'
               findtime: 2468
+          logtarget: syslog
   - name: sys_ferm
     run_list:
       - recipe[sys::ferm]
