@@ -26,21 +26,39 @@ return if node['sys']['nfs'].empty?
 package 'nfs-common'
 
 if debian_version >= 12
-  # Bookworm switched to /etc/nfs.conf(.d/)
 
+  # Bookworm switched to individual systemd units:
+  service 'rpc-gssd' do
+    action :nothing
+  end
+
+  # and Bookworm switched to /etc/nfs.conf(.d/):
   template '/etc/nfs.conf.d/gssd.conf' do
     helpers(Sys::Harry)
     source 'harry.erb'
     variables(
       config: {
         gssd: {
-          verbosity: 1,
-          'rpc-verbosity' => 1
+          verbosity: node['sys']['nfs']['gssd']['verbosity'],
+          'rpc-verbosity' => node['sys']['nfs']['gssd']['rpc-verbosity']
         }
       }
     )
+    notifies :restart, 'service[rpc-gssd]'
   end
+
 else
+
+  # for /etc/default/nfs-common we have to transform the numeric verbositry
+  # into '-vvv...' and '-rrr...' arguments:
+  rpcgssdopts = []
+  if node['sys']['nfs']['gssd']['verbosity'].to_i > 0
+    rpcgssdopts.push('-' + 'v' * node['sys']['nfs']['gssd']['verbosity'].to_i)
+  end
+  if node['sys']['nfs']['gssd']['rpc-verbosity'].to_i > 0
+    rpcgssdopts.push('-' +
+                     'r' * node['sys']['nfs']['gssd']['rpc-verbosity'].to_i)
+  end
 
   # this ressource has a different name to allow
   #   co-existance with the nfs cookbook
@@ -50,6 +68,9 @@ else
     user     'root'
     owner    'root'
     mode     '0644'
+    variables(
+      rpcgssdopts: rpcgssdopts
+    )
   end
 
   # nfs-common unit is masked on Stretch

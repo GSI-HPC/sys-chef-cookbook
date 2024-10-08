@@ -305,7 +305,9 @@ suites:
     attributes:
       sys:
         nfs:
-          yes, please!
+          gssd:
+            verbosity: 12
+            rpc-verbosity: 7
   - name: sys_nftables
     run_list:
       - recipe[nftables-test::default]
