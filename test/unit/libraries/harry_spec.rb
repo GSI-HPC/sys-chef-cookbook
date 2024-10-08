@@ -1,12 +1,11 @@
-describe 'Sys::Harry' do
+require_relative '../../../libraries/sys_harry.rb'
 
-  before do
-    require_relative '../../../libraries/sys_harry.rb'
-    class Dummy
-    end
-    @dummy = Dummy.new
-    @dummy.extend(Sys::Harry)
-  end
+class Dummy
+end
+@dummy = Dummy.new
+@dummy.extend(Sys::Harry)
+
+describe 'Sys::Harry' do
 
   it 'should render config' do
     @single_value = @dummy.generate_harry_config({section: { option: 'value'}}, 0)

@@ -19,7 +19,7 @@ module Sys
 
     def encrypt(plaintext,clientname)
       # choose a cipher
-      cipher = OpenSSL::Cipher::Cipher.new 'AES-256-CFB'
+      cipher = OpenSSL::Cipher.new('cip-her-aes')
       # initialize the cipher for encrypting
       cipher.encrypt
       # choose random initialization vector
@@ -57,7 +57,7 @@ module Sys
         iv_plain = private_key.private_decrypt(Base64.decode64(secretArray[0]))
         key_plain = private_key.private_decrypt(Base64.decode64(secretArray[1]))
         # choose a cipher
-        decipher = OpenSSL::Cipher::Cipher.new 'AES-256-CFB'
+        decipher = OpenSSL::Cipher.new('cip-her-aes')
         # initialize the cipher for encrypting
         decipher.decrypt
         # set initialization vector
