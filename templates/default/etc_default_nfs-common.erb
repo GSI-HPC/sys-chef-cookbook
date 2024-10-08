@@ -19,3 +19,5 @@ NEED_IDMAPD=<%= '"yes"' if node['sys']['nfs']['krb5'] %>
 
 # Do you want to start the gssd daemon? It is required for Kerberos mounts.
 NEED_GSSD=<%= '"yes"' if node['sys']['nfs']['krb5'] %>
+
+RPCGSSDOPTS="-v -r"
