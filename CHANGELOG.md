@@ -2,6 +2,15 @@
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## Unreleased
+
+### Added
+- [`krb5`] Wallet client finally enteres official Debian repos as `krb5-wallet-client` in Trixie
+
+### Fixed
+- [`rsyslog`] Small tweak for RHEL platform
+- [`sys_wallet`] Code cleanup
+
 ## [2.6.0] - 2024-09-02
 
 ### Added
