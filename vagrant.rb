@@ -38,6 +38,8 @@ Vagrant.configure(2) do |config|
      # for testing recipe rsyslog
      test -d /etc/rsyslog.d || sudo mkdir /etc/rsyslog.d
      sudo touch /etc/rsyslog.d/loghost.conf
+     # create a dummy kerberos keytab:
+     sudo touch /etc/krb5.keytab
   SHELL
 
   # configure proxy if required:
