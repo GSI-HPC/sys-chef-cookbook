@@ -26,12 +26,6 @@ return if node['sys']['nfs'].empty?
 package 'nfs-common'
 
 if debian_version >= 12
-
-  # Bookworm switched to individual systemd units:
-  service 'rpc-gssd' do
-    action :nothing
-  end
-
   # and Bookworm switched to /etc/nfs.conf(.d/):
   template '/etc/nfs.conf.d/gssd.conf' do
     helpers(Sys::Harry)
@@ -44,7 +38,6 @@ if debian_version >= 12
         }
       }
     )
-    notifies :restart, 'service[rpc-gssd]'
   end
 
 else
@@ -72,19 +65,27 @@ else
       rpcgssdopts: rpcgssdopts
     )
   end
+end
 
+if debian_version >= 9
+  # Stretch switched to individual systemd units and
+  # masked the nfs-common service
+  service 'rpc-gssd' do
+    action :nothing
+    subscribes :restart, 'template[[sys] /etc/default/nfs-common]'
+    subscribes :restart, 'template[/etc/nfs.conf.d/gssd.conf]'
+  end
   # nfs-common unit is masked on Stretch
-  if debian_version < 9
-    # Comments in systemctl-src say that update-rc.d does not provide
-    # information wheter a service is enabled or not and always returns
-    # false.  Work around that.
-    actions = [:start]
-    actions << :enable if Dir.glob('/etc/rcS.d/*nfs-common*').empty?
+else
+  # Comments in systemctl-src say that update-rc.d does not provide
+  # information wheter a service is enabled or not and always returns
+  # false.  Work around that.
+  actions = [:start]
+  actions << :enable if Dir.glob('/etc/rcS.d/*nfs-common*').empty?
 
-    service 'nfs-common' do
-      action actions
-      supports :restart => true
-      subscribes :restart, 'template[[sys] /etc/default/nfs-common]'
-    end
+  service 'nfs-common' do
+    action actions
+    supports :restart => true
+    subscribes :restart, 'template[[sys] /etc/default/nfs-common]'
   end
 end
