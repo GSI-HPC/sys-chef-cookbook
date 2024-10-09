@@ -21,6 +21,8 @@
 
 require 'spec_helper'
 
-describe file '/var/log/syslog' do
-  its(:content) { should match(/rpc.gssd\[\d+\]: libtirpc: debug level 7/) }
+context 'not on Buster', if: debian_version != 10 do
+  describe file '/var/log/syslog' do
+    its(:content) { should match(/rpc.gssd\[\d+\]: libtirpc: debug level 7/) }
+  end
 end

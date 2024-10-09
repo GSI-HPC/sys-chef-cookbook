@@ -53,6 +53,13 @@ else
                      'r' * node['sys']['nfs']['gssd']['rpc-verbosity'].to_i)
   end
 
+  # Handling of rpcgssdopts is broken in Debian Buster,
+  # see https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=857912
+  if debian_version == 10 && ! rpcgssdopts.empty?
+    Chef::Log.warn 'Handling of RPCGSSDOPTS on Debian Buster is broken,'\
+                   ' it will be ignored'
+  end
+
   # this ressource has a different name to allow
   #   co-existance with the nfs cookbook
   template '[sys] /etc/default/nfs-common' do
