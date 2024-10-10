@@ -77,15 +77,6 @@ chefspec:
         - x509
 
 # circumvent limit of 50 parallel jobs:
-stretch:
-  extends: .kitchen
-  variables:
-    PLATFORM: stretch
-  tags:
-    - kitchen
-    - stretch
-  allow_failure: true # Stretch vagrant images are currently broken
-
 buster:
   extends: .kitchen
   variables:
