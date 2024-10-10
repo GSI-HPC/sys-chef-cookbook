@@ -38,6 +38,6 @@ context 'Debian Buster or later', if: debian_version >= 10 do
   end
 
   describe x509_certificate('/tmp/covfefe.pem') do
-    its('subject') { should eq 'CN = alternativlos.org' }
+    its('subject') { should match(/^CN *= *alternativlos\.org$/) }
   end
 end
