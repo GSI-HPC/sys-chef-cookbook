@@ -6,8 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Added
 - [`krb5`] Wallet client finally enteres official Debian repos as `krb5-wallet-client` in Trixie
-- [`fail2ban`] Add attribute `node['sys']['fail2ban']['logtarget']` to switch syslog logging on and off
+- [`fail2ban`] Add attribute `node['sys']['fail2ban']['logtarget']` to
+               switch syslog logging on and off (see !77)
 - [`fail2ban`] Divert logrotate config for fail2ban when logging to syslog
+- [`nfs`] Add option to enable debugging for rpc.gssd (see !76)
 
 ### Fixed
 - [`rsyslog`] Small tweak for RHEL platform
