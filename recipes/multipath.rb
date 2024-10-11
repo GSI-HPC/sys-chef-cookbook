@@ -1,8 +1,8 @@
 #
-# Cookbook Name:: sys
+# Cookbook:: sys
 # Recipe:: multipath
 #
-# Copyright 2014-2022 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+# Copyright:: 2014-2024 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
 #
 # Authors:
 #  Dennis Klein   <d.klein@gsi.de>
@@ -28,7 +28,7 @@ config.delete('regenerate_initramdisk')
 unless config.empty?
   package 'multipath-tools'
 
-  service 'multipath-tools' do
+  service 'multipathd' do
     supports :reload => true
     status_command 'ps -p $(cat /var/run/multipathd.pid)'
     if node['sys']['multipath']['disable']
@@ -50,7 +50,7 @@ unless config.empty?
     variables({
       :config => config
     })
-    notifies :reload, 'service[multipath-tools]'
+    notifies :reload, 'service[multipathd]'
     if node['sys']['multipath']['regenerate_initramdisk']
       notifies :run, 'execute[regenerate_initramdisk]'
     end
