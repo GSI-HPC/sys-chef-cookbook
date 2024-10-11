@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Fixed
 - [`multipath`] Service name is `multipathd`, aliasing to `multipath-tools` vanishes in Trixie
 - [`sys_secret`] Revert rubocop recommendation for SSL contants – breaks stuff on Debian Buster
+- [`sys_wallet`] Fix namespace confusion between `File` and `Chef::Provider::File`
 
 ## [2.7.0] - 2024-10-10
 

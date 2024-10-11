@@ -61,7 +61,7 @@ action :deploy do
       owner new_resource.owner
       group new_resource.group
       # do not create keytabs, only update ownership and permissions
-      only_if { File.exist?(new_resource.place) }
+      only_if { ::File.exist?(new_resource.place) }
     end
     new_resource.updated_by_last_action(true)
   end
