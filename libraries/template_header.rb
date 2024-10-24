@@ -42,3 +42,4 @@ module Sys
 end
 
 Chef::Mixin::Template::TemplateContext.include(Sys::TemplateHeader)
+Chef::Resource::File.include(Sys::TemplateHeader)
