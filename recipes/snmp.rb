@@ -1,8 +1,8 @@
 #
-# Cookbook Name:: sys
+# Cookbook:: sys
 # Recipe:: snmp
 #
-# Copyright 2011-2024 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+# Copyright:: 2011-2024 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
 #
 # Authors:
 #  Christopher Huhn   <C.Huhn@gsi.de>
@@ -71,10 +71,7 @@ if systemd_installed?
 
   file '/etc/systemd/system/snmpd.service.d/override.conf' do
     content <<EOF
-# DO NOT CHANGE THIS FILE MANUALLY!
-#
-# This file is managed by chef.
-# Created by sys::snmp
+#{template_header}
 
 [Service]
 Type=simple
