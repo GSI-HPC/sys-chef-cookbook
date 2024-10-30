@@ -33,8 +33,9 @@ module Sys
     def template_header(comment = '#')
       header = "DO NOT CHANGE THIS FILE MANUALLY!\n\n" \
                "This file is managed by #{chef_product_name}.\n"\
-               "Created by #{@cookbook_name}::#{@recipe_name} "\
-               "(line #{@recipe_line})"
+               "Created by #{@cookbook_name}::#{@recipe_name}"
+      # recipe_line and @template_name are only avaiable in TemplateContexts:
+      header += " (line #{@recipe_line})" if @recipe_line
       header += " from template #{@template_name}" if @template_name
       header.gsub(/^ */, "#{comment} ")
     end
