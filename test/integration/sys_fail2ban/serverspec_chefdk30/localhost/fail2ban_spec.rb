@@ -92,3 +92,7 @@ context 'test the banning', if: host_inventory['ohai']['ipaddress'] do
   end
 
 end
+
+describe file '/etc/logrotate.d/fail2ban' do
+  it { should_not exist }
+end

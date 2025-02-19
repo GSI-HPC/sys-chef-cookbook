@@ -27,10 +27,6 @@ class Chef
       class SystemdMount < Chef::Provider::Mount::Mount
         include Chef::Mixin::ShellOut
 
-        def initialize(new_resource, run_context)
-          super
-        end
-
         def enabled?
           unless @current_resource.enabled == true
             systemd_file = systemd_substitute(@new_resource.mount_point)

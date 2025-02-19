@@ -1,8 +1,8 @@
 #
-# Cookbook Name:: sys
+# Cookbook:: sys
 # Config file for test-kitchen
 #
-# Copyright 2015-2024 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+# Copyright:: 2015-2024 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
 #
 # Authors:
 #  Christopher Huhn   <c.huhn@gsi.de>
@@ -272,6 +272,10 @@ suites:
               bantime: 1234
               maxretry: '4'
               findtime: 2468
+              # on Trixie ignoreself has to be turned off explicitely
+              #  for ban testing to work:
+              ignoreself: false
+          logtarget: syslog
   - name: sys_ferm
     run_list:
       - recipe[sys::ferm]
@@ -328,6 +332,15 @@ suites:
           regenerate_initramdisk: true
           defaults:
             verbosity: 5
+  - name: sys_nfs
+    run_list:
+      - recipe[sys::nfs]
+    attributes:
+      sys:
+        nfs:
+          gssd:
+            verbosity: 12
+            rpc-verbosity: 7
   - name: sys_nftables
     run_list:
       - recipe[nftables-test::default]

@@ -1,8 +1,12 @@
 #
-# Cookbook Name:: sys
+# Cookbook:: sys
 # Recipe:: nfs
 #
-# Copyright 2016, Matthias Pausch
+# Copyright:: 2016-2024 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+#
+# Authors:
+#  Matthias Pausch    <m.pausch@gsi.de>
+#  Christopher Huhn   <c.huhn@gsi.de>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,7 +21,44 @@
 # limitations under the License.
 #
 
-unless node['sys']['nfs'].empty?
+return if node['sys']['nfs'].empty?
+
+package 'nfs-common'
+
+if debian_version >= 12
+  # and Bookworm switched to /etc/nfs.conf(.d/):
+  template '/etc/nfs.conf.d/gssd.conf' do
+    helpers(Sys::Harry)
+    source 'harry.erb'
+    variables(
+      config: {
+        gssd: {
+          verbosity: node['sys']['nfs']['gssd']['verbosity'],
+          'rpc-verbosity' => node['sys']['nfs']['gssd']['rpc-verbosity']
+        }
+      }
+    )
+  end
+
+else
+
+  # for /etc/default/nfs-common we have to transform the numeric verbositry
+  # into '-vvv...' and '-rrr...' arguments:
+  rpcgssdopts = []
+  if node['sys']['nfs']['gssd']['verbosity'].to_i > 0
+    rpcgssdopts.push('-' + 'v' * node['sys']['nfs']['gssd']['verbosity'].to_i)
+  end
+  if node['sys']['nfs']['gssd']['rpc-verbosity'].to_i > 0
+    rpcgssdopts.push('-' +
+                     'r' * node['sys']['nfs']['gssd']['rpc-verbosity'].to_i)
+  end
+
+  # Handling of rpcgssdopts is broken in Debian Buster,
+  # see https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=857912
+  if debian_version == 10 && ! rpcgssdopts.empty?
+    Chef::Log.warn 'Handling of RPCGSSDOPTS on Debian Buster is broken,'\
+                   ' it will be ignored'
+  end
 
   # this ressource has a different name to allow
   #   co-existance with the nfs cookbook
@@ -27,9 +68,22 @@ unless node['sys']['nfs'].empty?
     user     'root'
     owner    'root'
     mode     '0644'
-    notifies :restart, 'service[nfs-common]', :delayed
+    variables(
+      rpcgssdopts: rpcgssdopts
+    )
   end
+end
 
+if debian_version >= 9
+  # Stretch switched to individual systemd units and
+  # masked the nfs-common service
+  service 'rpc-gssd' do
+    action :nothing
+    subscribes :restart, 'template[[sys] /etc/default/nfs-common]'
+    subscribes :restart, 'template[/etc/nfs.conf.d/gssd.conf]'
+  end
+  # nfs-common unit is masked on Stretch
+else
   # Comments in systemctl-src say that update-rc.d does not provide
   # information wheter a service is enabled or not and always returns
   # false.  Work around that.
@@ -39,8 +93,6 @@ unless node['sys']['nfs'].empty?
   service 'nfs-common' do
     action actions
     supports :restart => true
-    # nfs-common unit is masked on Stretch
-    only_if { node['platform_version'].to_i < 9}
+    subscribes :restart, 'template[[sys] /etc/default/nfs-common]'
   end
-
 end

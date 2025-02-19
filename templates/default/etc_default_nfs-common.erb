@@ -5,7 +5,7 @@
 # for the NEED_ options are "yes" and "no".
 
 # Do you want to start the statd daemon? It is not needed for NFSv4.
-<%= node['sys']['nfs']['krb5'] ? 'NEED_STATD="no"' : 'NEED_IDMAPD="yes"' %>
+NEED_STATD=<%= '"yes"' unless node['sys']['nfs']['krb5'] %>
 
 # Options for rpc.statd.
 #   Should rpc.statd listen on a specific port? This is especially useful
@@ -15,7 +15,10 @@
 STATDOPTS=
 
 # Do you want to start the idmapd daemon? It is only needed for NFSv4.
-<%= node['sys']['nfs']['krb5'] ? 'NEED_IDMAPD="yes"' : "NEED_IDMAPD=" %>
+NEED_IDMAPD=<%= '"yes"' if node['sys']['nfs']['krb5'] %>
 
 # Do you want to start the gssd daemon? It is required for Kerberos mounts.
-<%= node['sys']['nfs']['krb5'] ? 'NEED_GSSD="yes"' : "NEED_GSSD=" %>
+NEED_GSSD=<%= '"yes"' if node['sys']['nfs']['krb5'] %>
+<%- unless @rpcgssdopts.empty? -%>
+RPCGSSDOPTS="<%= @rpcgssdopts.join(' ') %>"
+<%- end -%>
