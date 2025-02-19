@@ -85,14 +85,14 @@ debian:
     - kitchen
     - bookworm
 
-rh7:
-  extends: .kitchen
-  variables:
-    PLATFORM: rh7
-  tags:
-    - kitchen
-    - rhel
-    - rhel7
+# rh7:
+#   extends: .kitchen
+#   variables:
+#     PLATFORM: rh7
+#   tags:
+#     - kitchen
+#     - rhel
+#     - rhel7
 
 rh8:
   extends: .kitchen
