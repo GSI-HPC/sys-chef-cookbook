@@ -2,7 +2,7 @@
 # Cookbook Name:: sys
 # Recipe:: time
 #
-# Copyright 2012-2024 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+# Copyright 2012-2025 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
 #
 # Authors:
 #  Christopher Huhn  <c.huhn@gsi.de>
@@ -58,8 +58,18 @@ CMD
       debconf-show tzdata |
          grep "^[* ] tzdata/Zones/#{area}: #{zone}$"
 TEST
+    only_if {platform_family? 'debian'}
   end
 
+end
+
+#
+# ntpd configuration
+#
+
+if platform_family? 'rhel'
+  Chef::Log.warn 'No ntpd configuration on RHEL'
+  return
 end
 
 time_servers = node['sys']['time']['servers']
