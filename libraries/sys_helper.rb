@@ -54,9 +54,14 @@ module Sys
 
     # Detect installed systemd
     def systemd_installed?
-      cmd = Mixlib::ShellOut.new('dpkg -s systemd-sysv')
-      cmd.run_command
-      cmd.exitstatus == 0
+      case platform_family
+      when 'rhel'
+        true # systemd since RHEL7
+      when 'debian'
+        cmd = Mixlib::ShellOut.new('dpkg -s systemd-sysv')
+        cmd.run_command
+        cmd.exitstatus == 0
+      end
     end
 
     # Detect active systemd instance
