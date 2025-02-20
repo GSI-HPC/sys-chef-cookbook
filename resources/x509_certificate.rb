@@ -2,7 +2,7 @@
 # Cookbook:: sys
 # Resource:: x509_certificate
 #
-# Copyright:: 2022-2024 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+# Copyright:: 2022-2025 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
 #
 # Authors:
 #  Matthias Pausch  <m.pausch@gsi.de>
@@ -20,8 +20,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-# This code is an adjustment of https://github.com/sous-chefs/firewall
-#
 
 if Gem::Requirement.new('>= 12.15').satisfied_by?(Gem::Version.new(Chef::VERSION))
   begin
@@ -29,6 +27,8 @@ if Gem::Requirement.new('>= 12.15').satisfied_by?(Gem::Version.new(Chef::VERSION
   rescue LoadError
     Chef::Log.warn "chef-vault gem not found. sys_x509_certificate cannot be used"
   end
+
+  include(Sys::Helper)
 
   action_class do
     def certificate_file_content
@@ -93,10 +93,10 @@ if Gem::Requirement.new('>= 12.15').satisfied_by?(Gem::Version.new(Chef::VERSION
 
   property :certificate_path,
            String,
-           default: lazy { "/etc/ssl/certs/#{bag_item}.pem" }
+           default: lazy { "#{pki_base_path}/certs/#{bag_item}.pem" }
   property :key_path,
            String,
-           default: lazy { "/etc/ssl/private/#{vault_item}.key" }
+           default: lazy { "#{pki_base_path}/private/#{vault_item}.key" }
   property :data_bag,
            String,
            default: 'ssl_certs'
@@ -114,7 +114,7 @@ if Gem::Requirement.new('>= 12.15').satisfied_by?(Gem::Version.new(Chef::VERSION
            default: false
 
   action :install do
-    package 'ssl-cert'
+    package 'ssl-cert' if platform_family? 'debian'
 
     begin
       file new_resource.certificate_path do
@@ -131,7 +131,7 @@ if Gem::Requirement.new('>= 12.15').satisfied_by?(Gem::Version.new(Chef::VERSION
       file new_resource.key_path do
         content key_file_content
         owner 'root'
-        group 'ssl-cert'
+        group node['platform_family'] == 'debian' ? 'ssl-cert' : 'root'
         mode '0640'
         sensitive true
       end

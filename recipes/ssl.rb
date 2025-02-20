@@ -25,7 +25,7 @@
 
 return unless node['sys']['ssl']
 
-package 'ssl-cert'
+package 'ssl-cert' if platform_family? 'debian'
 
 defaults = {
   cert: {
@@ -39,8 +39,8 @@ use_resource = Gem::Requirement.new('>= 12.15').satisfied_by?(Gem::Version.new(C
 
 node['sys']['ssl']['certs'].each do |attrs|
   cert = defaults[:cert].merge(attrs)
-  cert['file'] ||= "/etc/ssl/certs/#{cert['data_bag_item']}.pem"
-  cert['key_file'] ||= "/etc/ssl/private/#{cert['data_bag_item']}.key"
+  cert['file'] ||= "#{pki_base_path}/certs/#{cert['data_bag_item']}.pem"
+  cert['key_file'] ||= "#{pki_base_path}/private/#{cert['data_bag_item']}.key"
 
   if use_resource
 
@@ -69,7 +69,7 @@ node['sys']['ssl']['certs'].each do |attrs|
       file cert['key_file'] do
         content chef_vault_item(cert['key_vault'], cert['data_bag_item'])['file-content']
         owner 'root'
-        group 'ssl-cert'
+        group  platform_family?('debian') ? 'ssl-cert' : 'root'
         mode  '0640' # this file is only readable for the ssl-cert group
         sensitive true
       end

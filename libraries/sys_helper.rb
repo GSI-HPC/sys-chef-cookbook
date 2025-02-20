@@ -42,6 +42,16 @@ module Sys
       node['platform'] == 'debian'
     end
 
+    # where to store certificates and keys?
+    def pki_base_path
+      case node['platform_family']
+      when 'rhel'
+        '/etc/pki/tls'
+      else
+        '/etc/ssl'
+      end
+    end
+
     # Detect installed systemd
     def systemd_installed?
       cmd = Mixlib::ShellOut.new('dpkg -s systemd-sysv')
