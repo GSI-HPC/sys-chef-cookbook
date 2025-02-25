@@ -2,7 +2,7 @@
 # Cookbook:: sys
 # Helper library class
 #
-# Copyright:: 2015-2024 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+# Copyright:: 2015-2025 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
 #
 # Authors:
 #  Dennis Klein      <d.klein@gsi.de>
@@ -54,7 +54,7 @@ module Sys
 
     # Detect installed systemd
     def systemd_installed?
-      case platform_family
+      case node['platform_family']
       when 'rhel'
         true # systemd since RHEL7
       when 'debian'
