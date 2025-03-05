@@ -1,8 +1,14 @@
 #
-# Author:: Dennis Klein
-# Author:: Victor Penso
+# Cookbook:: sys
+# Provider:: sys_apt_key
 #
-# Copyright:: 2013-15, GSI HPC department
+# Copyright:: 2013-2019 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+#
+# Authors:
+#  Christopher Huhn   <c.huhn@gsi.de>
+#  Dennis Klein       <d.klein@gsi.de>
+#  Matthias Pausch    <m.pausch@gsi.de>
+#  Victor Penso       <v.penso@gsi.de>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.

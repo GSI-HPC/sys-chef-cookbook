@@ -61,11 +61,17 @@ describe command('apt-cache policy'), if: os[:family] == 'debian' do
   end
 end
 
-describe command('apt-key list') do
+
+apt_key = if debian_version >= 11
+            'gpg --list-keys --no-default-keyring --keyring /etc/apt/keyrings/*.gpg'
+          else
+            'apt-key list'
+          end
+describe command(apt_key) do
   its(:exit_status) { should be_zero }
   # stderr of apt-key contains a warning when it is not a terminal
   its(:stdout) do
-    should include('744B 9D32 A1F8 6D35 EF99  A0D1 25A0 AD16 5D3F 07EF')
+    should match(/744B ?9D32 ?A1F8 ?6D35 ?EF99 *A0D1 ?25A0 ?AD16 ?5D3F ?07EF/)
   end
   its(:stdout) do
     should include('uid           [ unknown] Zappergeck (Ein schwieriges Kind) <zappergeck@example.com>')
