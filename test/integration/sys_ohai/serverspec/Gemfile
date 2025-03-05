@@ -14,7 +14,12 @@ elsif ruby_version < Gem::Version.new('2.4.0')
 elsif ruby_version < Gem::Version.new('2.6.0')
   # net-ssh >= 7 requires ruby 2.6
   gems['net-ssh'] = '< 7'
+  gems['public_suffix'] = '< 5' # required on Buster
   gems['rspec-its'] = '< 2'
+else
+  # The ohai gem is only required on newer platforms
+  # with Omnibus-cinc
+  gems['ohai'] = nil
 end
 
 gems.each do |name, constraint|
