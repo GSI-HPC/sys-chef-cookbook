@@ -1,6 +1,4 @@
-source 'http://rubygems.org'
-
-source 'http://rubygems.org'
+source 'https://rubygems.org'
 
 ruby_version = Gem::Version.new(RUBY_VERSION)
 
@@ -9,9 +7,14 @@ gems = {}
 if ruby_version < Gem::Version.new('2.2.0')
   # net-ssh >= 5 requires ruby 2.2
   gems['net-ssh'] = '< 5'
+elsif ruby_version < Gem::Version.new('2.4.0')
+  gems['base64'] = '< 0.2'
+  gems['net-ssh'] = '< 7'
+  gems['rspec-its'] = '< 2'
 elsif ruby_version < Gem::Version.new('2.6.0')
   # net-ssh >= 7 requires ruby 2.6
   gems['net-ssh'] = '< 7'
+  gems['rspec-its'] = '< 2'
 end
 
 gems.each do |name, constraint|
