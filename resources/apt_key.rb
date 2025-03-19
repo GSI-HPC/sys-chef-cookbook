@@ -29,23 +29,64 @@ if Gem::Requirement.new('>= 16.2')
 
   default_action :add
   property :key, String, required: true
-  property :keyring, String,  name_property: true,
-           coerce: proc { |name| name.gsub(/[\s:]+/, '-').downcase }
+  property :keyring, String, name_property: true, desired_state: false
+  property :place, String, default: '/etc/apt/trusted.gpg.d'
 
-  action :add do
-    directory '/etc/apt/keyrings' do
-      mode 0o755
-    end
+  load_current_value do |new_resource|
+    # keyring new_resource.keyring
+    # place new_resource.place
 
-    execute 'import key into keyring' do
-      command "gpg --no-default-keyring --keyring /etc/apt/keyrings/#{new_resource.keyring}.gpg --import"
-      input new_resource.key
+    keyfile = "#{new_resource.place}/#{new_resource.keyring}.asc"
+    if ::File.exist?(keyfile)
+      key IO.read(keyfile)
+    else
+      current_value_does_not_exist!
     end
   end
 
+  action :add do
+    keyring = Tempfile.new('sys_apt_key')
+    gpg_cmd = "gpg --no-default-keyring --keyring #{keyring.path}"
+
+    cmd = Mixlib::ShellOut.new(
+      "#{gpg_cmd} --show-keys --with-colons",
+      input: new_resource.key
+    )
+    cmd.run_command
+
+    # read fingerprint and uid from key data:
+    fingerprint = cmd.stdout.match(/^fpr:.*/)[0].split(':')[9]
+    uid = cmd.stdout.match(/^uid:.*/)[0].split(':')[9]
+
+    # clean up the uid to make it suitable for a filename:
+    # strip the email part, convert it to lowercase,
+    # replace all non alphanumerical characters to dashes including whitespace
+    tidy_uid = uid.match(/(.*?)\s+<(.*)>/)[1].downcase
+                 .gsub(/[^[:alnum:]]+/, ' ').strip.gsub(' ', '-')
+
+    keyfile = "#{new_resource.place}/#{tidy_uid}.asc"
+
+    directory new_resource.place do
+      mode 0o755
+    end
+
+    # man apt-secure:
+    # > Alternatively, keys may be placed in /etc/apt/keyrings for local keys, […]
+    # > ASCII-armored keys must use an extension of .asc, and unarmored keys an extension of .gpg.
+    # > To generate keys suitable for use in APT using GnuPG, you will need to use
+    # > the gpg --export-options export-minimal [--armor] --export command.
+    execute "Adding #{uid} to #{new_resource.place}" do
+      command "#{gpg_cmd} --import;" \
+              " #{gpg_cmd} --export-options export-minimal --export --armor"\
+              " --output #{keyfile}"
+      input new_resource.key
+    end
+
+    keyring.unlink
+  end
+
   action :remove do
-    # this assumes that the keyring contains exactly one key:
-    file "/etc/apt/keyrings/#{new_resource.keyring}.gpg" do
+    file "#{new_resource.place}/#{new_resource.keyring}.asc" do
       action :delete
     end
   end

@@ -63,7 +63,7 @@ end
 
 
 apt_key = if debian_version >= 11
-            'gpg --list-keys --no-default-keyring --keyring /etc/apt/keyrings/*.gpg'
+            'gpg --show-keys /etc/apt/trusted.gpg.d/zappergeck-ein-schwieriges-kind.asc'
           else
             'apt-key list'
           end
@@ -74,7 +74,7 @@ describe command(apt_key) do
     should match(/744B ?9D32 ?A1F8 ?6D35 ?EF99 *A0D1 ?25A0 ?AD16 ?5D3F ?07EF/)
   end
   its(:stdout) do
-    should include('uid           [ unknown] Zappergeck (Ein schwieriges Kind) <zappergeck@example.com>')
+    should match(/^uid\s+(\[ unknown\])?\s+Zappergeck \(Ein schwieriges Kind\) <zappergeck@example.com>/)
   end
 end
 
