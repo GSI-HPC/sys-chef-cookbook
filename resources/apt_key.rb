@@ -32,11 +32,46 @@ if Gem::Requirement.new('>= 16.2')
   property :keyring, String, name_property: true, desired_state: false
   property :place, String, default: '/etc/apt/trusted.gpg.d'
 
-  load_current_value do |new_resource|
-    # keyring new_resource.keyring
-    # place new_resource.place
+  # small helper class to extract the uid and fingerprint from a PGP key
+  class Sys
+    class Apt
+      class Key
+        attr_reader :key, :fingerprint, :uid
 
-    keyfile = "#{new_resource.place}/#{new_resource.keyring}.asc"
+        def initialize(key)
+          @key = key
+
+          keyring = Tempfile.new('sys_apt_key')
+          gpg_cmd = "gpg --no-default-keyring --keyring #{keyring.path}"
+
+          cmd = Mixlib::ShellOut.new(
+            "#{gpg_cmd} --show-keys --with-colons",
+            input: key
+          )
+          cmd.run_command
+          keyring.unlink
+
+          @fingerprint = cmd.stdout.match(/^fpr:.*/)[0].split(':')[9]
+          @uid = cmd.stdout.match(/^uid:.*/)[0].split(':')[9]
+        end
+
+        # clean up the uid to make it suitable for a filename
+        def tidy_uid
+          # strip the email part, convert it to lowercase,
+          # replace all non alphanumerical characters to dashes
+          #  including whitespace
+          tidy_uid = @uid.match(/(.*?)\s+<(.*)>/)[1].downcase
+                       .gsub(/[^[:alnum:]]+/, ' ').strip.gsub(' ', '-')
+        end
+      end
+    end
+  end
+
+  load_current_value do |new_resource|
+
+    new_key =  Sys::Apt::Key.new new_resource.key
+
+    keyfile = "#{new_resource.place}/#{new_key.tidy_uid}.asc"
     if ::File.exist?(keyfile)
       key IO.read(keyfile)
     else
@@ -45,39 +80,27 @@ if Gem::Requirement.new('>= 16.2')
   end
 
   action :add do
-    keyring = Tempfile.new('sys_apt_key')
-    gpg_cmd = "gpg --no-default-keyring --keyring #{keyring.path}"
+    new_key = Sys::Apt::Key.new new_resource.key
 
-    cmd = Mixlib::ShellOut.new(
-      "#{gpg_cmd} --show-keys --with-colons",
-      input: new_resource.key
-    )
-    cmd.run_command
-
-    # read fingerprint and uid from key data:
-    fingerprint = cmd.stdout.match(/^fpr:.*/)[0].split(':')[9]
-    uid = cmd.stdout.match(/^uid:.*/)[0].split(':')[9]
-
-    # clean up the uid to make it suitable for a filename:
-    # strip the email part, convert it to lowercase,
-    # replace all non alphanumerical characters to dashes including whitespace
-    tidy_uid = uid.match(/(.*?)\s+<(.*)>/)[1].downcase
-                 .gsub(/[^[:alnum:]]+/, ' ').strip.gsub(' ', '-')
-
-    keyfile = "#{new_resource.place}/#{tidy_uid}.asc"
+    keyfile = "#{new_resource.place}/#{new_key.tidy_uid}.asc"
 
     directory new_resource.place do
       mode 0o755
     end
 
+    keyring = Tempfile.new('sys_apt_key')
+    gpg_cmd = "gpg --no-default-keyring --keyring #{keyring.path}"
+
     # man apt-secure:
-    # > Alternatively, keys may be placed in /etc/apt/keyrings for local keys, […]
-    # > ASCII-armored keys must use an extension of .asc, and unarmored keys an extension of .gpg.
-    # > To generate keys suitable for use in APT using GnuPG, you will need to use
-    # > the gpg --export-options export-minimal [--armor] --export command.
-    execute "Adding #{uid} to #{new_resource.place}" do
+    # > Alternatively, keys may be placed in /etc/apt/keyrings for local keys,
+    # > […] ASCII-armored keys must use an extension of .asc, and unarmored keys
+    # > an extension of .gpg.
+    # > To generate keys suitable for use in APT using GnuPG, you will need to
+    # > use the gpg --export-options export-minimal [--armor] --export command.
+    execute "Adding '#{new_key.uid}' (#{new_key.fingerprint}) "\
+            "to #{new_resource.place}" do
       command "#{gpg_cmd} --import;" \
-              " #{gpg_cmd} --export-options export-minimal --export --armor"\
+              " #{gpg_cmd} --export-options export-minimal --armor --export"\
               " --output #{keyfile}"
       input new_resource.key
     end
@@ -86,7 +109,9 @@ if Gem::Requirement.new('>= 16.2')
   end
 
   action :remove do
-    file "#{new_resource.place}/#{new_resource.keyring}.asc" do
+    new_key =  Sys::Apt::Key.new new_resource.key
+
+    file "#{new_resource.place}/#{new_key.tidy_uid}.asc" do
       action :delete
     end
   end
