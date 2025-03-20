@@ -29,7 +29,7 @@ if Gem::Requirement.new('>= 16.2')
 
   default_action :add
   property :key, String, required: true
-  property :keyring, String, name_property: true, desired_state: false
+  property :name, String, name_property: true, desired_state: false
   property :place, String, default: '/etc/apt/trusted.gpg.d'
 
   # small helper class to extract the uid and fingerprint from a PGP key
@@ -60,8 +60,8 @@ if Gem::Requirement.new('>= 16.2')
           # strip the email part, convert it to lowercase,
           # replace all non alphanumerical characters to dashes
           #  including whitespace
-          tidy_uid = @uid.match(/(.*?)\s+<(.*)>/)[1].downcase
-                       .gsub(/[^[:alnum:]]+/, ' ').strip.gsub(' ', '-')
+          @uid.match(/(.*?)\s+<(.*)>/)[1].downcase
+            .gsub(/[^[:alnum:]]+/, ' ').strip.gsub(' ', '-')
         end
       end
     end
@@ -69,7 +69,7 @@ if Gem::Requirement.new('>= 16.2')
 
   load_current_value do |new_resource|
 
-    new_key =  Sys::Apt::Key.new new_resource.key
+    new_key = Sys::Apt::Key.new new_resource.key
 
     keyfile = "#{new_resource.place}/#{new_key.tidy_uid}.asc"
     if ::File.exist?(keyfile)
@@ -109,7 +109,7 @@ if Gem::Requirement.new('>= 16.2')
   end
 
   action :remove do
-    new_key =  Sys::Apt::Key.new new_resource.key
+    new_key = Sys::Apt::Key.new new_resource.key
 
     file "#{new_resource.place}/#{new_key.tidy_uid}.asc" do
       action :delete
