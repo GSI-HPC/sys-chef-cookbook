@@ -92,41 +92,40 @@ if node['sys']['autofs']['ldap']
     notifies :restart, 'service[autofs]'
   end
 
-  sys_systemd_unit 'k5start-autofs.service' do
-    config({
-      'Unit' => {
-        'Description' => 'Maintain Ticket-Cache for autofs',
-        'Documentation' => 'man:k5start(1) man:autofs(8)',
-        'After' => 'network-online.target',
-        'Requires' => 'network-online.target',
-        'Before' => 'autofs.service',
-      },
-      'Service' => {
-        'Type' => 'forking',
-        'ExecStart' => '/usr/bin/k5start -b -L -F -f /etc/autofs.keytab'\
-          ' -K 60 -k /tmp/krb5cc_autofs -U -x',
-        'Restart' => 'always',
-        'RestartSec' => '5',
-      },
-      'Install' => {
-        'WantedBy' => 'default.target',
-      }
-    })
-    notifies :restart, 'service[k5start-autofs]'
-    only_if { node['platform_version'].to_i >= 9 }
+  if systemd_active?
+    sys_systemd_unit 'k5start-autofs.service' do
+      config(
+        'Unit' => {
+          'Description' => 'Maintain Ticket-Cache for autofs',
+          'Documentation' => 'man:k5start(1) man:autofs(8)',
+          'After' => 'network-online.target',
+          'Requires' => 'network-online.target',
+          'Before' => 'autofs.service',
+        },
+        'Service' => {
+          'Type' => 'forking',
+          'ExecStart' => '/usr/bin/k5start -b -L -F -f /etc/autofs.keytab'\
+                         ' -K 60 -k /tmp/krb5cc_autofs -U -x',
+          'Restart' => 'always',
+          'RestartSec' => '5',
+        },
+        'Install' => {
+          'WantedBy' => 'default.target',
+        }
+      )
+      notifies :restart, 'service[k5start-autofs]'
+    end
+  else
+    cookbook_file '/etc/init.d/autofs' do
+      source 'etc_init.d_autofs'
+      mode '0755'
+      notifies :restart, 'service[autofs]'
+    end
   end
 
   service 'k5start-autofs' do
     supports :restart => true, :reload => true
     action [:enable, :start]
-    only_if { node['platform_version'].to_i >= 9 }
-  end
-
-  cookbook_file '/etc/init.d/autofs' do
-    source 'etc_init.d_autofs'
-    mode '0755'
-    notifies :restart, 'service[autofs]'
-    only_if { node['platform_version'].to_i < 9 }
   end
 
   if Gem::Requirement.new('>= 12.15')
