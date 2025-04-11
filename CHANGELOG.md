@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Changed
 - [`apt`] Get rid of the deprecated `apt-key` in `sys_apt_key`,
   refactored as a modern custom resource (see !80)
+- [`autofs`] Improved detection of systemd
 
 ## [2.7.1] - 2024-10-11
 
