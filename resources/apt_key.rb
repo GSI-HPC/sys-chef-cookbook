@@ -83,10 +83,15 @@ if Gem::Requirement.new('>= 16.2')
     converge_if_changed do
       new_key = Sys::Apt::Key.new new_resource.key
 
-      keyfile = "#{new_resource.place}/#{new_key.tidy_uid}.asc"
-
+      # make sure enclosing directory exists:
       directory new_resource.place do
         mode 0o755
+      end
+
+      keyfile = "#{new_resource.place}/#{new_key.tidy_uid}.asc"
+      # gpg --export --output requires that the destination file does not exist:
+      file keyfile do
+        action :delete
       end
 
       keyring = Tempfile.new('sys_apt_key')
