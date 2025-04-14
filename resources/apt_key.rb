@@ -42,7 +42,7 @@ if Gem::Requirement.new('>= 16.2')
           @key = key
 
           keyring = Tempfile.new('sys_apt_key')
-          gpg_cmd = "gpg --no-default-keyring --keyring #{keyring.path}"
+          gpg_cmd = "gpg --batch --no-tty --no-default-keyring --keyring #{keyring.path}"
 
           cmd = Mixlib::ShellOut.new(
             "#{gpg_cmd} --show-keys --with-colons",
@@ -80,32 +80,35 @@ if Gem::Requirement.new('>= 16.2')
   end
 
   action :add do
-    new_key = Sys::Apt::Key.new new_resource.key
+    converge_if_changed do
+      new_key = Sys::Apt::Key.new new_resource.key
 
-    keyfile = "#{new_resource.place}/#{new_key.tidy_uid}.asc"
+      keyfile = "#{new_resource.place}/#{new_key.tidy_uid}.asc"
 
-    directory new_resource.place do
-      mode 0o755
+      directory new_resource.place do
+        mode 0o755
+      end
+
+      keyring = Tempfile.new('sys_apt_key')
+      gpg_cmd = 'gpg --batch --no-tty --no-default-keyring'\
+                " --keyring #{keyring.path}"
+
+      # man apt-secure:
+      # > Alternatively, keys may be placed in /etc/apt/keyrings for local keys,
+      # > […] ASCII-armored keys must use an extension of .asc, and unarmored
+      # > keys an extension of .gpg.
+      # > To generate keys suitable for use in APT using GnuPG, you will need to
+      # > use `gpg --export-options export-minimal [--armor] --export`
+      execute "Adding '#{new_key.uid}' (#{new_key.fingerprint}) "\
+              "to #{new_resource.place}" do
+        command "#{gpg_cmd} --import;" \
+                " #{gpg_cmd} --export-options export-minimal --armor --export"\
+                " --output #{keyfile}"
+        input new_resource.key
+      end
+
+      keyring.unlink
     end
-
-    keyring = Tempfile.new('sys_apt_key')
-    gpg_cmd = "gpg --no-default-keyring --keyring #{keyring.path}"
-
-    # man apt-secure:
-    # > Alternatively, keys may be placed in /etc/apt/keyrings for local keys,
-    # > […] ASCII-armored keys must use an extension of .asc, and unarmored keys
-    # > an extension of .gpg.
-    # > To generate keys suitable for use in APT using GnuPG, you will need to
-    # > use the gpg --export-options export-minimal [--armor] --export command.
-    execute "Adding '#{new_key.uid}' (#{new_key.fingerprint}) "\
-            "to #{new_resource.place}" do
-      command "#{gpg_cmd} --import;" \
-              " #{gpg_cmd} --export-options export-minimal --armor --export"\
-              " --output #{keyfile}"
-      input new_resource.key
-    end
-
-    keyring.unlink
   end
 
   action :remove do
