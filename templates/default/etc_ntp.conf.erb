@@ -42,6 +42,9 @@ restrict ::1
 # cryptographically authenticated.
 #restrict 192.168.123.0 mask 255.255.255.0 notrust
 
+<%- @observers.each do |host| -%>
+restrict <%= host %> default kod notrap nomodify nopeer limited
+<%- end -%>
 
 # If you want to provide time to your local subnet, change the next line.
 # (Again, the address is an example only.)
