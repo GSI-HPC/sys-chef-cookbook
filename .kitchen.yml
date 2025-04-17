@@ -27,7 +27,7 @@ driver:
   name: vagrant
   box_auto_update: true
   customize:
-    memory: 1024
+    memory: 1280
     cpus: 2
 
 provisioner:
@@ -163,6 +163,7 @@ suites:
     run_list:
       - recipe[sys::ohai]   # for 'debian' ohai plugin
       - recipe[sys::apt]
+      # - recipe[apt-test]
     attributes:
       sys:
         apt:
