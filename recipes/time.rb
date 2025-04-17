@@ -1,8 +1,8 @@
 #
-# Cookbook Name:: sys
+# Cookbook:: sys
 # Recipe:: time
 #
-# Copyright 2012-2024 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+# Copyright:: 2012-2025 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
 #
 # Authors:
 #  Christopher Huhn  <c.huhn@gsi.de>
@@ -86,6 +86,7 @@ unless time_servers.empty?
     source 'etc_ntp.conf.erb'
     variables(
       servers: time_servers,
+      observers: node['sys']['time']['observers'] || [],
       package: ntp_package
     )
     notifies :restart, "service[ntp]"

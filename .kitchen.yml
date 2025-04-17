@@ -496,6 +496,8 @@ suites:
             - ntp1.net.berkeley.edu
             - time1.esa.int
             - zeit.fu-berlin.de
+          observers:
+            - ntp-observer.example.org
   - name: sys_x509
     run_list:
       - recipe[x509-test::default]
