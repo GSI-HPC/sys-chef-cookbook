@@ -2,7 +2,7 @@
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-## Unreleased
+## 2.8.0 - 2025-04-25
 
 ### Changed
 - [`apt`] Get rid of the deprecated `apt-key` in `sys_apt_key`,
