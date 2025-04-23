@@ -6,6 +6,7 @@
 #
 # Authors:
 #  Dennis Klein      <d.klein@gsi.de>
+#  Matthias Pausch   <m.pausch@gsi.de>
 #  Christopher Huhn  <c.huhn@gsi.de>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,6 +24,16 @@
 
 module Sys
   module Helper
+
+    # chef or cinc?
+    def chef_product_name
+      begin
+        ChefUtils::Dist::Infra::SHORT
+      rescue NameError
+        'chef' # fallback if chef too old
+      end
+    end
+
     # return a meaningful numeric Debian version where
     #  the value for Testing or Unstable is 1) numeric and
     #  2) larger than any sensible Debian version number
@@ -55,8 +66,20 @@ module Sys
       cmd.run_command
       cmd.stdout.chomp == 'systemd'
     end
+
+    # generate a standard header that can be used in template and file resources
+    def template_header(comment = '#')
+      header = "DO NOT CHANGE THIS FILE MANUALLY!\n\n" \
+               "This file is managed by #{chef_product_name}.\n"\
+               "Created by #{@cookbook_name}::#{@recipe_name}"
+      # recipe_line and @template_name are only avaiable in TemplateContexts:
+      header += " (line #{@recipe_line})" if @recipe_line
+      header += " from template #{@template_name}" if @template_name
+      header.gsub(/^ */, "#{comment} ")
+    end
   end
 end
 
 Chef::Recipe.include(Sys::Helper)
 Chef::Mixin::Template::TemplateContext.include(Sys::Helper)
+Chef::Resource::File.include(Sys::Helper)
