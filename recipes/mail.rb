@@ -39,6 +39,8 @@ maincf_vars = {
   mydestination:      node['sys']['mail']['mydestination'],
   relay_domains:      node['sys']['mail']['relay_domains'],
   message_size_limit: node['sys']['mail']['message_size_limit'],
+  smtpd_milters:      node['sys']['mail']['smtpd_milters'],
+  non_smtpd_milters:  node['sys']['mail']['non_smtpd_milters'],
 }
 
 if node['sys']['mail']['export_environment']

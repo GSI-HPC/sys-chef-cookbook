@@ -59,3 +59,10 @@ inet_protocols = ipv4
 
 <%# crucial to make e.g. "date | mail -s blabla7 userid" work: -%>
 recipient_canonical_maps = hash:/etc/postfix/canonical
+
+<% unless @smtpd_milters.empty? %>
+smtpd_milters = <%= @smtpd_milters.join(' ') %>
+<% end %>
+<% unless @non_smtpd_milters.empty? %>
+non_smtpd_milters = <%= @non_smtpd_milters.join(' ') %>
+<% end %>
