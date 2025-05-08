@@ -42,6 +42,8 @@ configuration option |
   The contents of this array will be merged with the default
   `TZ`, `LANG`, `MAIL_CONFIG` |
 | `message_size_limit` | (optional) | Maximum mail size, larger mails will be bounced |
+| `smtpd_milters` | (optional) | Milters for mail received via SMTP (array) |
+| `non_smtpd_milters` | (optional) | Milters for mail received via other transports (eg. local) (array) |
 
 ### Example
 
