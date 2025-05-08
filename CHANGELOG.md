@@ -2,6 +2,10 @@
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## Unreleased
+
+- [`mail`] Add support for setup of smptd and non-smtpd milters in postfix
+
 ## 2.8.0 - 2025-04-25
 
 ### Changed
