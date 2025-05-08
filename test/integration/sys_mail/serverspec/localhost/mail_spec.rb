@@ -81,12 +81,15 @@ describe file('/tmp/mail.test') do
 
   @now = Time.now.strftime("%Y_%m_%d_%H_%M_%S")
 
-  before do
+  before :all do
+    # a simple dummy milter:
+    @pid = Process.spawn('/tmp/verifier/suites/serverspec/test_milter.py')
+
     `echo "test mail #{@now}" | mail -s "test-kitchen mail test" array`
     # wait for creation of mailbox:
     (1..10).each do |i|
       File.exist?('/tmp/mail.test') && break
-      puts i
+      print "#{i} "
       sleep 1
     end
   end
@@ -96,4 +99,9 @@ describe file('/tmp/mail.test') do
   its(:content) { should include "test mail #{@now}" }
   # mail address may or may not be enclosed in angle brackets
   its(:content) { should match %r{^To: <?array@} }
+  its(:content) { should include 'X-Milter-Filter: intelligent circuitry' }
+  after :all do
+    # cleanup the milter:
+    Process.kill('TERM', @pid)
+  end
 end
