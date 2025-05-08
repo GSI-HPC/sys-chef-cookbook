@@ -2,7 +2,7 @@
 # Cookbook:: sys
 # Config file for test-kitchen
 #
-# Copyright:: 2015-2024 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+# Copyright:: 2015-2025 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
 #
 # Authors:
 #  Christopher Huhn   <c.huhn@gsi.de>
@@ -293,6 +293,10 @@ suites:
               - /tmp/mail.test
             nobody: knowsthetroubleiveseen@example.org
           message_size_limit: 1234567890
+          non_smtpd_milters:
+            - inet:localhost:42761 # Q who?
+          smtpd_milters:
+            - inet:localhost:42761
   - name: sys_multipath
     run_list:
       - recipe[sys::multipath]
