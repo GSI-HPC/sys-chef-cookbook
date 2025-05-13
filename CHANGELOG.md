@@ -2,7 +2,7 @@
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-## Unreleased
+## [2.9.0] - 2025-05-13
 
 ### Added
 - [`mail`] Add support for setup of smptd and non-smtpd milters in postfix (!82)
@@ -10,8 +10,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Changed
 - Move `template_header` to `Sys::Helper` module so it becomes available in recipes and `file` resources too (!78)
 
-
-## 2.8.0 - 2025-04-25
+## [2.8.0] - 2025-04-25
 
 ### Changed
 - [`apt`] Get rid of the deprecated `apt-key` in `sys_apt_key`,
