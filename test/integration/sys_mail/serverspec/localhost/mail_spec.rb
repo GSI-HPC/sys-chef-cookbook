@@ -1,8 +1,8 @@
 #
-# Cookbook Name:: sys
+# Cookbook:: sys
 # Serverspec integration tests for sys::mail
 #
-# Copyright 2020-2022 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+# Copyright 2020-2024 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
 #
 # Authors:
 #  Christopher Huhn   <C.Huhn@gsi.de>
@@ -83,7 +83,7 @@ describe file('/tmp/mail.test') do
 
   before :all do
     # a simple dummy milter:
-    @pid = Process.spawn('/tmp/verifier/suites/serverspec/test_milter.py')
+    @pid = Process.spawn(File.join(File.dirname(__FILE__), '../test_milter.py'))
 
     `echo "test mail #{@now}" | mail -s "test-kitchen mail test" array`
     # wait for creation of mailbox:
