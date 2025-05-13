@@ -2,6 +2,12 @@
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## Unreleased
+
+### Changed
+- Move `template_header` to `Sys::Helper` module so it becomes available in recipes and `file` resources too
+
+
 ## 2.8.0 - 2025-04-25
 
 ### Changed
