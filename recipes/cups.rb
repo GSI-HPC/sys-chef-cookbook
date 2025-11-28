@@ -1,9 +1,14 @@
-# -*- coding: iso-8859-15 -*-
 #
-# Cookbook Name:: sys
+# Cookbook:: sys
 # Recipe:: cups
 #
-# Copyright 2013 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH <hpc@gsi.de>
+# Copyright:: 2014-2025 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+#
+# Authors:
+#  Christopher Huhn   <c.huhn@gsi.de>
+#  Dennis Klein       <d.klein@gsi.de>
+#  Matthias Pausch    <m.pausch@gsi.de>
+#  Thomas Roth        <t.roth@gsi.de>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -17,7 +22,7 @@
 
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-# All rights reserved - Do Not Redistribute
+#
 
 if node['sys']['cups']
 
