@@ -38,12 +38,38 @@ sshd_config['HostKey'] << '/etc/ssh/ssh_host_ed25519_key' if debian_version >= 8
 sshd_config['PermitRootLogin'] = 'without-password'       if debian_version < 9
 sshd_config['AddressFamily'] = 'inet'
 
+
 # only if SSH daemon configuration is defined
 unless node['sys']['sshd']['config'].empty?
   package 'openssh-server'
   service 'ssh' do
     supports :reload => true
   end
+
+  # deploy ssh host keys
+  begin
+    vault = node['sys']['sshd']['host_keys_vault']
+    item = node['sys']['sshd']['host_keys_item']
+    host_keys = []
+
+    chef_vault_item(vault, item).each do |key_name, key|
+      key_filename = "/etc/ssh/ssh_host_#{key_name}_key"
+
+      file key_filename do
+        content key
+        owner 'root'
+        group 'root'
+        mode '0600'
+        sensitive true
+      end
+      
+      host_keys << key_filename
+    end
+    sshd_config['HostKey'] = host_keys
+  rescue
+    Chef::log.warn("No host key deployed: Vault item with name #{item} not found.")
+  end
+
   # overwrite the default configuration
   sshd_config.merge! node['sys']['sshd']['config']
   template '/etc/ssh/sshd_config' do
