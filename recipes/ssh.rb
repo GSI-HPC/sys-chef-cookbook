@@ -67,7 +67,7 @@ unless node['sys']['sshd']['config'].empty?
     end
     sshd_config['HostKey'] = host_keys
   rescue
-    Chef::log.warn("No host key deployed: Vault item with name #{item} not found.")
+    Chef::Log.warn("No host key deployed: Vault item with name #{item} not found.")
   end
 
   # overwrite the default configuration
