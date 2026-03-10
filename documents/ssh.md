@@ -106,6 +106,10 @@ Alternatively use the resource `sys_ssh_authorize` like:
       managed true
     end
 
+## SSH host key management
+
+… add documentation here …
+
 ## Known Hosts
 
 `sys::ssh` can manage the system-wide `/etc/ssh/ssh_known_hosts`.

@@ -2,6 +2,11 @@
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## Unreleased
+
+### Added
+- [`ssh`] Manage SSH host keys with chef vaults (!86)
+
 ## [2.9.0] - 2025-05-13
 
 ### Added
