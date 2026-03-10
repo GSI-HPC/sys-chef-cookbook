@@ -47,27 +47,37 @@ unless node['sys']['sshd']['config'].empty?
   end
 
   # deploy ssh host keys
-  begin
-    vault = node['sys']['sshd']['host_keys_vault'] || 'ssh_host_keys'
-    item = node['sys']['sshd']['host_keys_item'] || node['fqdn']
-    host_keys = []
+  if  node['sys']['sshd']['host_keys_vault'] &&
+      node['sys']['sshd']['host_keys_item']
+    begin
+      host_keys = []
 
-    chef_vault_item(vault, item).each do |key_name, key|
-      key_filename = "/etc/ssh/ssh_host_#{key_name}_key"
+      chef_vault_item(
+        node['sys']['sshd']['host_keys_vault'],
+        node['sys']['sshd']['host_keys_item']
+      )['keys'].each do |key_name, key|
+        key_filename = "/etc/ssh/ssh_host_#{key_name}_key"
 
-      file key_filename do
-        content key
-        owner 'root'
-        group 'root'
-        mode '0600'
-        sensitive true
+        file key_filename do
+          content key
+          owner 'root'
+          group 'root'
+          mode '0600'
+          sensitive true
+        end
+
+        # TODO: generate the public key
+
+        host_keys << key_filename
       end
-
-      host_keys << key_filename
+      sshd_config['HostKey'] = host_keys
+    rescue ChefVault::Exceptions::ItemNotFound
+      Chef::Log.warn(
+        format("No host keys deployed: Vault item %s::%s not found",
+               node['sys']['sshd']['host_keys_vault'],
+               node['sys']['sshd']['host_keys_item'])
+      )
     end
-    sshd_config['HostKey'] = host_keys
-  rescue
-    Chef::Log.debug("No host key deployed: Vault item with name #{item} not found.")
   end
 
   # overwrite the default configuration
