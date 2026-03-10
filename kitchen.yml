@@ -2,7 +2,7 @@
 # Cookbook:: sys
 # Config file for test-kitchen
 #
-# Copyright:: 2015-2025 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+# Copyright:: 2015-2026 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
 #
 # Authors:
 #  Christopher Huhn   <c.huhn@gsi.de>
@@ -22,124 +22,19 @@
 # limitations under the License.
 #
 
+# Defaults are loaded via kitchen_global.yml in gitlab-ci
+# see https://git.gsi.de/chef/cookbooks/gsi_template/-/blob/master/kitchen_global.yml
+# For local kitchen tests set KITCHEN_GLOBAL_YAML to a checked out copy of that file
+# eg. `KITCHEN_GLOBAL_YAML=../gsi_template/kitchen_global.yml kitchen test`
 ---
 driver:
-  name: vagrant
-  box_auto_update: true
   customize:
     memory: 1280
     cpus: 2
-
-provisioner:
-  require_chef_omnibus: false
-  install_strategy: skip
-  log_level: warn
-  # name: chef-solo
-  # chef_solo_path: /usr/bin/chef-solo
-  name: chef_zero
-  chef_client_path: /usr/bin/chef-client
-  data_bags_path: test/integration/data_bags
-  # product_name: cinc
-  chef_omnibus_url: https://omnitruck.cinc.sh/install.sh
-
-verifier:
-  name: busser
-  ruby_bindir: /usr/bin
-
-platforms:
-  - name: jessie
-    driver:
-      box: debian/jessie64
-      require_chef_omnibus: 12.0.3
-      provider: libvirt
-      provision: true
-      vagrantfiles:
-        - vagrant.rb
-  - name: stretch
-    driver:
-      box: gsi/stretch
-      box_url: https://web-docs.gsi.de/~christo/vagrant-boxes/gsi-stretch.json
-      provider: libvirt
-      provision: true
-      vagrantfiles:
-        - vagrant.rb
-  - name: buster
-    driver:
-      box: gsi/buster
-      box_url: https://web-docs.gsi.de/~christo/vagrant-boxes/gsi-buster.json
-      provider: libvirt
-      provision: true
-      vagrantfiles:
-        - vagrant.rb
-  - name: bullseye
-    driver:
-      box: debian/bullseye64
-      provider: libvirt
-      provision: true
-      require_chef_omnibus: true
-      vagrantfiles:
-        - vagrant.rb
-    provisioner:
-      client_rb:
-        # Chef 15 no longer collects passwd information by default
-        # cf. https://stackoverflow.com/a/70749387/9793012
-        'ohai.optional_plugins = ':
-          - :Passwd
-  - name: bookworm
-    driver:
-      box: debian/bookworm64
-      provider: libvirt
-      provision: true
-      require_chef_omnibus: true
-      vagrantfiles:
-        - vagrant.rb
-    provisioner:
-      client_rb:
-        # Chef 15 no longer collects passwd information by default
-        # cf. https://stackoverflow.com/a/70749387/9793012
-        'ohai.optional_plugins = ':
-          - :Passwd
-  - name: trixie
-    driver:
-      box: debian/testing64
-      provider: libvirt
-      provision: true
-      require_chef_omnibus: true
-      vagrantfiles:
-        - vagrant.rb
-    provisioner:
-      client_rb:
-        # Chef 15 no longer collects passwd information by default
-        # cf. https://stackoverflow.com/a/70749387/9793012
-        'ohai.optional_plugins = ':
-          - :Passwd
-  - name: focal
-    driver:
-      box: generic/ubuntu2004
-      provider: libvirt
-      provision: true
-      vagrantfiles:
-        - vagrant.rb
-    provisioner:
-      client_rb:
-        # Chef 15 no longer collects passwd information by default
-        # cf. https://stackoverflow.com/a/70749387/9793012
-        'ohai.optional_plugins = ':
-          - :Passwd
-  # the Jammy libvirt image is broken - at least on my box
-  # - name: jammy
-  #   driver:
-  #     box: generic/ubuntu2204
-  #     provider: libvirt
-  #     provision: true
-  #     vagrantfiles:
-  #       - vagrant.rb
-  #   provisioner:
-  #     client_rb:
-  #       # Chef 15 no longer collects passwd information by default
-  #       # cf. https://stackoverflow.com/a/70749387/9793012
-  #       'ohai.optional_plugins = ':
-  #         - :Passwd
+  # network:
+  #   - ["forwarded_port", {guest: 80, host: 8977}]
+  # synced_folders:
+  #   - ["test/data/%{instance_name}", "/tmp/data", "type: :rsync"]
 
 suites:
   - name: sys_accounts
