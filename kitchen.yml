@@ -324,6 +324,11 @@ suites:
           config:
             ClientAliveInterval: 4711
             X11Forwarding: 'no'
+          host_keys_vault: cant_touch_this
+          host_keys_item: stop_hammer_time
+      # test chef-vault functionality with databags:
+      chef-vault:
+        databag_fallback: true
   - name: sys_ssl
     run_list:
       - recipe[sys::ssl]
