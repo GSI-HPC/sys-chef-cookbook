@@ -1,54 +1,9 @@
 ---
-stages:
-  - lint
-  - chefspec
-  - kitchen
-
-rubocop:
-  stage: lint
-  tags:
-    - rubocop
-  script:
-    - rake rubocop
-
-foodcritic:
-  stage: lint
-  tags:
-    - foodcritic
-  script:
-    - rake foodcritic
-  allow_failure: true
-
-cookstyle:
-  stage: lint
-  tags:
-    - cookstyle
-  script:
-    - cookstyle --fail-level E -f junit --out cookstyle.xml
-  artifacts:
-    when: always
-    paths:
-      - cookstyle.xml
-    reports:
-      junit: cookstyle.xml
-
-chefspec:
-  stage: chefspec
-  script:
-    - rake chefspec
-  allow_failure: true
+include:
+  - project: 'chef/cookbooks/gsi_template'
+    file: 'gitlab-ci/default.yml'
 
 .kitchen:
-  stage: kitchen
-  resource_group: $CI_JOB_NAME-$CI_PROJECT_NAME
-  script:
-    - sleep $((RANDOM%30))
-    - kitchen create $SUITE-$PLATFORM
-    - kitchen converge $SUITE-$PLATFORM
-    - kitchen verify $SUITE-$PLATFORM
-  after_script:
-    # make sure failed runs are always cleaned up too:
-    - kitchen destroy $SUITE-$PLATFORM
   parallel:
     matrix:
       - SUITE:
@@ -76,40 +31,7 @@ chefspec:
         - time
         - x509
 
-# circumvent limit of 50 parallel jobs:
 buster:
   extends: .kitchen
   variables:
     PLATFORM: buster
-  tags:
-    - kitchen
-    - buster
-
-bullseye:
-  extends: .kitchen
-  variables:
-    PLATFORM: bullseye
-  tags:
-    - kitchen
-    - bullseye
-
-bookworm:
-  extends: .kitchen
-  variables:
-    PLATFORM: bookworm
-  tags:
-    - kitchen
-    - bookworm
-
-trixie:
-  extends: .kitchen
-  variables:
-    PLATFORM: trixie
-  tags:
-    - kitchen
-    - trixie
-  allow_failure: true
-
-.post:
-   script:
-    - kitchen destroy
