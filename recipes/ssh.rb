@@ -2,7 +2,7 @@
 # Cookbook:: sys
 # Recipe:: ssh
 #
-# Copyright 2012-2024 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+# Copyright 2012-2026 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
 #
 # Authors:
 #  Christopher Huhn  <c.huhn@gsi.de>
@@ -10,6 +10,7 @@
 #  Matthias Pausch   <m.pausch@gsi.de>
 #  Victor Penso      <v.penso@gsi.de>
 #  Thomas Roth       <t.roth@gsi.de>
+#  Karim Elaammari   <k.elaammari@gsi.de>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -61,7 +62,7 @@ unless node['sys']['sshd']['config'].empty?
         mode '0600'
         sensitive true
       end
-      
+
       host_keys << key_filename
     end
     sshd_config['HostKey'] = host_keys
