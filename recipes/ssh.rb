@@ -56,8 +56,44 @@ unless node['sys']['sshd']['config'].empty?
         node['sys']['sshd']['host_keys_vault'],
         node['sys']['sshd']['host_keys_item']
       )['keys'].each do |key_name, key|
+
+        # calculate the public key
+        # also checks the validity of the private key:
+        ssh_keygen = Mixlib::ShellOut.new(
+          'ssh-keygen -y -f /dev/stdin',
+          input: key
+        )
+        ssh_keygen.run_command
+
+        if ssh_keygen.error?
+          Chef::Log.warn(
+            format("Can't generate public key for %s in vault item %s::%s: %s",
+                   key_name,
+                   node['sys']['sshd']['host_keys_vault'],
+                   node['sys']['sshd']['host_keys_item'],
+                   ssh_keygen.stderr
+                  )
+          )
+          next
+        end
+
+        public_key = ssh_keygen.stdout
+        # check whether the pubkey has the right form:
+        if public_key !~ /^(ssh-)?#{key_name}[ -]/
+          Chef::Log.warn(
+            format("Public key for %s in vault item %s::%s looks incorrect: %s",
+                   key_name,
+                   node['sys']['sshd']['host_keys_vault'],
+                   node['sys']['sshd']['host_keys_item'],
+                   public_key
+                  )
+          )
+          next
+        end
+
         key_filename = "/etc/ssh/ssh_host_#{key_name}_key"
 
+        # the private key
         file key_filename do
           content key
           owner 'root'
@@ -66,11 +102,18 @@ unless node['sys']['sshd']['config'].empty?
           sensitive true
         end
 
-        # TODO: generate the public key
+        # the public key
+        file "#{key_filename}.pub" do
+          content public_key
+          owner 'root'
+          group 'root'
+          mode '0644'
+        end
 
         host_keys << key_filename
       end
-      sshd_config['HostKey'] = host_keys
+
+      sshd_config['HostKey'] = host_keys unless host_keys.empty?
     rescue ChefVault::Exceptions::ItemNotFound
       Chef::Log.warn(
         format("No host keys deployed: Vault item %s::%s not found",
