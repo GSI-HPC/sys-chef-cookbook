@@ -108,7 +108,24 @@ Alternatively use the resource `sys_ssh_authorize` like:
 
 ## SSH host key management
 
-… add documentation here …
+`sys::ssh` can deploy ssh host keys from chef-vault and configures the SSHD service accordingly. To use this feature, following attributes must to be set:
+* Name of the vault: `node['sys']['sshd']['host_keys_vault']`
+* Name of the item: `node['sys']['sshd']['host_keys_item']`
+
+Chef-vault-item structure needs two main attributes. `id`-Attribute as name of the item and a `keys`-Hash containing a combination of key_type as attribute name and the private key as attribute value.
+```json
+{
+  "id": "itemname",
+  "keys": {
+    "ecdsa": "-----BEGIN OPENSSH...",
+    "rsa": "...",
+    ...
+  }
+}
+```
+For each private key in `keys` the corresponding public key will be computed on the host with `ssh-keygen`. If a public key cannot be computed from the private key, a warning will be logged and the deployment of this key is skipped. In addition the key_type field must be a legit ssh key_type. E.g: `ecdsa, rsa, ed25519...`. If the computed key type of ssh-keygen does not match the key_type given in the name, the key is skipped.
+
+
 
 ## Known Hosts
 

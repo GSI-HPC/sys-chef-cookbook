@@ -107,3 +107,36 @@ describe command 'ssh -o BatchMode=yes -v git@git.gsi.de' do
   its(:stderr) { should match %r{^debug1: Host 'git\.gsi\.de' is known and matches the (ECDSA|ED25519) host key\.} }
   its(:stderr) { should match %r{^debug1: Found key in /etc/ssh/ssh_known_hosts:\d+} }
 end
+
+
+# Deploy ssh_host_keys 
+# Valid keyname and format
+describe file('/etc/ssh/ssh_host_ecdsa_key') do
+  it { should exist }
+  it { should be_mode('600') }
+  its(:content) do
+    should match("-----BEGIN OPENSSH PRIVATE KEY-----\nb3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAAAaAAAABNlY2RzYS\n1zaGEyLW5pc3RwMjU2AAAACG5pc3RwMjU2AAAAQQQmExd6PCwLRgLmFXzBemDW1yRWI/6Y\nnQdhKQmaGd/V4FfdK70wTQvAeGb8Ehfe69II+2xukyE00R4aM/JnA+zxAAAAqKcLGcynCx\nnMAAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBCYTF3o8LAtGAuYV\nfMF6YNbXJFYj/pidB2EpCZoZ39XgV90rvTBNC8B4ZvwSF97r0gj7bG6TITTRHhoz8mcD7P\nEAAAAhAOpw4h2wB4GUcWM6FrCZpzc2F2LCbXe/Hb3gYVxgF3Y7AAAACW1jQGhhbW1lcgEC\nAwQFBg==\n-----END OPENSSH PRIVATE KEY-----\n")
+  end
+end
+
+describe file('/etc/ssh/ssh_host_ecdsa_key.pub') do
+  it { should exist }
+  it { should be_mode('644') }
+  its(:content) do
+    should match(`ssh-keygen -y -f /etc/ssh/ssh_host_ecdsa_key`)
+  end
+end
+
+# Containing key does not have a valid format.  
+describe file('/etc/ssh/ssh_host_rsa_key') do
+  its(:content) do
+    should_not match("If you can't groove to this, then you probably are dead")
+  end
+end
+
+# Name 'legit' is not a vailid keytype.
+['', '.pub'].each do |suffix|
+  describe file("/etc/ssh/ssh_host_legit_key#{suffix}") do
+    it { should_not exist } 
+  end
+end

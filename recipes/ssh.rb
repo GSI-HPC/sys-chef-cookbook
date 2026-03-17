@@ -100,6 +100,7 @@ unless node['sys']['sshd']['config'].empty?
           group 'root'
           mode '0600'
           sensitive true
+          notifies :restart, 'service[ssh]'
         end
 
         # the public key
