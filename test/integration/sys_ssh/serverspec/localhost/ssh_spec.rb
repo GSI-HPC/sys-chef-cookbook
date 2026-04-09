@@ -1,10 +1,11 @@
-# Cookbook Name:: sys
+# Cookbook:: sys
 # Integration tests for recipe sys::ssh
 #
-# Copyright 2020-2024 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+# Copyright 2020-2026 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
 #
 # Authors:
 #  Christopher Huhn   <c.huhn@gsi.de>
+#  Karim El Aammari <k.elaammar@gsi.de>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -109,7 +110,7 @@ describe command 'ssh -o BatchMode=yes -v git@git.gsi.de' do
 end
 
 
-# Deploy ssh_host_keys 
+# Deploy ssh_host_keys
 # Valid keyname and format
 describe file('/etc/ssh/ssh_host_ecdsa_key') do
   it { should exist }
@@ -127,7 +128,7 @@ describe file('/etc/ssh/ssh_host_ecdsa_key.pub') do
   end
 end
 
-# Containing key does not have a valid format.  
+# Containing key does not have a valid format.
 describe file('/etc/ssh/ssh_host_rsa_key') do
   its(:content) do
     should_not match("If you can't groove to this, then you probably are dead")
@@ -137,6 +138,6 @@ end
 # Name 'legit' is not a vailid keytype.
 ['', '.pub'].each do |suffix|
   describe file("/etc/ssh/ssh_host_legit_key#{suffix}") do
-    it { should_not exist } 
+    it { should_not exist }
   end
 end

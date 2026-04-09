@@ -115,11 +115,11 @@ set the following attributes:
 | Attribute | Description |
 | :--- | :--- |
 | `node['sys']['sshd']['host_keys_vault']` | Vault name (e.g. ssh_keys) |
-| `node['sys']['sshd']['host_keys_item']` | Item name (e.g. production) |
+| `node['sys']['sshd']['host_keys_item']` | Item name (e.g. `minions.example.org`) |
 
-### Chef Vault Item Structure
+### Chef-Vault Item Structure
 
-The Chef Vault item **must** follow this schema:
+The chef-vault item **must** follow this schema:
 
 ```json
 {
@@ -131,7 +131,7 @@ The Chef Vault item **must** follow this schema:
 }
 ```
 
-`keys` is a hash with the SSH key type as key and the private key as value.
+`keys` is a hash with the SSH key type as *key* and the private key as *value*.
 The private keys must be unencrypted (OpenSSH/PEM format).
 
 ### Public Key Generation & Validation
