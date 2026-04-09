@@ -106,25 +106,44 @@ Alternatively use the resource `sys_ssh_authorize` like:
       managed true
     end
 
-## SSH host key management
+## SSH Host Key Management
 
-`sys::ssh` can deploy ssh host keys from chef-vault and configures the SSHD service accordingly. To use this feature, following attributes must to be set:
-* Name of the vault: `node['sys']['sshd']['host_keys_vault']`
-* Name of the item: `node['sys']['sshd']['host_keys_item']`
+The `sys::ssh` recipe deploys SSH host keys from a chef-vault and
+configures the `sshd` service accordingly. To enable this feature,
+set the following attributes:
 
-Chef-vault-item structure needs two main attributes. `id`-Attribute as name of the item and a `keys`-Hash containing a combination of key_type as attribute name and the private key as attribute value.
+| Attribute | Description |
+| :--- | :--- |
+| `node['sys']['sshd']['host_keys_vault']` | Vault name (e.g. ssh_keys) |
+| `node['sys']['sshd']['host_keys_item']` | Item name (e.g. production) |
+
+### Chef Vault Item Structure
+
+The Chef Vault item **must** follow this schema:
+
 ```json
 {
-  "id": "itemname",
+  "id": "itemname",  // the vault item name
   "keys": {
-    "ecdsa": "-----BEGIN OPENSSH...",
-    "rsa": "...",
-    ...
+    "ed25519": "-----BEGIN OPENSSH PRIVATE KEY …",
+    "rsa": "-----BEGIN OPENSSH PRIVATE KEY …"
   }
 }
 ```
-For each private key in `keys` the corresponding public key will be computed on the host with `ssh-keygen`. If a public key cannot be computed from the private key, a warning will be logged and the deployment of this key is skipped. In addition the key_type field must be a legit ssh key_type. E.g: `ecdsa, rsa, ed25519...`. If the computed key type of ssh-keygen does not match the key_type given in the name, the key is skipped.
 
+`keys` is a hash with the SSH key type as key and the private key as value.
+The private keys must be unencrypted (OpenSSH/PEM format).
+
+### Public Key Generation & Validation
+
+For each private key defined in the `keys` object the **corresponding public key**
+is
+1. computed via `ssh-keygen -y`
+2. validated:
+  - Can `ssh-keygen` parse the client key?
+  - Does the detected key type match the type given in the vault?
+  - If the validation fails the deployment of the client key is skipped with a warning
+3. written to `/etc/ssh/ssh_host_<type>_key.pub`
 
 
 ## Known Hosts
